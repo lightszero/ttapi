@@ -31,7 +31,7 @@ export namespace tt_impl {
       //             this._whitetexture = new impl_t.tt_impl.Texture(webgl, 4, 4, tt.TextureFormat.RGBA32, data, true, false);
       //             impl_ss.tt_impl.Shaders.InitShader(this._webgl);
 
-      let info = wx.getSystemInfoSync();
+      let info = wx.getWindowInfo();
 
       this._pixelRadio = info.pixelRatio;
       this._pixelWidth = info.windowWidth;
