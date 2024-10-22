@@ -137,6 +137,7 @@ export namespace tt_impl {
         constructor() {
             // this.audioBGM = wx.createInnerAudioContext({ "useWebAudioImplement": false });
             try {
+                
                 //var _AudioContext = window["AudioContext"] || window as any ["webkitAudioContext"] || window["mozAudioContext"] || window["msAudioContext"];
                 this.audioContext = wx.createWebAudioContext();// new AudioContext();
                 console.log("audio Context inited");

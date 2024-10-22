@@ -19,7 +19,7 @@ export namespace tt_impl {
         webgl?: WebGL2RenderingContext | null;
         public Init(): void {
             let canvas = wx.createCanvas();
-            
+            wx.createCanvas();
             //wx.createImage();
             this.webgl = canvas.getContext("webgl2", { antialias: false });
 

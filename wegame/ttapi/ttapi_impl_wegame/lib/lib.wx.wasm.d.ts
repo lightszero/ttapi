@@ -1,5 +1,5 @@
 /*! *****************************************************************************
-Copyright (c) 2023 Tencent, Inc. All rights reserved.
+Copyright (c) 2024 Tencent, Inc. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ***************************************************************************** */
 
-/** [WXWebAssembly](https://developers.weixin.qq.com/miniprogram/dev/framework/performance/wasm.html)
+/** [WXWebAssembly](https://developers.weixin.qq.com/minigame/dev/guide/performance/perf-webassembly.html)
  *
  * WXWebAssembly */
 declare namespace WXWebAssembly {

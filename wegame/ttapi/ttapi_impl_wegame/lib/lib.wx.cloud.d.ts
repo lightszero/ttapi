@@ -1,5 +1,5 @@
 /*! *****************************************************************************
-Copyright (c) 2023 Tencent, Inc. All rights reserved.
+Copyright (c) 2024 Tencent, Inc. All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -99,14 +99,14 @@ interface WxCloud {
         param: RQ<ICloud.CallFunctionParam>
     ): Promise<ICloud.CallFunctionResult>
 
-    uploadFile(param: OQ<ICloud.UploadFileParam>): WechatMiniprogram.UploadTask
+    uploadFile(param: OQ<ICloud.UploadFileParam>): WechatMinigame.UploadTask
     uploadFile(
         param: RQ<ICloud.UploadFileParam>
     ): Promise<ICloud.UploadFileResult>
 
     downloadFile(
         param: OQ<ICloud.DownloadFileParam>
-    ): WechatMiniprogram.DownloadTask
+    ): WechatMinigame.DownloadTask
     downloadFile(
         param: RQ<ICloud.DownloadFileParam>
     ): Promise<ICloud.DownloadFileResult>
@@ -135,8 +135,6 @@ interface WxCloud {
     connectContainer(
         param: RQ<ICloud.ConnectContainerParam>
     ): Promise<ICloud.ConnectContainerResult>
-
-    services: ICloud.CloudServices
 }
 
 declare namespace ICloud {
@@ -182,7 +180,7 @@ declare namespace ICloud {
     }
 
     interface ConnectContainerResult extends IAPISuccessParam {
-        socketTask: WechatMiniprogram.SocketTask
+        socketTask: WechatMinigame.SocketTask
     }
 
     interface ConnectSocketOptions extends IAPIParam<void> {
@@ -201,37 +199,6 @@ declare namespace ICloud {
             service: string
             path?: string
         }
-    // === end ===
-
-    // === API: services ===
-    type AsyncSession<T> = T | PromiseLike<T>
-    interface GatewayCallOptions {
-        path: string
-        data: any
-        shouldSerialize?: boolean
-        apiVersion?: number
-    }
-    interface GatewayInstance {
-        call: (
-            param: CallContainerParam & GatewayCallOptions
-        ) => Promise<CallContainerResult>
-        refresh: (session: AsyncSession<string>) => Promise<void>
-    }
-    interface GatewayConstructOptions {
-        id: string
-        appid?: string
-        domain?: string
-        keepalive?: boolean
-        prefetch?: boolean
-        prefetchOptions?: {
-            concurrent?: number
-            enableQuic?: boolean
-            enableHttp2?: boolean
-        }
-    }
-    interface CloudServices {
-        Gateway: (opts: GatewayConstructOptions) => GatewayInstance
-    }
     // === end ===
 
     // === API: uploadFile ===
