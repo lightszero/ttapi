@@ -91,49 +91,48 @@ export namespace tt_impl {
       return img as HTMLImageElement;
     }
     static c2d: CanvasRenderingContext2D;
-    async LoadImageDataAsync(name: string, gray: boolean): Promise<tt.ImageBuffer> {
+    async LoadImageDataAsync(name: string): Promise<ImageData> {
       let img = await this.LoadImageAsync(name);
-      if (WxLoader.c2d == null) {
-        let canvas = wx.createCanvas();
-        WxLoader.c2d = canvas.getContext("2d");
-      }
+      // if (WxLoader.c2d == null) {
+      //   let canvas = wx.createCanvas();
+      //   WxLoader.c2d = canvas.getContext("2d");
+      // }
       WxLoader.c2d.canvas.width = img.width;
       WxLoader.c2d.canvas.height = img.height;
       WxLoader.c2d.clearRect(0, 0, img.width, img.height);
       WxLoader.c2d.drawImage(img, 0, 0);
 
       let data = WxLoader.c2d.getImageData(0, 0, img.width, img.height);
-      let imgbuf = new tt.ImageBuffer();
-      imgbuf.width = data.width;
-      imgbuf.height = data.height;
-      if (gray) {
-        imgbuf.data = new Uint8Array(data.width * data.height);
-      }
-      else {
-        imgbuf.data = new Uint8Array(data.width * data.height * 4);
-      }
-      for (var y = 0; y < data.height; y++) {
-        for (var x = 0; x < data.width; x++) {
-          if (gray) {
-            let r = data.data[(y * data.width + x) * 4 + 0];
-            let g = data.data[(y * data.width + x) * 4 + 1];
-            let b = data.data[(y * data.width + x) * 4 + 2]
-            let grayv = (0.299 * r + 0.587 * g + 0.114 * b) | 0;
-            if (grayv < 0)
-              grayv = 0;
-            if (grayv > 255)
-              grayv = 255;
-            imgbuf.data[(y * data.width + x)] = grayv;
-          }
-          else {
-            imgbuf.data[(y * data.width + x) * 4 + 0] = data.data[(y * data.width + x) * 4 + 0]
-            imgbuf.data[(y * data.width + x) * 4 + 1] = data.data[(y * data.width + x) * 4 + 1]
-            imgbuf.data[(y * data.width + x) * 4 + 2] = data.data[(y * data.width + x) * 4 + 2]
-            imgbuf.data[(y * data.width + x) * 4 + 3] = data.data[(y * data.width + x) * 4 + 3]
-          }
-        }
-      }
-      return imgbuf;
+      return data;
+
+    }
+
+    LoadTextPixel(text: string, fontsize: number, width: number, height: number): ImageData {
+      let c2d = WxLoader.c2d;
+      c2d.canvas.width = width;
+      c2d.canvas.height = height;
+
+      c2d.clearRect(0, 0, width, height);
+      //c2d.fillStyle = "#ffff00";
+      //c2d.strokeRect(0,0,width,height);
+      let font="monospace";
+      c2d.font = fontsize + "px "+font;// regular";
+      c2d.textBaseline= "top";
+
+ 
+      //画个阴影
+      c2d.fillStyle = "#000000";
+      c2d.fillText(text, 1, 1);
+
+      c2d.fillStyle = "#ffffff";
+      c2d.fillText(text, 0, 0);
+
+      // c2d.strokeStyle="#000000";
+      // c2d.lineWidth=1;
+      // c2d.strokeText(text, 0, 0);
+      //c2d.measureText(text).
+      let imagedata = c2d.getImageData(0, 0, width, height);
+      return imagedata;
     }
 
   }

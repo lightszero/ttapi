@@ -63,7 +63,8 @@ export module tt {
         LoadStringAsync(name: string): Promise<string>;
         LoadBinaryAsync(name: string): Promise<ArrayBuffer>;
         LoadImageAsync(name: string): Promise<HTMLImageElement>;
-        LoadImageDataAsync(name: string, gray: boolean): Promise<ImageBuffer>;
+        LoadImageDataAsync(name: string): Promise<ImageData>;
+        LoadTextPixel(text: string, fontsize: number, width: number, height: number): ImageData
     }
 
     export interface IGraphic {
