@@ -1,0 +1,230 @@
+
+
+    //#region   ------Code From Color
+    export class Color {
+      constructor(r: number, g: number, b: number, a: number = 1) {
+          this.R = r;
+          this.G = g;
+          this.B = b;
+          this.A = a;
+      }
+      R: number
+      G: number
+      B: number
+      A: number
+      static get White(): Color {
+          return new Color(1, 1, 1, 1);
+      }
+      static get Black(): Color {
+          return new Color(0, 0, 0, 1);
+      }
+      static get Tran(): Color {
+          return new Color(0, 0, 0, 0);
+      }
+      Clone(): Color {
+          return new Color(this.R, this.G, this.B, this.A);
+
+      }
+  }
+  //不一定用的到，保证RGBA取值的玩意儿罢了
+  export class Color32 {
+      constructor(r: number, g: number, b: number, a: number = 255) {
+          this.data = new Uint8Array(4);
+          this.R = r;
+          this.G = g;
+          this.B = b;
+          this.A = a;
+      }
+      data: Uint8Array
+      get R(): number {
+          return this.data[0];
+      }
+      set R(v: number) {
+          this.data[0] = v;
+      }
+      get G(): number {
+          return this.data[1];
+      }
+      set G(v: number) {
+          this.data[1] = v;
+      }
+      get B(): number {
+          return this.data[2];
+      }
+      set B(v: number) {
+          this.data[2] = v;
+      }
+      get A(): number {
+          return this.data[3];
+      }
+      set A(v: number) {
+          this.data[3] = v;
+      }
+  }
+  //#endregion
+
+  //#region  -----Code From Vector
+  export class Vector2 {
+      constructor(x: number, y: number) {
+          this.X = x;
+          this.Y = y;
+      }
+      X: number;
+      Y: number;
+      Clone(): Vector2 {
+          return new Vector2(this.X, this.Y);
+      }
+      static get One(): Vector2 {
+          return new Vector2(1, 1);
+      }
+      static get Zero(): Vector2 {
+          return new Vector2(0, 0);
+      }
+      static Length(v1: Vector2): number {
+          return Math.sqrt((v1.X) * (v1.X) + (v1.Y) * (v1.Y));
+      }
+      static Dist(v1: Vector2, v2: Vector2): number {
+          return Math.sqrt((v1.X - v2.X) * (v1.X - v2.X) + (v1.Y - v2.Y) * (v1.Y - v2.Y));
+      }
+      static Dir(from: Vector2, to: Vector2): Vector2 {
+          let dist = Vector2.Dist(from, to);
+          return new Vector2((to.X - from.X) / dist, (to.Y - from.Y) / dist);
+      }
+      static Add(v1: Vector2, v2: Vector2): Vector2 {
+          return new Vector2(v1.X + v2.X, v1.Y + v2.Y);
+      }
+
+      static Normal(src: Vector2): Vector2 {
+          let len = Vector2.Length(src);
+          return new Vector2(src.X / len, src.Y / len);
+      }
+  }
+  export class Vector3 {
+      constructor(x: number, y: number, z: number) {
+          this.X = x;
+          this.Y = y;
+          this.Z = z;
+      }
+      X: number;
+      Y: number;
+      Z: number;
+
+      Clone(): Vector3 {
+          return new Vector3(this.X, this.Y, this.Z);
+      }
+      static get One(): Vector3 {
+          return new Vector3(1, 1, 1);
+      }
+      static get Zero(): Vector3 {
+          return new Vector3(0, 0, 0);
+      }
+  }
+  //#endregion 
+
+  //#region  -----Code From DrawPoint
+  export class DrawPoint {
+      //pos
+      x: number = 0;  //offset 0
+      y: number = 0;  //offset 4
+      z: number = 0;  //offset 8
+
+      //color (byte)
+      r: number = 1;    //offset 12
+      g: number = 1;    //offset 13
+      b: number = 1;    //offset 14
+      a: number = 1;    //offset 15
+      //uv
+      u: number = 0;      //offset 16
+      v: number = 0;      //offset 20
+
+
+      //tex&paluv (byte)
+      palx: number = 0;   //offset 24
+      paly: number = 0;   //offset 25
+      anyz: number = 0;  //offset 26 //this can be auto,no need to public
+      eff: number = 0;    //offset 27
+      //pixel length =28
+
+      Clone(): DrawPoint {
+          var p = new DrawPoint();
+          p.x = this.x;
+          p.y = this.y;
+          p.z = this.z;
+          p.u = this.u;
+          p.v = this.v;
+          p.r = this.r;
+          p.g = this.g;
+          p.b = this.b;
+          p.a = this.a;
+          p.palx = this.palx;
+          p.paly = this.paly;
+          p.anyz = this.anyz;
+          p.eff = this.eff;
+          p.x = this.x;
+
+          return p;
+
+      }
+  }
+  //#endregion
+
+  //#region -----Code From Rectangle
+  export class Rectangle {
+      constructor(x: number, y: number, w: number, h: number) {
+          this.X = x;
+          this.Y = y;
+          this.Width = w;
+          this.Height = h;
+      }
+      X: number;
+      Y: number;
+      Width: number;
+      Height: number;
+
+  }
+  export class RectangleMath {
+      static Clone(r: Rectangle): Rectangle {
+          return new Rectangle(r.X, r.Y, r.Width, r.Height);
+      }
+      static Intersect(left: Rectangle, r: Rectangle): Rectangle {
+          let x1 = left.X;
+          let x2 = left.X + left.Width;
+          let y1 = left.Y;
+          let y2 = left.Y + left.Height;
+          let rx1 = r.X;
+          let ry1 = r.Y;
+          let rx2 = rx1 + r.Width;
+          let ry2 = ry1 + r.Height;
+          if (x1 >= rx2 || rx1 >= x2 || y1 >= ry2 || ry1 >= y2)
+              return new Rectangle(0, 0, 0, 0);
+          let nx1 = Math.max(x1, rx1);
+          let ny1 = Math.max(y1, ry1);
+          let nx2 = Math.min(x2, rx2);
+          let ny2 = Math.min(y2, ry2);
+          return new Rectangle(nx1, ny1, nx2 - nx1, ny2 - ny1);
+      }
+  }
+  export class Border {
+      constructor(xLeft: number, yTop: number, xRight: number, yBottom: number) {
+          this.XLeft = xLeft;
+          this.YTop = yTop;
+          this.XRight = xRight;
+          this.YBottom = yBottom;
+      }
+      XLeft: number;
+      XRight: number;
+      YTop: number;
+      YBottom: number;
+  }
+  export class UVRect {
+      constructor(u1: number, v1: number, u2: number, v2: number) {
+          this.U1 = u1;
+          this.V1 = v1;
+          this.U2 = u2;
+          this.V2 = v2;
+      }
+      U1: number;
+      V1: number;
+      U2: number;
+      V2: number;
+  }

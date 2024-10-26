@@ -1,5 +1,7 @@
 //微信小程序使用commonjs 风格
+
 import { UserState01 } from "./game_state1.js";
+console.log("微信小游戏不支持链接"); 
 import { tt_impl } from "./ttimpl_wegame/ttimpl_wx.js"
 import { GameApp } from "./ttlayer2/ttlayer2.js"
 console.log("-->这是mini game<--");
