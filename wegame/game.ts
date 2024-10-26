@@ -1,7 +1,7 @@
 //微信小程序使用commonjs 风格
 import { UserState01 } from "./game_state1.js";
-import { tt_impl } from "./ttapi/ttapi_impl_wegame/ttimpl_wx.js"
-import { GameApp } from "./ttapi_layer2/ttlayer2.js"
+import { tt_impl } from "./ttimpl_wegame/ttimpl_wx.js"
+import { GameApp } from "./ttlayer2/ttlayer2.js"
 console.log("-->这是mini game<--");
 
 //初始化ttapi for微信

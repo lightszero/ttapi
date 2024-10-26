@@ -14,10 +14,9 @@
   },
   "compileType": "game",
   "libVersion": "latest",
-  "appid": "wx6ac3f5090a6b99c5",
+  "appid": "wx9d8f91d4d3841678",
   "projectname": "quickstart",
   "condition": {},
-  "isGameTourist": true,
   "packOptions": {
     "ignore": [],
     "include": []

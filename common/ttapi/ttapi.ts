@@ -70,7 +70,7 @@ export module tt {
     export interface IGraphic {
         GetWebGL():WebGL2RenderingContext;
      
-
+        GetBackGroundC2D():CanvasRenderingContext2D;
 
         getDeviceScreenWidth(): number;
         getDeviceScreenHeight(): number;
