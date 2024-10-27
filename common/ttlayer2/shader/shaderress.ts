@@ -2,10 +2,10 @@ import * as s from "./shaders.js"
 
 
 
-    var vs_default: string = `#version 300 es
+var vs_default: string = `#version 300 es
     layout(location = 0) in vec3 position;//顶点提供的数据
-    layout(location = 1) in vec4 color; 
-    layout(location = 2) in vec2 uv; 
+    layout(location = 1) in vec2 uv; 
+    layout(location = 2) in vec4 color; 
     layout(location = 3) in vec4 ext; 
 
     uniform mat4 matModel;
@@ -26,7 +26,7 @@ import * as s from "./shaders.js"
     }
     `;
 
-    var fs_default: string = `#version 300 es
+var fs_default: string = `#version 300 es
     precision mediump float;//指定浮点型精确度
     
     in vec2 vUv;//从vs接收的参数
@@ -86,26 +86,63 @@ import * as s from "./shaders.js"
     }
     `;
 
+var vs_simple: string = `#version 300 es
+    layout(location = 0) in vec3 position;//顶点提供的数据
+    layout(location = 1) in vec2 uv; 
+    layout(location = 2) in vec4 color; 
+ 
 
-    export function InitInnerShader(webgl: WebGL2RenderingContext): void {
-        var vsdef =s.AddShader(webgl, s.ShaderType.VertexShader, "default", vs_default, true);
-        var fsdef = s.AddShader(webgl, s.ShaderType.FragmentShader, "default", fs_default, true);
+    uniform mat4 matModel;
+    uniform mat4 matView;
+    uniform mat4 matProj;
 
-        if (vsdef != null && fsdef != null)
+    out vec4 vColor;//输出给fs的参数
+    out vec2 vUv;//输出给fs的参数2
+    //flat out vec4 vExt;
+
+    void main(void) 
+    {
+        mat4 matrix = matProj*matView*matModel;
+        gl_Position = matrix * vec4(position,1);// uViewProjMatrix * uModelMatrix * position;
+        vColor = color;
+        vUv = uv;
+        //vExt = ext;
+    }
+    `;
+var fs_simple: string = `#version 300 es
+    precision mediump float;//指定浮点型精确度
+    
+    in vec2 vUv;//从vs接收的参数
+    in vec4 vColor;//从vs接收的参数
+    //flat in vec4 vExt;
+
+        
+    layout(location = 0) out vec4 fragColor;
+
+    //uniform sampler2D tex2;
+    uniform sampler2D tex;  //从外部设置的参数
+    void main(void) 
+    {
+        vec4 texc = texture(tex,vUv);
+        vec4 outc = vColor;
+       
+        outc = vColor * texc;
+       
+        fragColor =  outc;
+    }
+    `;
+
+export function InitInnerShader(webgl: WebGL2RenderingContext): void {
+    var vsdef = s.AddShader(webgl, s.ShaderType.VertexShader, "default", vs_default, true);
+    var fsdef = s.AddShader(webgl, s.ShaderType.FragmentShader, "default", fs_default, true);
+
+    if (vsdef != null && fsdef != null)
         s.LinkShader(webgl, "default", vsdef, fsdef);
 
-        // var fsdef_noa = Shaders.AddShader(webgl, Shaders.ShaderType.FragmentShader, "default_noa", fs_default_noa, true);
+    var vssim = s.AddShader(webgl, s.ShaderType.VertexShader, "simple", vs_simple, true);
+    var fssim = s.AddShader(webgl, s.ShaderType.FragmentShader, "simple", fs_simple, true);
 
-        // if (vsdef != null && fsdef_noa != null)
-        //     Shaders.LinkShader(webgl, "default_noa", vsdef, fsdef_noa);
+    if (vssim != null && fssim != null)
+        s.LinkShader(webgl, "simple", vssim, fssim);
 
-        // var fspal = Shaders.AddShader(webgl, Shaders.ShaderType.FragmentShader, "palette", fs_palette, true);
-        // if (vsdef != null && fspal != null)
-        // Shaders.LinkShader(webgl, "palette", vsdef, fspal);
-
-        // var fslight = Shaders.AddShader(webgl, Shaders.ShaderType.FragmentShader, "lightmap", fs_lightmap, true);
-        // if (vsdef != null && fslight != null)
-        // Shaders.LinkShader(webgl, "lightmap", vsdef, fslight);
-
-
-    }
+}

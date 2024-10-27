@@ -55,8 +55,7 @@ export namespace tt_impl {
             this._webgl.flush();
             this._webgl.bindFramebuffer(this._webgl.FRAMEBUFFER, null);
         }
-        Resize(width:number,height:number):void
-        {
+        Resize(width: number, height: number): void {
             let webgl = this._webgl;
 
             this.Destory();
@@ -64,14 +63,14 @@ export namespace tt_impl {
             // webgl.framebufferTexture2D(webgl.FRAMEBUFFER, webgl.COLOR_ATTACHMENT0, webgl.TEXTURE_2D,
             //   null, 0);
             // webgl.bindFramebuffer(webgl.FRAMEBUFFER, null);
-      
+
             //console.log("reset rt.");
-      
+
             this._width = width;
             this._height = height;
-      
+
             webgl.deleteTexture(this._texobj);
-            
+
             this._texobj = webgl.createTexture();
             webgl.bindTexture(webgl.TEXTURE_2D, this._texobj);
             webgl.texParameteri(webgl.TEXTURE_2D, webgl.TEXTURE_MIN_FILTER, webgl.NEAREST);
@@ -80,17 +79,20 @@ export namespace tt_impl {
             webgl.texParameteri(this._webgl.TEXTURE_2D, this._webgl.TEXTURE_WRAP_T, this._webgl.CLAMP_TO_EDGE);
             var formatGL = this._format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.LUMINANCE;
             webgl.texImage2D(webgl.TEXTURE_2D, 0, formatGL, width, height, 0, formatGL, webgl.UNSIGNED_BYTE, null);
-      
-      
+
+
             this._fbo = webgl.createFramebuffer();
             webgl.bindFramebuffer(webgl.FRAMEBUFFER, this._fbo);
             webgl.framebufferTexture2D(webgl.FRAMEBUFFER, webgl.COLOR_ATTACHMENT0, webgl.TEXTURE_2D,
-              this._texobj, 0);
-      
+                this._texobj, 0);
+
             webgl.bindFramebuffer(webgl.FRAMEBUFFER, null);
         }
         getID(): number {
             return this._id;
+        }
+        getGLTex(): WebGLTexture {
+            return this._texobj;
         }
         getFormat(): TextureFormat {
             return this._format;

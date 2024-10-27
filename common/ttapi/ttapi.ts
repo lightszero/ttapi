@@ -64,13 +64,13 @@ export module tt {
         LoadBinaryAsync(name: string): Promise<ArrayBuffer>;
         LoadImageAsync(name: string): Promise<HTMLImageElement>;
         LoadImageDataAsync(name: string): Promise<ImageData>;
-        LoadTextPixel(text: string, fontsize: number, width: number, height: number): ImageData
+        LoadCustomFont(name: string, url: string): Promise<string>
     }
 
     export interface IGraphic {
-        GetWebGL():WebGL2RenderingContext;
-     
-        GetBackGroundC2D():CanvasRenderingContext2D;
+        GetWebGL(): WebGL2RenderingContext;
+
+        GetBackGroundC2D(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
         getDeviceScreenWidth(): number;
         getDeviceScreenHeight(): number;
@@ -78,7 +78,7 @@ export module tt {
         getMainScreenScale(): number;
         setMainScreenScale(v: number): void;
         getFinalScale(): number;
-        
+
         OnUpdate: ((delta: number) => void) | null;
         OnResize: ((width: number, height: number) => void) | null;
         OnRender: (() => void) | null;

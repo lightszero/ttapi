@@ -4,13 +4,21 @@ export enum ShaderType {
   VertexShader,
   FragmentShader
 }
+export enum UniformType {
+  empty,
+  unknown,
+  mat4,
+  sampler2D,
+  float,
+  vec4,
+}
 export class ShaderObj {
   name: string
   type: ShaderType;
   source: string;
   shader: WebGLShader;
-  uniformInfo: { [id: string]: string };
-  constructor(type: ShaderType, name: string, source: string, shader: WebGLShader, uniformInfo: { [id: string]: string }) {
+  uniformInfo: { [id: string]: UniformType };
+  constructor(type: ShaderType, name: string, source: string, shader: WebGLShader, uniformInfo: { [id: string]: UniformType }) {
     this.type = type;
     this.name = name;
     this.source = source;
@@ -39,6 +47,7 @@ export function AddShader(webgl: WebGL2RenderingContext, type: ShaderType, name:
 
   webgl.shaderSource(_shader, source);
   webgl.compileShader(_shader);
+
   var r1 = webgl.getShaderParameter(_shader, webgl.COMPILE_STATUS);
   if (r1 == false) {
     console.error("AddShader error webgl.compileShader:" + webgl.getShaderInfoLog(_shader) + ':' + type + ":" + name);
@@ -47,7 +56,8 @@ export function AddShader(webgl: WebGL2RenderingContext, type: ShaderType, name:
   else {
     console.log("AddShader:" + ShaderType[type].toString() + name);
   }
-  var uinfo = {};
+  var uinfo: { [id: string]: UniformType } = {};
+
   findUniform(source, uinfo);
 
   var shaderobj = new ShaderObj(type, name, keepsource ? source : "", _shader, uinfo);
@@ -61,7 +71,7 @@ export function AddShader(webgl: WebGL2RenderingContext, type: ShaderType, name:
 
 
 }
-function findUniform(source: string, target: { [id: string]: string }): void {
+function findUniform(source: string, target: { [id: string]: UniformType }): void {
   var lines = source.split("\n");
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i].replace(new RegExp('\r', "g"), "");
@@ -70,7 +80,7 @@ function findUniform(source: string, target: { [id: string]: string }): void {
     line = line.replace(new RegExp(';', "g"), " ");
     line = line.replace("//", " ");
     var words = line.split(" ");
-    var type = "";
+    var type = UniformType.empty;
     var name = "";
     var state = 0;//0 寻找uniform //1寻找type //2 寻找name
     for (var j = 0; j < words.length; j++) {
@@ -87,7 +97,23 @@ function findUniform(source: string, target: { [id: string]: string }): void {
         }
       }
       else if (state == 1) {
-        type = word;
+        switch (word) {
+          case "mat4":
+            type = UniformType.mat4;
+            break;
+          case "sampler2D":
+            type = UniformType.sampler2D;
+            break;
+          case "float":
+            type = UniformType.float;
+            break;
+          case "vec4":
+            type = UniformType.vec4;
+            break;
+          default:
+            type = UniformType.unknown;
+        }
+
         state++;
       }
       else if (state == 2) {
@@ -95,10 +121,7 @@ function findUniform(source: string, target: { [id: string]: string }): void {
         break;
       }
     }
-    if (type != "") {
-      if (name == "matrix" || name == "texpalette" || name == "texmain" || name == "texlut")
-        continue;
-
+    if (type != UniformType.empty) {
       target[name] = type;
     }
   }
@@ -127,14 +150,19 @@ export function LinkShader(webgl: WebGL2RenderingContext, name: string, vs: Shad
 }
 
 var programs: { [id: string]: ShaderProgram } = {};
+export class uniformInfo {
+  type: UniformType;
+  loc: WebGLUniformLocation;
+
+}
 export class ShaderProgram {
   name: string;
   program: WebGLProgram;
   //attr 是固定的
-  attrIndexPos: number;
-  attrIndexUV: number;
-  attrIndexColor: number;
-  attrIndexExt: number;//palu palv texid effect,
+  // attrIndexPos: number;
+  // attrIndexUV: number;
+  // attrIndexColor: number;
+  // attrIndexExt: number;//palu palv texid effect,
 
 
   //uniform Matrix texpalette texmain 是固定的
@@ -145,15 +173,17 @@ export class ShaderProgram {
   uniTex2: WebGLUniformLocation | null;
   uniTexPal: WebGLUniformLocation | null;
   //其余自定义uniform
-  uniforms: { [id: string]: WebGLUniformLocation };
+  uniformInfos: { [id: string]: uniformInfo };
 
   constructor(webgl: WebGL2RenderingContext, name: string, program: WebGLProgram, vs: ShaderObj, fs: ShaderObj) {
     this.name = name;
     this.program = program;
-    this.attrIndexPos = webgl.getAttribLocation(this.program, "position");
-    this.attrIndexColor = webgl.getAttribLocation(this.program, "color");
-    this.attrIndexUV = webgl.getAttribLocation(this.program, "uv");
-    this.attrIndexExt = webgl.getAttribLocation(this.program, "ext");
+
+
+    // this.attrIndexPos = webgl.getAttribLocation(this.program, "position");
+    // this.attrIndexColor = webgl.getAttribLocation(this.program, "color");
+    // this.attrIndexUV = webgl.getAttribLocation(this.program, "uv");
+    // this.attrIndexExt = webgl.getAttribLocation(this.program, "ext");
 
 
     this.uniMatModel = webgl.getUniformLocation(this.program, "matModel");
@@ -164,27 +194,26 @@ export class ShaderProgram {
     this.uniTex2 = webgl.getUniformLocation(this.program, "tex2");
     this.uniTexPal = webgl.getUniformLocation(this.program, "texpal");
 
-    this.uniforms = {};
+    this.uniformInfos = {};
+
     for (var key in vs.uniformInfo) {
-      if (this.uniforms[key] != undefined) continue;
-      //if (key == "matrix" || key == "texpalette" || key == "texmain") continue;
-      var loc = webgl.getUniformLocation(this.program, key);
-      if (loc != null) {
-        this.uniforms[key] = loc;
-      }
+      let type = vs.uniformInfo[key];
+      this.AddUniform(webgl, key, type);
+
     }
     for (var key in fs.uniformInfo) {
-      if (this.uniforms[key] != undefined) continue;
-      //if (key == "mattrix" || key == "texpalette" || key == "texmain") continue;
-      var loc = webgl.getUniformLocation(this.program, key);
-      if (loc != null) {
-        this.uniforms[key] = loc;
-      }
+      let type = fs.uniformInfo[key];
+      this.AddUniform(webgl, key, type);
     }
 
   }
-}
+  private AddUniform(webgl: WebGL2RenderingContext, key: string, type: UniformType) {
 
+    var loc = webgl.getUniformLocation(this.program, key);
+    if (loc == null) return;
+    this.uniformInfos[key] = { loc: loc, type: type }
+  }
+}
 
 export function GetShaderProgram(name: string): ShaderProgram | undefined {
   //if (programs[name] == undefined) return null;

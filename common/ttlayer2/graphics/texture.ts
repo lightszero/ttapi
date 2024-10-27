@@ -11,6 +11,7 @@ export interface ITexture {
     getWidth(): number;
     getHeight(): number;
     getData(): Uint8Array;
+    getGLTex(): WebGLTexture;
     IsStatic(): boolean;
     IsTarget(): boolean;
     Destory(): void;
@@ -20,6 +21,7 @@ export interface ITexture {
 
 
     ApplyTexture(TurnToStatic: boolean): void
+
 }
 
 export interface IRenderTarget extends ITexture {
@@ -120,7 +122,9 @@ export class Texture implements ITexture {
     getID(): number {
         return this._id;
     }
-
+    getGLTex(): WebGLTexture {
+        return this._texobj;
+    }
     getFormat(): TextureFormat {
         return this._format;
     }

@@ -41,11 +41,11 @@ export namespace tt_impl {
       return aysnc_op;
 
     }
-   
+
     async LoadImageDataAsync(name: string): Promise<ImageData> {
       let img = await this.LoadImageAsync(name);
 
-      let c2d =tt.graphic.GetBackGroundC2D();
+      let c2d = tt.graphic.GetBackGroundC2D();
 
       c2d.canvas.width = img.width;
       c2d.canvas.height = img.height;
@@ -56,34 +56,13 @@ export namespace tt_impl {
 
       return data;
     }
-
-    LoadTextPixel(text: string, fontsize: number, width: number, height: number): ImageData {
-      let c2d =tt.graphic.GetBackGroundC2D();
-      c2d.canvas.width = width;
-      c2d.canvas.height = height;
-
-      c2d.clearRect(0, 0, width, height);
-      //c2d.fillStyle = "#ffff00";
-      //c2d.strokeRect(0,0,width,height);
-      let font = "monospace";
-      c2d.font = fontsize + "px " + font;// regular";
-      c2d.textBaseline = "top";
-
-
-      //画个阴影
-      c2d.fillStyle = "#000000";
-      c2d.fillText(text, 1, 1);
-
-      c2d.fillStyle = "#ffffff";
-      c2d.fillText(text, 0, 0);
-
-      // c2d.strokeStyle="#000000";
-      // c2d.lineWidth=1;
-      // c2d.strokeText(text, 0, 0);
-      //c2d.measureText(text).
-      let imagedata = c2d.getImageData(0, 0, width, height);
-      return imagedata;
+    async LoadCustomFont(name: string, url: string): Promise<string> {
+      const myFont = new FontFace(name, "url(" + url + ")");
+      let font = await myFont.load();
+      document.fonts.add(font);
+      return font.family;
     }
+
 
   }
 }

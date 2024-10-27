@@ -1,9 +1,9 @@
 import { tt } from "../../ttapi/ttapi.js";
 import { Color, Rectangle, RectangleMath } from "../math/vector.js";
-import { TextureFormat } from "./texture.js";
+import { TextureFormat, IRenderTarget } from "./texture.js";
 
 
-export class MainScreen {
+export class MainScreen implements IRenderTarget {
 
     _webgl: WebGL2RenderingContext;
     constructor(webgl: WebGL2RenderingContext) {
@@ -28,6 +28,9 @@ export class MainScreen {
     }
     getID(): number {
         return 0
+    }
+    getGLTex(): WebGLTexture {
+        return null;
     }
     getFormat(): TextureFormat {
         return TextureFormat.RGBA32;

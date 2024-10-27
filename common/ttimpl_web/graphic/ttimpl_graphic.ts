@@ -2,13 +2,13 @@ import { tt } from "../../ttapi/ttapi.js";
 
 
 export namespace tt_impl {
- 
+
 
     export class ttimpl_graphics implements tt.IGraphic {
         _webgl: WebGL2RenderingContext;
-        public constructor(webgl: WebGL2RenderingContext) {
+        public constructor(webgl: WebGL2RenderingContext, c2d: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D) {
             this._webgl = webgl;
-
+            this.c2d = c2d;
 
             //let info = wx.getSystemInfoSync();
 
@@ -18,24 +18,18 @@ export namespace tt_impl {
             // this._pixelWidth = c.clientWidth;
             // this._pixelHeight = c.clientHeight;
         }
-        c2d: CanvasRenderingContext2D;
-        GetBackGroundC2D():CanvasRenderingContext2D
-        {
-            if(this.c2d==null)
-            {
-                let canvas = window.document.createElement("canvas");
-                this.c2d = canvas.getContext("2d"); 
-            }
+        c2d: CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D;
+        GetBackGroundC2D(): CanvasRenderingContext2D|OffscreenCanvasRenderingContext2D {
+
             return this.c2d;
         }
         // _pixelRadio: number;
         // _pixelWidth: number;
         // _pixelHeight: number;
-        GetWebGL():WebGL2RenderingContext
-        {
+        GetWebGL(): WebGL2RenderingContext {
             return this._webgl;
         }
-     
+
         _MainScreenScale: number = 1.0;
         getMainScreenScale(): number {
             return this._MainScreenScale;
@@ -70,7 +64,7 @@ export namespace tt_impl {
             //return this._pixelHeight;
         }
         getDevicePixelRadio(): number {
-            return  window.devicePixelRatio;
+            return window.devicePixelRatio;
             //return this._pixelRadio;
         }
 
@@ -81,7 +75,7 @@ export namespace tt_impl {
         OnResize: ((width: number, height: number) => void) | null = null;
         OnRender: (() => void) | null = null;
 
-        
+
     }
 
 }

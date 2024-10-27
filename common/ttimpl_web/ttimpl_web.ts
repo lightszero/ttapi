@@ -20,7 +20,11 @@ export namespace tt_impl {
             this.webgl = canvas.getContext("webgl2", { antialias: false });
 
             if (this.webgl != null) {
-                tt.graphic = new impl_g.tt_impl.ttimpl_graphics(this.webgl);
+                let canvas =new OffscreenCanvas(32,32); 
+                //window.document.createElement("canvas");
+
+                let c2d = canvas.getContext("2d"); 
+                tt.graphic = new impl_g.tt_impl.ttimpl_graphics(this.webgl,c2d);
 
                 this.timerMs = new Date().getTime();
                 requestAnimationFrame(this.Update.bind(this));

@@ -4,6 +4,10 @@ import { Vector2, DrawPoint } from "./math/vector.js"
 
 import { ITexture, getWhiteTexture, IRenderTarget } from "./graphics/texture.js"
 import { GetShaderProgram, ShaderProgram } from "./shader/shaders.js";
+import { Mesh } from "./ttlayer2.js";
+import { Material } from "./graphics/material.js";
+import { VertexFormatMgr } from "./graphics/mesh.js";
+import { Render } from "./graphics/render.js";
 
 export class Render_Batcher {
     constructor(webgl: WebGL2RenderingContext) {
@@ -15,59 +19,61 @@ export class Render_Batcher {
         this._bufferView = new DataView(this._buffer.buffer, 0, this._buffer.length);
         this._pointseek = 0;
         this._lastMode = webgl.TRIANGLES;
-        if (_vbo != null) {
-            this._vbo = _vbo;
-        }
-        else {
-            throw new Error("error vbo.");
-        }
-        var _vao = webgl.createVertexArray();
-        if (_vao != null) {
-            this._vao = _vao;
-        }
-        else {
-            throw new Error("error vao.");
-        }
-        {//初始化 vao
-            webgl.bindVertexArray(_vao);
-            webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);
-            //if (shader.attrIndexPos >= 0) {
-            webgl.enableVertexAttribArray(0);
-            //36 是数据步长(字节)，就是数据结构的长度
-            //0 是数据偏移（字节）
-            webgl.vertexAttribPointer(0, 3, webgl.FLOAT, false, 28, 0);
-            //}
+        // if (_vbo != null) {
+        //     this._vbo = _vbo;
+        // }
+        // else {
+        //     throw new Error("error vbo.");
+        // }
+        // var _vao = webgl.createVertexArray();
+        // if (_vao != null) {
+        //     this._vao = _vao;
+        // }
+        // else {
+        //     throw new Error("error vao.");
+        // }
+        // {//初始化 vao
+        //     webgl.bindVertexArray(_vao);
+        //     webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);
+        //     //if (shader.attrIndexPos >= 0) {
+        //     webgl.enableVertexAttribArray(0);
+        //     //36 是数据步长(字节)，就是数据结构的长度
+        //     //0 是数据偏移（字节）
+        //     webgl.vertexAttribPointer(0, 3, webgl.FLOAT, false, 28, 0);
+        //     //}
 
-            //if (shader.attrIndexColor >= 0) {
-            webgl.enableVertexAttribArray(1);
-            webgl.vertexAttribPointer(1, 4, webgl.UNSIGNED_BYTE, true, 28, 12);
-            //}
-            //if (shader.attrIndexUV >= 0) {
-            webgl.enableVertexAttribArray(2);
-            webgl.vertexAttribPointer(2, 2, webgl.FLOAT, false, 28, 16);
-            //}
+        //     //if (shader.attrIndexColor >= 0) {
+        //     webgl.enableVertexAttribArray(1);
+        //     webgl.vertexAttribPointer(1, 4, webgl.UNSIGNED_BYTE, true, 28, 12);
+        //     //}
+        //     //if (shader.attrIndexUV >= 0) {
+        //     webgl.enableVertexAttribArray(2);
+        //     webgl.vertexAttribPointer(2, 2, webgl.FLOAT, false, 28, 16);
+        //     //}
 
-            //if (shader.attrIndexExt >= 0) {
-            webgl.enableVertexAttribArray(3);
-            webgl.vertexAttribPointer(3, 4, webgl.UNSIGNED_BYTE, false, 28, 24);
-            //}
-            webgl.bindVertexArray(null);
-        }
+        //     //if (shader.attrIndexExt >= 0) {
+        //     webgl.enableVertexAttribArray(3);
+        //     webgl.vertexAttribPointer(3, 4, webgl.UNSIGNED_BYTE, false, 28, 24);
+        //     //}
+        //     webgl.bindVertexArray(null);
+        // }
         this.LookAt = new Vector2(0, 0);
         this.Scale = 1.0;
         this._lastTex = null;
         this._lastTex2 = null;
         this._lastTexPal = null;
-        var shader = GetShaderProgram("default");
-        if (shader == null)
-            throw new Error("error load shader.");
-        this._shader = shader
-        this._modelMatrix = new Float32Array(16);
-        this._viewMatrix = new Float32Array(16);
-        this._projMatrix = new Float32Array(16);
-
+        // var shader = GetShaderProgram("default");
+        // if (shader == null)
+        //     throw new Error("error load shader.");
+        //this._shader = shader
+        // this._modelMatrix = new Float32Array(16);
+        // this._viewMatrix = new Float32Array(16);
+        // this._projMatrix = new Float32Array(16);
+        this._mesh = new Mesh();
+        this._mesh.UpdateVertexFormat(webgl, VertexFormatMgr.GetFormat_Vertex_UV_Color_Color2());
+        this._mat = new Material(GetShaderProgram("default"));
     }
-    _shader: ShaderProgram;
+    //_shader: ShaderProgram;
     _webgl: WebGL2RenderingContext
     _target: IRenderTarget | null;
     _lastshader: ShaderProgram | null;
@@ -75,14 +81,16 @@ export class Render_Batcher {
     _lastTex: ITexture | null;
     _lastTex2: ITexture | null;
     _lastTexPal: ITexture | null;
-    _vbo: WebGLBuffer;
-    _vao: WebGLVertexArrayObject;
+    //_vbo: WebGLBuffer;
+    //_vao: WebGLVertexArrayObject;
+    _mesh: Mesh = null;
+    _mat: Material = null;
     _buffer: Uint8Array;
     _bufferView: DataView;
     _pointseek: number;
-    _modelMatrix: Float32Array;
-    _viewMatrix: Float32Array;
-    _projMatrix: Float32Array;
+    // _modelMatrix: Float32Array;
+    // _viewMatrix: Float32Array;
+    // _projMatrix: Float32Array;
     DrawQuads(tex: ITexture, tex2: ITexture | null, texpal: ITexture | null, quads: DrawPoint[], quadCount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
@@ -167,9 +175,12 @@ export class Render_Batcher {
 
     ResetMatrix(): void {
         this._Render();
-        this._MatDefault(this._modelMatrix);
-        this._MatView(this._viewMatrix);
-        this._MatProj(this._projMatrix, 0, 0);
+        this._mat.UpdateMatModel();
+        this._mat.UpdateMatView();
+        this._mat.UpdateMatProj(this._target);
+        // this._MatDefault(this._modelMatrix);
+        // this._MatView(this._viewMatrix);
+        // this._MatProj(this._projMatrix, 0, 0);
     }
 
     ApplyBatch(): void {
@@ -180,10 +191,10 @@ export class Render_Batcher {
 
         //update viewmatrix & modelmatrxi projmatrix
 
-        this._MatDefault(this._modelMatrix);
-        this._MatView(this._viewMatrix);
-        this._MatProj(this._projMatrix, 0, 0);
-
+        // this._MatDefault(this._modelMatrix);
+        // this._MatView(this._viewMatrix);
+        // this._MatProj(this._projMatrix, 0, 0);
+        this._mat.UpdateMatProj(this._target);
         let webgl = this._webgl;
 
         webgl.disable(webgl.CULL_FACE);
@@ -196,134 +207,57 @@ export class Render_Batcher {
             webgl.SRC_ALPHA, webgl.ONE);
 
     }
-    _MatView(matrix: Float32Array) {
-        let sx = this.Scale;
-        let sy = this.Scale;
-        let offx = -this.LookAt.X;
-        let offy = -this.LookAt.Y;
-        matrix[0] = sx; matrix[4] = 0; matrix[8] = 0; matrix[12] = offx * sx;
-        matrix[1] = 0; matrix[5] = sy; matrix[9] = 0; matrix[13] = offy * sy;
-        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
-        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
-    }
-    _MatDefault(matrix: Float32Array) {
-
-
-        matrix[0] = 1; matrix[4] = 0; matrix[8] = 0; matrix[12] = 0;
-        matrix[1] = 0; matrix[5] = 1; matrix[9] = 0; matrix[13] = 0;
-        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
-        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
-
-    }
-    _MatProj(matrix: Float32Array, offx: number, offy: number) {
-        if (this._target == null)
-            throw new Error("error target.");
-        let sx = 1.0 * 2 / this._target.getWidth()
-        let sy = 1 * 2 / this._target.getHeight()
-        if (this._target.IsMainOutput())//isMainoutput
-            sy *= -1;
-
-        matrix[0] = sx; matrix[4] = 0; matrix[8] = 0; matrix[12] = offx;
-        matrix[1] = 0; matrix[5] = sy; matrix[9] = 0; matrix[13] = offy;
-        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
-        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
-    }
 
     EndDraw(): void {
         this._Render();
         this._target = null;
-        this._ApplySingle(null,null,null);
+        this._ApplySingle(null, null, null);
     }
     _Render(): void {
         if (this._pointseek == 0)
             return;
         let webgl = this._webgl;
 
-        let shader = this._shader;
+        //this._mat.Apply(webgl);
+        //this._mesh.Apply(webgl);
+        // let shader = this._shader;
 
-        webgl.useProgram(shader.program);
+        // webgl.useProgram(shader.program);
 
-        webgl.bindVertexArray(this._vao);
-        // webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);
-        // //if (shader.attrIndexPos >= 0) {
-        // webgl.enableVertexAttribArray(0);
-        // //36 是数据步长(字节)，就是数据结构的长度
-        // //0 是数据偏移（字节）
-        // webgl.vertexAttribPointer(0, 3, webgl.FLOAT, false, 28, 0);
-        // //}
-
-        // //if (shader.attrIndexColor >= 0) {
-        // webgl.enableVertexAttribArray(1);
-        // webgl.vertexAttribPointer(1, 4, webgl.UNSIGNED_BYTE, true, 28, 12);
-        // //}
-        // //if (shader.attrIndexUV >= 0) {
-        // webgl.enableVertexAttribArray(2);
-        // webgl.vertexAttribPointer(2, 2, webgl.FLOAT, false, 28, 16);
-        // //}
-
-        // //if (shader.attrIndexExt >= 0) {
-        // webgl.enableVertexAttribArray(3);
-        // webgl.vertexAttribPointer(3, 4, webgl.UNSIGNED_BYTE, false, 28, 24);
-        // //}
-
-
-        if (shader.uniMatModel != null) {
-            webgl.uniformMatrix4fv(shader.uniMatModel, false, this._modelMatrix);
-        }
-        if (shader.uniMatView != null) {
-            webgl.uniformMatrix4fv(shader.uniMatView, false, this._viewMatrix);
-        }
-        if (shader.uniMatProj != null) {
-            webgl.uniformMatrix4fv(shader.uniMatProj, false, this._projMatrix);
-        }
-
-        if (shader.uniTex != null) {
-            webgl.activeTexture(webgl.TEXTURE0);
-            let tex = this._GetTexture(this._lastTex);
-
-            webgl.bindTexture(webgl.TEXTURE_2D, tex);
-            webgl.uniform1i(shader.uniTex, 0);
-        }
-        if (shader.uniTex2 != null && this._lastTex2 != null) {
-            webgl.activeTexture(webgl.TEXTURE2);
-            let tex2 = this._GetTexture(this._lastTex2);
-
-            webgl.bindTexture(webgl.TEXTURE_2D, tex2);
-            webgl.uniform1i(shader.uniTex2, 2);
-        }
-        if (shader.uniTexPal != null && this._lastTexPal != null) {
-            webgl.activeTexture(webgl.TEXTURE3);
-            let texpal = this._GetTexture(this._lastTexPal);
-
-            webgl.bindTexture(webgl.TEXTURE_2D, texpal);
-            webgl.uniform1i(shader.uniTexPal, 3);
-        }
-
-        webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);
-        webgl.bufferData(webgl.ARRAY_BUFFER, this._buffer, webgl.DYNAMIC_DRAW, 0, this._pointseek * 28);
+        // webgl.bindVertexArray(this._vao);
+        this._mat.uniformTexs["tex"].value = this._lastTex;
+        this._mesh.UpdateVertexBuffer(webgl, this._buffer, true, this._pointseek * 28);
+        this._pointseek = 0;
+        //webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);
+        //webgl.bufferData(webgl.ARRAY_BUFFER, this._buffer, webgl.DYNAMIC_DRAW, 0, this._pointseek * 28);
 
         //webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);
-        webgl.drawArrays(this._lastMode, 0, this._pointseek);
+
+        Render.DrawMesh(webgl, this._mesh, this._mat);
+        //webgl.drawArrays(this._lastMode, 0, this._pointseek);
+
         // if (this._lastMode == webgl.TRIANGLES)
         //     webgl.drawArrays(this._lastMode, 0, this._pointseek / 3);
         // if (this._lastMode == webgl.LINES)
         //     webgl.drawArrays(this._lastMode, 0, this._pointseek / 2);
         // if (this._lastMode == webgl.POINTS)
         //     webgl.drawArrays(this._lastMode, 0, this._pointseek / 1);
-        this._pointseek = 0;
+
     }
     _AddBuf(p: DrawPoint): void {
         this._bufferView.setFloat32(this._pointseek * 28 + 0, p.x, true);
         this._bufferView.setFloat32(this._pointseek * 28 + 4, p.y, true);
         this._bufferView.setFloat32(this._pointseek * 28 + 8, p.z, true);
+        this._bufferView.setFloat32(this._pointseek * 28 + 12, p.u, true);
+        this._bufferView.setFloat32(this._pointseek * 28 + 16, p.v, true);
 
-        this._bufferView.setUint8(this._pointseek * 28 + 12, (p.r * 255) | 0);
-        this._bufferView.setUint8(this._pointseek * 28 + 13, (p.g * 255) | 0);
-        this._bufferView.setUint8(this._pointseek * 28 + 14, (p.b * 255) | 0);
-        this._bufferView.setUint8(this._pointseek * 28 + 15, (p.a * 255) | 0);
 
-        this._bufferView.setFloat32(this._pointseek * 28 + 16, p.u, true);
-        this._bufferView.setFloat32(this._pointseek * 28 + 20, p.v, true);
+        this._bufferView.setUint8(this._pointseek * 28 + 20, (p.r * 255) | 0);
+        this._bufferView.setUint8(this._pointseek * 28 + 21, (p.g * 255) | 0);
+        this._bufferView.setUint8(this._pointseek * 28 + 22, (p.b * 255) | 0);
+        this._bufferView.setUint8(this._pointseek * 28 + 23, (p.a * 255) | 0);
+
+
 
         this._bufferView.setUint8(this._pointseek * 28 + 24, p.palx);
         this._bufferView.setUint8(this._pointseek * 28 + 25, p.paly);
@@ -331,23 +265,7 @@ export class Render_Batcher {
         this._bufferView.setUint8(this._pointseek * 28 + 27, p.eff);
         this._pointseek++;
     }
-    _GetTexture(tex: ITexture): WebGLTexture {
-        if (tex == null)
-            return (getWhiteTexture() as any)._texobj;
-        var _tex = (tex as any)._texobj;
-        if (_tex == undefined)
-            return (getWhiteTexture() as any)._texobj;
-        else
-            return _tex as WebGLTexture;
-        // if(tex.isTarget)
-        // {
-        //     return (tes as impl.RenderTarget)._texobj;
-        // }
-        // else
-        // {
-        //     return (tex as impl.Texture)._texobj;
-        // }
-    }
+
     _ApplySingle(tex: ITexture, tex2: ITexture | null, texpal: ITexture | null): void {
         this._lastTex = tex;
         this._lastTex2 = tex2;
