@@ -41,10 +41,11 @@ export namespace tt_impl {
         GetWebGL(): WebGL2RenderingContext {
             return this._webgl;
         }
-        c2d: CanvasRenderingContext2D;
-        GetBackGroundC2D(): CanvasRenderingContext2D {
+        c2d: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+        GetBackGroundC2D(): CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D {
             if (this.c2d == null) {
-                let canvas = window.document.createElement("canvas");
+
+                let canvas = wx.createCanvas();
                 this.c2d = canvas.getContext("2d");
             }
             return this.c2d;

@@ -1,9 +1,9 @@
 //微信小程序使用commonjs 风格
 
-import { UserState01 } from "./game_state1.js";
 
 import { tt_impl } from "./ttimpl_wegame/ttimpl_wx.js"
 import { GameApp } from "./ttlayer2/ttlayer2.js"
+import { TTState_Draw } from "./ttsample/ttstate_draw.js";
 console.log("-->这是mini game<--");
 
 //var info = wx.loadFont("./VonwaonBitmap-16px.ttf")
@@ -13,5 +13,5 @@ let impl = new tt_impl.ttimpl_wx();
 impl.Init();
 
 //初始化layer2
-GameApp.Start();
-GameApp.ChangeState(new UserState01());
+GameApp.Start(new TTState_Draw());
+

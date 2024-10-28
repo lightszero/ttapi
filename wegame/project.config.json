@@ -19,7 +19,28 @@
   "condition": {},
   "packOptions": {
     "ignore": [],
-    "include": []
+    "include": [
+      {
+        "value": "ttlayer2",
+        "type": "folder"
+      },
+      {
+        "value": "ttapi",
+        "type": "folder"
+      },
+      {
+        "value": "ttimpl_wegame",
+        "type": "folder"
+      },
+      {
+        "value": "ttsample",
+        "type": "folder"
+      },
+      {
+        "value": ".js",
+        "type": "suffix"
+      }
+    ]
   },
   "editorSetting": {
     "tabIndent": "insertSpaces",
