@@ -17,71 +17,17 @@ export class TTState_Draw implements IState {
     _mainscreen: MainScreen = null;
 
     private mesh: Mesh = null;
+
     private mat: Material = null;
-    private vertexdata: Uint8Array;
-    private element: Uint16Array;
+    private mesh2: Mesh = null;
+
+    private mat2: Material = null;
+
     OnInit(): void {
         let gl = tt.graphic.GetWebGL();
 
-        this.mesh = new Mesh();
-        this.mesh.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_UV_Color());
-        let stride = this.mesh.GetVertexFormat().stride;
-        let vertexdata = new Uint8Array(stride * 4);
-        let element = new Uint8Array(12);
-        let datavbo = new DataView(vertexdata.buffer);
-        datavbo.setFloat32(0 * stride, 0, true);//x
-        datavbo.setFloat32(0 * stride + 4, 0, true);//y
-        datavbo.setFloat32(0 * stride + 8, 0, true);//z
-        datavbo.setFloat32(0 * stride + 12, 0, true);//u
-        datavbo.setFloat32(0 * stride + 16, 0, true);//v
-        datavbo.setUint8(0 * stride + 20, 255);//r
-        datavbo.setUint8(0 * stride + 21, 255);//g
-        datavbo.setUint8(0 * stride + 22, 255);//b
-        datavbo.setUint8(0 * stride + 23, 255);//a
-
-        datavbo.setFloat32(1 * stride, 50, true);//x
-        datavbo.setFloat32(1 * stride + 4, 0, true);//y
-        datavbo.setFloat32(1 * stride + 8, 0, true);//z
-        datavbo.setFloat32(1 * stride + 12, 0, true);//u
-        datavbo.setFloat32(1 * stride + 16, 0, true);//v
-        datavbo.setUint8(1 * stride + 20, 255);//r
-        datavbo.setUint8(1 * stride + 21, 255);//g
-        datavbo.setUint8(1 * stride + 22, 255);//b
-        datavbo.setUint8(1 * stride + 23, 255);//a
-
-        datavbo.setFloat32(2 * stride, 0, true);//x
-        datavbo.setFloat32(2 * stride + 4, 50, true);//y
-        datavbo.setFloat32(2 * stride + 8, 0, true);//z
-        datavbo.setFloat32(2 * stride + 12, 0, true);//u
-        datavbo.setFloat32(2 * stride + 16, 1, true);//v
-        datavbo.setUint8(2 * stride + 20, 255);//r
-        datavbo.setUint8(2 * stride + 21, 0);//g
-        datavbo.setUint8(2 * stride + 22, 255);//b
-        datavbo.setUint8(2 * stride + 23, 255);//a
-
-        datavbo.setFloat32(3 * stride, 50, true);//x
-        datavbo.setFloat32(3 * stride + 4, 50, true);//y
-        datavbo.setFloat32(3 * stride + 8, 0, true);//z
-        datavbo.setFloat32(3 * stride + 12, 1, true);//u
-        datavbo.setFloat32(3 * stride + 16, 1, true);//v
-        datavbo.setUint8(3 * stride + 20, 0);//r
-        datavbo.setUint8(3 * stride + 21, 255);//g
-        datavbo.setUint8(3 * stride + 22, 255);//b
-        datavbo.setUint8(3 * stride + 23, 255);//a
-        let dataebo = new DataView(element.buffer);
-        dataebo.setUint16(0, 0, true);
-        dataebo.setUint16(2, 1, true);
-        dataebo.setUint16(4, 2, true);
-        dataebo.setUint16(6, 2, true);
-        dataebo.setUint16(8, 1, true);
-        dataebo.setUint16(10, 3, true);
-        this.mesh.UpdateVertexBuffer(gl, vertexdata, false, stride * 4);
-        this.mesh.UpdateIndexBuffer(gl, element, false, 12);
-        this.mat = new Material(GetShaderProgram("simple"));
-        this.mat.UpdateMatModel();
-        this.mat.UpdateMatView();
-
-
+        this.InitMesh(gl);
+        this.InitMesh2(gl);
         this._mainscreen = GameApp.GetMainScreen();
         this._mainscreen.ClearColor = new Color(0.5, 0.5, 1, 1);
         this._quadbatcher = new Render_Batcher(gl);
@@ -132,6 +78,158 @@ export class TTState_Draw implements IState {
         this.tex = new Texture(gl, data.width, data.height, TextureFormat.RGBA32, bdata, true, false);
 
     }
+    InitMesh(gl: WebGL2RenderingContext): void {
+
+        this.mesh = new Mesh();
+        this.mesh.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_UV_Color());
+        let stride = this.mesh.GetVertexFormat().vbos[0].stride;
+        let vertexdata = new Uint8Array(stride * 4);
+        let element = new Uint8Array(12);
+        let datavbo = new DataView(vertexdata.buffer);
+        datavbo.setFloat32(0 * stride, 0, true);//x
+        datavbo.setFloat32(0 * stride + 4, 0, true);//y
+        datavbo.setFloat32(0 * stride + 8, 0, true);//z
+        datavbo.setFloat32(0 * stride + 12, 0, true);//u
+        datavbo.setFloat32(0 * stride + 16, 0, true);//v
+        datavbo.setUint8(0 * stride + 20, 255);//r
+        datavbo.setUint8(0 * stride + 21, 255);//g
+        datavbo.setUint8(0 * stride + 22, 255);//b
+        datavbo.setUint8(0 * stride + 23, 255);//a
+
+        datavbo.setFloat32(1 * stride, 50, true);//x
+        datavbo.setFloat32(1 * stride + 4, 0, true);//y
+        datavbo.setFloat32(1 * stride + 8, 0, true);//z
+        datavbo.setFloat32(1 * stride + 12, 0, true);//u
+        datavbo.setFloat32(1 * stride + 16, 0, true);//v
+        datavbo.setUint8(1 * stride + 20, 255);//r
+        datavbo.setUint8(1 * stride + 21, 255);//g
+        datavbo.setUint8(1 * stride + 22, 255);//b
+        datavbo.setUint8(1 * stride + 23, 255);//a
+
+        datavbo.setFloat32(2 * stride, 0, true);//x
+        datavbo.setFloat32(2 * stride + 4, 50, true);//y
+        datavbo.setFloat32(2 * stride + 8, 0, true);//z
+        datavbo.setFloat32(2 * stride + 12, 0, true);//u
+        datavbo.setFloat32(2 * stride + 16, 1, true);//v
+        datavbo.setUint8(2 * stride + 20, 255);//r
+        datavbo.setUint8(2 * stride + 21, 0);//g
+        datavbo.setUint8(2 * stride + 22, 255);//b
+        datavbo.setUint8(2 * stride + 23, 255);//a
+
+        datavbo.setFloat32(3 * stride, 50, true);//x
+        datavbo.setFloat32(3 * stride + 4, 50, true);//y
+        datavbo.setFloat32(3 * stride + 8, 0, true);//z
+        datavbo.setFloat32(3 * stride + 12, 1, true);//u
+        datavbo.setFloat32(3 * stride + 16, 1, true);//v
+        datavbo.setUint8(3 * stride + 20, 0);//r
+        datavbo.setUint8(3 * stride + 21, 255);//g
+        datavbo.setUint8(3 * stride + 22, 255);//b
+        datavbo.setUint8(3 * stride + 23, 255);//a
+        let dataebo = new DataView(element.buffer);
+        dataebo.setUint16(0, 0, true);
+        dataebo.setUint16(2, 1, true);
+        dataebo.setUint16(4, 2, true);
+        dataebo.setUint16(6, 2, true);
+        dataebo.setUint16(8, 1, true);
+        dataebo.setUint16(10, 3, true);
+
+
+        //创建实例数据
+        // let strideinst = this.mesh.GetVertexFormat().vbos[1].stride;
+        // let vertexdatainst = new Uint8Array(strideinst * 3);
+        // let datavboinst = new DataView(vertexdatainst.buffer);
+        //this.mesh.UpdateVertexBuffer(gl, 1,vertexdatainst, false, vertexdatainst.byteLength);
+        this.mesh.UpdateVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
+
+        this.mesh.UpdateIndexBuffer(gl, element, false, 12);
+        this.mat = new Material(GetShaderProgram("simple"));
+        this.mat.UpdateMatModel();
+        this.mat.UpdateMatView();
+    }
+    InitMesh2(gl: WebGL2RenderingContext) {
+        this.mesh2 = new Mesh();
+        this.mesh2.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_UV_Color_InstPos());
+        let stride = this.mesh.GetVertexFormat().vbos[0].stride;
+        let vertexdata = new Uint8Array(stride * 4);
+        let element = new Uint8Array(12);
+        let datavbo = new DataView(vertexdata.buffer);
+        datavbo.setFloat32(0 * stride, 0, true);//x
+        datavbo.setFloat32(0 * stride + 4, 0, true);//y
+        datavbo.setFloat32(0 * stride + 8, 0, true);//z
+        datavbo.setFloat32(0 * stride + 12, 0, true);//u
+        datavbo.setFloat32(0 * stride + 16, 0, true);//v
+        datavbo.setUint8(0 * stride + 20, 255);//r
+        datavbo.setUint8(0 * stride + 21, 255);//g
+        datavbo.setUint8(0 * stride + 22, 255);//b
+        datavbo.setUint8(0 * stride + 23, 255);//a
+
+        datavbo.setFloat32(1 * stride, 50, true);//x
+        datavbo.setFloat32(1 * stride + 4, 0, true);//y
+        datavbo.setFloat32(1 * stride + 8, 0, true);//z
+        datavbo.setFloat32(1 * stride + 12, 0, true);//u
+        datavbo.setFloat32(1 * stride + 16, 0, true);//v
+        datavbo.setUint8(1 * stride + 20, 255);//r
+        datavbo.setUint8(1 * stride + 21, 255);//g
+        datavbo.setUint8(1 * stride + 22, 255);//b
+        datavbo.setUint8(1 * stride + 23, 255);//a
+
+        datavbo.setFloat32(2 * stride, 0, true);//x
+        datavbo.setFloat32(2 * stride + 4, 50, true);//y
+        datavbo.setFloat32(2 * stride + 8, 0, true);//z
+        datavbo.setFloat32(2 * stride + 12, 0, true);//u
+        datavbo.setFloat32(2 * stride + 16, 1, true);//v
+        datavbo.setUint8(2 * stride + 20, 255);//r
+        datavbo.setUint8(2 * stride + 21, 0);//g
+        datavbo.setUint8(2 * stride + 22, 255);//b
+        datavbo.setUint8(2 * stride + 23, 255);//a
+
+        datavbo.setFloat32(3 * stride, 50, true);//x
+        datavbo.setFloat32(3 * stride + 4, 50, true);//y
+        datavbo.setFloat32(3 * stride + 8, 0, true);//z
+        datavbo.setFloat32(3 * stride + 12, 1, true);//u
+        datavbo.setFloat32(3 * stride + 16, 1, true);//v
+        datavbo.setUint8(3 * stride + 20, 0);//r
+        datavbo.setUint8(3 * stride + 21, 255);//g
+        datavbo.setUint8(3 * stride + 22, 255);//b
+        datavbo.setUint8(3 * stride + 23, 255);//a
+        let dataebo = new DataView(element.buffer);
+        dataebo.setUint16(0, 0, true);
+        dataebo.setUint16(2, 1, true);
+        dataebo.setUint16(4, 2, true);
+        dataebo.setUint16(6, 2, true);
+        dataebo.setUint16(8, 1, true);
+        dataebo.setUint16(10, 3, true);
+
+
+        //创建实例数据
+        // let strideinst = this.mesh.GetVertexFormat().vbos[1].stride;
+        // let vertexdatainst = new Uint8Array(strideinst * 3);
+        // let datavboinst = new DataView(vertexdatainst.buffer);
+        //this.mesh.UpdateVertexBuffer(gl, 1,vertexdatainst, false, vertexdatainst.byteLength);
+        this.mesh2.UpdateVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
+
+
+
+        let stride2 = this.mesh2.GetVertexFormat().vbos[1].stride;
+        let vertexdata2 = new Uint8Array(stride2 * 3);
+        let datavbo2 = new DataView(vertexdata2.buffer);
+        datavbo2.setFloat32(0, 0.1, true);
+        datavbo2.setFloat32(4, 0, true);
+        datavbo2.setFloat32(8, 0, true);
+        datavbo2.setFloat32(12, 0.2, true);
+        datavbo2.setFloat32(16, 0, true);
+        datavbo2.setFloat32(20, 0, true);
+        datavbo2.setFloat32(24, 0.3, true);
+        datavbo2.setFloat32(28, 0, true);
+        datavbo2.setFloat32(32, 0, true);
+        this.mesh2.UpdateVertexBuffer(gl, 1, vertexdata, false, vertexdata2.byteLength);
+        this.mesh2.instancecount = 3;
+
+        this.mesh2.UpdateIndexBuffer(gl, element, false, 12);
+        this.mat2 = new Material(GetShaderProgram("simple_inst"));
+        this.mat2.UpdateMatModel();
+        this.mat2.UpdateMatView();
+    }
     OnUpdate(delta: number): void {
 
     }
@@ -170,7 +268,10 @@ export class TTState_Draw implements IState {
 
             this._quadbatcher.EndDraw();
         }
+
+
         Render.DrawMesh(gl, this.mesh, this.mat);
+        Render.DrawMeshInstanced(gl, this.mesh2, this.mat2);
         this._mainscreen.End();
     }
     OnPostRender(): void {

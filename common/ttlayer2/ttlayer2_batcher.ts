@@ -226,7 +226,7 @@ export class Render_Batcher {
 
         // webgl.bindVertexArray(this._vao);
         this._mat.uniformTexs["tex"].value = this._lastTex;
-        this._mesh.UpdateVertexBuffer(webgl, this._buffer, true, this._pointseek * 28);
+        this._mesh.UpdateVertexBuffer(webgl, 0, this._buffer, true, this._pointseek * 28);
         this._pointseek = 0;
         //webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);
         //webgl.bufferData(webgl.ARRAY_BUFFER, this._buffer, webgl.DYNAMIC_DRAW, 0, this._pointseek * 28);

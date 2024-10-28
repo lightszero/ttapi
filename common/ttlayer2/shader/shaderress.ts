@@ -109,6 +109,30 @@ var vs_simple: string = `#version 300 es
         //vExt = ext;
     }
     `;
+
+var vs_simple_inst: string = `#version 300 es
+layout(location = 0) in vec3 position;//顶点提供的数据
+layout(location = 1) in vec2 uv; 
+layout(location = 2) in vec4 color; 
+layout(location = 3) in vec3 pos_inst; 
+
+uniform mat4 matModel;
+uniform mat4 matView;
+uniform mat4 matProj;
+
+out vec4 vColor;//输出给fs的参数
+out vec2 vUv;//输出给fs的参数2
+//flat out vec4 vExt;
+
+void main(void) 
+{
+    mat4 matrix = matProj*matView*matModel;
+    gl_Position = matrix * vec4(position+pos_inst,1);// uViewProjMatrix * uModelMatrix * position;
+    vColor = color;
+    vUv = uv;
+    //vExt = ext;
+}
+`;
 var fs_simple: string = `#version 300 es
     precision mediump float;//指定浮点型精确度
     
@@ -144,5 +168,9 @@ export function InitInnerShader(webgl: WebGL2RenderingContext): void {
 
     if (vssim != null && fssim != null)
         s.LinkShader(webgl, "simple", vssim, fssim);
+
+    var vssim_inst = s.AddShader(webgl, s.ShaderType.VertexShader, "simple_inst", vs_simple_inst, true);
+    if (vssim_inst != null && fssim != null)
+        s.LinkShader(webgl, "simple_inst", vssim, fssim);
 
 }

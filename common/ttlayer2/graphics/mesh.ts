@@ -12,18 +12,16 @@ export class VertexAttribItem {
     type: VertexAttribType;
     size: number;//元素数量
     normalize: boolean;
+
     offset: number;
+
 }
-export class VertexFormat {
-    constructor(id: string) {
-        this.id = id;
-        this.atrribs = [];
-    }
-    id: string;
-    atrribs: VertexAttribItem[]
-    hash: string;
+export class VBOInfo {
+    vertexAttribDivisor: number = 0;
+    atrribs: VertexAttribItem[] = [];
     atrribsCount: number;
     stride: number;
+    hash: string;
     Update(): void {
         this.atrribsCount = this.atrribs.length;
         this.stride = 0;
@@ -41,12 +39,33 @@ export class VertexFormat {
         }
     }
 }
+//这个顶点格式描述方法，还不够强
+export class VertexFormat {
+    constructor(id: string) {
+        this.id = id;
+        this.vbos = [];
+    }
+    id: string;
+    vbos: VBOInfo[]
+    hash: string;
+
+    Update(): void {
+
+        this.hash = "";
+        for (var i = 0; i < this.vbos.length; i++) {
+            var a = this.vbos[i];
+            a.Update();
+            this.hash += "{" + a.hash + "}";
+        }
+    }
+}
 export class VertexFormatMgr {
     private static vertexFormats: { [hash: string]: VertexFormat } = {}
     private static vertexFormatsID2Hash: { [id: string]: string } = {}
     private static vertexFormat_Vertex_Color: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color_Color2: VertexFormat = null;
+    private static vertexFormat_Vertex_UV_Color_InstPos: VertexFormat = null;
     static RegFormat(format: VertexFormat): VertexFormat {
         format.Update();
         let f: VertexFormat = format;
@@ -65,8 +84,9 @@ export class VertexFormatMgr {
     static GetFormat_Vertex_Color(): VertexFormat {
         if (this.vertexFormat_Vertex_Color == null) {
             let vecf = new VertexFormat("Vertex_Color");
-            vecf.atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
-            vecf.atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
             this.vertexFormat_Vertex_Color = this.RegFormat(vecf);
         }
         return this.vertexFormat_Vertex_Color;
@@ -74,9 +94,10 @@ export class VertexFormatMgr {
     static GetFormat_Vertex_UV_Color(): VertexFormat {
         if (this.vertexFormat_Vertex_UV_Color == null) {
             let vecf = new VertexFormat("Vertex_UV_Color");
-            vecf.atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
-            vecf.atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));
-            vecf.atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
             this.vertexFormat_Vertex_UV_Color = this.RegFormat(vecf);
         }
         return this.vertexFormat_Vertex_UV_Color;
@@ -84,18 +105,34 @@ export class VertexFormatMgr {
     static GetFormat_Vertex_UV_Color_Color2(): VertexFormat {
         if (this.vertexFormat_Vertex_UV_Color_Color2 == null) {
             let vecf = new VertexFormat("Vertex_UV_Color_Color2");
-            vecf.atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
-            vecf.atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));
-            vecf.atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
-            vecf.atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, false));
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, false));
             this.vertexFormat_Vertex_UV_Color_Color2 = this.RegFormat(vecf);
         }
         return this.vertexFormat_Vertex_UV_Color_Color2;
     }
+    static GetFormat_Vertex_UV_Color_InstPos(): VertexFormat {
+        if (this.vertexFormat_Vertex_UV_Color_InstPos == null) {
+            let vecf = new VertexFormat("Vertex_UV_Color");
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[1].vertexAttribDivisor = 1;//instanced data
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
+            this.vertexFormat_Vertex_UV_Color_InstPos = this.RegFormat(vecf);
+        }
+        return this.vertexFormat_Vertex_UV_Color_InstPos;
+    }
 }
 
 export class Mesh {
-    _vbo: WebGLBuffer = null;
+    _vbos: WebGLBuffer[] = null;
+    instancecount: number;//示例数量
     _ebo: WebGLBuffer = null;
     _vao: WebGLVertexArrayObject = null;
     vertexcount: number = 0;
@@ -110,37 +147,50 @@ export class Mesh {
     UpdateVertexFormat(webgl: WebGL2RenderingContext, vecf: VertexFormat): void {
         if (this._vao == null) {
             this._vao = webgl.createVertexArray();
-            if (this._vbo == null)
-                this._vbo = webgl.createBuffer();
+
         }
+        if (this._vbos == null) {
+            this._vbos = [];
+            for (var j = 0; j < vecf.vbos.length; j++) {
+                this._vbos.push(webgl.createBuffer());
+            }
+        
+        }
+
         this.vertexFormat = vecf;
 
         {//初始化 vao
             webgl.bindVertexArray(this._vao);
-            webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);
 
-            for (var i = 0; i < 10; i++) {
-                if (i < vecf.atrribsCount) {
-                    var vi = vecf.atrribs[i];
-                    webgl.enableVertexAttribArray(i);
-                    webgl.vertexAttribPointer(i, vi.size, vi.type, vi.normalize, vecf.stride, vi.offset);
+            let iatt = 0;
+            for (var j = 0; j < vecf.vbos.length; j++) {
+                let vf = vecf.vbos[j];
+                webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbos[j]);
+
+                for (var i = 0; i < vf.atrribsCount; i++) {
+                    let vi = vf.atrribs[i];
+
+                    webgl.enableVertexAttribArray(iatt);
+                    webgl.vertexAttribPointer(iatt, vi.size, vi.type, vi.normalize, vf.stride, vi.offset);
+                    webgl.vertexAttribDivisor(iatt, vf.vertexAttribDivisor);
+                    iatt++;
                 }
-                else {
-                    webgl.disableVertexAttribArray(i);
-                }
+
+            }
+            for (var i = iatt; i < 10; i++) {
+                webgl.disableVertexAttribArray(i);
             }
             webgl.bindVertexArray(null);
         }
     }
-    UpdateVertexBuffer(webgl: WebGL2RenderingContext, vertexdata: ArrayBufferView, dynamic: boolean, bytelength: number): void {
-        if (this._vbo == null) {
-            this._vbo = webgl.createBuffer();
-        }
-        webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);
+    UpdateVertexBuffer(webgl: WebGL2RenderingContext, vboindex:number,vertexdata: Uint8Array, dynamic: boolean, bytelength: number): void {
+
+
+        webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbos[vboindex]);
         webgl.bufferData(webgl.ARRAY_BUFFER, vertexdata, dynamic ? webgl.DYNAMIC_DRAW : webgl.STATIC_DRAW, 0, bytelength);
-        this.vertexcount = bytelength / this.vertexFormat.stride;
+        this.vertexcount = bytelength / this.vertexFormat.vbos[vboindex].stride;
     }
-    UpdateIndexBuffer(webgl: WebGL2RenderingContext, element: ArrayBufferView, dynamic: boolean, bytelength: number) {
+    UpdateIndexBuffer(webgl: WebGL2RenderingContext, element: Uint8Array, dynamic: boolean, bytelength: number) {
         if (this._ebo == null) {
             this._ebo = webgl.createBuffer();
         }
