@@ -135,7 +135,7 @@ export class Mesh {
     instancecount: number;//示例数量
     _ebo: WebGLBuffer = null;
     _vao: WebGLVertexArrayObject = null;
-    vertexcount: number = 0;
+    vertexcount: number[];
     indexcount: number = 0;
     private vertexFormat: VertexFormat;
     constructor() {
@@ -151,10 +151,12 @@ export class Mesh {
         }
         if (this._vbos == null) {
             this._vbos = [];
+            this.vertexcount = [];
             for (var j = 0; j < vecf.vbos.length; j++) {
                 this._vbos.push(webgl.createBuffer());
+                this.vertexcount.push(0);
             }
-        
+
         }
 
         this.vertexFormat = vecf;
@@ -183,12 +185,12 @@ export class Mesh {
             webgl.bindVertexArray(null);
         }
     }
-    UpdateVertexBuffer(webgl: WebGL2RenderingContext, vboindex:number,vertexdata: Uint8Array, dynamic: boolean, bytelength: number): void {
+    UpdateVertexBuffer(webgl: WebGL2RenderingContext, vboindex: number, vertexdata: Uint8Array, dynamic: boolean, bytelength: number): void {
 
 
         webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbos[vboindex]);
         webgl.bufferData(webgl.ARRAY_BUFFER, vertexdata, dynamic ? webgl.DYNAMIC_DRAW : webgl.STATIC_DRAW, 0, bytelength);
-        this.vertexcount = bytelength / this.vertexFormat.vbos[vboindex].stride;
+        this.vertexcount[vboindex] = bytelength / this.vertexFormat.vbos[vboindex].stride;
     }
     UpdateIndexBuffer(webgl: WebGL2RenderingContext, element: Uint8Array, dynamic: boolean, bytelength: number) {
         if (this._ebo == null) {
