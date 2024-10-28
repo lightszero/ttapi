@@ -1,3 +1,7 @@
 *.map
 *.js
 
+/ttapi
+/ttimpl_wegame
+/ttlayer2
+/ttsample
