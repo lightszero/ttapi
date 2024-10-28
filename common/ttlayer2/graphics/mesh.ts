@@ -116,7 +116,7 @@ export class VertexFormatMgr {
     }
     static GetFormat_Vertex_UV_Color_InstPos(): VertexFormat {
         if (this.vertexFormat_Vertex_UV_Color_InstPos == null) {
-            let vecf = new VertexFormat("Vertex_UV_Color");
+            let vecf = new VertexFormat("Vertex_UV_Color_InstPos");
             vecf.vbos.push(new VBOInfo());
             vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
             vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));

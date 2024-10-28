@@ -93,8 +93,7 @@ export class Material {
 
     }
     Apply(webgl: WebGL2RenderingContext) {
-
-
+      
         webgl.disable(webgl.CULL_FACE);
         webgl.depthMask(false);//这是zwrite
         webgl.disable(webgl.DEPTH_TEST);//这是ztest

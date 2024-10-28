@@ -171,6 +171,6 @@ export function InitInnerShader(webgl: WebGL2RenderingContext): void {
 
     var vssim_inst = s.AddShader(webgl, s.ShaderType.VertexShader, "simple_inst", vs_simple_inst, true);
     if (vssim_inst != null && fssim != null)
-        s.LinkShader(webgl, "simple_inst", vssim, fssim);
+        s.LinkShader(webgl, "simple_inst", vssim_inst, fssim);
 
 }
