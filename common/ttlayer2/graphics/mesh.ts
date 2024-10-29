@@ -62,6 +62,7 @@ export class VertexFormat {
 export class VertexFormatMgr {
     private static vertexFormats: { [hash: string]: VertexFormat } = {}
     private static vertexFormatsID2Hash: { [id: string]: string } = {}
+    private static vertexFormat_Vertex_Normal: VertexFormat = null;
     private static vertexFormat_Vertex_Color: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color_Color2: VertexFormat = null;
@@ -80,6 +81,16 @@ export class VertexFormatMgr {
     static GetFormat(id: string): VertexFormat {
         let hash = this.vertexFormatsID2Hash[id];
         return this.vertexFormats[hash];
+    }
+    static GetFormat_Vertex_Normal(): VertexFormat {
+        if (this.vertexFormat_Vertex_Normal == null) {
+            let vecf = new VertexFormat("Vertex_Normal");
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, true));
+            this.vertexFormat_Vertex_Normal = this.RegFormat(vecf);
+        }
+        return this.vertexFormat_Vertex_Normal;
     }
     static GetFormat_Vertex_Color(): VertexFormat {
         if (this.vertexFormat_Vertex_Color == null) {
@@ -144,7 +155,7 @@ export class Mesh {
     GetVertexFormat(): VertexFormat {
         return this.vertexFormat;
     }
-    UpdateVertexFormat(webgl: WebGL2RenderingContext, vecf: VertexFormat): void {
+    UpdateVertexFormat(webgl: WebGL2RenderingContext, vecf: VertexFormat, vbos: WebGLBuffer[] = null): void {
         if (this._vao == null) {
             this._vao = webgl.createVertexArray();
 
@@ -153,10 +164,20 @@ export class Mesh {
             this._vbos = [];
             this.vertexcount = [];
             for (var j = 0; j < vecf.vbos.length; j++) {
+
                 this._vbos.push(webgl.createBuffer());
                 this.vertexcount.push(0);
             }
 
+        }
+        if (vbos != null)//替换vbo逻辑
+        {
+            for (var j = 0; j < vecf.vbos.length; j++) {
+                if (this._vbos[j] != vbos[j] && vbos[j] != null) {
+                    webgl.deleteBuffer(this._vbos[j]);
+                    this._vbos[j] = vbos[j];
+                }
+            }
         }
 
         this.vertexFormat = vecf;

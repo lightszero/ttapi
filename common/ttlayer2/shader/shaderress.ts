@@ -156,6 +156,27 @@ var fs_simple: string = `#version 300 es
     }
     `;
 
+    var vs_feedback: string = `#version 300 es
+layout(location = 0) in vec3 position;//顶点提供的数据
+layout(location = 1) in vec3 normal;//顶点提供的数据
+out vec3 outPos;
+out vec3 outNormal;
+void main(void) 
+{
+    outPos = position + normal*0.01;
+    outNormal = normal;
+}
+`;
+    var fs_empty: string = `#version 300 es
+    precision mediump float;//指定浮点型精确度
+   
+    layout(location = 0) out vec4 fragColor;
+
+    void main(void) 
+    {
+        fragColor =  vec4(0,0,0,1);
+    }
+    `;
 export function InitInnerShader(webgl: WebGL2RenderingContext): void {
     var vsdef = s.AddShader(webgl, s.ShaderType.VertexShader, "default", vs_default, true);
     var fsdef = s.AddShader(webgl, s.ShaderType.FragmentShader, "default", fs_default, true);
@@ -172,5 +193,10 @@ export function InitInnerShader(webgl: WebGL2RenderingContext): void {
     var vssim_inst = s.AddShader(webgl, s.ShaderType.VertexShader, "simple_inst", vs_simple_inst, true);
     if (vssim_inst != null && fssim != null)
         s.LinkShader(webgl, "simple_inst", vssim_inst, fssim);
+
+    var vsfeedback = s.AddShader(webgl, s.ShaderType.VertexShader, "feedback", vs_feedback, true);
+    var fsempty = s.AddShader(webgl, s.ShaderType.FragmentShader, "empty", fs_empty, true);
+    if (vsfeedback != null && fsempty != null)
+        s.LinkShaderFeedBack(webgl, "feedback", vsfeedback, fsempty,["outPos","outNormal"]);
 
 }

@@ -1,7 +1,7 @@
 import { tt } from "../ttapi/ttapi.js";
 import { Material } from "../ttlayer2/graphics/material.js";
 import { VertexFormatMgr } from "../ttlayer2/graphics/mesh.js";
-import { Render } from "../ttlayer2/graphics/render.js";
+import { Render, TransformFeedBack } from "../ttlayer2/graphics/render.js";
 import { GetShaderProgram } from "../ttlayer2/shader/shaders.js";
 
 
@@ -17,17 +17,20 @@ export class TTState_Draw implements IState {
     _mainscreen: MainScreen = null;
 
     private mesh: Mesh = null;
-
     private mat: Material = null;
-    private mesh2: Mesh = null;
 
+    private mesh2: Mesh = null;
     private mat2: Material = null;
 
+
+    private mesh3: Mesh = null;
+    private mat3: Material = null;
     OnInit(): void {
         let gl = tt.graphic.GetWebGL();
 
         this.InitMesh(gl);
         this.InitMesh2(gl);
+        this.InitTF(gl);
         this._mainscreen = GameApp.GetMainScreen();
         this._mainscreen.ClearColor = new Color(0.5, 0.5, 1, 1);
         this._quadbatcher = new Render_Batcher(gl);
@@ -61,7 +64,7 @@ export class TTState_Draw implements IState {
         this.pts.push(p2);
         this.pts.push(p3);
 
-        let data = TextTool.LoadTextPixel("中国123你好H2o", "v16", 16, 160, 16, 0, 0);
+        let data = TextTool.LoadTextPixel("中国17你好H2o", "v16", 16, 160, 16, 0, 0);
         let bdata = new Uint8Array(data.width * data.height * 4);
         for (let i = 0; i < data.width * data.height; i++) {
 
@@ -242,6 +245,56 @@ export class TTState_Draw implements IState {
         this.mat2.UpdateMatModel();
         this.mat2.UpdateMatView();
     }
+
+    InitTF(gl: WebGL2RenderingContext) {
+        let mesh = new Mesh();
+        mesh.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_Normal());
+        let stride = this.mesh.GetVertexFormat().vbos[0].stride;
+        let vertexdata = new Uint8Array(stride * 4);
+        let datavbo = new DataView(vertexdata.buffer);
+        datavbo.setFloat32(0 * stride, 0, true);//x
+        datavbo.setFloat32(0 * stride + 4, 0, true);//y
+        datavbo.setFloat32(0 * stride + 8, 0, true);//z
+        datavbo.setFloat32(0 * stride + 12, 1, true);//norx
+        datavbo.setFloat32(0 * stride + 16, 0, true);//nory
+        datavbo.setFloat32(0 * stride + 20, 0, true);//norz
+
+
+        datavbo.setFloat32(1 * stride, 50, true);//x
+        datavbo.setFloat32(1 * stride + 4, 0, true);//y
+        datavbo.setFloat32(1 * stride + 8, 0, true);//z
+        datavbo.setFloat32(1 * stride + 12, 1, true);//norx
+        datavbo.setFloat32(1 * stride + 16, 0, true);//nory
+        datavbo.setFloat32(1 * stride + 20, 0, true);//norz
+
+        datavbo.setFloat32(2 * stride, 0, true);//x
+        datavbo.setFloat32(2 * stride + 4, 50, true);//y
+        datavbo.setFloat32(2 * stride + 8, 0, true);//z
+        datavbo.setFloat32(2 * stride + 12, 1, true);//norx
+        datavbo.setFloat32(2 * stride + 16, 0, true);//nory
+        datavbo.setFloat32(2 * stride + 20, 0, true);//norz
+
+        datavbo.setFloat32(3 * stride, 50, true);//x
+        datavbo.setFloat32(3 * stride + 4, 50, true);//y
+        datavbo.setFloat32(3 * stride + 8, 0, true);//z
+        datavbo.setFloat32(3 * stride + 12, 1, true);//norx
+        datavbo.setFloat32(3 * stride + 16, 0, true);//nory
+        datavbo.setFloat32(3 * stride + 20, 0, true);//norz
+
+        mesh.UpdateVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
+
+        let mat = new Material(GetShaderProgram("feedback"));
+        let tf = new TransformFeedBack(gl, stride * 4);
+        tf.Execute(gl, mesh, mat, 0, 4);
+        let bufdata = new Uint8Array(stride * 4);
+        bufdata[3]=78;
+        tf.ReadBuf(gl, bufdata);
+        let dv = new Float32Array(bufdata.buffer);
+        for (var i = 0; i < dv.length; i++) {
+            console.log("F[" + i + "]=" + dv[i]);
+        }
+  
+    }
     OnUpdate(delta: number): void {
 
     }
@@ -287,6 +340,7 @@ export class TTState_Draw implements IState {
         this.mat2.UpdateMatModel();
         this.mat2.UpdateMatView();
         Render.DrawMeshInstanced(gl, this.mesh2, this.mat2);
+
 
         this._mainscreen.End();
     }

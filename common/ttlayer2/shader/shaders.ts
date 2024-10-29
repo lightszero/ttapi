@@ -54,7 +54,7 @@ export function AddShader(webgl: WebGL2RenderingContext, type: ShaderType, name:
     return null;
   }
   else {
-    console.log("AddShader:" + ShaderType[type].toString() + name);
+    console.log("AddShader:" + ShaderType[type].toString() + ":" + name);
   }
   var uinfo: { [id: string]: UniformType } = {};
 
@@ -132,6 +132,30 @@ export function LinkShader(webgl: WebGL2RenderingContext, name: string, vs: Shad
   if (prog != null) {
     webgl.attachShader(prog, vs.shader);
     webgl.attachShader(prog, fs.shader);
+    webgl.linkProgram(prog);
+    var r3 = webgl.getProgramParameter(prog, webgl.LINK_STATUS);
+    if (r3 == false) {
+      console.error("LinkShader error webgl.linkProgram:" + webgl.getProgramInfoLog(prog));
+      return null;
+    }
+    var _prog = new ShaderProgram(webgl, name, prog, vs, fs);
+    programs[name] = _prog;
+    console.log("LinkShader:" + name);
+    return _prog;
+  }
+  else {
+    console.error("LinkShader error webgl.createProgram");
+  }
+  return null;
+}
+export function LinkShaderFeedBack(webgl: WebGL2RenderingContext, name: string, vs: ShaderObj, fs: ShaderObj, feedbackvaring: string[]): ShaderProgram | null {
+  var prog = webgl.createProgram();
+  if (prog != null) {
+    webgl.attachShader(prog, vs.shader);
+    webgl.attachShader(prog, fs.shader);
+
+    webgl.transformFeedbackVaryings(prog, feedbackvaring, webgl.INTERLEAVED_ATTRIBS);//交错
+
     webgl.linkProgram(prog);
     var r3 = webgl.getProgramParameter(prog, webgl.LINK_STATUS);
     if (r3 == false) {
