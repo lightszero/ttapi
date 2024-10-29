@@ -86,9 +86,10 @@ export class Scene {
                     v.target.Begin();
                     lasttarget = v.target;
                 }
+                let renders = v.CollRenderItem();
+                this.RenderList(v, renders, 0);
             }
-            let renders = v.CollRenderItem();
-            this.RenderList(v, renders, 0);
+
 
         }
 

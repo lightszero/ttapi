@@ -30,7 +30,7 @@ export class TransformFeedBack {
 
         gl.endTransformFeedback();
         gl.disable(gl.RASTERIZER_DISCARD);
-        gl.flush();
+        gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, null);
     }
     ReadBuf(gl: WebGL2RenderingContext, bufobj: WebGLBuffer, readbuf: Uint8Array, bytelength: number) {
         gl.bindBuffer(gl.TRANSFORM_FEEDBACK_BUFFER, bufobj);

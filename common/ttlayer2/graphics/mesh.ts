@@ -251,6 +251,7 @@ export class Mesh {
         webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbos[vboindex]);
         webgl.bufferData(webgl.ARRAY_BUFFER, vertexdata, dynamic ? webgl.DYNAMIC_DRAW : webgl.STATIC_DRAW, 0, bytelength);
         this.vertexcount[vboindex] = bytelength / this.vertexFormat.vbos[vboindex].stride;
+        webgl.bindBuffer(webgl.ARRAY_BUFFER, null);
     }
     UploadIndexBuffer(webgl: WebGL2RenderingContext, element: Uint8Array, dynamic: boolean, bytelength: number) {
         if (this._ebo == null) {
@@ -259,6 +260,7 @@ export class Mesh {
         webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER, this._ebo);
         webgl.bufferData(webgl.ELEMENT_ARRAY_BUFFER, element, dynamic ? webgl.DYNAMIC_DRAW : webgl.STATIC_DRAW, 0, bytelength);
         this.indexcount = bytelength / 2;
+        webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER, null);
     }
     Apply(webgl: WebGL2RenderingContext) {
         webgl.bindVertexArray(this._vao);

@@ -163,7 +163,7 @@ out vec3 outPos;
 out vec3 outNormal;
 void main(void) 
 {
-    outPos = position + normal*0.01;
+    outPos = position + normal;
     outNormal = normal;
 }
 `;
