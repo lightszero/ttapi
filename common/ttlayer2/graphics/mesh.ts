@@ -67,6 +67,7 @@ export class VertexFormatMgr {
     private static vertexFormat_Vertex_UV_Color: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color_Color2: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color_InstPos: VertexFormat = null;
+    private static vertexFormat_Vertex_UV_Color_InstPosNormal: VertexFormat = null;
     static RegFormat(format: VertexFormat): VertexFormat {
         format.Update();
         let f: VertexFormat = format;
@@ -139,6 +140,21 @@ export class VertexFormatMgr {
         }
         return this.vertexFormat_Vertex_UV_Color_InstPos;
     }
+    static GetFormat_Vertex_UV_Color_InstPosNormal(): VertexFormat {
+        if (this.vertexFormat_Vertex_UV_Color_InstPosNormal == null) {
+            let vecf = new VertexFormat("Vertex_UV_Color_InstPosNormal");
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[1].vertexAttribDivisor = 1;//instanced data
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, true));
+            this.vertexFormat_Vertex_UV_Color_InstPosNormal = this.RegFormat(vecf);
+        }
+        return this.vertexFormat_Vertex_UV_Color_InstPosNormal;
+    }
 }
 
 export class Mesh {
@@ -163,12 +179,18 @@ export class Mesh {
         if (this._vbos == null) {
             this._vbos = [];
             this.vertexcount = [];
-            for (var j = 0; j < vecf.vbos.length; j++) {
 
-                this._vbos.push(webgl.createBuffer());
-                this.vertexcount.push(0);
-            }
+        }
+        while (this._vbos.length < vecf.vbos.length) {
+            this._vbos.push(null);
+        }
+        while (this.vertexcount.length < vecf.vbos.length) {
+            this.vertexcount.push(0);
+        }
+        for (var j = 0; j < vecf.vbos.length; j++) {
 
+            if (this._vbos[j] == null)
+                this._vbos[j] = webgl.createBuffer();
         }
 
 
@@ -198,14 +220,39 @@ export class Mesh {
             webgl.bindVertexArray(null);
         }
     }
-    UpdateVertexBuffer(webgl: WebGL2RenderingContext, vboindex: number, vertexdata: Uint8Array, dynamic: boolean, bytelength: number): void {
+    SetVertexBuffer(webgl: WebGL2RenderingContext, vboindex: number, bufobj: WebGLBuffer, vertexcount: number): void {
+        if (this._vbos == null) {
+            this._vbos = [];
+            this.vertexcount = [];
 
+        }
+        while (this._vbos.length <= vboindex) {
+            this._vbos.push(null);
+        }
+        while (this.vertexcount.length <= vboindex) {
+            this.vertexcount.push(0);
+        }
+
+
+        this._vbos[vboindex] = bufobj
+        //webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbos[vboindex]);
+        this.vertexcount[vboindex] = vertexcount;
+    }
+    SetIndexBuffer(webgl: WebGL2RenderingContext, bufobj: WebGLBuffer, dynamic: boolean, indexcount: number) {
+        this._ebo = bufobj;
+        //webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER, this._ebo);
+        this.indexcount = indexcount;
+    }
+    UploadVertexBuffer(webgl: WebGL2RenderingContext, vboindex: number, vertexdata: Uint8Array, dynamic: boolean, bytelength: number): void {
+        if (this._vbos[vboindex] == null) {
+            this._vbos[vboindex] = webgl.createBuffer()
+        }
 
         webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbos[vboindex]);
         webgl.bufferData(webgl.ARRAY_BUFFER, vertexdata, dynamic ? webgl.DYNAMIC_DRAW : webgl.STATIC_DRAW, 0, bytelength);
         this.vertexcount[vboindex] = bytelength / this.vertexFormat.vbos[vboindex].stride;
     }
-    UpdateIndexBuffer(webgl: WebGL2RenderingContext, element: Uint8Array, dynamic: boolean, bytelength: number) {
+    UploadIndexBuffer(webgl: WebGL2RenderingContext, element: Uint8Array, dynamic: boolean, bytelength: number) {
         if (this._ebo == null) {
             this._ebo = webgl.createBuffer();
         }

@@ -142,9 +142,9 @@ export class TTState_Draw implements IState {
         // let vertexdatainst = new Uint8Array(strideinst * 3);
         // let datavboinst = new DataView(vertexdatainst.buffer);
         //this.mesh.UpdateVertexBuffer(gl, 1,vertexdatainst, false, vertexdatainst.byteLength);
-        this.mesh.UpdateVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
+        this.mesh.UploadVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
 
-        this.mesh.UpdateIndexBuffer(gl, element, false, 12);
+        this.mesh.UploadIndexBuffer(gl, element, false, 12);
         this.mat = new Material(GetShaderProgram("simple"));
         this.mat.UpdateMatModel();
         this.mat.UpdateMatView();
@@ -198,7 +198,7 @@ export class TTState_Draw implements IState {
             datavbo.setUint8(3 * stride + 23, 255);//a
 
 
-            this.mesh2.UpdateVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
+            this.mesh2.UploadVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
 
 
         }
@@ -226,7 +226,7 @@ export class TTState_Draw implements IState {
             datavbo2.setFloat32(24, 33, true);
             datavbo2.setFloat32(28, 33, true);
             datavbo2.setFloat32(32, 0, true);
-            this.mesh2.UpdateVertexBuffer(gl, 1, vertexdata2, false, vertexdata2.byteLength);
+            this.mesh2.UploadVertexBuffer(gl, 1, vertexdata2, false, vertexdata2.byteLength);
             this.mesh2.instancecount = instcount;
         }
         {
@@ -238,7 +238,7 @@ export class TTState_Draw implements IState {
             dataebo.setUint16(6, 2, true);
             dataebo.setUint16(8, 1, true);
             dataebo.setUint16(10, 3, true);
-            this.mesh2.UpdateIndexBuffer(gl, element, false, 12);
+            this.mesh2.UploadIndexBuffer(gl, element, false, 12);
         }
 
         this.mat2 = new Material(GetShaderProgram("simple_inst"));
@@ -281,14 +281,19 @@ export class TTState_Draw implements IState {
         datavbo.setFloat32(3 * stride + 16, 0, true);//nory
         datavbo.setFloat32(3 * stride + 20, 0, true);//norz
 
-        mesh.UpdateVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
+        mesh.UploadVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
 
         let mat = new Material(GetShaderProgram("feedback"));
-        let tf = new TransformFeedBack(gl, stride * 4);
-        tf.Execute(gl, mesh, mat, 0, 4);
+        let outbuf = gl.createBuffer();
+        gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, outbuf);
+        gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, stride * 4, gl.STREAM_COPY);
+
+        let tf = new TransformFeedBack(gl);
+        tf.Execute(gl, mesh, mat, outbuf, 0, 4);
+
         let bufdata = new Uint8Array(stride * 4);
         bufdata[3] = 78;
-        tf.ReadBuf(gl, bufdata);
+        tf.ReadBuf(gl, outbuf, bufdata, stride * 4);
         let dv = new Float32Array(bufdata.buffer);
         for (var i = 0; i < dv.length; i++) {
             console.log("F[" + i + "]=" + dv[i]);

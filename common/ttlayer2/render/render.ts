@@ -4,24 +4,24 @@ import { Mesh } from "../graphics/mesh.js";
 
 export class TransformFeedBack {
     obj: WebGLTransformFeedback;
-    buf: WebGLBuffer;
-    bytelength: number;
-    constructor(gl: WebGL2RenderingContext, bytelength: number) {
+    //buf: WebGLBuffer;
+    //bytelength: number;
+    constructor(gl: WebGL2RenderingContext) {
         this.obj = gl.createTransformFeedback();
         gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, this.obj);
 
-        this.buf = gl.createBuffer();
-        gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, this.buf);
-        this.bytelength = bytelength;
-        gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, bytelength, gl.STREAM_DRAW);
+        // this.buf = gl.createBuffer();
+        // gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, this.buf);
+        // this.bytelength = bytelength;
+        // gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, bytelength, gl.STREAM_DRAW);
     }
-    Execute(gl: WebGL2RenderingContext, mesh: Mesh, mat: Material, first: number, count: number) {
+    Execute(gl: WebGL2RenderingContext, mesh: Mesh, mat: Material, outbufobj: WebGLBuffer, first: number, count: number) {
         gl.enable(gl.RASTERIZER_DISCARD);
 
         mesh.Apply(gl);
         mat.Apply(gl);
         gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, this.obj);
-        gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, this.buf);
+        gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, outbufobj);
         gl.beginTransformFeedback(gl.POINTS);
         {
 
@@ -32,9 +32,9 @@ export class TransformFeedBack {
         gl.disable(gl.RASTERIZER_DISCARD);
         gl.flush();
     }
-    ReadBuf(gl: WebGL2RenderingContext, buf: Uint8Array) {
-        gl.bindBuffer(gl.TRANSFORM_FEEDBACK_BUFFER, this.buf);
-        gl.getBufferSubData(gl.TRANSFORM_FEEDBACK_BUFFER, 0, buf, 0, this.bytelength);
+    ReadBuf(gl: WebGL2RenderingContext, bufobj: WebGLBuffer, readbuf: Uint8Array, bytelength: number) {
+        gl.bindBuffer(gl.TRANSFORM_FEEDBACK_BUFFER, bufobj);
+        gl.getBufferSubData(gl.TRANSFORM_FEEDBACK_BUFFER, 0, readbuf, 0, bytelength);
     }
 
 }

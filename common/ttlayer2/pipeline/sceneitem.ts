@@ -1,12 +1,12 @@
 import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
 import { Vector2 } from "../math/vector.js";
-import { ISceneComponment, ISceneItem, ISceneItemNode, ISceneItemSetParent, ISceneRenderItem } from "./scene.js";
+import { ISceneComponent, ISceneItem, ISceneItemNode, ISceneItemSetParent, ISceneRenderItem } from "./scene.js";
 
 export class SceneItem implements ISceneItem, ISceneItemSetParent {
     private parent: ISceneItemNode;
     private _localMatrix: Matrix3x2 = new Matrix3x2();;
     private _worldMatrix: Matrix3x2 = new Matrix3x2();
-    private componments: ISceneComponment[] = null;
+    private componments: ISceneComponent[] = null;
     private _render: ISceneRenderItem = null;
     pos: Vector2 = Vector2.Zero;
     scale: Vector2 = Vector2.One;
@@ -34,7 +34,7 @@ export class SceneItem implements ISceneItem, ISceneItemSetParent {
         }
     }
 
-    AddComponment(comp: ISceneComponment): void {
+    AddComponment(comp: ISceneComponent): void {
         if (this.componments == null)
             this.componments = [];
         if (this.GetComponment(comp.GetType()) != null)
@@ -48,10 +48,10 @@ export class SceneItem implements ISceneItem, ISceneItemSetParent {
         this.componments.push(comp);
         comp.OnAdd(this);
     }
-    GetComponments(): ISceneComponment[] {
+    GetComponments(): ISceneComponent[] {
         return this.componments;
     }
-    GetComponment(type: string): ISceneComponment {
+    GetComponment(type: string): ISceneComponent {
         return this.componments.find((v, i, obj) => {
             return v.GetType() == type;
         });
@@ -133,12 +133,12 @@ export class SceneItem_Group implements ISceneItemNode, ISceneItemSetParent {
             }
         }
     }
-    private componments: ISceneComponment[] = null;
+    private componments: ISceneComponent[] = null;
     private _render: ISceneRenderItem = null;
     GetRender(): ISceneRenderItem {
         return this._render;
     }
-    AddComponment(comp: ISceneComponment): void {
+    AddComponment(comp: ISceneComponent): void {
         if (this.componments == null)
             this.componments = [];
         if (this.GetComponment(comp.GetType()) != null)
@@ -151,10 +151,10 @@ export class SceneItem_Group implements ISceneItemNode, ISceneItemSetParent {
         this.componments.push(comp);
         comp.OnAdd(this);
     }
-    GetComponments(): ISceneComponment[] {
+    GetComponments(): ISceneComponent[] {
         return this.componments;
     }
-    GetComponment(type: string): ISceneComponment {
+    GetComponment(type: string): ISceneComponent {
         return this.componments.find((v, i, obj) => {
             return v.GetType() == type;
         });

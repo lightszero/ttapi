@@ -12,13 +12,13 @@ export interface ITran {
 
 }
 
-export interface ISceneRenderItem extends ISceneComponment {
+export interface ISceneRenderItem extends ISceneComponent {
     GetSortValue(): number
     OnRender(view: SceneView, tag: number): void;
     GetRenderObject(): any;
     EndRender(): void;
 }
-export interface ISceneComponment {
+export interface ISceneComponent {
     GetType(): string;
     OnAdd(item: ISceneItem): void;
     OnUpdate(delta: number): void;
@@ -30,9 +30,9 @@ export interface ISceneItem extends ITran {
     OnUpdate(delta: number): void;
     GetRender(): ISceneRenderItem | null;
     IsGroup(): boolean
-    AddComponment(comp: ISceneComponment): void
-    GetComponments(): ISceneComponment[];
-    GetComponment(Type: string): ISceneComponment;
+    AddComponment(comp: ISceneComponent): void
+    GetComponments(): ISceneComponent[];
+    GetComponment(Type: string): ISceneComponent;
 }
 //节点也必须继承这个,不过不想让用户可以随时访问当
 export interface ISceneItemSetParent {

@@ -1,11 +1,11 @@
-import { tt } from "../../ttapi/ttapi.js";
-import { Matrix3x2Math } from "../math/Matrix3x2.js";
-import { Color, DrawPoint, Rectangle, UVRect, Vector2 } from "../math/vector.js";
-import { GameApp, getWhiteTexture, ITexture, Render_Batcher } from "../ttlayer2.js";
-import { ISceneComponment, ISceneItem, ISceneRenderItem } from "./scene.js";
-import { SceneView } from "./sceneview.js";
+import { tt } from "../../../ttapi/ttapi.js";
+import { Matrix3x2Math } from "../../math/Matrix3x2.js";
+import { Color, DrawPoint, Rectangle, UVRect, Vector2 } from "../../math/vector.js";
+import { GameApp, getWhiteTexture, ITexture, Render_Batcher } from "../../ttlayer2.js";
+import {ISceneComponent, ISceneItem, ISceneRenderItem } from "../scene.js";
+import { SceneView } from "../sceneview.js";
 
-export class Comp_Sprite implements ISceneComponment, ISceneRenderItem {
+export class Comp_Sprite implements ISceneComponent, ISceneRenderItem {
     GetType(): string { return "sprite" };
     sceneitem: ISceneItem = null;
     tex: ITexture = null;

@@ -1,6 +1,8 @@
-import { Comp_Sprite } from "../ttlayer2/pipeline/comp_sprite.js";
+import { Comp_ParticleSystem } from "../ttlayer2/pipeline/component/comp_particlesystem.js";
+import { Comp_Sprite } from "../ttlayer2/pipeline/component/comp_sprite.js";
+import { SceneView } from "../ttlayer2/pipeline/sceneview.js";
 
-import { GameApp, IState , SceneItem, SceneItem_Group  } from "../ttlayer2/ttlayer2.js";
+import { GameApp, IState, SceneItem, SceneItem_Group } from "../ttlayer2/ttlayer2.js";
 
 export class TTState_Scene implements IState {
 
@@ -32,6 +34,18 @@ export class TTState_Scene implements IState {
             sceneitem.AddComponment(comp);
         }
         console.log("hello ha.")
+
+        let view = new SceneView();
+        GameApp.GetScene().views.push(view);
+        {
+            let sceneitem = new SceneItem();
+            sceneitem.scale.X = 10;
+            sceneitem.scale.Y = 10;
+            view.root.AddChild(sceneitem);
+            let comp = new Comp_ParticleSystem();
+
+            sceneitem.AddComponment(comp);
+        }
     }
     OnUpdate(delta: number): void {
         this.subgroup.rotate += delta;
@@ -40,8 +54,7 @@ export class TTState_Scene implements IState {
         //状态机过分暴躁,清理一下,需要一个UI栈
         let defscene = GameApp.GetScene().views[0];
         let items = defscene.root.GetItems();
-        for(var i=0;i<items.length;i++)
-        {
+        for (var i = 0; i < items.length; i++) {
             defscene.root.RemoveChild(items[i]);
         }
     }

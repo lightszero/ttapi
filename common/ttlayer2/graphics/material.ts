@@ -66,34 +66,36 @@ export class Material {
         matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
         this.uniformMats["matProj"].value = matrix;
     }
-    UpdateMatModel() {
-        let matrix: Float32Array = new Float32Array(16);
+    UpdateMatModel(matrix: Float32Array = null) {
+        if (matrix == null) {
+            matrix = new Float32Array(16);
 
-
-        matrix[0] = 1; matrix[4] = 0; matrix[8] = 0; matrix[12] = 0;
-        matrix[1] = 0; matrix[5] = 1; matrix[9] = 0; matrix[13] = 0;
-        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
-        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
+            matrix[0] = 1; matrix[4] = 0; matrix[8] = 0; matrix[12] = 0;
+            matrix[1] = 0; matrix[5] = 1; matrix[9] = 0; matrix[13] = 0;
+            matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
+            matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
+        }
         this.uniformMats["matModel"].value = matrix;
     }
-    UpdateMatView() {
+    UpdateMatView(matrix: Float32Array = null) {
 
-
-        let matrix: Float32Array = new Float32Array(16);
-        let sx = 1.0;// this.Scale;
-        let sy = 1.0;// this.Scale;
-        let offx = 0;//-this.LookAt.X;
-        let offy = 0;//-this.LookAt.Y;
-        matrix[0] = sx; matrix[4] = 0; matrix[8] = 0; matrix[12] = offx * sx;
-        matrix[1] = 0; matrix[5] = sy; matrix[9] = 0; matrix[13] = offy * sy;
-        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
-        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
+        if (matrix == null) {
+            matrix = new Float32Array(16);
+            let sx = 1.0;// this.Scale;
+            let sy = 1.0;// this.Scale;
+            let offx = 0;//-this.LookAt.X;
+            let offy = 0;//-this.LookAt.Y;
+            matrix[0] = sx; matrix[4] = 0; matrix[8] = 0; matrix[12] = offx * sx;
+            matrix[1] = 0; matrix[5] = sy; matrix[9] = 0; matrix[13] = offy * sy;
+            matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
+            matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
+        }
         this.uniformMats["matView"].value = matrix;
 
 
     }
     Apply(webgl: WebGL2RenderingContext) {
-      
+
         webgl.disable(webgl.CULL_FACE);
         webgl.depthMask(false);//这是zwrite
         webgl.disable(webgl.DEPTH_TEST);//这是ztest
