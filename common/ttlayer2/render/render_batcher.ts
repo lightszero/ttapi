@@ -1,13 +1,13 @@
-import { Vector2, DrawPoint } from "./math/vector.js"
+import { Vector2, DrawPoint } from "../math/vector.js"
 
 
 
-import { ITexture, getWhiteTexture, IRenderTarget } from "./graphics/texture.js"
-import { GetShaderProgram, ShaderProgram } from "./shader/shaders.js";
-import { Mesh } from "./ttlayer2.js";
-import { Material } from "./graphics/material.js";
-import { VertexFormatMgr } from "./graphics/mesh.js";
-import { Render } from "./graphics/render.js";
+import { ITexture, getWhiteTexture, IRenderTarget } from "../graphics/texture.js"
+import { GetShaderProgram, ShaderProgram } from "../shader/shaders.js";
+import { Mesh } from "../ttlayer2.js";
+import { Material } from "../graphics/material.js";
+import { VertexFormatMgr } from "../graphics/mesh.js";
+import { Render } from "./render.js";
 
 export class Render_Batcher {
     constructor(webgl: WebGL2RenderingContext) {
@@ -70,7 +70,7 @@ export class Render_Batcher {
         // this._viewMatrix = new Float32Array(16);
         // this._projMatrix = new Float32Array(16);
         this._mesh = new Mesh();
-        this._mesh.UpdateVertexFormat(webgl, VertexFormatMgr.GetFormat_Vertex_UV_Color_Color2());
+        this._mesh.UpdateVertexFormat(webgl, VertexFormatMgr.GetFormat_Vertex_UV_Color_Ext());
         this._mat = new Material(GetShaderProgram("default"));
     }
     //_shader: ShaderProgram;
@@ -225,7 +225,8 @@ export class Render_Batcher {
         // webgl.useProgram(shader.program);
 
         // webgl.bindVertexArray(this._vao);
-        this._mat.uniformTexs["tex"].value = this._lastTex;
+        if (this._mat.uniformTexs["tex"] != undefined)
+            this._mat.uniformTexs["tex"].value = this._lastTex;
         this._mesh.UpdateVertexBuffer(webgl, 0, this._buffer, true, this._pointseek * 28);
         this._pointseek = 0;
         //webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);

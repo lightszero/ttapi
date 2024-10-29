@@ -1,7 +1,7 @@
 import { tt } from "../ttapi/ttapi.js";
 import { Material } from "../ttlayer2/graphics/material.js";
 import { VertexFormatMgr } from "../ttlayer2/graphics/mesh.js";
-import { Render, TransformFeedBack } from "../ttlayer2/graphics/render.js";
+import { Render, TransformFeedBack } from "../ttlayer2/render/render.js";
 import { GetShaderProgram } from "../ttlayer2/shader/shaders.js";
 
 
@@ -32,7 +32,7 @@ export class TTState_Draw implements IState {
         this.InitMesh2(gl);
         this.InitTF(gl);
         this._mainscreen = GameApp.GetMainScreen();
-        this._mainscreen.ClearColor = new Color(0.5, 0.5, 1, 1);
+        this._mainscreen.ClearColor = new Color(0, 0, 0, 1);
         this._quadbatcher = new Render_Batcher(gl);
 
         let p0 = new DrawPoint();
@@ -64,19 +64,19 @@ export class TTState_Draw implements IState {
         this.pts.push(p2);
         this.pts.push(p3);
 
-        let data = TextTool.LoadTextPixel("中国17你好H2o", "v16", 16, 160, 16, 0, 0);
+        let data = TextTool.LoadTextPixel("中国17你好H2o", "v16", 32, 320, 32, 0, 0);
         let bdata = new Uint8Array(data.width * data.height * 4);
         for (let i = 0; i < data.width * data.height; i++) {
 
             let r = data.data[i * 4 + 0];
             // let g = data.data[i * 4 + 1];
             // let b = data.data[i * 4 + 2];
-            // let a = data.data[i * 4 + 3];
+            let a = data.data[i * 4 + 3];
 
             bdata[i * 4 + 0] = 255;
             bdata[i * 4 + 1] = 255;
             bdata[i * 4 + 2] = 255;
-            bdata[i * 4 + 3] = r;
+            bdata[i * 4 + 3] = (a / 255) * (a / 255) * 255;
         }
         this.tex = new Texture(gl, data.width, data.height, TextureFormat.RGBA32, bdata, true, false);
 
@@ -287,13 +287,13 @@ export class TTState_Draw implements IState {
         let tf = new TransformFeedBack(gl, stride * 4);
         tf.Execute(gl, mesh, mat, 0, 4);
         let bufdata = new Uint8Array(stride * 4);
-        bufdata[3]=78;
+        bufdata[3] = 78;
         tf.ReadBuf(gl, bufdata);
         let dv = new Float32Array(bufdata.buffer);
         for (var i = 0; i < dv.length; i++) {
             console.log("F[" + i + "]=" + dv[i]);
         }
-  
+
     }
     OnUpdate(delta: number): void {
 
@@ -304,7 +304,7 @@ export class TTState_Draw implements IState {
     OnResize(width: number, height: number): void {
 
     }
-    OnRender(): void {
+    OnPreRender(): void {
 
         let gl = tt.graphic.GetWebGL();
 
@@ -319,11 +319,11 @@ export class TTState_Draw implements IState {
                 //     this.pts[k].b = Math.random();
                 // }
                 this.pts[0].x = this.pts[2].x = - 150;
-                this.pts[1].x = this.pts[3].x = this.pts[0].x + this.tex.getWidth() * 8;
+                this.pts[1].x = this.pts[3].x = this.pts[0].x + this.tex.getWidth() * 1;
 
                 this.pts[0].y = this.pts[1].y = - 150;
                 //let y =this.pts[0].y;
-                this.pts[2].y = this.pts[3].y = this.pts[0].y + this.tex.getHeight() * 8;
+                this.pts[2].y = this.pts[3].y = this.pts[0].y + this.tex.getHeight() * 1;
                 this._quadbatcher.DrawQuads(this.tex, null, null, this.pts, 1);
             }
 

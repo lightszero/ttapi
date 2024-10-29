@@ -113,7 +113,7 @@ export class VertexFormatMgr {
         }
         return this.vertexFormat_Vertex_UV_Color;
     }
-    static GetFormat_Vertex_UV_Color_Color2(): VertexFormat {
+    static GetFormat_Vertex_UV_Color_Ext(): VertexFormat {
         if (this.vertexFormat_Vertex_UV_Color_Color2 == null) {
             let vecf = new VertexFormat("Vertex_UV_Color_Color2");
             vecf.vbos.push(new VBOInfo());
@@ -155,7 +155,7 @@ export class Mesh {
     GetVertexFormat(): VertexFormat {
         return this.vertexFormat;
     }
-    UpdateVertexFormat(webgl: WebGL2RenderingContext, vecf: VertexFormat, vbos: WebGLBuffer[] = null): void {
+    UpdateVertexFormat(webgl: WebGL2RenderingContext, vecf: VertexFormat): void {
         if (this._vao == null) {
             this._vao = webgl.createVertexArray();
 
@@ -170,15 +170,7 @@ export class Mesh {
             }
 
         }
-        if (vbos != null)//替换vbo逻辑
-        {
-            for (var j = 0; j < vecf.vbos.length; j++) {
-                if (this._vbos[j] != vbos[j] && vbos[j] != null) {
-                    webgl.deleteBuffer(this._vbos[j]);
-                    this._vbos[j] = vbos[j];
-                }
-            }
-        }
+
 
         this.vertexFormat = vecf;
 

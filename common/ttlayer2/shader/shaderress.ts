@@ -46,42 +46,42 @@ var fs_default: string = `#version 300 es
         int effect = int(vExt.w);
         if(effect==0)//rgba model 
         {
-            outc = vColor * texc;
+            outc = vColor*texc;
         }
         else if(effect==1)//gray model
         {
-            vec4 c = vec4(texc.r,texc.r,texc.r,1);
-            outc = vColor * c;
+             vec4 c = vec4(texc.r,texc.r,texc.r,1);
+             outc = vColor * c;
         }
-        else if(effect==2)//pal8 model
-        {
-            vec2 paluv = vec2(texc.r+vExt.x/256.0,vExt.y/256.0);
-            vec4 c = texture(texpal,paluv);
-            outc = vColor * c;
-        }
-        else if(effect==3)//p5a3 model
-        {
+        // else if(effect==2)//pal8 model
+        // {
+        //     vec2 paluv = vec2(texc.r+vExt.x/256.0,vExt.y/256.0);
+        //     vec4 c = texture(texpal,paluv);
+        //     outc = vColor * c;
+        // }
+        // else if(effect==3)//p5a3 model
+        // {
       
-            int v =  int(texc.r *255.0+0.9);
+        //     int v =  int(texc.r *255.0+0.9);
             
-            //分解调色板和alpha
+        //     //分解调色板和alpha
 
-            float palx = float(v % 32)/255.0 + vExt.x/255.0;
-            float paly = vExt.y/255.0;
-            float alpha = float(v/32) /7.0f;
+        //     float palx = float(v % 32)/255.0 + vExt.x/255.0;
+        //     float paly = vExt.y/255.0;
+        //     float alpha = float(v/32) /7.0f;
 
-            vec4 c = texture(texpal,vec2(palx,paly));
-            c.a = alpha;
-            //c =vec4(1.0,1.0,1.0,1.0);
-            outc = vColor * c;
+        //     vec4 c = texture(texpal,vec2(palx,paly));
+        //     c.a = alpha;
+        //     //c =vec4(1.0,1.0,1.0,1.0);
+        //     outc = vColor * c;
           
-        }
-        else if(effect==4)//gray as alpha model
-        {
-            outc.a *= texc.r;
-            //vec4 c = vec4(1.0,1.0,1.0,texc.r);
-            //outc = vColor * c;
-        }
+        // }
+        // else if(effect==4)//gray as alpha model
+        // {
+        //     outc.a *= texc.r;
+        //     //vec4 c = vec4(1.0,1.0,1.0,texc.r);
+        //     //outc = vColor * c;
+        // }
         fragColor =  outc;
     }
     `;
@@ -156,7 +156,7 @@ var fs_simple: string = `#version 300 es
     }
     `;
 
-    var vs_feedback: string = `#version 300 es
+var vs_feedback: string = `#version 300 es
 layout(location = 0) in vec3 position;//顶点提供的数据
 layout(location = 1) in vec3 normal;//顶点提供的数据
 out vec3 outPos;
@@ -167,7 +167,7 @@ void main(void)
     outNormal = normal;
 }
 `;
-    var fs_empty: string = `#version 300 es
+var fs_empty: string = `#version 300 es
     precision mediump float;//指定浮点型精确度
    
     layout(location = 0) out vec4 fragColor;
@@ -197,6 +197,6 @@ export function InitInnerShader(webgl: WebGL2RenderingContext): void {
     var vsfeedback = s.AddShader(webgl, s.ShaderType.VertexShader, "feedback", vs_feedback, true);
     var fsempty = s.AddShader(webgl, s.ShaderType.FragmentShader, "empty", fs_empty, true);
     if (vsfeedback != null && fsempty != null)
-        s.LinkShaderFeedBack(webgl, "feedback", vsfeedback, fsempty,["outPos","outNormal"]);
+        s.LinkShaderFeedBack(webgl, "feedback", vsfeedback, fsempty, ["outPos", "outNormal"]);
 
 }

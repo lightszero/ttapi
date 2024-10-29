@@ -1,5 +1,5 @@
-import { Material } from "./material.js";
-import { Mesh } from "./mesh.js";
+import { Material } from "../graphics/material.js";
+import { Mesh } from "../graphics/mesh.js";
 
 
 export class TransformFeedBack {
@@ -13,7 +13,7 @@ export class TransformFeedBack {
         this.buf = gl.createBuffer();
         gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, this.buf);
         this.bytelength = bytelength;
-        gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, bytelength, gl.STREAM_COPY);
+        gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, bytelength, gl.STREAM_DRAW);
     }
     Execute(gl: WebGL2RenderingContext, mesh: Mesh, mat: Material, first: number, count: number) {
         gl.enable(gl.RASTERIZER_DISCARD);

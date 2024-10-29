@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { tt_impl } from "./ttimpl_web/ttimpl_web.js";
 import { tt } from "./ttapi/ttapi.js";
 import { GameApp } from "./ttlayer2/ttlayer2.js";
-import { TTState_Draw } from "./ttsample/ttstate_draw.js";
+import { TTState_Scene } from "./ttsample/ttstate_scene.js";
 function start() {
     return __awaiter(this, void 0, void 0, function* () {
         //初始化图像
@@ -29,7 +29,7 @@ function start() {
         let font = yield tt.loader.LoadCustomFont("v16", "./VonwaonBitmap-16px.ttf");
         console.log("add font:" + font);
         //初始化layer2
-        GameApp.Start(new TTState_Draw());
+        GameApp.Start(new TTState_Scene());
         //GameApp.ChangeState();
     });
 }

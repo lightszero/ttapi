@@ -2,6 +2,7 @@ import { tt_impl } from "./ttimpl_web/ttimpl_web.js";
 import { tt } from "./ttapi/ttapi.js";
 import { GameApp } from "./ttlayer2/ttlayer2.js";
 import { TTState_Draw } from "./ttsample/ttstate_draw.js";
+import { TTState_Scene } from "./ttsample/ttstate_scene.js";
 
 
 async function start() {
@@ -28,7 +29,7 @@ async function start() {
 
     console.log("add font:" + font);
     //初始化layer2
-    GameApp.Start(new TTState_Draw());
+    GameApp.Start(new TTState_Scene());
     //GameApp.ChangeState();
 
 }

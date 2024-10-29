@@ -6,7 +6,7 @@ export class TextTool {
         c2d.canvas.width = width;
         c2d.canvas.height = height;
         c2d.scale(1, 1);
-    
+
         //type CanvasTextRendering = "auto" | "geometricPrecision" | "optimizeLegibility" | "optimizeSpeed";
 
         c2d.imageSmoothingEnabled = false;
@@ -14,14 +14,15 @@ export class TextTool {
 
         c2d.font = fontsize + "px " + font;// regular";
 
-        //c2d.clearRect(0, 0, width, height);
-         c2d.fillStyle = "#000000ff";
-         c2d.fillRect(0, 0, width, height);
+        c2d.clearRect(0, 0, width, height);
+        //c2d.fillStyle = "#00000000";
+        //c2d.fillRect(0, 0, width, height);
 
 
         c2d.textBaseline = "top";
         c2d.textAlign = "left"
         c2d.fillStyle = "#ffffffff";
+        c2d.globalAlpha = 1;
         c2d.fillText(text, x, y);// + m.ideographicBaseline);
 
 
