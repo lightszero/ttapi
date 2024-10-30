@@ -29,6 +29,7 @@ function start() {
         let font = yield tt.loader.LoadCustomFont("v16", "./VonwaonBitmap-16px.ttf");
         console.log("add font:" + font);
         //初始化layer2
+        //GameApp.Start(new TTState_Draw());
         GameApp.Start(new TTState_Scene());
         //GameApp.ChangeState();
     });

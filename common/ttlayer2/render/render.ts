@@ -16,6 +16,8 @@ export class TransformFeedBack {
         // gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, bytelength, gl.STREAM_DRAW);
     }
     Execute(gl: WebGL2RenderingContext, mesh: Mesh, mat: Material, outbufobj: WebGLBuffer, first: number, count: number) {
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
         gl.enable(gl.RASTERIZER_DISCARD);
 
         mesh.Apply(gl);
@@ -27,8 +29,9 @@ export class TransformFeedBack {
 
             gl.drawArrays(gl.POINTS, first, count);
         }
-
+        //gl.flush();
         gl.endTransformFeedback();
+        gl.flush();
         gl.disable(gl.RASTERIZER_DISCARD);
         gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, null);
     }
