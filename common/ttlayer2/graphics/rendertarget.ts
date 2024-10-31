@@ -103,9 +103,7 @@ export namespace tt_impl {
         getHeight(): number {
             return this._height;
         }
-        getData(): Uint8Array {
-            throw new Error("not spport on RenderTarget.");
-        }
+       
         IsStatic(): boolean {
             return true;
         }
@@ -115,9 +113,7 @@ export namespace tt_impl {
         UploadTexture(x: number, y: number, w: number, h: number, data: Uint8Array | Uint8ClampedArray): void {
             throw new Error("Method not implemented.");
         }
-        ApplyTexture(TurnToStatic: boolean): void {
-            throw new Error("Method not implemented.");
-        }
+       
         Destory(): void {
             if (this._fbo != null)
                 this._webgl.deleteFramebuffer(this._fbo);
