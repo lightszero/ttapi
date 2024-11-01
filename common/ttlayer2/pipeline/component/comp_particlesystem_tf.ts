@@ -12,19 +12,21 @@ export class ParticleInfo {
 }
 //基于TransformFeed 的 粒子系统,
 //手机上表现不好,没解决让TransformFeed强行完成的的问题
-export const ParticleSystemInstCount: number = 4096;
-export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
+export const ParticleSystemInstCount: number = 65536;
+export class Comp_ParticleSystem_TF implements ISceneComponent, ISceneRenderItem {
     sceneitem: ISceneItem = null;
 
     webgl: WebGL2RenderingContext;
-    private meshDraw: Mesh = null;
+    private meshDraw1: Mesh = null;
+    private meshDraw2: Mesh = null;
     private matDraw: Material = null;
-
-
+    private usedraw: number = 1;
+    private feedback: TransformFeedBack;
+    private meshFeed1: Mesh = null;
+    private meshFeed2: Mesh = null;
+    private matInst: Material = null;
 
     private instIndex: number = 0;
-    private InstVbo: Uint8Array = null;
-    private InstVboView: DataView = null;
     GetType(): string { return "particleSystem" };
 
     OnAdd(item: ISceneItem) {
@@ -34,22 +36,33 @@ export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
 
 
         let gl = this.webgl = tt.graphic.GetWebGL();
-        this.meshDraw = new Mesh();
-        this.meshDraw.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_UV_Color_InstPosNormal());
+        this.meshDraw1 = new Mesh();
+        this.meshDraw1.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_UV_Color_InstPosNormal());
 
+        this.meshDraw2 = new Mesh();
+        this.meshDraw2.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_UV_Color_InstPosNormal());
         //初始化渲染用的模型
         this.InitDrawMesh();
 
         this.InitInstMesh();
 
+        this.meshFeed1 = new Mesh();
+        this.meshFeed1.SetVertexBuffer(gl, 0, this.meshDraw1._vbos[1], this.meshDraw1.instancecount);
+        this.meshFeed1.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_Normal());
+
+        this.meshFeed2 = new Mesh();
+        this.meshFeed2.SetVertexBuffer(gl, 0, this.meshDraw2._vbos[1], this.meshDraw1.instancecount);
+        this.meshFeed2.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_Normal());
+
+        this.matInst = new Material(GetShaderProgram("feedback"));
+
+        this.fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+        this.webgl.finish();
+        this.webgl.waitSync(this.fence, 0, this.webgl.TIMEOUT_IGNORED);
     }
     private InitDrawMesh() {
 
-        let r = 255;
-        let g = 128;
-        let b = 100;
-        let a = 128;
-        let stride = this.meshDraw.GetVertexFormat().vbos[0].stride;
+        let stride = this.meshDraw1.GetVertexFormat().vbos[0].stride;
         let vertexdata = new Uint8Array(stride * 6);
         let datavbo = new DataView(vertexdata.buffer);
         datavbo.setFloat32(0 * stride, -0.5, true);//x
@@ -57,30 +70,30 @@ export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
         datavbo.setFloat32(0 * stride + 8, 0, true);//z
         datavbo.setFloat32(0 * stride + 12, 0, true);//u
         datavbo.setFloat32(0 * stride + 16, 0, true);//v
-        datavbo.setUint8(0 * stride + 20, r);//r
-        datavbo.setUint8(0 * stride + 21, g);//g
-        datavbo.setUint8(0 * stride + 22, b);//b
-        datavbo.setUint8(0 * stride + 23, a);//a
+        datavbo.setUint8(0 * stride + 20, 255);//r
+        datavbo.setUint8(0 * stride + 21, 255);//g
+        datavbo.setUint8(0 * stride + 22, 255);//b
+        datavbo.setUint8(0 * stride + 23, 255);//a
 
         datavbo.setFloat32(1 * stride, 0.5, true);//x
         datavbo.setFloat32(1 * stride + 4, -0.5, true);//y
         datavbo.setFloat32(1 * stride + 8, 0, true);//z
         datavbo.setFloat32(1 * stride + 12, 0, true);//u
         datavbo.setFloat32(1 * stride + 16, 0, true);//v
-        datavbo.setUint8(1 * stride + 20, r);//r
-        datavbo.setUint8(1 * stride + 21, g);//g
-        datavbo.setUint8(1 * stride + 22, b);//b
-        datavbo.setUint8(1 * stride + 23, a);//a
+        datavbo.setUint8(1 * stride + 20, 255);//r
+        datavbo.setUint8(1 * stride + 21, 255);//g
+        datavbo.setUint8(1 * stride + 22, 255);//b
+        datavbo.setUint8(1 * stride + 23, 255);//a
 
         datavbo.setFloat32(2 * stride, -0.5, true);//x
         datavbo.setFloat32(2 * stride + 4, 0.5, true);//y
         datavbo.setFloat32(2 * stride + 8, 0, true);//z
         datavbo.setFloat32(2 * stride + 12, 0, true);//u
         datavbo.setFloat32(2 * stride + 16, 1, true);//v
-        datavbo.setUint8(2 * stride + 20, r);//r
-        datavbo.setUint8(2 * stride + 21, g);//g
-        datavbo.setUint8(2 * stride + 22, b);//b
-        datavbo.setUint8(2 * stride + 23, a);//a
+        datavbo.setUint8(2 * stride + 20, 255);//r
+        datavbo.setUint8(2 * stride + 21, 255);//g
+        datavbo.setUint8(2 * stride + 22, 255);//b
+        datavbo.setUint8(2 * stride + 23, 255);//a
 
 
         datavbo.setFloat32(3 * stride, -0.5, true);//x
@@ -88,10 +101,10 @@ export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
         datavbo.setFloat32(3 * stride + 8, 0, true);//z
         datavbo.setFloat32(3 * stride + 12, 0, true);//u
         datavbo.setFloat32(3 * stride + 16, 1, true);//v
-        datavbo.setUint8(3 * stride + 20, r);//r
-        datavbo.setUint8(3 * stride + 21, g);//g
-        datavbo.setUint8(3 * stride + 22, b);//b
-        datavbo.setUint8(3 * stride + 23, a);//a
+        datavbo.setUint8(3 * stride + 20, 255);//r
+        datavbo.setUint8(3 * stride + 21, 255);//g
+        datavbo.setUint8(3 * stride + 22, 255);//b
+        datavbo.setUint8(3 * stride + 23, 255);//a
 
         datavbo.setFloat32(4 * stride, 0.5, true);//x
         datavbo.setFloat32(4 * stride + 4, -0.5, true);//y
@@ -114,16 +127,21 @@ export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
         datavbo.setUint8(5 * stride + 22, 255);//b
         datavbo.setUint8(5 * stride + 23, 255);//a
 
-        this.meshDraw.UploadVertexBuffer(this.webgl, 0, vertexdata, false, vertexdata.byteLength);
+        this.meshDraw1.UploadVertexBuffer(this.webgl, 0, vertexdata, false, vertexdata.byteLength);
 
+        datavbo.setUint8(0 * stride + 20, 0);//r
+        datavbo.setUint8(0 * stride + 21, 0);//g
+        datavbo.setUint8(0 * stride + 22, 255);//b
+        datavbo.setUint8(0 * stride + 23, 255);//a
 
+        this.meshDraw2.UploadVertexBuffer(this.webgl, 0, vertexdata, false, vertexdata.byteLength);
     }
     private InitInstMesh() {
-        let stride = this.meshDraw.GetVertexFormat().vbos[1].stride;
+        let stride = this.meshDraw1.GetVertexFormat().vbos[1].stride;
 
-        let vertexdata = this.InstVbo = new Uint8Array(stride * ParticleSystemInstCount);
+        let vertexdata = new Uint8Array(stride * ParticleSystemInstCount);
 
-        let dataview = this.InstVboView = new DataView(vertexdata.buffer);
+        let dataview = new DataView(vertexdata.buffer);
         for (var i = 0; i < ParticleSystemInstCount; i++) {
             dataview.setFloat32(stride * i + 0, 0, true);//x
             dataview.setFloat32(stride * i + 4, 0, true);//y
@@ -132,34 +150,36 @@ export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
             dataview.setFloat32(stride * i + 16, 0, true);//nory
             dataview.setFloat32(stride * i + 20, 0, true);//norz
         }
-        this.meshDraw.instancecount = ParticleSystemInstCount;
-        this.meshDraw.UploadVertexBuffer(this.webgl, 1, vertexdata, true, vertexdata.byteLength);
+        this.meshDraw1.instancecount = ParticleSystemInstCount;
+        this.meshDraw1.UploadVertexBuffer(this.webgl, 1, vertexdata, true, vertexdata.byteLength);
+        this.meshDraw2.instancecount = ParticleSystemInstCount;
+        this.meshDraw2.UploadVertexBuffer(this.webgl, 1, vertexdata, true, vertexdata.byteLength);
 
+        this.feedback = new TransformFeedBack(this.webgl);
     }
     UpdateParticles(ps: ParticleInfo[]) {
         let len = ps.length;
         let maxlen = ParticleSystemInstCount - this.instIndex;
 
-        let mesh = this.meshDraw;
+        let mesh = this.usedraw == 1 ? this.meshDraw1 : this.meshDraw2;
         let stride = mesh.GetVertexFormat().vbos[1].stride;
 
         let range1 = Math.min(len, maxlen);
         if (range1 > 0) {
 
-
-
+            let buf = new Uint8Array(range1 * stride);
+            let dv1 = new DataView(buf.buffer);
             for (var i = 0; i < range1; i++) {
-                let i2 = this.instIndex + i;
-                this.InstVboView.setFloat32(i2 * stride + 0, ps[i].pos.X, true);
-                this.InstVboView.setFloat32(i2 * stride + 4, ps[i].pos.Y, true);
-                this.InstVboView.setFloat32(i2 * stride + 8, ps[i].pos.Z, true);
-                this.InstVboView.setFloat32(i2 * stride + 12, ps[i].normal.X, true);
-                this.InstVboView.setFloat32(i2 * stride + 16, ps[i].normal.Y, true);
-                this.InstVboView.setFloat32(i2 * stride + 20, ps[i].normal.Z, true);
+                dv1.setFloat32(i * stride + 0, ps[i].pos.X, true);
+                dv1.setFloat32(i * stride + 4, ps[i].pos.Y, true);
+                dv1.setFloat32(i * stride + 8, ps[i].pos.Z, true);
+                dv1.setFloat32(i * stride + 12, ps[i].normal.X, true);
+                dv1.setFloat32(i * stride + 16, ps[i].normal.Y, true);
+                dv1.setFloat32(i * stride + 20, ps[i].normal.Z, true);
             }
-            // this.webgl.bindBuffer(this.webgl.ARRAY_BUFFER, mesh._vbos[1]);
-            // this.webgl.bufferSubData(this.webgl.ARRAY_BUFFER, this.instIndex * stride, buf, 0, buf.byteLength);
-            // this.webgl.bindBuffer(this.webgl.ARRAY_BUFFER, null);
+            this.webgl.bindBuffer(this.webgl.ARRAY_BUFFER, mesh._vbos[1]);
+            this.webgl.bufferSubData(this.webgl.ARRAY_BUFFER, this.instIndex * stride, buf, 0, buf.byteLength);
+            this.webgl.bindBuffer(this.webgl.ARRAY_BUFFER, null);
             this.instIndex += range1;
             this.instIndex = this.instIndex % ParticleSystemInstCount;
         }
@@ -168,16 +188,19 @@ export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
         if (len > maxlen) {
             let range2 = len - maxlen;
             let index2 = maxlen;
-
+            let buf = new Uint8Array(range2 * stride);
+            let dv1 = new DataView(buf.buffer);
             for (var i = 0; i < range2; i++) {
-                this.InstVboView.setFloat32(i * stride + 0, ps[index2 + i].pos.X, true);
-                this.InstVboView.setFloat32(i * stride + 4, ps[index2 + i].pos.Y, true);
-                this.InstVboView.setFloat32(i * stride + 8, ps[index2 + i].pos.Z, true);
-                this.InstVboView.setFloat32(i * stride + 12, ps[index2 + i].normal.X, true);
-                this.InstVboView.setFloat32(i * stride + 16, ps[index2 + i].normal.Y, true);
-                this.InstVboView.setFloat32(i * stride + 20, ps[index2 + i].normal.Z, true);
+                dv1.setFloat32(i * stride + 0, ps[index2 + i].pos.X, true);
+                dv1.setFloat32(i * stride + 4, ps[index2 + i].pos.Y, true);
+                dv1.setFloat32(i * stride + 8, ps[index2 + i].pos.Z, true);
+                dv1.setFloat32(i * stride + 12, ps[index2 + i].normal.X, true);
+                dv1.setFloat32(i * stride + 16, ps[index2 + i].normal.Y, true);
+                dv1.setFloat32(i * stride + 20, ps[index2 + i].normal.Z, true);
             }
-
+            this.webgl.bindBuffer(this.webgl.ARRAY_BUFFER, mesh._vbos[1]);
+            this.webgl.bufferSubData(this.webgl.ARRAY_BUFFER, this.instIndex * stride, buf, 0, buf.byteLength);
+            this.webgl.bindBuffer(this.webgl.ARRAY_BUFFER, null);
             this.instIndex += range2;
         }
 
@@ -194,27 +217,20 @@ export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
         mat4[3] = 0; mat4[7] = 0; mat4[11] = 0; mat4[15] = 1;
         this.matDraw.UpdateMatModel(mat4);//这个跟着worldmatrix走
 
-        let stride = this.meshDraw.GetVertexFormat().vbos[1].stride;
-
-
-        let vertexdata = this.InstVbo
-
-        let dataview = this.InstVboView;
-        for (var i = 0; i < ParticleSystemInstCount; i++) {
-            let x = dataview.getFloat32(stride * i + 0, true);
-            let y = dataview.getFloat32(stride * i + 4, true);
-            let z = dataview.getFloat32(stride * i + 8, true);
-            let norx = dataview.getFloat32(stride * i + 12, true);
-            let nory = dataview.getFloat32(stride * i + 16, true);
-            let norz = dataview.getFloat32(stride * i + 20, true);
-            dataview.setFloat32(stride * i + 0, x + norx, true);//x
-            dataview.setFloat32(stride * i + 4, y + nory, true);//y
-            dataview.setFloat32(stride * i + 8, z + norz, true);//z
-
+        // if (this.sleep > 0) {
+        //     this.sleep--;
+        // }
+        if (this.usedraw == 1) {
+            this.feedback.Execute(this.webgl, this.meshFeed1, this.matInst, this.meshDraw2._vbos[1], 0, this.meshDraw1.instancecount);
+            this.usedraw = 2;
+            this.sleep = 1;
         }
-        //this.meshDraw.instancecount = ParticleSystemInstCount;
-        this.meshDraw.UploadVertexBuffer(this.webgl, 1, vertexdata, true, vertexdata.byteLength);
-
+        else {
+            this.feedback.Execute(this.webgl, this.meshFeed2, this.matInst, this.meshDraw1._vbos[1], 0, this.meshDraw1.instancecount);
+            this.usedraw = 1;
+            this.sleep = 1;
+        }
+ 
     }
     IsRender(): boolean {
         return true;
@@ -232,8 +248,8 @@ export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
                 target = GameApp.GetMainScreen();
             this.matDraw.UpdateMatView();//这个应该跟着View走
             this.matDraw.UpdateMatProj(target);
-            Render.DrawMeshInstanced(this.webgl, this.meshDraw, this.matDraw);
-            //this.webgl.finish();
+            Render.DrawMeshInstanced(this.webgl, this.usedraw == 1 ? this.meshDraw1 : this.meshDraw2, this.matDraw);
+
         }
     }
 

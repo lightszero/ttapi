@@ -2,7 +2,8 @@ import { tt } from "../ttapi/ttapi.js";
 import { Font } from "../ttlayer2/atlas/font.js";
 import { Vector3 } from "../ttlayer2/math/vector.js";
 import { Comp_Label } from "../ttlayer2/pipeline/component/comp_label.js";
-import { Comp_ParticleSystem, ParticleInfo } from "../ttlayer2/pipeline/component/comp_particlesystem.js";
+import { Comp_ParticleSystem } from "../ttlayer2/pipeline/component/comp_particlesystem.js";
+import { Comp_ParticleSystem_TF, ParticleInfo } from "../ttlayer2/pipeline/component/comp_particlesystem_tf.js";
 import { Comp_Sprite } from "../ttlayer2/pipeline/component/comp_sprite.js";
 import { SceneView } from "../ttlayer2/pipeline/sceneview.js";
 

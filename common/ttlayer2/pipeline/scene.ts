@@ -110,5 +110,7 @@ export class Scene {
             }
         }
         GameApp.GetMainScreen().End();
+
+      
     }
 }

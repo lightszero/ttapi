@@ -15,17 +15,25 @@ export class TransformFeedBack {
         // this.bytelength = bytelength;
         // gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, bytelength, gl.STREAM_DRAW);
     }
-    query: WebGLQuery;
+    //query: WebGLQuery;
+    fence: WebGLSync = null;
     Execute(gl: WebGL2RenderingContext, mesh: Mesh, mat: Material, outbufobj: WebGLBuffer, first: number, count: number) {
+        gl.finish();
+        
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
         gl.enable(gl.RASTERIZER_DISCARD);
 
         mesh.Apply(gl);
         mat.Apply(gl);
-        if (this.query == null)
-            this.query = gl.createQuery();
-        //gl.beginQuery(gl.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, this.query);
+        // if (this.query == null) {
+        //     this.query = gl.createQuery();
+        //     gl.beginQuery(gl.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, this.query);
+        // }
+        if (this.fence == null) 
+        {
+            this.fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+        }
         gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, this.obj);
         gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, outbufobj);
         gl.beginTransformFeedback(gl.POINTS);
@@ -33,26 +41,33 @@ export class TransformFeedBack {
 
             gl.drawArrays(gl.POINTS, first, count);
         }
+
+        //let p = gl.getQueryParameter(this.query, gl.QUERY_RESULT);
+        //console.log("p=" + p);
         //gl.flush();
-
-
+        gl.finish();
 
         gl.endTransformFeedback();
         gl.disable(gl.RASTERIZER_DISCARD);
 
-
+      
+        
+        
+       
+       
+      
+        //console.log("t=" + t);
         //var fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
-        gl.flush();
+        //gl.flush();
 
         // let p1 = gl.getParameter(gl.MAX_CLIENT_WAIT_TIMEOUT_WEBGL);
         // let t = gl.clientWaitSync(fence, gl.SYNC_FLUSH_COMMANDS_BIT, 1000);
         // //37149 WAIT_FAILED
         // gl.endQuery(gl.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN)
-        // let p = gl.getQueryParameter(this.query, gl.QUERY_RESULT);
-        // console.log("p=" + p + ",t=" + t + ",p1=" + p1);
 
 
         gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, null);
+        gl.finish();
     }
     ReadBuf(gl: WebGL2RenderingContext, bufobj: WebGLBuffer, readbuf: Uint8Array, bytelength: number) {
         gl.bindBuffer(gl.TRANSFORM_FEEDBACK_BUFFER, bufobj);
