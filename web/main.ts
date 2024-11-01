@@ -29,8 +29,8 @@ async function start() {
 
     console.log("add font:" + font);
     //初始化layer2
-    GameApp.Start(new TTState_Draw());
-    //GameApp.Start(new TTState_Scene());
+    //GameApp.Start(new TTState_Draw());
+    GameApp.Start(new TTState_Scene());
     //GameApp.ChangeState();
 
 }

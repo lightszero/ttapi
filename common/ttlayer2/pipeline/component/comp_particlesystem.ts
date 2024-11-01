@@ -10,7 +10,7 @@ export class ParticleInfo {
     pos: Vector3;
     normal: Vector3
 }
-export const ParticleSystemInstCount: number = 65536;
+export const ParticleSystemInstCount: number = 1024;
 export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
     sceneitem: ISceneItem = null;
 
@@ -198,6 +198,7 @@ export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
             this.instIndex += range2;
         }
     }
+    private sleep: number = 0;
     OnUpdate(delta: number): void {
         let mat = this.sceneitem.GetWorldMatrix();
         let mat4 = new Float32Array(16);
@@ -207,14 +208,20 @@ export class Comp_ParticleSystem implements ISceneComponent, ISceneRenderItem {
         mat4[3] = 0; mat4[7] = 0; mat4[11] = 0; mat4[15] = 1;
         this.matDraw.UpdateMatModel(mat4);//这个跟着worldmatrix走
 
+        // if (this.sleep > 0) {
+        //     this.sleep--;
+        // }
         if (this.usedraw == 1) {
             this.feedback.Execute(this.webgl, this.meshFeed1, this.matInst, this.meshDraw2._vbos[1], 0, this.meshDraw1.instancecount);
             this.usedraw = 2;
+            this.sleep = 1;
         }
         else {
             this.feedback.Execute(this.webgl, this.meshFeed2, this.matInst, this.meshDraw1._vbos[1], 0, this.meshDraw1.instancecount);
             this.usedraw = 1;
+            this.sleep = 1;
         }
+
     }
     IsRender(): boolean {
         return true;

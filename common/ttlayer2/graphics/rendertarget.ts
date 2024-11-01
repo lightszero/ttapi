@@ -47,9 +47,13 @@ export namespace tt_impl {
         Begin(): void {
             this._webgl.bindFramebuffer(this._webgl.FRAMEBUFFER, this._fbo);
             this._webgl.viewport(0, 0, this._width, this._height);
+         
+            this.ResetLimitRect();
+        }
+        Clear(color:Color):void
+        {
             this._webgl.clearColor(this.ClearColor.R, this.ClearColor.G, this.ClearColor.B, this.ClearColor.A);
             this._webgl.clear(this._webgl.COLOR_BUFFER_BIT);
-            this.ResetLimitRect();
         }
         End(): void {
             this._webgl.flush();

@@ -48,12 +48,13 @@ export interface ISceneItemNode extends ISceneItem {
 //场景图概念,树形组织,方便理解
 export class Scene {
     views: SceneView[] = [new SceneView()]
+    clearColor: Color = Color.Black;
     Update(delta: number): void {
         for (var i = 0; i < this.views.length; i++) {
             this.views[i].Update(delta);
             let v = this.views[i];
             if (v.target == null || v.target.IsMainOutput()) {
-                GameApp.GetMainScreen().ClearColor = v.clearColor;
+                this.clearColor = v.clearColor;
             }
         }
     }
@@ -99,6 +100,7 @@ export class Scene {
 
         //绘制上屏View
         GameApp.GetMainScreen().Begin();
+        GameApp.GetMainScreen().Clear(this.clearColor);
         for (var i = 0; i < this.views.length; i++) {
             let v = this.views[i];
             if (v.target == null || v.target.IsMainOutput()) {

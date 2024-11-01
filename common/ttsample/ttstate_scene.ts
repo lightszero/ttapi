@@ -1,14 +1,21 @@
+import { tt } from "../ttapi/ttapi.js";
+import { Font } from "../ttlayer2/atlas/font.js";
 import { Vector3 } from "../ttlayer2/math/vector.js";
+import { Comp_Label } from "../ttlayer2/pipeline/component/comp_label.js";
 import { Comp_ParticleSystem, ParticleInfo } from "../ttlayer2/pipeline/component/comp_particlesystem.js";
 import { Comp_Sprite } from "../ttlayer2/pipeline/component/comp_sprite.js";
 import { SceneView } from "../ttlayer2/pipeline/sceneview.js";
 
 import { GameApp, IState, SceneItem, SceneItem_Group } from "../ttlayer2/ttlayer2.js";
 
+
 export class TTState_Scene implements IState {
 
     subgroup: SceneItem_Group;
     comp_p: Comp_ParticleSystem;
+
+    private font: Font = null;
+    private comp_l: Comp_Label = null;
     OnInit(): void {
         let defscene = GameApp.GetScene().views[0];
 
@@ -48,8 +55,35 @@ export class TTState_Scene implements IState {
 
             sceneitem.AddComponment(comp);
         }
+
+        {
+            let sceneitem = new SceneItem();
+            sceneitem.scale.X = 1;
+            sceneitem.scale.Y = 1;
+            sceneitem.pos.X = -150;
+            sceneitem.pos.Y = -150;
+            view.root.AddChild(sceneitem);
+            let comp = this.comp_l = new Comp_Label();
+            comp.font = this.font = new Font(tt.graphic.GetWebGL(), "VonwaonBitmap-16px", 24);
+            comp.text = "FPS:label";
+            sceneitem.AddComponment(comp);
+        }
     }
+    private _timer: number = 0;
+    private _framecount: number = 0;
+
     OnUpdate(delta: number): void {
+
+
+        this._timer += delta;
+        this._framecount++;
+        if (this._timer > 1.0) {
+            let _fps = (((this._framecount / this._timer) * 10 + 0.5) | 0) / 10;
+            this.comp_l.text = "FPS:" + _fps;
+            this._framecount = 0;
+            this._timer -= 1.0;
+        }
+
         this.subgroup.rotate += delta;
         let pss: ParticleInfo[] = [];
         let ranpos = new Vector3(Math.random() * 200 - 100, Math.random() * 200 - 100, 0);

@@ -9,19 +9,24 @@ export class MainScreen implements IRenderTarget {
     constructor(webgl: WebGL2RenderingContext) {
         this._webgl = webgl;
         console.log("webgl init size:" + webgl.canvas.width + "," + webgl.canvas.height);
-        this.ClearColor = new Color(1, 0, 1, 1);
+       
     }
 
-    ClearColor: Color;
+   
     IsMainOutput(): boolean {
         return true;
     }
     Begin(): void {
         this._webgl.bindFramebuffer(this._webgl.FRAMEBUFFER, null);
         this._webgl.viewport(0, 0, this.getWidth(), this.getHeight());
-        this._webgl.clearColor(this.ClearColor.R, this.ClearColor.G, this.ClearColor.B, this.ClearColor.A);
-        this._webgl.clear(this._webgl.COLOR_BUFFER_BIT);
+        // this._webgl.clearColor(this.ClearColor.R, this.ClearColor.G, this.ClearColor.B, this.ClearColor.A);
+        // this._webgl.clear(this._webgl.COLOR_BUFFER_BIT);
         this.ResetLimitRect();
+    }
+    Clear(color:Color):void
+    {
+        this._webgl.clearColor(color.R, color.G,color.B, color.A);
+        this._webgl.clear(this._webgl.COLOR_BUFFER_BIT);
     }
     End(): void {
         this._webgl.flush();

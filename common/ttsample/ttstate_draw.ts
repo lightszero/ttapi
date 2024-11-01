@@ -37,7 +37,7 @@ export class TTState_Draw implements IState, IRenderExt {
         this.InitMesh2(gl);
         this.InitTF(gl);
         this._mainscreen = GameApp.GetMainScreen();
-        this._mainscreen.ClearColor = new Color(0, 0, 0, 1);
+      
         this._quadbatcher = new Render_Batcher(gl);
 
         let p0 = new DrawPoint();
@@ -344,7 +344,7 @@ export class TTState_Draw implements IState, IRenderExt {
         let gl = tt.graphic.GetWebGL();
 
         this._mainscreen.Begin();
-
+        this._mainscreen.Clear(Color.Black);
 
         this.mat.UpdateMatProj(this._mainscreen);
         this.mat.UpdateMatModel();

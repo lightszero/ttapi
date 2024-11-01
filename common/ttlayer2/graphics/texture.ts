@@ -26,6 +26,7 @@ export interface IRenderTarget extends ITexture {
     //RenderTarget 的观察点
     IsMainOutput(): boolean
     Begin(): void;
+    Clear(color:Color):void
     End(): void;
 
     PushLimitRect(rect: Rectangle): void;
