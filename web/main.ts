@@ -25,12 +25,12 @@ async function start() {
 
     //加载自定义字体
 
-    let font = await tt.loader.LoadCustomFont("v16", "./VonwaonBitmap-16px.ttf");
+    let font = await tt.loader.LoadCustomFont("VonwaonBitmap-16px", "./VonwaonBitmap-16px.ttf");
 
     console.log("add font:" + font);
     //初始化layer2
-    //GameApp.Start(new TTState_Draw());
-    GameApp.Start(new TTState_Scene());
+    GameApp.Start(new TTState_Draw());
+    //GameApp.Start(new TTState_Scene());
     //GameApp.ChangeState();
 
 }

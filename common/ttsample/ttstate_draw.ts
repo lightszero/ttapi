@@ -1,6 +1,9 @@
 import { tt } from "../ttapi/ttapi.js";
+import { IRenderExt } from "../ttlayer2/app/gameapp.js";
+import { Font } from "../ttlayer2/atlas/font.js";
 import { Material } from "../ttlayer2/graphics/material.js";
 import { VertexFormatMgr } from "../ttlayer2/graphics/mesh.js";
+import { Vector2 } from "../ttlayer2/math/vector.js";
 import { Render, TransformFeedBack } from "../ttlayer2/render/render.js";
 import { GetShaderProgram } from "../ttlayer2/shader/shaders.js";
 
@@ -10,7 +13,7 @@ import {
     Mesh,
 } from "../ttlayer2/ttlayer2.js";
 
-export class TTState_Draw implements IState {
+export class TTState_Draw implements IState, IRenderExt {
     private pts: DrawPoint[] = [];
     private tex: ITexture = null;
     private _quadbatcher: Render_Batcher = null;
@@ -25,6 +28,8 @@ export class TTState_Draw implements IState {
 
     private mesh3: Mesh = null;
     private mat3: Material = null;
+
+    private font: Font = null;
     OnInit(): void {
         let gl = tt.graphic.GetWebGL();
 
@@ -64,7 +69,7 @@ export class TTState_Draw implements IState {
         this.pts.push(p2);
         this.pts.push(p3);
 
-        let data = TextTool.LoadTextPixel("中国17你好H2o", "v16", 32, 320, 32, 0, 0);
+        let data = TextTool.LoadTextPixel("中国17你好H2o", "VonwaonBitmap-16px", 32, 320, 32, 0, 0);
         let bdata = new Uint8Array(data.width * data.height * 4);
         for (let i = 0; i < data.width * data.height; i++) {
 
@@ -76,10 +81,13 @@ export class TTState_Draw implements IState {
             bdata[i * 4 + 0] = 255;
             bdata[i * 4 + 1] = 255;
             bdata[i * 4 + 2] = 255;
-            bdata[i * 4 + 3] = (a / 255) * (a / 255) * 255;
+            bdata[i * 4 + 3] = a;// (a / 255) * (a / 255) * 255;
         }
-        this.tex = new Texture(gl, data.width, data.height, TextureFormat.RGBA32, bdata, true, false);
+        this.tex = new Texture(gl, data.width, data.height, TextureFormat.RGBA32, bdata);
 
+        this.font = new Font(gl, "VonwaonBitmap-16px", 24);
+
+        GameApp.AddRenderExt(this);
     }
     InitMesh(gl: WebGL2RenderingContext): void {
 
@@ -301,19 +309,53 @@ export class TTState_Draw implements IState {
 
     }
     OnUpdate(delta: number): void {
+        {
+            let gl = tt.graphic.GetWebGL();
+            let stride2 = this.mesh2.GetVertexFormat().vbos[1].stride;
+            let instcount = 100;
+            let vertexdata2 = new Uint8Array(stride2 * instcount);
+            let datavbo2 = new DataView(vertexdata2.buffer);
+            for (var i = 0; i < instcount; i++) {
+                datavbo2.setFloat32(stride2 * i + 0, Math.random() * 100, true);
+                datavbo2.setFloat32(stride2 * i + 4, Math.random() * 100, true);
+                datavbo2.setFloat32(stride2 * i + 8, 0, true);
+            }
 
+            datavbo2.setFloat32(16, 22, true);
+            datavbo2.setFloat32(20, 0, true);
+            datavbo2.setFloat32(24, 33, true);
+            datavbo2.setFloat32(28, 33, true);
+            datavbo2.setFloat32(32, 0, true);
+            this.mesh2.UploadVertexBuffer(gl, 1, vertexdata2, false, vertexdata2.byteLength);
+            this.mesh2.instancecount = instcount;
+        }
     }
     OnExit(): void {
-
+        GameApp.RemoveRenderExt(this);
     }
     OnResize(width: number, height: number): void {
 
     }
     OnPreRender(): void {
 
+    }
+    OnPostRender(): void {
+
         let gl = tt.graphic.GetWebGL();
 
         this._mainscreen.Begin();
+
+
+        this.mat.UpdateMatProj(this._mainscreen);
+        this.mat.UpdateMatModel();
+        this.mat.UpdateMatView();
+        Render.DrawMesh(gl, this.mesh, this.mat);
+
+        this.mat2.UpdateMatProj(this._mainscreen);
+        this.mat2.UpdateMatModel();
+        this.mat2.UpdateMatView();
+        Render.DrawMeshInstanced(gl, this.mesh2, this.mat2);
+
         {
             this._quadbatcher.BeginDraw(this._mainscreen);
 
@@ -331,25 +373,22 @@ export class TTState_Draw implements IState {
                 this.pts[2].y = this.pts[3].y = this.pts[0].y + this.tex.getHeight() * 1;
                 this._quadbatcher.DrawQuads(this.tex, null, null, this.pts, 1);
             }
+            this.font.SureText("你好凶");
+            this.font.RenderText(this._quadbatcher, "你好凶", new Vector2(0, 0), new Vector2(2, 2), Color.White);
 
+            let str = "Radio = " + tt.graphic.getDevicePixelRadio() + "," + tt.graphic.getDeviceScreenWidth() + "," + tt.graphic.getDeviceScreenHeight();
+
+
+            this.font.SureText(str);
+            this.font.RenderText(this._quadbatcher, str, new Vector2(-200, -200), new Vector2(1, 1), Color.White);
 
             this._quadbatcher.EndDraw();
         }
 
-        this.mat.UpdateMatProj(this._mainscreen);
-        this.mat.UpdateMatModel();
-        this.mat.UpdateMatView();
-        Render.DrawMesh(gl, this.mesh, this.mat);
 
-        this.mat2.UpdateMatProj(this._mainscreen);
-        this.mat2.UpdateMatModel();
-        this.mat2.UpdateMatView();
-        Render.DrawMeshInstanced(gl, this.mesh2, this.mat2);
+
 
 
         this._mainscreen.End();
-    }
-    OnPostRender(): void {
-
     }
 }

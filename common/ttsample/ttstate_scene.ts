@@ -76,11 +76,6 @@ export class TTState_Scene implements IState {
     OnResize(width: number, height: number): void {
 
     }
-    OnPreRender(): void {
 
-    }
-    OnPostRender(): void {
-
-    }
 
 }

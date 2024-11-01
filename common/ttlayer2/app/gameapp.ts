@@ -9,6 +9,11 @@ export interface IState {
   OnUpdate(delta: number): void
   OnExit(): void;
   OnResize(width: number, height: number): void;
+
+}
+
+//添加额外的绘制层
+export interface IRenderExt {
   OnPreRender(): void;
   OnPostRender(): void;
 }
@@ -56,6 +61,15 @@ export class GameApp {
       this._state.OnInit();
     }
   }
+  static AddRenderExt(ext: IRenderExt) {
+    this.render_ext.push(ext);
+  }
+  static RemoveRenderExt(ext: IRenderExt) {
+    let i = this.render_ext.indexOf(ext);
+    if (i >= 0) {
+      this.render_ext.splice(i, 1);
+    }
+  }
   private static OnUpdate(delta: number): void {
     this._scene.Update(delta);
     if (this._state != null) {
@@ -67,19 +81,22 @@ export class GameApp {
       this._state.OnResize(width, height);
     }
   }
+  private static render_ext: IRenderExt[] = [];
   private static OnRender(): void {
+    let gl = tt.graphic.GetWebGL();
 
-
-    if (this._state != null) {
-      this._state.OnPreRender();
+    for (var i = 0; i < this.render_ext.length; i++) {
+      this.render_ext[i].OnPreRender();
     }
 
     //Scene part
     this._scene.Render();
 
-    if (this._state != null) {
-      this._state.OnPostRender();
+
+    for (var i = 0; i < this.render_ext.length; i++) {
+      this.render_ext[i].OnPostRender();
     }
+
 
   }
 }

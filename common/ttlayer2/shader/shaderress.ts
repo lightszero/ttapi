@@ -76,12 +76,12 @@ var fs_default: string = `#version 300 es
         //     outc = vColor * c;
           
         // }
-        // else if(effect==4)//gray as alpha model
-        // {
-        //     outc.a *= texc.r;
+        else if(effect==4)//gray as alpha model
+        {
+             outc.a *= texc.r;
         //     //vec4 c = vec4(1.0,1.0,1.0,texc.r);
         //     //outc = vColor * c;
-        // }
+        }
         fragColor =  outc;
     }
     `;
