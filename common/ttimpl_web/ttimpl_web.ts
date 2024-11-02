@@ -21,9 +21,10 @@ export namespace tt_impl {
 
             if (this.webgl != null) {
                 let canvas =new OffscreenCanvas(32,32); 
-                //window.document.createElement("canvas");
-
-                let c2d = canvas.getContext("2d"); 
+                let c = window.document.createElement("canvas");
+// c.getContext("2d",{ colorSpace:"srgb", willReadFrequently:true})
+                let c2d = canvas.getContext("2d",{ colorSpace:"srgb", willReadFrequently:true}); 
+            
                 tt.graphic = new impl_g.tt_impl.ttimpl_graphics(this.webgl,c2d);
 
                 this.timerMs = new Date().getTime();
@@ -45,50 +46,7 @@ export namespace tt_impl {
         public SendEnvEventToUser(name: string, obj: any) {
             //     (tt.platform as tt.impl.ttimpl_platform).SendEnvEventToUser(name, obj);
         }
-        // public async LoadDirect(rootPack:tt.IPackGroup )
-        // {
-        //     tt.rootPack =rootPack;
-        //     this.Start();
-        // }
-
-        // public async LoadResPack(url: string): Promise<void> {
-        //     if (url.includes(".ttpak")) {
-        //         let down = await fetch(url);
-        //         let u8 = new Uint8Array(await down.arrayBuffer());
-        //         tt.rootPack = new ttimpl_PackGroup_Mem("root", u8);
-
-        //     }
-        //     else {
-        //         var folder = new ttimpl_PackGroup_Path(url);
-        //         await folder.LoadAsync();
-        //         tt.rootPack = folder;
-        //     }
-
-        //     this.Start();
-        // }
-        // Start():void
-        // {
-        //     var allres = tt.rootPack.GetAllResourceName();
-        //     for (var i in allres) {
-        //         console.log("res=" + allres[i]);
-
-        //     }
-        //     var jsonitem = tt.rootPack.GetPackItem("index");
-        //     if (jsonitem == null)
-        //         throw new Error("not have index.");
-        //     var json = JSON.parse(jsonitem.GetAsText());
-        //     var name = json["name"];
-        //     var desc = json["desc"];
-        //     var cover = json["cover"];
-        //     console.warn("pack load:" + name + "  desc=" + desc + "  cover=" + cover);
-        //     var scripts = json["script"] as string[];
-        //     for (var s = 0; s < scripts.length; s++) {
-        //         var scriptitem = tt.rootPack.GetPackItem(PathTool.GetFileName(scripts[s]).name)
-        //         if (scriptitem == null)
-        //             throw new Error("not have script:" + scripts[s]);
-        //         eval(scriptitem.GetAsText());
-        //     }
-        // }
+ 
         timerMs: number = 0;
         Update(): void {
             if (this.webgl == null)

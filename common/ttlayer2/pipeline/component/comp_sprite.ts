@@ -2,7 +2,7 @@ import { tt } from "../../../ttapi/ttapi.js";
 import { Matrix3x2Math } from "../../math/Matrix3x2.js";
 import { Color, DrawPoint, Rectangle, UVRect, Vector2 } from "../../math/vector.js";
 import { GameApp, getWhiteTexture, ITexture, Render_Batcher } from "../../ttlayer2.js";
-import {ISceneComponent, ISceneItem, ISceneRenderItem } from "../scene.js";
+import { ISceneComponent, ISceneItem, ISceneRenderItem } from "../scene.js";
 import { SceneView } from "../sceneview.js";
 
 export class Comp_Sprite implements ISceneComponent, ISceneRenderItem {
@@ -96,7 +96,7 @@ export class Comp_Sprite implements ISceneComponent, ISceneRenderItem {
             if (tex == null) {
                 tex = getWhiteTexture();
             }
-            Comp_Sprite._batcher.DrawQuads(tex, null, null, this.quad, 1);
+            Comp_Sprite._batcher.DrawQuads(tex, null, this.quad, 1);
         }
     }
 

@@ -38,7 +38,6 @@ var fs_default: string = `#version 300 es
 
     //uniform sampler2D tex2;
     uniform sampler2D tex;  //从外部设置的参数
-    uniform sampler2D texpal;  //调色板用
     void main(void) 
     {
         vec4 texc = texture(tex,vUv);
@@ -50,37 +49,14 @@ var fs_default: string = `#version 300 es
         }
         else if(effect==1)//gray model
         {
-             vec4 c = vec4(texc.r,texc.r,texc.r,1);
-             outc = vColor * c;
+            vec4 c = vec4(texc.r,texc.r,texc.r,1);
+            outc = vColor * c;
         }
-        // else if(effect==2)//pal8 model
-        // {
-        //     vec2 paluv = vec2(texc.r+vExt.x/256.0,vExt.y/256.0);
-        //     vec4 c = texture(texpal,paluv);
-        //     outc = vColor * c;
-        // }
-        // else if(effect==3)//p5a3 model
-        // {
-      
-        //     int v =  int(texc.r *255.0+0.9);
-            
-        //     //分解调色板和alpha
-
-        //     float palx = float(v % 32)/255.0 + vExt.x/255.0;
-        //     float paly = vExt.y/255.0;
-        //     float alpha = float(v/32) /7.0f;
-
-        //     vec4 c = texture(texpal,vec2(palx,paly));
-        //     c.a = alpha;
-        //     //c =vec4(1.0,1.0,1.0,1.0);
-        //     outc = vColor * c;
-          
-        // }
         else if(effect==4)//gray as alpha model
         {
-             outc.a *= texc.r;
-        //     //vec4 c = vec4(1.0,1.0,1.0,texc.r);
-        //     //outc = vColor * c;
+            //outc.a *= texc.r;
+            vec4 c = vec4(1.0,1.0,1.0,texc.r);
+            outc = vColor * c;
         }
         fragColor =  outc;
     }
@@ -177,6 +153,38 @@ var fs_empty: string = `#version 300 es
         fragColor =  vec4(0,0,0,1);
     }
     `;
+var fs_tiledmap: string = `#version 300 es
+    precision mediump float;//指定浮点型精确度
+   
+    in vec2 vUv;//从vs接收的参数
+    in vec4 vColor;//从vs接收的参数
+
+    uniform sampler2D tex; 
+    uniform sampler2D tex2; 
+    uniform vec4     texsize;//xy map size, z=tilesize, w =tile texturesize
+    layout(location = 0) out vec4 fragColor;
+
+    void main(void) 
+    {
+        //抽取TiledIndex
+        vec4 texc = texture(tex,vUv);
+        float su =float(int(texc.r*255.0+0.9)); //tileindex x
+        float sv =float(int(texc.g*255.0+0.9)); //tileindex y
+
+        //计算tileduv
+        float subu = mod(vUv.x * texsize.x, 1.0);
+        float subv = mod(vUv.y * texsize.y, 1.0);
+        float tilescale =texsize.z/texsize.w;
+        vec2 tuv = vec2((su+subu)*tilescale,(sv+subv)*tilescale);
+
+        //合成颜色
+        vec4 ttc = texture(tex2,tuv);
+        vec4 outc = ttc * vColor;
+
+        
+        fragColor =  outc;
+    }
+    `;
 export function InitInnerShader(webgl: WebGL2RenderingContext): void {
     var vsdef = s.AddShader(webgl, s.ShaderType.VertexShader, "default", vs_default, true);
     var fsdef = s.AddShader(webgl, s.ShaderType.FragmentShader, "default", fs_default, true);
@@ -198,5 +206,10 @@ export function InitInnerShader(webgl: WebGL2RenderingContext): void {
     var fsempty = s.AddShader(webgl, s.ShaderType.FragmentShader, "empty", fs_empty, true);
     if (vsfeedback != null && fsempty != null)
         s.LinkShaderFeedBack(webgl, "feedback", vsfeedback, fsempty, ["outPos", "outNormal"]);
+
+
+    var fstiledmap = s.AddShader(webgl, s.ShaderType.FragmentShader, "tiledmap", fs_tiledmap, true);
+    if (vsdef != null && fstiledmap != null)
+        s.LinkShader(webgl, "tiledmap", vsdef, fstiledmap);
 
 }

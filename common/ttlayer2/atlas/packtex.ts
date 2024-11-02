@@ -86,7 +86,7 @@ export class Sprite {
         p3.anyz = 0;
         p3.eff = eff;
 
-        bathcer.DrawQuads(this.tex, null, null, Sprite._quad, 1);
+        bathcer.DrawQuads(this.tex, null, Sprite._quad, 1);
     }
     RenderWithLimit(bathcer: Render_Batcher, pos: Vector2, scale: Vector2, color: Color, eff: number, limitRect: Rectangle): void {
 
@@ -132,7 +132,7 @@ export class SpriteData {
         }
         else if (format == TextureFormat.R8 && this.format == TextureFormat.RGBA32) {
             let r = this.data[(y * this.width + x) * 4 + 0];
-            buf[index] = (r/255*r/255)*255;
+            buf[index] = (r / 255 * r / 255) * 255;
         }
         else if (format == TextureFormat.RGBA32 && this.format == TextureFormat.RGBA32) {
             let r = this.data[(y * this.width + x) * 4 + 0];
@@ -167,7 +167,7 @@ export class PackTexture extends Texture {
     pixelbuf: Uint8Array;
     dirty: boolean = false;
     //UploadImg,必须是4x4的
-    AddSprite(data: SpriteData, name: string = null): Sprite {
+    AddSprite(data: SpriteData, name: string = null): Vector2 {
         if (name != null && this.namedsprites[name] != undefined)
             throw "Sprite Key 冲突";
         let rect = this.maxrect.add(data.width, data.height, null);
@@ -183,24 +183,9 @@ export class PackTexture extends Texture {
             }
         }
         this.dirty = true;
-        let s = new Sprite();
-        s.u0 = rect.x;
-        s.v0 = rect.y;
-        s.u1 = rect.x + data.width;
-        s.v1 = rect.y + data.height;
-        s.marginx = 0;
-        s.marginy = 0;
-        s.width = data.width;
-        s.height = data.height;
-        s.offsetx = 0;
-        s.offsety = 0;
-        s.name = name;
-        s.tex = this;
-        this.sprites.push(s);
-        if (name != null) {
-            this.namedsprites[name] = s;
-        }
-        return s;
+
+       
+        return new Vector2(rect.x,rect.y);
     }
     AddfontSprite(data: SpriteData, name: string = null): Sprite {
         if (name != null && this.namedsprites[name] != undefined)
@@ -238,8 +223,8 @@ export class PackTexture extends Texture {
         }
         return s;
     }
-    Apply(): void {
-        if (this.dirty) {
+    Apply(force: boolean = false): void {
+        if (this.dirty || force) {
             this.UploadTexture(0, 0, this._width, this._height, this.pixelbuf);
             this.dirty = false;
         }

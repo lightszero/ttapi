@@ -61,7 +61,7 @@ export class Render_Batcher {
         this.Scale = 1.0;
         this._lastTex = null;
         this._lastTex2 = null;
-        this._lastTexPal = null;
+
         // var shader = GetShaderProgram("default");
         // if (shader == null)
         //     throw new Error("error load shader.");
@@ -80,7 +80,7 @@ export class Render_Batcher {
     _lastMode: number;
     _lastTex: ITexture | null;
     _lastTex2: ITexture | null;
-    _lastTexPal: ITexture | null;
+
     //_vbo: WebGLBuffer;
     //_vao: WebGLVertexArrayObject;
     _mesh: Mesh = null;
@@ -91,17 +91,17 @@ export class Render_Batcher {
     // _modelMatrix: Float32Array;
     // _viewMatrix: Float32Array;
     // _projMatrix: Float32Array;
-    DrawQuads(tex: ITexture, tex2: ITexture | null, texpal: ITexture | null, quads: DrawPoint[], quadCount: number): void {
+    DrawQuads(tex: ITexture, tex2: ITexture | null, quads: DrawPoint[], quadCount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
 
         if (this._lastMode != this._webgl.TRIANGLES || this._lastTex != tex || this._lastTex2 != tex2
-            || this._lastTexPal != texpal
+
             || this._pointseek + quadCount * 6 >= 65536) {
             this._Render();
 
 
-            this._ApplySingle(tex, tex2, texpal);
+            this._ApplySingle(tex, tex2);
         }
         this._lastMode = this._webgl.TRIANGLES
 
@@ -115,14 +115,14 @@ export class Render_Batcher {
         }
 
     }
-    DrawTris(tex: ITexture, tex2: ITexture | null, texpal: ITexture | null, tris: DrawPoint[], tricount: number): void {
+    DrawTris(tex: ITexture, tex2: ITexture | null,  tris: DrawPoint[], tricount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
         if (this._lastMode != this._webgl.TRIANGLES || this._lastTex != tex || this._lastTex2 != tex2
-            || this._lastTexPal != texpal
+         
             || this._pointseek + tricount * 3 > 65536) {
             this._Render();
-            this._ApplySingle(tex, tex2, texpal);
+            this._ApplySingle(tex, tex2);
         }
         this._lastMode = this._webgl.TRIANGLES
 
@@ -132,14 +132,14 @@ export class Render_Batcher {
             this._AddBuf(tris[i * 3 + 2]);
         }
     }
-    DrawLines(tex: ITexture, tex2: ITexture | null, texpal: ITexture | null, lines: DrawPoint[], linecount: number): void {
+    DrawLines(tex: ITexture, tex2: ITexture | null,  lines: DrawPoint[], linecount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
         if (this._lastMode != this._webgl.LINES || this._lastTex != tex || this._lastTex2 != tex2
-            || this._lastTexPal != texpal
+            
             || this._pointseek + linecount * 2 > 65536) {
             this._Render();
-            this._ApplySingle(tex, tex2, texpal);
+            this._ApplySingle(tex, tex2);
         }
         this._lastMode = this._webgl.LINES
 
@@ -148,14 +148,14 @@ export class Render_Batcher {
             this._AddBuf(lines[i * 2 + 1]);
         }
     }
-    DrawPoints(tex: ITexture, tex2: ITexture | null, texpal: ITexture | null, points: DrawPoint[], pointcount: number): void {
+    DrawPoints(tex: ITexture, tex2: ITexture | null,points: DrawPoint[], pointcount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
         if (this._lastMode != this._webgl.POINTS || this._lastTex != tex || this._lastTex2 != tex2
-            || this._lastTexPal != texpal
+            
             || this._pointseek + pointcount * 1 > 65536) {
             this._Render();
-            this._ApplySingle(tex, tex2, texpal);
+            this._ApplySingle(tex, tex2);
         }
         this._lastMode = this._webgl.POINTS
 
@@ -211,38 +211,22 @@ export class Render_Batcher {
     EndDraw(): void {
         this._Render();
         this._target = null;
-        this._ApplySingle(null, null, null);
+        this._ApplySingle(null, null);
     }
     _Render(): void {
         if (this._pointseek == 0)
             return;
         let webgl = this._webgl;
 
-        //this._mat.Apply(webgl);
-        //this._mesh.Apply(webgl);
-        // let shader = this._shader;
 
-        // webgl.useProgram(shader.program);
-
-        // webgl.bindVertexArray(this._vao);
         if (this._mat.uniformTexs["tex"] != undefined)
             this._mat.uniformTexs["tex"].value = this._lastTex;
         this._mesh.UploadVertexBuffer(webgl, 0, this._buffer, true, this._pointseek * 28);
         this._pointseek = 0;
-        //webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);
-        //webgl.bufferData(webgl.ARRAY_BUFFER, this._buffer, webgl.DYNAMIC_DRAW, 0, this._pointseek * 28);
 
-        //webgl.bindBuffer(webgl.ARRAY_BUFFER, this._vbo);
 
         Render.DrawMesh(webgl, this._mesh, this._mat);
-        //webgl.drawArrays(this._lastMode, 0, this._pointseek);
 
-        // if (this._lastMode == webgl.TRIANGLES)
-        //     webgl.drawArrays(this._lastMode, 0, this._pointseek / 3);
-        // if (this._lastMode == webgl.LINES)
-        //     webgl.drawArrays(this._lastMode, 0, this._pointseek / 2);
-        // if (this._lastMode == webgl.POINTS)
-        //     webgl.drawArrays(this._lastMode, 0, this._pointseek / 1);
 
     }
     _AddBuf(p: DrawPoint): void {
@@ -267,10 +251,10 @@ export class Render_Batcher {
         this._pointseek++;
     }
 
-    _ApplySingle(tex: ITexture, tex2: ITexture | null, texpal: ITexture | null): void {
+    _ApplySingle(tex: ITexture, tex2: ITexture | null): void {
         this._lastTex = tex;
         this._lastTex2 = tex2;
-        this._lastTexPal = texpal;
+       
     }
 
 }

@@ -11,6 +11,7 @@ export enum UniformType {
   sampler2D,
   float,
   vec4,
+  ivec4
 }
 export class ShaderObj {
   name: string
@@ -110,6 +111,9 @@ function findUniform(source: string, target: { [id: string]: UniformType }): voi
           case "vec4":
             type = UniformType.vec4;
             break;
+          case "ivec4":
+            type = UniformType.ivec4;
+            break;
           default:
             type = UniformType.unknown;
         }
@@ -182,20 +186,7 @@ export class uniformInfo {
 export class ShaderProgram {
   name: string;
   program: WebGLProgram;
-  //attr 是固定的
-  // attrIndexPos: number;
-  // attrIndexUV: number;
-  // attrIndexColor: number;
-  // attrIndexExt: number;//palu palv texid effect,
 
-
-  //uniform Matrix texpalette texmain 是固定的
-  uniMatModel: WebGLUniformLocation | null;
-  uniMatView: WebGLUniformLocation | null;
-  uniMatProj: WebGLUniformLocation | null;
-  uniTex: WebGLUniformLocation | null;
-  uniTex2: WebGLUniformLocation | null;
-  uniTexPal: WebGLUniformLocation | null;
   //其余自定义uniform
   uniformInfos: { [id: string]: uniformInfo };
 
@@ -204,19 +195,6 @@ export class ShaderProgram {
     this.program = program;
 
 
-    // this.attrIndexPos = webgl.getAttribLocation(this.program, "position");
-    // this.attrIndexColor = webgl.getAttribLocation(this.program, "color");
-    // this.attrIndexUV = webgl.getAttribLocation(this.program, "uv");
-    // this.attrIndexExt = webgl.getAttribLocation(this.program, "ext");
-
-
-    this.uniMatModel = webgl.getUniformLocation(this.program, "matModel");
-    this.uniMatView = webgl.getUniformLocation(this.program, "matView");
-    this.uniMatProj = webgl.getUniformLocation(this.program, "matProj");
-
-    this.uniTex = webgl.getUniformLocation(this.program, "tex");
-    this.uniTex2 = webgl.getUniformLocation(this.program, "tex2");
-    this.uniTexPal = webgl.getUniformLocation(this.program, "texpal");
 
     this.uniformInfos = {};
 

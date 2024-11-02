@@ -1,6 +1,7 @@
 import { tt } from "../ttapi/ttapi.js";
 import { IRenderExt } from "../ttlayer2/app/gameapp.js";
 import { Font } from "../ttlayer2/atlas/font.js";
+import { TiledMap } from "../ttlayer2/atlas/tiledmap.js";
 import { Material } from "../ttlayer2/graphics/material.js";
 import { VertexFormatMgr } from "../ttlayer2/graphics/mesh.js";
 import { Vector2 } from "../ttlayer2/math/vector.js";
@@ -30,6 +31,9 @@ export class TTState_Draw implements IState, IRenderExt {
     private mat3: Material = null;
 
     private font: Font = null;
+
+
+    private tilemap: TiledMap
     OnInit(): void {
         let gl = tt.graphic.GetWebGL();
 
@@ -37,7 +41,7 @@ export class TTState_Draw implements IState, IRenderExt {
         this.InitMesh2(gl);
         this.InitTF(gl);
         this._mainscreen = GameApp.GetMainScreen();
-      
+
         this._quadbatcher = new Render_Batcher(gl);
 
         let p0 = new DrawPoint();
@@ -86,8 +90,10 @@ export class TTState_Draw implements IState, IRenderExt {
         this.tex = new Texture(gl, data.width, data.height, TextureFormat.RGBA32, bdata);
 
         this.font = new Font(gl, "VonwaonBitmap-16px", 24);
-
+        this.tilemap = new TiledMap(gl, 256, 256, 16);
         GameApp.AddRenderExt(this);
+
+
     }
     InitMesh(gl: WebGL2RenderingContext): void {
 
@@ -346,6 +352,9 @@ export class TTState_Draw implements IState, IRenderExt {
         this._mainscreen.Begin();
         this._mainscreen.Clear(Color.Black);
 
+        this.tilemap.GetMat().UpdateMatProj(this._mainscreen);
+        this.tilemap.Render(gl);
+
         this.mat.UpdateMatProj(this._mainscreen);
         this.mat.UpdateMatModel();
         this.mat.UpdateMatView();
@@ -371,7 +380,7 @@ export class TTState_Draw implements IState, IRenderExt {
                 this.pts[0].y = this.pts[1].y = - 150;
                 //let y =this.pts[0].y;
                 this.pts[2].y = this.pts[3].y = this.pts[0].y + this.tex.getHeight() * 1;
-                this._quadbatcher.DrawQuads(this.tex, null, null, this.pts, 1);
+                this._quadbatcher.DrawQuads(this.tex, null, this.pts, 1);
             }
             this.font.SureText("你好凶");
             this.font.RenderText(this._quadbatcher, "你好凶", new Vector2(0, 0), new Vector2(2, 2), Color.White);

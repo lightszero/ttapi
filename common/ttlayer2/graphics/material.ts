@@ -6,9 +6,13 @@ export class UniformValue_Tex {
     loc: WebGLUniformLocation;
     value: ITexture
 }
-export class UniformValue_Mat4 {
+export class UniformValue_Vector {
     loc: WebGLUniformLocation;
     value: Float32Array
+}
+export class UniformValue_IVector {
+    loc: WebGLUniformLocation;
+    value: Int32Array
 }
 export class Material {
     constructor(shader: ShaderProgram) {
@@ -19,6 +23,16 @@ export class Material {
             defmatrix[1] = 0; defmatrix[5] = 1; defmatrix[9] = 0; defmatrix[13] = 0;
             defmatrix[2] = 0; defmatrix[6] = 0; defmatrix[10] = 1; defmatrix[14] = 0;
             defmatrix[3] = 0; defmatrix[7] = 0; defmatrix[11] = 0; defmatrix[15] = 1;
+        }
+        let defvec: Float32Array = new Float32Array(4);
+        {
+            defvec[0] = 0; defvec[1] = 0; defvec[2] = 0; defvec[3] = 0;
+
+        }
+        let defIvec: Int32Array = new Int32Array(4);
+        {
+            defIvec[0] = 0; defIvec[1] = 0; defIvec[2] = 0; defIvec[3] = 0;
+
         }
         this.shader = shader;
         for (var key in shader.uniformInfos) {
@@ -36,6 +50,18 @@ export class Material {
                         value: defmatrix
                     }
                     break;
+                case UniformType.vec4:
+                    this.uniformVecs[key] = {
+                        loc: info.loc,
+                        value: defvec
+                    }
+                    break;
+                case UniformType.ivec4:
+                    this.uniformIVecs[key] = {
+                        loc: info.loc,
+                        value: defIvec
+                    }
+                    break;
                 default:
                     break;
             }
@@ -45,8 +71,10 @@ export class Material {
     }
     private shader: ShaderProgram;
     uniformFloats: { [id: string]: number } = {};
-    uniformMats: { [id: string]: UniformValue_Mat4 } = {};
+    uniformMats: { [id: string]: UniformValue_Vector } = {};
     uniformTexs: { [id: string]: UniformValue_Tex } = {};
+    uniformVecs: { [id: string]: UniformValue_Vector } = {};
+    uniformIVecs: { [id: string]: UniformValue_IVector } = {};
     GetShader(): ShaderProgram {
         return this.shader;
     }
@@ -109,7 +137,21 @@ export class Material {
         webgl.useProgram(this.shader.program);
         for (var key in this.uniformMats) {
             let uni = this.uniformMats[key];
+
             webgl.uniformMatrix4fv(uni.loc, false, uni.value);
+
+        }
+        for (var key in this.uniformVecs) {
+            let uni = this.uniformVecs[key];
+
+            webgl.uniform4fv(uni.loc, uni.value);
+
+        }
+        for (var key in this.uniformIVecs) {
+            let uni = this.uniformIVecs[key];
+
+            webgl.uniform4iv(uni.loc, uni.value);
+
         }
         let texcount = 0;
         for (var key in this.uniformTexs) {
