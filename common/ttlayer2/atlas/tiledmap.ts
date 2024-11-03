@@ -1,6 +1,6 @@
 import { VertexFormatMgr } from "../graphics/mesh.js";
 import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
-import { Perlin } from "../perlin/perlin.js";
+import { PerlinNoise } from "../perlin/perlin.js";
 import { Render } from "../render/render.js";
 import { GetShaderProgram } from "../shader/shaders.js";
 import { GameApp, Material, Mesh, TextureFormat } from "../ttlayer2.js";
@@ -153,11 +153,11 @@ export class TiledMap {
         let sblue = this.tiledsprite.AddSprite(bluedata, "blue");
         this.tiledsprite.Apply();
 
-        Perlin.Reset();
+        PerlinNoise.Reset();
         for (let y = 0; y < this.mapinfo._height; y++) {
             for (let x = 0; x < this.mapinfo._width; x++) {
                 let index = (y * this.mapinfo._width + x) * 4;
-                let z = Perlin.perlin(x / 128, y / 128, 0);
+                let z = PerlinNoise.GenNoise(x / 128, y / 128, 0, 3, 2);
                 let c = z > 0.5;
                 this.mapinfo.pixelbuf[index] = c ? sred.X / this.tiledsize : sblue.X / this.tiledsize;
                 this.mapinfo.pixelbuf[index + 1] = c ? sred.Y / this.tiledsize : sblue.Y / this.tiledsize;
