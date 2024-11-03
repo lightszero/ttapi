@@ -1,7 +1,7 @@
 import { tt } from "../../ttapi/ttapi.js"
 import { MainScreen } from "../graphics/mainscreen.js";
 import { InitInnerShader } from "../shader/shaderress.js";
-import { Scene } from "../pipeline/scene.js";
+import { ViewList } from "../pipeline/viewlist.js";
 
 
 export interface IState {
@@ -27,7 +27,7 @@ export class GameApp {
     InitInnerShader(gl);
 
     this._mainscreen = new MainScreen(gl);
-    this._scene = new Scene();
+    this._viewlist = new ViewList();
 
     this.regevent();
     this.ChangeState(state);
@@ -44,9 +44,9 @@ export class GameApp {
 
   private static _state: IState = null;
 
-  private static _scene: Scene = null;
-  static GetScene(): Scene {
-    return this._scene;
+  private static _viewlist: ViewList = null;
+  static GetViewList(): ViewList {
+    return this._viewlist;
   }
 
   static GetMainScreen(): MainScreen {
@@ -71,7 +71,7 @@ export class GameApp {
     }
   }
   private static OnUpdate(delta: number): void {
-    this._scene.Update(delta);
+    this._viewlist.Update(delta);
     if (this._state != null) {
       this._state.OnUpdate(delta);
     }
@@ -90,7 +90,7 @@ export class GameApp {
     }
 
     //Scene part
-    this._scene.Render();
+    this._viewlist.Render();
 
 
     for (var i = 0; i < this.render_ext.length; i++) {

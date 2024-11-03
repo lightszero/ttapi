@@ -20,6 +20,29 @@ export class Matrix3x2 {
 }
 export class Matrix3x2Math {
 
+    static ToMatrix4x4(mat: Matrix3x2, mat4x4: Float32Array) {
+
+        let m = mat.values;
+        mat4x4[0] = m[0];//scale x
+        mat4x4[1] = m[1];
+        mat4x4[2] = 0;
+        mat4x4[3] = 0;
+
+        mat4x4[4] = m[2];
+        mat4x4[5] = m[3];//scale y
+        mat4x4[6] = 0;
+        mat4x4[7] = 0;
+
+        mat4x4[8] = 0;
+        mat4x4[9] = 0;
+        mat4x4[10] = 1; //sacle z
+        mat4x4[11] = 0;
+
+        mat4x4[12] = m[4];
+        mat4x4[13] = m[5];
+        mat4x4[14] = 0;
+        mat4x4[15] = 1;
+    }
     static MulVec2(mat: Matrix3x2, vec2: Vector2): Vector2 {
         let m11 = mat.values[0];
         let m12 = mat.values[1];

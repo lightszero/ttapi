@@ -1,13 +1,14 @@
 import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
 import { Vector2 } from "../math/vector.js";
-import { ISceneComponent, ISceneItem, ISceneItemNode, ISceneItemSetParent, ISceneRenderItem } from "./scene.js";
+import { ISceneItem, ISceneItemNode, ISceneItemSetParent } from "../scene/scene.js";
+import { IViewComponent, IViewItem, IViewRenderItem } from "../pipeline/viewlist.js";
 
-export class SceneItem implements ISceneItem, ISceneItemSetParent {
+export class SceneItem implements IViewItem, ISceneItemSetParent {
     private parent: ISceneItemNode;
     private _localMatrix: Matrix3x2 = new Matrix3x2();;
     private _worldMatrix: Matrix3x2 = new Matrix3x2();
-    private componments: ISceneComponent[] = null;
-    private _render: ISceneRenderItem = null;
+    private componments: IViewComponent[] = null;
+    private _render: IViewRenderItem = null;
     pos: Vector2 = Vector2.Zero;
     scale: Vector2 = Vector2.One;
     rotate: number = 0;
@@ -34,7 +35,7 @@ export class SceneItem implements ISceneItem, ISceneItemSetParent {
         }
     }
 
-    AddComponment(comp: ISceneComponent): void {
+    AddComponment(comp: IViewComponent): void {
         if (this.componments == null)
             this.componments = [];
         if (this.GetComponment(comp.GetType()) != null)
@@ -42,22 +43,22 @@ export class SceneItem implements ISceneItem, ISceneItemSetParent {
         if (comp.IsRender()) {
             if (this._render != null)
                 throw ("只能有一个render组件");
-            this._render = comp as ISceneRenderItem;
+            this._render = comp as IViewRenderItem;
         }
 
         this.componments.push(comp);
         comp.OnAdd(this);
     }
-    GetComponments(): ISceneComponent[] {
+    GetComponments(): IViewComponent[] {
         return this.componments;
     }
-    GetComponment(type: string): ISceneComponent {
+    GetComponment(type: string): IViewComponent {
         return this.componments.find((v, i, obj) => {
             return v.GetType() == type;
         });
     }
 
-    GetRender(): ISceneRenderItem | null {
+    GetRender(): IViewRenderItem | null {
         return this._render;
     }
     IsGroup(): boolean {
@@ -133,12 +134,12 @@ export class SceneItem_Group implements ISceneItemNode, ISceneItemSetParent {
             }
         }
     }
-    private componments: ISceneComponent[] = null;
-    private _render: ISceneRenderItem = null;
-    GetRender(): ISceneRenderItem {
+    private componments: IViewComponent[] = null;
+    private _render: IViewRenderItem = null;
+    GetRender(): IViewRenderItem {
         return this._render;
     }
-    AddComponment(comp: ISceneComponent): void {
+    AddComponment(comp: IViewComponent): void {
         if (this.componments == null)
             this.componments = [];
         if (this.GetComponment(comp.GetType()) != null)
@@ -146,15 +147,15 @@ export class SceneItem_Group implements ISceneItemNode, ISceneItemSetParent {
         if (comp.IsRender()) {
             if (this._render != null)
                 throw ("只能有一个render组件");
-            this._render = comp as ISceneRenderItem;
+            this._render = comp as IViewRenderItem;
         }
         this.componments.push(comp);
         comp.OnAdd(this);
     }
-    GetComponments(): ISceneComponent[] {
+    GetComponments(): IViewComponent[] {
         return this.componments;
     }
-    GetComponment(type: string): ISceneComponent {
+    GetComponment(type: string): IViewComponent {
         return this.componments.find((v, i, obj) => {
             return v.GetType() == type;
         });

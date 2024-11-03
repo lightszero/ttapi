@@ -5,7 +5,7 @@ import { Comp_Label } from "../ttlayer2/pipeline/component/comp_label.js";
 import { Comp_ParticleSystem } from "../ttlayer2/pipeline/component/comp_particlesystem.js";
 import { Comp_ParticleSystem_TF, ParticleInfo } from "../ttlayer2/pipeline/component/comp_particlesystem_tf.js";
 import { Comp_Sprite } from "../ttlayer2/pipeline/component/comp_sprite.js";
-import { SceneView } from "../ttlayer2/pipeline/sceneview.js";
+import { SceneView } from "../ttlayer2/scene/sceneview.js";
 
 import { GameApp, IState, SceneItem, SceneItem_Group } from "../ttlayer2/ttlayer2.js";
 
@@ -18,14 +18,15 @@ export class TTState_Scene implements IState {
     private font: Font = null;
     private comp_l: Comp_Label = null;
     OnInit(): void {
-        let defscene = GameApp.GetScene().views[0];
+        let view1 = new SceneView();
+        GameApp.GetViewList().views.push(view1);
 
         //10个子物体
         for (var i = 0; i < 1; i++) {
             let sceneitem = new SceneItem();
 
             sceneitem.pos.X = i * 20;
-            defscene.root.AddChild(sceneitem);
+            view1.root.AddChild(sceneitem);
             let comp = new Comp_Sprite();
             comp.color.G = 0;
             sceneitem.AddComponment(comp);
@@ -34,7 +35,7 @@ export class TTState_Scene implements IState {
         //子物体
         this.subgroup = new SceneItem_Group();
         this.subgroup.pos.Y = 20;
-        defscene.root.AddChild(this.subgroup);
+        view1.root.AddChild(this.subgroup);
         for (var i = 0; i < 10; i++) {
             let sceneitem = new SceneItem();
             sceneitem.pos.X = i * 20;
@@ -46,7 +47,7 @@ export class TTState_Scene implements IState {
         console.log("hello ha.")
 
         let view = new SceneView();
-        GameApp.GetScene().views.push(view);
+        GameApp.GetViewList().views.push(view);
         {
             let sceneitem = new SceneItem();
             sceneitem.scale.X = 5;
@@ -102,11 +103,7 @@ export class TTState_Scene implements IState {
     }
     OnExit(): void {
         //状态机过分暴躁,清理一下,需要一个UI栈
-        let defscene = GameApp.GetScene().views[0];
-        let items = defscene.root.GetItems();
-        for (var i = 0; i < items.length; i++) {
-            defscene.root.RemoveChild(items[i]);
-        }
+        GameApp.GetViewList().views.splice(0, GameApp.GetViewList().views.length);
     }
     OnResize(width: number, height: number): void {
 

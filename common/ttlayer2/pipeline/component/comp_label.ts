@@ -3,11 +3,11 @@ import { Font } from "../../atlas/font.js";
 import { Matrix3x2Math } from "../../math/Matrix3x2.js";
 import { Color, Vector2 } from "../../math/vector.js";
 import { GameApp, Render_Batcher } from "../../ttlayer2.js";
-import { ISceneComponent, ISceneItem, ISceneRenderItem } from "../scene.js";
-import { SceneView } from "../sceneview.js";
+import { IView, IViewComponent, IViewItem, IViewRenderItem } from "../viewlist.js";
+import { SceneView } from "../../scene/sceneview.js";
 import { Comp_Sprite } from "./comp_sprite.js";
 
-export class Comp_Label implements ISceneComponent, ISceneRenderItem {
+export class Comp_Label implements IViewComponent, IViewRenderItem {
     font: Font;
     private _text: string = "";
     get text(): string {
@@ -17,8 +17,8 @@ export class Comp_Label implements ISceneComponent, ISceneRenderItem {
         this._text = t;
     }
     GetType(): string { return "label"; }
-    sceneitem: ISceneItem;
-    OnAdd(item: ISceneItem): void {
+    sceneitem: IViewItem;
+    OnAdd(item: IViewItem): void {
         this.sceneitem = item;
         if (Comp_Sprite._batcher == null) {
             let gl = tt.graphic.GetWebGL();
@@ -33,10 +33,10 @@ export class Comp_Label implements ISceneComponent, ISceneRenderItem {
         let y = this.sceneitem.GetWorldMatrix().values[5];
         return y;
     }
-    OnRender(view: SceneView, tag: number): void {
+    OnRender(view: IView, tag: number): void {
         if (tag == 0) {
             if (!Comp_Sprite._begin) {
-                let target = view.target;
+                let target = view.GetTarget();
                 if (target == null)
                     target = GameApp.GetMainScreen();
                 Comp_Sprite._batcher.BeginDraw(target);

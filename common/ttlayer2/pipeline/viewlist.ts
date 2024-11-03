@@ -2,8 +2,8 @@ import { IRenderTarget } from "../graphics/texture.js";
 import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
 import { Color, Vector2 } from "../math/vector.js";
 import { GameApp } from "../ttlayer2.js";
-import { SceneItem_Group } from "./sceneitem.js";
-import { SceneView } from "./sceneview.js";
+
+
 
 export interface ITran {
     pos: Vector2;
@@ -12,56 +12,50 @@ export interface ITran {
 
 }
 
-export interface ISceneRenderItem extends ISceneComponent {
+export interface IViewRenderItem extends IViewComponent {
     GetSortValue(): number
-    OnRender(view: SceneView, tag: number): void;
+    OnRender(view: IView, tag: number): void;
     GetRenderObject(): any;
     EndRender(): void;
 }
-export interface ISceneComponent {
+export interface IViewComponent {
     GetType(): string;
-    OnAdd(item: ISceneItem): void;
+    OnAdd(item: IViewItem): void;
     OnUpdate(delta: number): void;
     IsRender(): boolean;
 }
-export interface ISceneItem extends ITran {
+export interface IViewItem extends ITran {
     GetWorldMatrix(): Matrix3x2;
-    GetParent(): ISceneItemNode;
-    OnUpdate(delta: number): void;
-    GetRender(): ISceneRenderItem | null;
-    IsGroup(): boolean
-    AddComponment(comp: ISceneComponent): void
-    GetComponments(): ISceneComponent[];
-    GetComponment(Type: string): ISceneComponent;
-}
-//节点也必须继承这个,不过不想让用户可以随时访问当
-export interface ISceneItemSetParent {
-    SetParent(parent: ISceneItemNode): void
-}
-export interface ISceneItemNode extends ISceneItem {
 
-    AddChild(item: ISceneItem): void;
-    RemoveChild(item: ISceneItem): void;
-    GetItems(): ISceneItem[];
-    SetItems(items: ISceneItem[]): void
+    OnUpdate(delta: number): void;
+    GetRender(): IViewRenderItem | null;
+    IsGroup(): boolean
+    AddComponment(comp: IViewComponent): void
+    GetComponments(): IViewComponent[];
+    GetComponment(Type: string): IViewComponent;
 }
-//场景图概念,树形组织,方便理解
-export class Scene {
-    views: SceneView[] = [new SceneView()]
+
+
+export interface IView {
+    GetTarget(): IRenderTarget;
+    GetViewMatrix(): Float32Array;
+    Update(delta: number): void;
+    CollRenderItem(): IViewRenderItem[];
+}
+
+export class ViewList {
+    views: IView[] = []
     clearColor: Color = Color.Black;
     Update(delta: number): void {
         for (var i = 0; i < this.views.length; i++) {
             this.views[i].Update(delta);
-            let v = this.views[i];
-            if (v.target == null || v.target.IsMainOutput()) {
-                this.clearColor = v.clearColor;
-            }
+            //ClearColor 不重要
         }
     }
 
-    RenderList(view: SceneView, renders: ISceneRenderItem[], tag: number): void {
+    RenderList(view: IView, renders: IViewRenderItem[], tag: number): void {
         renders.sort((a, b) => a.GetSortValue() - b.GetSortValue());
-        let lastRender: ISceneRenderItem = null;
+        let lastRender: IViewRenderItem = null;
         for (var i = 0; i < renders.length; i++) {
             let render = renders[i];
             if (lastRender != null && render.GetRenderObject() != lastRender.GetRenderObject()) {
@@ -80,12 +74,17 @@ export class Scene {
         let lasttarget: IRenderTarget = null;
         for (var i = 0; i < this.views.length; i++) {
             let v = this.views[i];
-            if (v.target != null && !v.target.IsMainOutput()) {
-                if (lasttarget != v.target) {
+            let target = v.GetTarget();
+            if (target == null)
+                continue;//
+
+            if (!target.IsMainOutput()) {
+                if (lasttarget != target) {
                     if (lasttarget != null)
                         lasttarget.End();
-                    v.target.Begin();
-                    lasttarget = v.target;
+
+                    lasttarget = target;
+                    lasttarget.Begin();
                 }
                 let renders = v.CollRenderItem();
                 this.RenderList(v, renders, 0);
@@ -99,18 +98,21 @@ export class Scene {
         }
 
         //绘制上屏View
-        GameApp.GetMainScreen().Begin();
-        GameApp.GetMainScreen().Clear(this.clearColor);
+        let maintarget = GameApp.GetMainScreen();
+        maintarget.Begin();
+        maintarget.Clear(this.clearColor);
         for (var i = 0; i < this.views.length; i++) {
             let v = this.views[i];
-            if (v.target == null || v.target.IsMainOutput()) {
+            let target = v.GetTarget();
+            if (target == null)
+                target = maintarget;
+            if (target.IsMainOutput()) {
                 let renders = v.CollRenderItem();
                 this.RenderList(v, renders, 0);
-
             }
         }
         GameApp.GetMainScreen().End();
 
-      
+
     }
 }

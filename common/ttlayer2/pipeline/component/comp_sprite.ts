@@ -2,12 +2,12 @@ import { tt } from "../../../ttapi/ttapi.js";
 import { Matrix3x2Math } from "../../math/Matrix3x2.js";
 import { Color, DrawPoint, Rectangle, UVRect, Vector2 } from "../../math/vector.js";
 import { GameApp, getWhiteTexture, ITexture, Render_Batcher } from "../../ttlayer2.js";
-import { ISceneComponent, ISceneItem, ISceneRenderItem } from "../scene.js";
-import { SceneView } from "../sceneview.js";
+import { IView, IViewComponent, IViewItem, IViewRenderItem } from "../viewlist.js";
+import { SceneView } from "../../scene/sceneview.js";
 
-export class Comp_Sprite implements ISceneComponent, ISceneRenderItem {
+export class Comp_Sprite implements IViewComponent, IViewRenderItem {
     GetType(): string { return "sprite" };
-    sceneitem: ISceneItem = null;
+    sceneitem: IViewItem = null;
     tex: ITexture = null;
     uv: UVRect = new UVRect(0, 0, 1, 1);
     size: Vector2 = new Vector2(16, 16);
@@ -15,7 +15,7 @@ export class Comp_Sprite implements ISceneComponent, ISceneRenderItem {
     quad: DrawPoint[] = null;
     static _batcher: Render_Batcher = null;
     static _begin: boolean = false;
-    OnAdd(item: ISceneItem) {
+    OnAdd(item: IViewItem) {
         this.sceneitem = item;
         if (Comp_Sprite._batcher == null) {
             let gl = tt.graphic.GetWebGL();
@@ -83,10 +83,10 @@ export class Comp_Sprite implements ISceneComponent, ISceneRenderItem {
         let y = this.sceneitem.GetWorldMatrix().values[5];
         return y;
     }
-    OnRender(view: SceneView, tag: number): void {
+    OnRender(view: IView, tag: number): void {
         if (tag == 0) {
             if (!Comp_Sprite._begin) {
-                let target = view.target;
+                let target = view.GetTarget();
                 if (target == null)
                     target = GameApp.GetMainScreen();
                 Comp_Sprite._batcher.BeginDraw(target);

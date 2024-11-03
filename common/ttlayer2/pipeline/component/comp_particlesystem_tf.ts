@@ -4,8 +4,8 @@ import { Vector3 } from "../../math/vector.js";
 import { Render, TransformFeedBack } from "../../render/render.js";
 import { GetShaderProgram } from "../../shader/shaders.js";
 import { Color, GameApp, Material, Mesh } from "../../ttlayer2.js";
-import { ISceneComponent, ISceneItem, ISceneRenderItem } from "../scene.js";
-import { SceneView } from "../sceneview.js";
+import { IView, IViewComponent, IViewItem, IViewRenderItem } from "../viewlist.js";
+import { SceneView } from "../../scene/sceneview.js";
 export class ParticleInfo {
     pos: Vector3;
     normal: Vector3
@@ -13,8 +13,8 @@ export class ParticleInfo {
 //基于TransformFeed 的 粒子系统,
 //手机上表现不好,没解决让TransformFeed强行完成的的问题
 export const ParticleSystemInstCount: number = 65536;
-export class Comp_ParticleSystem_TF implements ISceneComponent, ISceneRenderItem {
-    sceneitem: ISceneItem = null;
+export class Comp_ParticleSystem_TF implements IViewComponent, IViewRenderItem {
+    sceneitem: IViewItem = null;
 
     webgl: WebGL2RenderingContext;
     private meshDraw1: Mesh = null;
@@ -29,7 +29,7 @@ export class Comp_ParticleSystem_TF implements ISceneComponent, ISceneRenderItem
     private instIndex: number = 0;
     GetType(): string { return "particleSystem" };
 
-    OnAdd(item: ISceneItem) {
+    OnAdd(item: IViewItem) {
         this.sceneitem = item;
 
         this.matDraw = new Material(GetShaderProgram("simple_inst"));
@@ -241,9 +241,9 @@ export class Comp_ParticleSystem_TF implements ISceneComponent, ISceneRenderItem
         let y = this.sceneitem.GetWorldMatrix().values[5];
         return y;
     }
-    OnRender(view: SceneView, tag: number): void {
+    OnRender(view: IView, tag: number): void {
         if (tag == 0) {
-            let target = view.target;
+            let target = view.GetTarget();
             if (target == null)
                 target = GameApp.GetMainScreen();
             this.matDraw.UpdateMatView();//这个应该跟着View走
