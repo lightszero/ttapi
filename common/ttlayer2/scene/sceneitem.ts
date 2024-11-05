@@ -58,8 +58,9 @@ export class SceneItem implements IViewItem, ISceneItemSetParent {
         });
     }
 
-    GetRender(): IViewRenderItem | null {
-        return this._render;
+    GetRender(renders: IViewRenderItem[]): void {
+        if (this._render != null)
+            renders.push(this._render);
     }
     IsGroup(): boolean {
         return false;
@@ -136,8 +137,13 @@ export class SceneItem_Group implements ISceneItemNode, ISceneItemSetParent {
     }
     private componments: IViewComponent[] = null;
     private _render: IViewRenderItem = null;
-    GetRender(): IViewRenderItem {
-        return this._render;
+    GetRender(tolist: IViewRenderItem[]): void {
+        if (this._render != null) {
+            tolist.push(this._render);
+        }
+        for (let i = 0; i < this.items.length; i++) {
+            this.items[i].GetRender(tolist);
+        }
     }
     AddComponment(comp: IViewComponent): void {
         if (this.componments == null)

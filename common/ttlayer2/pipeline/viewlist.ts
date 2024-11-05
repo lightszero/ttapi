@@ -4,7 +4,11 @@ import { Color, Vector2 } from "../math/vector.js";
 import { GameApp } from "../ttlayer2.js";
 
 
-
+///一个场景化的系统是通用的
+///tiledmap系统 用来绘制背景
+///粒子系统 用来绘制大量粒子
+///粒子系统的变种可以用来绘制大量精灵
+///Canvas系统 用来绘制大量精灵
 export interface ITran {
     pos: Vector2;
     scale: Vector2;
@@ -28,8 +32,8 @@ export interface IViewItem extends ITran {
     GetWorldMatrix(): Matrix3x2;
 
     OnUpdate(delta: number): void;
-    GetRender(): IViewRenderItem | null;
-    IsGroup(): boolean
+    GetRender(tolist: IViewRenderItem[]): void;
+
     AddComponment(comp: IViewComponent): void
     GetComponments(): IViewComponent[];
     GetComponment(Type: string): IViewComponent;
@@ -37,10 +41,11 @@ export interface IViewItem extends ITran {
 
 
 export interface IView {
+    tag: string;
     GetTarget(): IRenderTarget;
     GetViewMatrix(): Float32Array;
     Update(delta: number): void;
-    CollRenderItem(): IViewRenderItem[];
+    CollRenderItem(tolist: IViewRenderItem[]): void;
 }
 
 export class ViewList {
@@ -86,7 +91,8 @@ export class ViewList {
                     lasttarget = target;
                     lasttarget.Begin();
                 }
-                let renders = v.CollRenderItem();
+                let renders: IViewRenderItem[] = [];
+                v.CollRenderItem(renders);
                 this.RenderList(v, renders, 0);
             }
 
@@ -107,7 +113,8 @@ export class ViewList {
             if (target == null)
                 target = maintarget;
             if (target.IsMainOutput()) {
-                let renders = v.CollRenderItem();
+                let renders: IViewRenderItem[] = [];
+                v.CollRenderItem(renders);
                 this.RenderList(v, renders, 0);
             }
         }

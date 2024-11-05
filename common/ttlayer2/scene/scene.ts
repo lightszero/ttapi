@@ -11,7 +11,7 @@ export interface ISceneItemNode extends ISceneItem {
     GetItems(): ISceneItem[];
     SetItems(items: ISceneItem[]): void
 }
-export interface ISceneItem extends IViewItem
-{
+export interface ISceneItem extends IViewItem {
     GetParent(): ISceneItemNode;
+    IsGroup(): boolean;
 }

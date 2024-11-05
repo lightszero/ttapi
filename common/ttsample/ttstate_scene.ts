@@ -5,6 +5,7 @@ import { Comp_Label } from "../ttlayer2/pipeline/component/comp_label.js";
 import { Comp_ParticleSystem } from "../ttlayer2/pipeline/component/comp_particlesystem.js";
 import { Comp_ParticleSystem_TF, ParticleInfo } from "../ttlayer2/pipeline/component/comp_particlesystem_tf.js";
 import { Comp_Sprite } from "../ttlayer2/pipeline/component/comp_sprite.js";
+import { FlatView, FlatViewItem } from "../ttlayer2/pipeline/flatview.js";
 import { SceneView } from "../ttlayer2/scene/sceneview.js";
 
 import { GameApp, IState, SceneItem, SceneItem_Group } from "../ttlayer2/ttlayer2.js";
@@ -46,25 +47,25 @@ export class TTState_Scene implements IState {
         }
         console.log("hello ha.")
 
-        let view = new SceneView();
+        let view = new FlatView();
         GameApp.GetViewList().views.push(view);
         {
-            let sceneitem = new SceneItem();
+            let sceneitem = new FlatViewItem();
             sceneitem.scale.X = 5;
             sceneitem.scale.Y = 5;
-            view.root.AddChild(sceneitem);
+            view.items.push(sceneitem);
             let comp = this.comp_p = new Comp_ParticleSystem();
 
             sceneitem.AddComponment(comp);
         }
 
         {
-            let sceneitem = new SceneItem();
+            let sceneitem = new FlatViewItem();
             sceneitem.scale.X = 1;
             sceneitem.scale.Y = 1;
             sceneitem.pos.X = -150;
             sceneitem.pos.Y = -150;
-            view.root.AddChild(sceneitem);
+            view.items.push(sceneitem);
             let comp = this.comp_l = new Comp_Label();
             comp.font = this.font = new Font(tt.graphic.GetWebGL(), "VonwaonBitmap-16px", 24);
             comp.text = "FPS:label";

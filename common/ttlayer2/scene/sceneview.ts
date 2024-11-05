@@ -8,6 +8,8 @@ import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
 
 export class SceneView implements IView {
     //impl for view
+    tag:string;
+
     target: IRenderTarget = null;
     GetTarget(): IRenderTarget {
         return this.target;
@@ -27,22 +29,9 @@ export class SceneView implements IView {
     Update(delta: number): void {
         this.root.OnUpdate(delta);
     }
-    CollRenderItem(): IViewRenderItem[] {
-        let list: IViewRenderItem[] = [];
-        SceneView._CollRenderItemDepth(list, this.root);
-        return list;
+    CollRenderItem(list: IViewRenderItem[]): void {
+        this.root.GetRender(list);
+      
     }
-    private static _CollRenderItemDepth(list: IViewRenderItem[], group: ISceneItemNode): void {
-        let items = group.GetItems();
-        for (var i = 0; i < items.length; i++) {
-            let item = items[i];
-            let r = item.GetRender();
-            if (r != null) {
-                list.push(r);
-            }
-            if (item.IsGroup()) {
-                this._CollRenderItemDepth(list, item as ISceneItemNode);
-            }
-        }
-    }
+
 }
