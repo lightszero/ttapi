@@ -1,4 +1,5 @@
-import { tt } from "../../ttapi_interface/ttapi.js";
+
+import { Sprite, Border, Render_Batcher, Rectangle, Color, DrawPoint } from "../ttlayer2/ttlayer2.js";
 import * as QUI from "./qui_base.js"
 //9宫格,通常用于实现边角缩放的UI背景之类的功能
 export class QUI_Scale9 {
@@ -8,7 +9,7 @@ export class QUI_Scale9 {
     //minwidth 最小尺寸，如果给0，自动计算
     //minheight 最小尺寸，如果给0，自动计算
     //如果小于最小尺寸，无法正确渲染
-    constructor(sprite: tt.Sprite, border: tt.Border, minwidth: number = 0, minheight: number = 0) {
+    constructor(sprite: Sprite, border: Border, minwidth: number = 0, minheight: number = 0) {
 
         this.sprite = sprite;
         this.l = border.XLeft;
@@ -51,7 +52,7 @@ export class QUI_Scale9 {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Image_Scale9;
     }
-    sprite: tt.Sprite;
+    sprite: Sprite;
     l: number; t: number; r: number; b: number; //边距
     u0: number; u1: number; u2: number; u3: number; //分线uv
     v0: number; v1: number; v2: number; v3: number;
@@ -66,15 +67,15 @@ export class QUI_Scale9 {
         return this._minheight;
     }
 
-    private _Render1RectWithLimit(u1: number, u2: number, v1: number, v2: number, batcher: tt.IBatcher, rect: tt.Rectangle, limitRect: tt.Rectangle, color: tt.Color | null = null, palindex: number = -1): void {
-        let rectbuf = tt.Sprite._rectbuf
+    private _Render1RectWithLimit(u1: number, u2: number, v1: number, v2: number, batcher: Render_Batcher, rect: Rectangle, limitRect: Rectangle, color: Color | null = null, palindex: number = -1): void {
+        let rectbuf = Sprite._rectbuf
         while (rectbuf.length < 4) {
-            rectbuf.push(new tt.DrawPoint());
+            rectbuf.push(new DrawPoint());
         }
-        if (tt.Sprite._colorbuf == null) {
-            tt.Sprite._colorbuf = tt.Color.White;
+        if (Sprite._colorbuf == null) {
+            Sprite._colorbuf = Color.White;
         }
-        let _color = color == null ? tt.Sprite._colorbuf : color;
+        let _color = color == null ? Sprite._colorbuf : color;
 
         let palu = 0;
         let palv = 0;
@@ -186,19 +187,19 @@ export class QUI_Scale9 {
         rectbuf[3].palx = palu;
         rectbuf[3].paly = palv;
         rectbuf[3].eff = this.sprite.effect;
-        batcher.DrawQuads(this.sprite.tex, null, this.sprite.texpal, rectbuf, 1);
+        batcher.DrawQuads(this.sprite.tex, this.sprite.texpal, rectbuf, 1);
     }
-    private _Render1Rect(u1: number, u2: number, v1: number, v2: number, batcher: tt.IBatcher, rect: tt.Rectangle, color: tt.Color | null = null, palindex: number = -1) {
+    private _Render1Rect(u1: number, u2: number, v1: number, v2: number, batcher: Render_Batcher, rect: Rectangle, color: Color | null = null, palindex: number = -1) {
         if (u1 == u2 || v1 == v2)
             return;
-        let rectbuf = tt.Sprite._rectbuf
+        let rectbuf = Sprite._rectbuf
         while (rectbuf.length < 4) {
-            rectbuf.push(new tt.DrawPoint());
+            rectbuf.push(new DrawPoint());
         }
-        if (tt.Sprite._colorbuf == null) {
-            tt.Sprite._colorbuf = tt.Color.White;
+        if (Sprite._colorbuf == null) {
+            Sprite._colorbuf = Color.White;
         }
-        let _color = color == null ? tt.Sprite._colorbuf : color;
+        let _color = color == null ? Sprite._colorbuf : color;
 
         let palu = 0;
         let palv = 0;
@@ -254,14 +255,14 @@ export class QUI_Scale9 {
         rectbuf[3].palx = palu;
         rectbuf[3].paly = palv;
         rectbuf[3].eff = this.sprite.effect;
-        batcher.DrawQuads(this.sprite.tex, null, this.sprite.texpal, rectbuf, 1);
+        batcher.DrawQuads(this.sprite.tex, this.sprite.texpal, rectbuf, 1);
     }
-    RenderRect(batcher: tt.IBatcher, rect: tt.Rectangle, color: tt.Color | null = null, palindex: number = -1, imgscale: number) {
+    RenderRect(batcher: Render_Batcher, rect: Rectangle, color: Color | null = null, palindex: number = -1, imgscale: number) {
         let l = this.l * imgscale;
         let r = this.r * imgscale;
         let t = this.t * imgscale;
         let b = this.b * imgscale;
-        let rt = new tt.Rectangle(0, 0, 1, 1);
+        let rt = new Rectangle(0, 0, 1, 1);
         //line01
         rt.Y = rect.Y;
         rt.Height = t;
@@ -304,12 +305,12 @@ export class QUI_Scale9 {
         rt.Width = r;
         this._Render1Rect(this.u2, this.u3, this.v2, this.v3, batcher, rt, color, palindex);
     }
-    RenderRectWithLimit(batcher: tt.IBatcher, rect: tt.Rectangle, limitRect: tt.Rectangle, color: tt.Color | null = null, palindex: number = -1, imgscale: number) {
+    RenderRectWithLimit(batcher: Render_Batcher, rect: Rectangle, limitRect: Rectangle, color: Color | null = null, palindex: number = -1, imgscale: number) {
         let l = this.l * imgscale;
         let r = this.r * imgscale;
         let t = this.t * imgscale;
         let b = this.b * imgscale;
-        let rt = new tt.Rectangle(0, 0, 1, 1);
+        let rt = new Rectangle(0, 0, 1, 1);
         //line01
         rt.Y = rect.Y;
         rt.Height = t;

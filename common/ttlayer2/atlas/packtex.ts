@@ -1,97 +1,9 @@
 import { Color, DrawPoint, Rectangle, Vector2 } from "../math/vector.js";
 import * as maxrect from "../maxrects_packer/src/index.js"
-import { Render_Batcher, Texture, TextureFormat } from "../ttlayer2.js"
+import { ITexture, Render_Batcher, Sprite, Texture, TextureFormat } from "../ttlayer2.js"
 
 //精灵,为啥又重写,之前的分层做的不清晰
-export class Sprite {
-    name: string;
-    u0: number;
-    v0: number;
-    u1: number;
-    v1: number;
-    marginx: number;//左上内缩,sprite实际尺寸可以比uv区域大
-    marginy: number;
-    width: number;
-    height: number;
-    offsetx: number; //中心点
-    offsety: number;
-    tex: PackTexture;
-    private static _quad: DrawPoint[] = null;
-    Render(bathcer: Render_Batcher, pos: Vector2, scale: Vector2, color: Color, eff: number) {
-        if (Sprite._quad == null) {
-            Sprite._quad = [];
-            Sprite._quad.push(new DrawPoint());
-            Sprite._quad.push(new DrawPoint());
-            Sprite._quad.push(new DrawPoint());
-            Sprite._quad.push(new DrawPoint());
-        }
-        let px0 = pos.X + (this.offsetx) * (scale.X);
-        let py0 = pos.Y + (this.offsety) * (scale.Y);
-        let px1 = pos.X + (this.u1 - this.u0 + this.offsetx) * scale.X;
-        let py1 = pos.Y + (this.v1 - this.v0 + this.offsety) * scale.Y;
-        let p0 = Sprite._quad[0];
-        p0.x = px0;
-        p0.y = py0;
-        p0.z = 0;
-        p0.r = color.R;
-        p0.g = color.G;
-        p0.b = color.B;
-        p0.a = color.A;
-        p0.u = this.u0 / this.tex._width;
-        p0.v = this.v0 / this.tex._height;
-        p0.palx = 0;
-        p0.paly = 0;
-        p0.anyz = 0;
-        p0.eff = eff;
-        let p1 = Sprite._quad[1];
-        p1.x = px1;
-        p1.y = py0;
-        p1.z = 0;
-        p1.r = color.R;
-        p1.g = color.G;
-        p1.b = color.B;
-        p1.a = color.A;
-        p1.u = this.u1 / this.tex._width;
-        p1.v = this.v0 / this.tex._height;
-        p1.palx = 0;
-        p1.paly = 0;
-        p1.anyz = 0;
-        p1.eff = eff;
-        let p2 = Sprite._quad[2];
-        p2.x = px0;
-        p2.y = py1;
-        p2.z = 0;
-        p2.r = color.R;
-        p2.g = color.G;
-        p2.b = color.B;
-        p2.a = color.A;
-        p2.u = this.u0 / this.tex._width;
-        p2.v = this.v1 / this.tex._height;
-        p2.palx = 0;
-        p2.paly = 0;
-        p2.anyz = 0;
-        p2.eff = eff;
-        let p3 = Sprite._quad[3];
-        p3.x = px1;
-        p3.y = py1;
-        p3.z = 0;
-        p3.r = color.R;
-        p3.g = color.G;
-        p3.b = color.B;
-        p3.a = color.A;
-        p3.u = this.u1 / this.tex._width;
-        p3.v = this.v1 / this.tex._height;
-        p3.palx = 0;
-        p3.paly = 0;
-        p3.anyz = 0;
-        p3.eff = eff;
 
-        bathcer.DrawQuads(this.tex, null, Sprite._quad, 1);
-    }
-    RenderWithLimit(bathcer: Render_Batcher, pos: Vector2, scale: Vector2, color: Color, eff: number, limitRect: Rectangle): void {
-
-    }
-}
 export class SpriteData {
     format: TextureFormat
     width: number;
@@ -204,18 +116,15 @@ export class PackTexture extends Texture {
             }
         }
         this.dirty = true;
-        let s = new Sprite();
-        s.u0 = rect.x;
-        s.v0 = rect.y;
-        s.u1 = rect.x + data.width;
-        s.v1 = rect.y + data.height;
-        s.marginx = 0;
-        s.marginy = 0;
-        s.width = data.width;
-        s.height = data.height;
-        s.offsetx = 0;
-        s.offsety = 0;
-        s.name = name;
+        let s = new Sprite(this,null);
+       
+        s.uv.U1 = rect.x;
+        s.uv.V1 = rect.y;
+        s.uv.U2 = rect.x + data.width;
+        s.uv.V2 = rect.y + data.height;
+        s.pixelwidth=data.width;
+        s.pixelheight=data.height;
+      
         s.tex = this;
         this.sprites.push(s);
         if (name != null) {

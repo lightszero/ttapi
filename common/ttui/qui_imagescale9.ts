@@ -1,4 +1,5 @@
-import { tt } from "../../ttapi_interface/ttapi.js";
+
+import { Color, Rectangle } from "../ttlayer2/ttlayer2.js";
 import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
 import * as QUIS9 from "./qui_scale9.js"
@@ -9,9 +10,9 @@ export class QUI_ImageScale9 extends QUI.QUI_BaseElement {
         super();
         this.scale9 = scale9;
         if (scale9 != null)
-            this.localRect.setByRect(new tt.Rectangle(0, 0, scale9.getMinWidth(), scale9.getMinHeight()));
+            this.localRect.setByRect(new Rectangle(0, 0, scale9.getMinWidth(), scale9.getMinHeight()));
         else
-            this.localRect.setByRect(new tt.Rectangle(0, 0, 128, 128));
+            this.localRect.setByRect(new Rectangle(0, 0, 128, 128));
     }
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Image_Scale9;
@@ -30,7 +31,7 @@ export class QUI_ImageScale9 extends QUI.QUI_BaseElement {
         return elem;
     }
     scale9: QUIS9.QUI_Scale9 | null;
-    color: tt.Color = tt.Color.White;
+    color: Color = Color.White;
 
     OnRender(_canvas: QUI_Canvas): void {
 

@@ -1,4 +1,5 @@
-import { tt } from "../../ttapi_interface/ttapi.js";
+import { tt } from "../ttapi/ttapi.js";
+import { Rectangle } from "../ttlayer2/ttlayer2.js";
 import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
 
@@ -6,7 +7,7 @@ import { QUI_Canvas } from "./qui_canvas.js";
 export class QUI_Button extends QUI.QUI_BaseElement {
     constructor() {
         super();
-        this.localRect.setByRect(new tt.Rectangle(0, 0, 100, 100));
+        this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
     }
     Clone(): QUI.QUI_IElement {
         let btn = new QUI_Button();

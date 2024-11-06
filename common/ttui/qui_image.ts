@@ -1,17 +1,18 @@
-import { tt } from "../../ttapi_interface/ttapi.js";
+
+import { Color, Rectangle, Sprite } from "../ttlayer2/ttlayer2.js";
 import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
 
 
 export class QUI_Image extends QUI.QUI_BaseElement {
-    constructor(sprite: tt.Sprite | null = null) {
+    constructor(sprite: Sprite | null = null) {
         super();
         this.sprite = sprite;
         if (this.sprite != null) {
-            this.localRect.setByRect(new tt.Rectangle(0, 0, sprite.pixelwidth, sprite.pixelheight));
+            this.localRect.setByRect(new Rectangle(0, 0, sprite.pixelwidth, sprite.pixelheight));
         }
         else {
-            this.localRect.setByRect(new tt.Rectangle(0, 0, 100, 100));
+            this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
         }
     }
     Clone(): QUI.QUI_IElement {
@@ -30,8 +31,8 @@ export class QUI_Image extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Image;
     }
-    sprite: tt.Sprite | null;
-    color: tt.Color = tt.Color.White;
+    sprite: Sprite | null;
+    color: Color = Color.White;
 
     OnRender(_canvas: QUI_Canvas): void {
 

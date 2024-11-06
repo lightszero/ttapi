@@ -1,3 +1,5 @@
+//柏林噪声好像不需要出现在这里
+
 export class PerlinNoise {
     // 所有可能的hash值，0-255
     private static permutation: Uint8Array = new Uint8Array([

@@ -1,14 +1,15 @@
-import { tt } from "../../ttapi_interface/ttapi.js";
+import { tt } from "../ttapi/ttapi.js";
+import { Rectangle,IRenderTarget, Render_Batcher } from "../ttlayer2/ttlayer2.js";
 import * as QUI from "./qui_base.js"
 
 
 export class QUI_Canvas extends QUI.QUI_BaseElement {
-    constructor(target: tt.IRenderTarget) {
+    constructor(target: IRenderTarget) {
         super();
         this.target = target;
-        this.batcherUI = tt.graphic.CreateRenderer_Batcher();
+        this.batcherUI =new Render_Batcher(tt.graphic.GetWebGL());// tt.graphic.CreateRenderer_Batcher();
         //设置canvas 基本尺寸
-        this.localRect.setByRect(new tt.Rectangle(0, 0, this.target.getWidth(), this.target.getHeight()));
+        this.localRect.setByRect(new Rectangle(0, 0, this.target.getWidth(), this.target.getHeight()));
 
         //让batcher的中心点看着target中心点，这样就会把0，0点移动到左上角
         this.batcherUI.LookAt.X = this.target.getWidth() / 2;
@@ -20,8 +21,8 @@ export class QUI_Canvas extends QUI.QUI_BaseElement {
     //Canvas Scale 不改变输出分辨率，而是直接缩放
     //而tt.graphic.setMainScreenScale 会直接改变输出分辨率
     scale: number = 1.0;
-    batcherUI: tt.IBatcher;
-    target: tt.IRenderTarget;
+    batcherUI: Render_Batcher;
+    target: IRenderTarget;
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Canvas;
     }
@@ -36,7 +37,7 @@ export class QUI_Canvas extends QUI.QUI_BaseElement {
 
         let scalewidth = this.target.getWidth() / this.scale;
         let scaleheight = this.target.getHeight() / this.scale;
-        this.localRect.setByRect(new tt.Rectangle(0, 0, scalewidth, scaleheight));
+        this.localRect.setByRect(new Rectangle(0, 0, scalewidth, scaleheight));
         super.OnUpdate(delta);
     }
     OnRender(_canvas: QUI_Canvas): void {

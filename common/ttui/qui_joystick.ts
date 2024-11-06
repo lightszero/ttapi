@@ -1,4 +1,5 @@
-import { tt } from "../../ttapi_interface/ttapi.js";
+import { tt } from "../ttapi/ttapi.js";
+import { Color, Rectangle, Sprite, Vector2 } from "../ttlayer2/ttlayer2.js";
 import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
 
@@ -22,7 +23,7 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
 
         elem.spriteJoyBack = this.spriteJoyBack;
         elem.spriteJoyHot = this.spriteJoyHot;
-        //elem.touchArea = tt.RectangleMath.Clone(this.touchArea);
+        //elem.touchArea = RectangleMath.Clone(this.touchArea);
         elem.touchBackSize = this.touchBackSize.Clone();
         elem.touchHotSize = this.touchHotSize.Clone();
         elem.hotMaxDist = this.hotMaxDist;
@@ -32,22 +33,22 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
     }
 
 
-    spriteJoyBack: tt.Sprite | null;
-    spriteJoyHot: tt.Sprite | null;
-    //touchArea: tt.Rectangle = new tt.Rectangle(100, 100, 320, 320);//整体可触碰区域
+    spriteJoyBack: Sprite | null;
+    spriteJoyHot: Sprite | null;
+    //touchArea: Rectangle = new Rectangle(100, 100, 320, 320);//整体可触碰区域
 
 
-    touchBackSize: tt.Vector2 = new tt.Vector2(160, 160);//背景图大小
-    private _touchBackPoint: tt.Vector2 = new tt.Vector2(100, 100);//背景区中心点
+    touchBackSize: Vector2 = new Vector2(160, 160);//背景图大小
+    private _touchBackPoint: Vector2 = new Vector2(100, 100);//背景区中心点
 
-    touchHotSize: tt.Vector2 = new tt.Vector2(160, 160);//热点图尺寸
+    touchHotSize: Vector2 = new Vector2(160, 160);//热点图尺寸
     hotMaxDist: number = 100;
-    private _touchHotPoint: tt.Vector2 = new tt.Vector2(100, 100);//触摸区中心点
-    GetTouchDirection(): tt.Vector2 | null {
+    private _touchHotPoint: Vector2 = new Vector2(100, 100);//触摸区中心点
+    GetTouchDirection(): Vector2 | null {
         if (this._press == false)
             return null;
         else {
-            let dec = new tt.Vector2(
+            let dec = new Vector2(
                 (this._touchHotPoint.X - this._touchBackPoint.X) / this.hotMaxDist,
                 (this._touchHotPoint.Y - this._touchBackPoint.Y) / this.hotMaxDist
             )
@@ -55,7 +56,7 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
         }
     }
 
-    color: tt.Color = tt.Color.White;
+    color: Color = Color.White;
     private _press: boolean = false;
     private _pressid: number = 0;
     OnRender(_canvas: QUI_Canvas): void {
@@ -65,7 +66,7 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
         //this.Render_impl();
         if (this._press) {
             if (this.spriteJoyBack != null) {
-                let touchbackrect = new tt.Rectangle(
+                let touchbackrect = new Rectangle(
                     (this._touchBackPoint.X - this.touchBackSize.X / 2) * _canvas.scale + sw.X * _canvas.scale,
                     (this._touchBackPoint.Y - this.touchBackSize.Y / 2) * _canvas.scale + sw.Y * _canvas.scale,
                     (this.touchBackSize.X) * _canvas.scale,
@@ -74,7 +75,7 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
                 this.spriteJoyBack.RenderRect(_canvas.batcherUI, touchbackrect);
             }
             if (this.spriteJoyHot != null) {
-                let touchhotrect = new tt.Rectangle(
+                let touchhotrect = new Rectangle(
                     (this._touchHotPoint.X - this.touchHotSize.X / 2) * _canvas.scale + sw.X * _canvas.scale,
                     (this._touchHotPoint.Y - this.touchHotSize.Y / 2) * _canvas.scale + sw.Y * _canvas.scale,
                     (this.touchHotSize.X) * _canvas.scale,
@@ -92,7 +93,7 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
     }
     private _updateKeyBoardToDir() {
         let p = false;
-        let dir = tt.Vector2.Zero;
+        let dir = Vector2.Zero;
         if (tt.input.IsKeyDown("KeyW")) {
             this.keymode = true;
             p = true;
@@ -119,11 +120,11 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
                 this._press = true;
                 let sw = this.getWorldRect();
 
-                this._touchBackPoint = new tt.Vector2(
+                this._touchBackPoint = new Vector2(
                     this.touchBackSize.X / 2,
                     sw.Height - this.touchBackSize.Y / 2
                 );
-                this._touchHotPoint = new tt.Vector2(
+                this._touchHotPoint = new Vector2(
                     this._touchBackPoint.X + dir.X * this.hotMaxDist,
                     this._touchBackPoint.Y + dir.Y * this.hotMaxDist);
             }
@@ -156,7 +157,7 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
                 this._pressid = touchid;
                 let lx = x - prect.X
                 let ly = y - prect.Y;
-                let lpoint = new tt.Vector2(lx, ly);
+                let lpoint = new Vector2(lx, ly);
                 let tx2 = rect.Width - this.touchBackSize.X / 2;
                 let ty2 = rect.Height - this.touchBackSize.Y / 2;
                 if (lx < this.touchBackSize.X / 2)
@@ -170,12 +171,12 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
                 this._touchBackPoint.X = lx;
                 this._touchBackPoint.Y = ly;
 
-                let dist = tt.Vector2.Dist(this._touchBackPoint, lpoint);
+                let dist = Vector2.Dist(this._touchBackPoint, lpoint);
                 if (dist > this.hotMaxDist) {
-                    let dir = tt.Vector2.Dir(this._touchBackPoint, lpoint);
+                    let dir = Vector2.Dir(this._touchBackPoint, lpoint);
                     dir.X *= this.hotMaxDist;
                     dir.Y *= this.hotMaxDist;
-                    lpoint = tt.Vector2.Add(this._touchBackPoint, dir);
+                    lpoint = Vector2.Add(this._touchBackPoint, dir);
                 }
                 this._touchHotPoint.X = lpoint.X;
                 this._touchHotPoint.Y = lpoint.Y;
@@ -185,14 +186,14 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
         }
         //拖拽
         if (this._press == true && press == true && this._pressid == touchid) {
-            let lpoint = new tt.Vector2(x - prect.X, y - prect.Y);
+            let lpoint = new Vector2(x - prect.X, y - prect.Y);
 
-            let dist = tt.Vector2.Dist(this._touchBackPoint, lpoint);
+            let dist = Vector2.Dist(this._touchBackPoint, lpoint);
             if (dist > this.hotMaxDist) {
-                let dir = tt.Vector2.Dir(this._touchBackPoint, lpoint);
+                let dir = Vector2.Dir(this._touchBackPoint, lpoint);
                 dir.X *= this.hotMaxDist;
                 dir.Y *= this.hotMaxDist;
-                lpoint = tt.Vector2.Add(this._touchBackPoint, dir);
+                lpoint = Vector2.Add(this._touchBackPoint, dir);
 
             }
             this._touchHotPoint.X = lpoint.X;

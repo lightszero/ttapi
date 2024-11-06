@@ -1,6 +1,6 @@
-import { tt } from "../../ttapi_interface/ttapi.js";
-import { QUI_Canvas } from "./qui_canvas.js";
 
+import { QUI_Canvas } from "./qui_canvas.js";
+import { Rectangle } from "../ttlayer2/ttlayer2.js";
 //开发一个简洁的UI系统
 export enum QUI_DragDriection {
     None,
@@ -50,7 +50,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         nr.offsetY2 = this.offsetY2;
         return nr;
     }
-    getFinalRect(parentFinal: tt.Rectangle): tt.Rectangle {
+    getFinalRect(parentFinal: Rectangle): Rectangle {
         let px1 = parentFinal.X;
         let px2 = parentFinal.X + parentFinal.Width;
         let py1 = parentFinal.Y;
@@ -59,10 +59,10 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         let y1 = py1 + this.radioY1 * (py2 - py1) + this.offsetY1;
         let x2 = px1 + this.radioX2 * (px2 - px1) + this.offsetX2;
         let y2 = py1 + this.radioY2 * (py2 - py1) + this.offsetY2;
-        let r = new tt.Rectangle(x1, y1, x2 - x1, y2 - y1);
+        let r = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         return r;
     }
-    getFinalRectScale(parentFinal: tt.Rectangle, scale: number): tt.Rectangle {
+    getFinalRectScale(parentFinal: Rectangle, scale: number): Rectangle {
         let px1 = parentFinal.X;
         let px2 = parentFinal.X + parentFinal.Width;
         let py1 = parentFinal.Y;
@@ -71,7 +71,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         let y1 = (py1 + this.radioY1 * (py2 - py1) + this.offsetY1) * scale;
         let x2 = (px1 + this.radioX2 * (px2 - px1) + this.offsetX2) * scale;
         let y2 = (py1 + this.radioY2 * (py2 - py1) + this.offsetY2) * scale;
-        let r = new tt.Rectangle(x1, y1, x2 - x1, y2 - y1);
+        let r = new Rectangle(x1, y1, x2 - x1, y2 - y1);
         return r;
     }
     //按照填充模式设置控件位置
@@ -89,7 +89,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         this.offsetY2 = 0;
     }
     //按照左上角定位模式设置控件位置&尺寸
-    setByRect(rect: tt.Rectangle): void {
+    setByRect(rect: Rectangle): void {
         // 该函数等价于
         // this.setHPosByLeftBorder(rect.Width,rect.X);
         // this.setVPosByTopBorder(rect.Height,rect.Y);
@@ -204,7 +204,7 @@ export interface QUI_IElement {
     Enable: boolean; //组件是否活动
     Tag: string | null;
     //得到最终位置，考虑父组件
-    getWorldRect(): tt.Rectangle;
+    getWorldRect(): Rectangle;
     alpha: number;
     Clone(): QUI_IElement;
 }
@@ -337,26 +337,26 @@ export abstract class QUI_BaseElement implements QUI_IElement {
 
 
     //得到最终位置，考虑父组件
-    getWorldRect(): tt.Rectangle {
+    getWorldRect(): Rectangle {
         if (this._parent == null) {
             let x1 = this.localRect.offsetX1;
             let y1 = this.localRect.offsetY1;
             let x2 = this.localRect.offsetX2;
             let y2 = this.localRect.offsetY2;
-            return new tt.Rectangle(x1, y1, x2 - x1, y2 - y1);
+            return new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
         else {
             let pw = this._parent.getWorldRect();
             return this.localRect.getFinalRect(pw);
         }
     }
-    getWorldRectScale(scale: number): tt.Rectangle {
+    getWorldRectScale(scale: number): Rectangle {
         if (this._parent == null) {
             let x1 = this.localRect.offsetX1 * scale;
             let y1 = this.localRect.offsetY1 * scale;
             let x2 = this.localRect.offsetX2 * scale;
             let y2 = this.localRect.offsetY2 * scale;
-            return new tt.Rectangle(x1, y1, (x2 - x1), y2 - y1);
+            return new Rectangle(x1, y1, (x2 - x1), y2 - y1);
         }
         else {
             let pw = this._parent.getWorldRect();

@@ -1,5 +1,5 @@
 
-import { tt } from "../../../ttapi_interface/ttapi.js";
+import { tt } from "../../ttapi/ttapi.js";
 import * as QUI from "../qui_base.js"
 import { QUI_Container } from "../qui_container.js";
 import { QUI_Panel } from "./qui_panel.js";

@@ -1,6 +1,6 @@
 import { Color, Rectangle, Vector2 } from "../math/vector.js";
-import { Render_Batcher, TextTool, Texture, TextureFormat } from "../ttlayer2.js";
-import { PackTexture, Sprite, SpriteData } from "./packtex.js";
+import { Render_Batcher, Sprite, TextTool, Texture, TextureFormat } from "../ttlayer2.js";
+import { PackTexture, SpriteData } from "./packtex.js";
 
 export class Font {
     constructor(webgl: WebGL2RenderingContext, font: string, size: number) {
@@ -56,12 +56,20 @@ export class Font {
 
 
     }
-    SureText(text: string): void {
-
+    SureText(text: string,): number {
+        let width = 0;
         for (var i = 0; i < text.length; i++) {
-            this._CacheCharSprite(text.charCodeAt(i));
+            let _s = this._CacheCharSprite(text.charCodeAt(i));
+            if (_s != null) {
+                width += _s.totalWidth;
+            }
+            else {
+                width += this.fontsize / 2;
+            }
+
         }
         this.fonttex.Apply();
+        return width;
     }
     RenderText(bathcer: Render_Batcher, text: string, pos: Vector2, scale: Vector2, color: Color): void {
         //tt.platform.Log("==render"+text);
@@ -72,27 +80,30 @@ export class Font {
                 //let rect = new Rectangle(pos.X + xadd, pos.Y, s.totalWidth * scale.X, s.totalHeight * scale.Y);
                 //s.RenderRect(bathcer, rect, color)
                 s.Render(bathcer, new Vector2(pos.X + xadd, pos.Y), scale, color, 4);
-                xadd += (s.width * scale.X);
+                xadd += (s.pixelwidth * scale.X);
             }
             else {
                 xadd += this.fontsize / 2 * scale.X;
             }
         }
     }
+
     RenderTextWithLimit(bathcer: Render_Batcher, text: string, pos: Vector2, scale: Vector2, color: Color, limitRect: Rectangle): void {
         let xadd = 0;
         for (var i = 0; i < text.length; i++) {
             let s = this.GetCharSprite(text.charCodeAt(i));
             if (s != null) {
-                let rect = new Rectangle(pos.X + xadd, pos.Y, s.width * scale.X, s.height * scale.Y);
-                s.RenderWithLimit(bathcer, new Vector2(pos.X + xadd, pos.Y), scale, color, 4, limitRect);
+                let rect = new Rectangle(pos.X + xadd, pos.Y, s.pixelwidth * scale.X, s.pixelheight * scale.Y);
+                s.RenderRectWithLimit(bathcer, rect, limitRect, color);
 
                 //s.Render(bathcer, new Vector2(pos.X + xadd, pos.Y), scale, color);
-                xadd += (s.width * scale.X);
+                xadd += (s.totalWidth * scale.X);
             }
             else {
                 xadd += this.fontsize / 2 * scale.X;
             }
         }
     }
+
+
 }

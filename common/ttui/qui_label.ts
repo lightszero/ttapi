@@ -1,14 +1,15 @@
-import { tt } from "../../ttapi_interface/ttapi.js";
+
+import { Color, Rectangle, Vector2,Font } from "../ttlayer2/ttlayer2.js";
 import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
 
 export class QUI_Label extends QUI.QUI_BaseElement {
 
-    constructor(font: tt.Font | null = null, txt: string = "") {
+    constructor(font: Font | null = null, txt: string = "") {
         super();
         this.font = font;
         this.text = txt;
-        this.localRect.setByRect(new tt.Rectangle(0, 0, 100, 100));
+        this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
     }
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Label;
@@ -31,15 +32,15 @@ export class QUI_Label extends QUI.QUI_BaseElement {
         elem.valign = this.valign;
         return elem;
     }
-    font: tt.Font | null;
+    font: Font | null;
     text: string;
-    color: tt.Color = tt.Color.White;
+    color: Color = Color.White;
     //是否裁剪
-    fontScale: tt.Vector2 = new tt.Vector2(1.0, 1.0);
+    fontScale: Vector2 = new Vector2(1.0, 1.0);
     cut: boolean = false;
     halign: QUI.QUI_HAlign = QUI.QUI_HAlign.Middle;
     valign: QUI.QUI_VAlign = QUI.QUI_VAlign.Middle;
-    private _pos: tt.Vector2 = new tt.Vector2(0, 0);
+    private _pos: Vector2 = new Vector2(0, 0);
     OnRender(_canvas: QUI_Canvas): void {
 
         this.color.A = this.alpha;
@@ -48,7 +49,7 @@ export class QUI_Label extends QUI.QUI_BaseElement {
             let sw = this.getWorldRectScale(_canvas.scale);
 
             let fontheight = this.font.GetFontSize() * this.fontScale.Y * _canvas.scale;
-            let fontwidth = this.font.SureText(this.text, this.fontScale.X * _canvas.scale);
+            let fontwidth = this.font.SureText(this.text) * this.fontScale.X * _canvas.scale;
             if (this.halign == QUI.QUI_HAlign.Left) {
                 this._pos.X = sw.X;
             }
@@ -70,7 +71,7 @@ export class QUI_Label extends QUI.QUI_BaseElement {
             }
 
 
-            let _outs = new tt.Vector2(this.fontScale.X * _canvas.scale, this.fontScale.Y * _canvas.scale);
+            let _outs = new Vector2(this.fontScale.X * _canvas.scale, this.fontScale.Y * _canvas.scale);
             if (this.cut) {
                 this.font.RenderTextWithLimit(_canvas.batcherUI, this.text, this._pos, _outs, this.color, sw);
             }

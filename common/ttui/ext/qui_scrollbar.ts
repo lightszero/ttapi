@@ -1,4 +1,5 @@
-import { tt } from "../../../ttapi_interface/ttapi.js";
+
+import { Rectangle } from "../../ttlayer2/ttlayer2.js";
 import * as QUI from "../qui_base.js"
 import { QUI_Canvas } from "../qui_canvas.js";
 
@@ -9,7 +10,7 @@ export class QUI_ScrollBar extends QUI.QUI_BaseElement {
     constructor() {
         super();
 
-        this.localRect.setByRect(new tt.Rectangle(0, 0, 16, 250));
+        this.localRect.setByRect(new Rectangle(0, 0, 16, 250));
     }
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_ScrollBar;

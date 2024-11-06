@@ -2,7 +2,7 @@
 *.js
 
 /ttapi
-/ttimpl_wegame
+/ttimpl_web
 /ttlayer2
 /ttui
 /ttsample

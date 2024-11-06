@@ -1,16 +1,16 @@
 
-import { tt } from "../../../ttapi_interface/ttapi.js";
 import * as QUI from "../qui_base.js"
 import { QUI_Container } from "../qui_container.js";
 import { QUI_DragButton } from "../ext/qui_dragbutton.js";
 import { QUI_Canvas } from "../qui_canvas.js";
+import { Border, Rectangle } from "../../ttlayer2/ttlayer2.js";
 
 //切分面板
 export class QUI_Panel_Split extends QUI.QUI_BaseElement {
     constructor() {
         super();
 
-        this.localRect.setByRect(new tt.Rectangle(0, 0, 250, 250));
+        this.localRect.setByRect(new Rectangle(0, 0, 250, 250));
         this._panel1 = new QUI_Container();
         this._panel1._parent = this;
         this._panel1.localRect.setAsFill();
@@ -19,7 +19,7 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
         this._panel2._parent = this;
         this._panel2.localRect.setAsFill();
 
-        this._border = new tt.Border(16, 16, 16, 16);
+        this._border = new Border(16, 16, 16, 16);
 
         this._splitButton = new QUI_DragButton();
         this._splitButton._parent = this;
@@ -79,8 +79,8 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
     }
     backElement: QUI.QUI_IElement;
     borderElement: QUI.QUI_IElement;//面板的边界外观
-    protected _border: tt.Border;//面板的边距
-    getBorder(): tt.Border {
+    protected _border: Border;//面板的边距
+    getBorder(): Border {
         return this._border;
     }
     splitSize: number = 16;
