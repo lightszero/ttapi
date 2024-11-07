@@ -1,6 +1,7 @@
-import { Color, DrawPoint, Rectangle, Vector2 } from "../math/vector.js";
+import { Color, Rectangle, Vector2 } from "../math/vector.js";
 import * as maxrect from "../maxrects_packer/src/index.js"
-import { ITexture, Render_Batcher, Sprite, Texture, TextureFormat } from "../ttlayer2.js"
+import { ITexture, Render_Batcher, Sprite, Texture, TextureFormat, DrawPoint } from "../ttlayer2.js"
+import { RenderEffect } from "./sprite.js";
 
 //精灵,为啥又重写,之前的分层做的不清晰
 
@@ -96,8 +97,8 @@ export class PackTexture extends Texture {
         }
         this.dirty = true;
 
-       
-        return new Vector2(rect.x,rect.y);
+
+        return new Vector2(rect.x, rect.y);
     }
     AddfontSprite(data: SpriteData, name: string = null): Sprite {
         if (name != null && this.namedsprites[name] != undefined)
@@ -116,15 +117,15 @@ export class PackTexture extends Texture {
             }
         }
         this.dirty = true;
-        let s = new Sprite(this,null);
-       
+        let s = new Sprite(this, null);
+        s.effect = RenderEffect.GrayAsAlpha;
         s.uv.U1 = rect.x;
         s.uv.V1 = rect.y;
         s.uv.U2 = rect.x + data.width;
         s.uv.V2 = rect.y + data.height;
-        s.pixelwidth=data.width;
-        s.pixelheight=data.height;
-      
+        s.pixelwidth = data.width;
+        s.pixelheight = data.height;
+
         s.tex = this;
         this.sprites.push(s);
         if (name != null) {

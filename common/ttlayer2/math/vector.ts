@@ -121,52 +121,6 @@
   }
   //#endregion 
 
-  //#region  -----Code From DrawPoint
-  export class DrawPoint {
-      //pos
-      x: number = 0;  //offset 0
-      y: number = 0;  //offset 4
-      z: number = 0;  //offset 8
-
-      //color (byte)
-      r: number = 1;    //offset 12
-      g: number = 1;    //offset 13
-      b: number = 1;    //offset 14
-      a: number = 1;    //offset 15
-      //uv
-      u: number = 0;      //offset 16
-      v: number = 0;      //offset 20
-
-
-      //tex&paluv (byte)
-      palx: number = 0;   //offset 24
-      paly: number = 0;   //offset 25
-      anyz: number = 0;  //offset 26 //this can be auto,no need to public
-      eff: number = 0;    //offset 27
-      //pixel length =28
-
-      Clone(): DrawPoint {
-          var p = new DrawPoint();
-          p.x = this.x;
-          p.y = this.y;
-          p.z = this.z;
-          p.u = this.u;
-          p.v = this.v;
-          p.r = this.r;
-          p.g = this.g;
-          p.b = this.b;
-          p.a = this.a;
-          p.palx = this.palx;
-          p.paly = this.paly;
-          p.anyz = this.anyz;
-          p.eff = this.eff;
-          p.x = this.x;
-
-          return p;
-
-      }
-  }
-  //#endregion
 
   //#region -----Code From Rectangle
   export class Rectangle {

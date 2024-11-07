@@ -1,4 +1,4 @@
-import { Vector2, DrawPoint } from "../math/vector.js"
+import { Vector2 } from "../math/vector.js"
 
 
 
@@ -8,7 +8,59 @@ import { Mesh } from "../ttlayer2.js";
 import { Material } from "../graphics/material.js";
 import { VertexFormatMgr } from "../graphics/mesh.js";
 import { Render } from "./render.js";
+export enum RenderEffect {
+    RGBA = 0,
+    Gray = 1,
+    //PAL8 = 2,暂时去除调色板支持
+    //P5A3 = 3,
+    GrayAsAlpha = 4,
+}
+//#region  -----Code From DrawPoint
+export class DrawPoint {
+    //pos
+    x: number = 0;  //offset 0
+    y: number = 0;  //offset 4
+    z: number = 0;  //offset 8
 
+    //color (byte)
+    r: number = 1;    //offset 12
+    g: number = 1;    //offset 13
+    b: number = 1;    //offset 14
+    a: number = 1;    //offset 15
+    //uv
+    u: number = 0;      //offset 16
+    v: number = 0;      //offset 20
+
+
+    //tex&paluv (byte)
+    palx: number = 0;   //offset 24
+    paly: number = 0;   //offset 25
+    anyz: number = 0;  //offset 26 //this can be auto,no need to public
+    eff: RenderEffect = 0;    //offset 27
+    //pixel length =28
+
+    Clone(): DrawPoint {
+        var p = new DrawPoint();
+        p.x = this.x;
+        p.y = this.y;
+        p.z = this.z;
+        p.u = this.u;
+        p.v = this.v;
+        p.r = this.r;
+        p.g = this.g;
+        p.b = this.b;
+        p.a = this.a;
+        p.palx = this.palx;
+        p.paly = this.paly;
+        p.anyz = this.anyz;
+        p.eff = this.eff;
+        p.x = this.x;
+
+        return p;
+
+    }
+}
+//#endregion
 export class Render_Batcher {
     constructor(webgl: WebGL2RenderingContext) {
         this._webgl = webgl;
@@ -115,11 +167,11 @@ export class Render_Batcher {
         }
 
     }
-    DrawTris(tex: ITexture, tex2: ITexture | null,  tris: DrawPoint[], tricount: number): void {
+    DrawTris(tex: ITexture, tex2: ITexture | null, tris: DrawPoint[], tricount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
         if (this._lastMode != this._webgl.TRIANGLES || this._lastTex != tex || this._lastTex2 != tex2
-         
+
             || this._pointseek + tricount * 3 > 65536) {
             this._Render();
             this._ApplySingle(tex, tex2);
@@ -132,11 +184,11 @@ export class Render_Batcher {
             this._AddBuf(tris[i * 3 + 2]);
         }
     }
-    DrawLines(tex: ITexture, tex2: ITexture | null,  lines: DrawPoint[], linecount: number): void {
+    DrawLines(tex: ITexture, tex2: ITexture | null, lines: DrawPoint[], linecount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
         if (this._lastMode != this._webgl.LINES || this._lastTex != tex || this._lastTex2 != tex2
-            
+
             || this._pointseek + linecount * 2 > 65536) {
             this._Render();
             this._ApplySingle(tex, tex2);
@@ -148,11 +200,11 @@ export class Render_Batcher {
             this._AddBuf(lines[i * 2 + 1]);
         }
     }
-    DrawPoints(tex: ITexture, tex2: ITexture | null,points: DrawPoint[], pointcount: number): void {
+    DrawPoints(tex: ITexture, tex2: ITexture | null, points: DrawPoint[], pointcount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
         if (this._lastMode != this._webgl.POINTS || this._lastTex != tex || this._lastTex2 != tex2
-            
+
             || this._pointseek + pointcount * 1 > 65536) {
             this._Render();
             this._ApplySingle(tex, tex2);
@@ -254,7 +306,7 @@ export class Render_Batcher {
     _ApplySingle(tex: ITexture, tex2: ITexture | null): void {
         this._lastTex = tex;
         this._lastTex2 = tex2;
-       
+
     }
 
 }

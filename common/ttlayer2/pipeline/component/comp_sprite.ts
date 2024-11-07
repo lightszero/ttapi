@@ -1,7 +1,7 @@
 import { tt } from "../../../ttapi/ttapi.js";
 import { Matrix3x2Math } from "../../math/Matrix3x2.js";
-import { Color, DrawPoint, Rectangle, UVRect, Vector2 } from "../../math/vector.js";
-import { GameApp, getWhiteTexture, ITexture, Render_Batcher } from "../../ttlayer2.js";
+import { Color, Rectangle, UVRect, Vector2 } from "../../math/vector.js";
+import { GameApp, getWhiteTexture, ITexture, Render_Batcher , DrawPoint} from "../../ttlayer2.js";
 import { IView, IViewComponent, IViewItem, IViewRenderItem } from "../viewlist.js";
 import { SceneView } from "../../scene/sceneview.js";
 
