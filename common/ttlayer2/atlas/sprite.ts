@@ -1,11 +1,11 @@
-import { Border, Color, DrawPoint, Rectangle, UVRect, Vector2 } from "../math/vector.js";
-import { ITexture, Render_Batcher } from "../ttlayer2.js";
+import { Border, Color, Rectangle, UVRect, Vector2 } from "../math/vector.js";
+import { ITexture, Render_Batcher, DrawPoint } from "../ttlayer2.js";
 
 export enum RenderEffect {
     RGBA = 0,
     Gray = 1,
-    PAL8 = 2,
-    P5A3 = 3,
+    //PAL8 = 2,暂时去除调色板支持
+    //P5A3 = 3,
     GrayAsAlpha = 4,
 }
 export class Sprite {
@@ -230,7 +230,7 @@ export class Sprite {
         rectbuf[3].palx = palu;
         rectbuf[3].paly = palv;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.tex,this.texpal, rectbuf, 1);
+        batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
     }
     RenderRect2(batcher: Render_Batcher, x1: number, y1: number, x2: number, y2: number, color: Color | null = null, palindex: number = -1) {
         let rectbuf = Sprite._rectbuf
@@ -297,7 +297,7 @@ export class Sprite {
         rectbuf[3].palx = palu;
         rectbuf[3].paly = palv;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.tex,this.texpal, rectbuf, 1);
+        batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
     }
     Render(batcher: Render_Batcher, pos: Vector2, scale: Vector2, color: Color | null = null, palindex: number = -1): void {
         let rectbuf = Sprite._rectbuf

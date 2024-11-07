@@ -79,7 +79,7 @@ export class Font {
             if (s != null) {
                 //let rect = new Rectangle(pos.X + xadd, pos.Y, s.totalWidth * scale.X, s.totalHeight * scale.Y);
                 //s.RenderRect(bathcer, rect, color)
-                s.Render(bathcer, new Vector2(pos.X + xadd, pos.Y), scale, color, 4);
+                s.Render(bathcer, new Vector2(pos.X + xadd, pos.Y), scale, color);
                 xadd += (s.pixelwidth * scale.X);
             }
             else {
