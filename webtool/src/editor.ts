@@ -1,4 +1,4 @@
-import { FlatView } from "../ttlayer2/pipeline/flatview";
+import { FlatView } from "../ttlayer2/pipeline/flatview.js";
 import { GameApp, IState } from "../ttlayer2/ttlayer2.js";
 
 export class EditState implements IState

@@ -2,6 +2,7 @@ import { IRenderTarget } from "../graphics/texture.js";
 import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
 import { Color, Vector2 } from "../math/vector.js";
 import { GameApp } from "../ttlayer2.js";
+import { IPileLine, PipeLine_Default } from "./pipeline.js";
 
 
 ///一个场景化的系统是通用的
@@ -42,6 +43,7 @@ export interface IViewItem extends ITran {
 
 export interface IView {
     tag: string;
+    GetSortValue():number;
     GetTarget(): IRenderTarget;
     GetViewMatrix(): Float32Array;
     Update(delta: number): void;
@@ -50,7 +52,7 @@ export interface IView {
 
 export class ViewList {
     views: IView[] = []
-    clearColor: Color = Color.Black;
+   
     Update(delta: number): void {
         for (var i = 0; i < this.views.length; i++) {
             this.views[i].Update(delta);
@@ -72,54 +74,9 @@ export class ViewList {
         if (lastRender != null)
             lastRender.EndRender();
     }
+
+    pipeline:IPileLine =new PipeLine_Default();
     Render(): void {
-        //默认管线,后期把这玩意儿搞成容易配置的
-
-        //绘制BackBuffer
-        let lasttarget: IRenderTarget = null;
-        for (var i = 0; i < this.views.length; i++) {
-            let v = this.views[i];
-            let target = v.GetTarget();
-            if (target == null)
-                continue;//
-
-            if (!target.IsMainOutput()) {
-                if (lasttarget != target) {
-                    if (lasttarget != null)
-                        lasttarget.End();
-
-                    lasttarget = target;
-                    lasttarget.Begin();
-                }
-                let renders: IViewRenderItem[] = [];
-                v.CollRenderItem(renders);
-                this.RenderList(v, renders, 0);
-            }
-
-
-        }
-
-        if (lasttarget != null) {
-            lasttarget.End();
-        }
-
-        //绘制上屏View
-        let maintarget = GameApp.GetMainScreen();
-        maintarget.Begin();
-        maintarget.Clear(this.clearColor);
-        for (var i = 0; i < this.views.length; i++) {
-            let v = this.views[i];
-            let target = v.GetTarget();
-            if (target == null)
-                target = maintarget;
-            if (target.IsMainOutput()) {
-                let renders: IViewRenderItem[] = [];
-                v.CollRenderItem(renders);
-                this.RenderList(v, renders, 0);
-            }
-        }
-        GameApp.GetMainScreen().End();
-
-
+        this.pipeline.Render(this);
     }
 }

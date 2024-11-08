@@ -8,8 +8,11 @@ import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
 
 export class SceneView implements IView {
     //impl for view
-    tag:string;
-
+    tag: string;
+    sortvalue: number = 0;
+    GetSortValue(): number {
+        return this.sortvalue;
+    }
     target: IRenderTarget = null;
     GetTarget(): IRenderTarget {
         return this.target;
@@ -31,7 +34,7 @@ export class SceneView implements IView {
     }
     CollRenderItem(list: IViewRenderItem[]): void {
         this.root.GetRender(list);
-      
+
     }
 
 }

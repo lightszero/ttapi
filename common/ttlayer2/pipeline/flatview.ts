@@ -1,7 +1,7 @@
-import { IRenderTarget } from "../graphics/texture";
-import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2";
-import { Vector2 } from "../math/vector";
-import { IView, IViewComponent, IViewItem, IViewRenderItem } from "./viewlist";
+import { IRenderTarget } from "../graphics/texture.js";
+import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
+import { Vector2 } from "../math/vector.js";
+import { IView, IViewComponent, IViewItem, IViewRenderItem } from "./viewlist.js";
 
 
 export class FlatViewItem implements IViewItem {
@@ -53,7 +53,11 @@ export class FlatViewItem implements IViewItem {
 export class FlatView implements IView {
     //impl for view
     tag: string;
-
+    sortvalue: number = 0;
+    GetSortValue(): number
+    {
+        return this.sortvalue;
+    }
     target: IRenderTarget = null;
     viewmatrix: Float32Array = new Float32Array(16);
     GetTarget(): IRenderTarget {
@@ -67,26 +71,25 @@ export class FlatView implements IView {
     rotate: number = 0;
 
     items: IViewItem[] = [];
-   
+
     Update(delta: number): void {
-        let mat: Matrix3x2;
+        let mat: Matrix3x2 = new Matrix3x2();
         Matrix3x2Math.MakeTRS(mat, this.tran, this.rotate, this.scale);
         let mat4x4 = new Float32Array(16);
         Matrix3x2Math.ToMatrix4x4(mat, mat4x4);
 
         for (let i = 0; i < this.items.length; i++) {
             this.items[i].OnUpdate(delta);
-           
+
         }
-       
+
     }
-    CollRenderItem(list:IViewRenderItem[]): void {
-    
-        for (let i = 0; i < this.items.length; i++)
-        {
+    CollRenderItem(list: IViewRenderItem[]): void {
+
+        for (let i = 0; i < this.items.length; i++) {
             this.items[i].GetRender(list);
         }
-      
+
     }
 
 }
