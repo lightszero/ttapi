@@ -1,4 +1,4 @@
-import { tt } from "../../ttapi/ttapi.js";
+import { tt } from "../../ttapi/ttapi.js"; 
 import { Color, Rectangle } from "../math/vector.js";
 
 export enum TextureFormat {
@@ -12,7 +12,7 @@ export interface ITexture {
     getHeight(): number;
 
     getGLTex(): WebGLTexture;
-    IsStatic(): boolean;
+  
     IsTarget(): boolean;
     Destory(): void;
     UploadTexture(x: number, y: number,
@@ -72,7 +72,7 @@ export class Texture implements ITexture {
 
         this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
         if (data == null) {
-            this._static = false;
+           
             this._webgl.texImage2D(this._webgl.TEXTURE_2D,
                 0,
                 formatGL,
@@ -106,7 +106,6 @@ export class Texture implements ITexture {
     _width: number;
     _height: number;
 
-    _static: boolean;
     getID(): number {
         return this._id;
     }
@@ -123,9 +122,7 @@ export class Texture implements ITexture {
         return this._height;
     }
 
-    IsStatic(): boolean {
-        return this._static;
-    }
+
     IsTarget(): boolean {
         return false;
     }
@@ -141,9 +138,7 @@ export class Texture implements ITexture {
             img);
     }
     UploadTexture(x: number, y: number, w: number, h: number, data: Uint8Array | Uint8ClampedArray): void {
-        if (this._static)
-            throw new Error("this is a closed texture.");
-
+     
         this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
         var formatGL = this._format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.LUMINANCE;
         var type = this._webgl.UNSIGNED_BYTE;

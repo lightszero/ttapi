@@ -1,7 +1,7 @@
 import { Color, Rectangle, Vector2 } from "../math/vector.js";
 import * as maxrect from "../maxrects_packer/src/index.js"
-import { ITexture, Render_Batcher, Sprite, Texture, TextureFormat, DrawPoint } from "../ttlayer2.js"
-import { RenderEffect } from "./sprite.js";
+import { ITexture, Render_Batcher, Sprite, Texture, TextureFormat, DrawPoint, SpriteFormat } from "../ttlayer2.js"
+
 
 //精灵,为啥又重写,之前的分层做的不清晰
 
@@ -118,7 +118,7 @@ export class PackTexture extends Texture {
         }
         this.dirty = true;
         let s = new Sprite(this, null);
-        s.effect = RenderEffect.GrayAsAlpha;
+        s.effect = SpriteFormat.GrayAsAlpha;
         s.uv.U1 = rect.x / this._width;
         s.uv.V1 = rect.y / this._height;
         s.uv.U2 = (rect.x + data.width) / this._width;

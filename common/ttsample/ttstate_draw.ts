@@ -5,8 +5,8 @@ import { TiledMap } from "../ttlayer2/atlas/tiledmap.js";
 import { Material } from "../ttlayer2/graphics/material.js";
 import { VertexFormatMgr } from "../ttlayer2/graphics/mesh.js";
 import { Vector2 } from "../ttlayer2/math/vector.js";
-import { Render, TransformFeedBack } from "../ttlayer2/render/render.js";
-import { GetShaderProgram } from "../ttlayer2/shader/shaders.js";
+import { Render, TransformFeedBack } from "../ttlayer2/graphics/render/render.js";
+import { GetShaderProgram } from "../ttlayer2/graphics/shader/shaders.js";
 
 
 import {

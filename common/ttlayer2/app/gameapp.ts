@@ -1,6 +1,6 @@
 import { tt } from "../../ttapi/ttapi.js"
 import { MainScreen } from "../graphics/mainscreen.js";
-import { InitInnerShader } from "../shader/shaderress.js";
+import { InitInnerShader } from "../graphics/shader/shaderress.js";
 import { ViewList } from "../pipeline/viewlist.js";
 
 

@@ -1,18 +1,12 @@
 import { Border, Color, Rectangle, UVRect, Vector2 } from "../math/vector.js";
-import { ITexture, Render_Batcher, DrawPoint } from "../ttlayer2.js";
+import { ITexture, Render_Batcher, DrawPoint, SpriteFormat } from "../ttlayer2.js";
 
-export enum RenderEffect {
-    RGBA = 0,
-    Gray = 1,
-    //PAL8 = 2,暂时去除调色板支持
-    //P5A3 = 3,
-    GrayAsAlpha = 4,
-}
+
 export class Sprite {
     constructor(tex: ITexture, texpal: ITexture) {
         this.tex = tex;
         this.texpal = texpal;
-        this.effect = RenderEffect.RGBA;
+        this.effect = SpriteFormat.RGBA;
         this.uv = new UVRect(0, 0, 1, 1);
         this.border = new Border(0, 0, 0, 0);
         this.pixelwidth = tex.getWidth();
@@ -21,7 +15,7 @@ export class Sprite {
     }
     tex: ITexture;
     texpal: ITexture;
-    effect: RenderEffect;
+    effect: SpriteFormat;
     paluvs: Vector2[]
     uv: UVRect;//xywz
     //border

@@ -1,5 +1,5 @@
-import { Material } from "../graphics/material.js";
-import { Mesh } from "../graphics/mesh.js";
+import { Material } from "../material.js";
+import { Mesh } from "../mesh.js";
 
 
 export class TransformFeedBack {

@@ -1,19 +1,24 @@
-import { Vector2 } from "../math/vector.js"
+import { Vector2 } from "../../math/vector.js"
 
 
 
-import { ITexture, getWhiteTexture, IRenderTarget } from "../graphics/texture.js"
+import { ITexture, getWhiteTexture, IRenderTarget } from "../texture.js"
 import { GetShaderProgram, ShaderProgram } from "../shader/shaders.js";
-import { Mesh } from "../ttlayer2.js";
-import { Material } from "../graphics/material.js";
-import { VertexFormatMgr } from "../graphics/mesh.js";
+import { Mesh } from "../../ttlayer2.js";
+import { Material } from "../material.js";
+import { VertexFormatMgr } from "../mesh.js";
 import { Render } from "./render.js";
-export enum RenderEffect {
+export enum SpriteFormat {
     RGBA = 0,
     Gray = 1,
+ 
+    //将来扩展 调色板用uniformbuffer 传入
     //PAL8 = 2,暂时去除调色板支持
-    //P5A3 = 3,
-    GrayAsAlpha = 4,
+    //P5A3 只能32色,这种用法必然要引入一个二维PAL图,因为图不多,可以完全用一个RGB化的方法搞,不需要一开始就限制他
+    //P5A3 = 3,32color 8alpha
+    //P7A1 = 128 color,2alpha
+    
+    GrayAsAlpha = 4,//for Font
 }
 //#region  -----Code From DrawPoint
 export class DrawPoint {
@@ -36,7 +41,7 @@ export class DrawPoint {
     palx: number = 0;   //offset 24
     paly: number = 0;   //offset 25
     anyz: number = 0;  //offset 26 //this can be auto,no need to public
-    eff: RenderEffect = 0;    //offset 27
+    eff: SpriteFormat = 0;    //offset 27
     //pixel length =28
 
     Clone(): DrawPoint {

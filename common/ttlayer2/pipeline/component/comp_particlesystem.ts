@@ -1,8 +1,8 @@
 import { tt } from "../../../ttapi/ttapi.js";
 import { VertexFormat, VertexFormatMgr } from "../../graphics/mesh.js";
 import { Vector3 } from "../../math/vector.js";
-import { Render, TransformFeedBack } from "../../render/render.js";
-import { GetShaderProgram } from "../../shader/shaders.js";
+import { Render, TransformFeedBack } from "../../graphics/render/render.js";
+import { GetShaderProgram } from "../../graphics/shader/shaders.js";
 import { Color, GameApp, Material, Mesh } from "../../ttlayer2.js";
 import { IView, IViewComponent, IViewItem, IViewRenderItem } from "../viewlist.js";
 import { SceneView } from "../../scene/sceneview.js";
