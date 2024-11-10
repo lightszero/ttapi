@@ -4,7 +4,7 @@ import { PackTexture, SpriteData } from "./packtex.js";
 
 export class Font {
     constructor(webgl: WebGL2RenderingContext, font: string, size: number) {
-        this.fonttex = new PackTexture(webgl, 1024, 1024, TextureFormat.R8, 0);
+        this.fonttex = new PackTexture(webgl, 256, 256, TextureFormat.R8, 0);
         this.fontsize = size;
         this.fontname = font;
     }
@@ -45,7 +45,7 @@ export class Font {
             data.data = imgdata.data;
             data.width = imgdata.width;
             data.height = imgdata.height;
-
+           
             s = this.fonttex.AddfontSprite(data, txt);
 
             return s;

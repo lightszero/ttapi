@@ -26,7 +26,7 @@ export class Comp_Label implements IViewComponent, IViewRenderItem {
         }
     }
     OnUpdate(delta: number): void {
-
+        this.font.SureText(this._text);
     }
     IsRender(): boolean { return true; }
     GetSortValue(): number {

@@ -19,8 +19,12 @@ export class FlatViewItem implements IViewItem {
 
     OnUpdate(delta: number): void {
         Matrix3x2Math.MakeTRS(this._worldMatrix, this.pos, this.rotate, this.scale);
+        for (var i = 0; i < this.componments.length; i++) {
+            this.componments[i].OnUpdate(delta);
+        }
 
     }
+
 
     AddComponment(comp: IViewComponent): void {
         if (this.componments == null)
@@ -45,8 +49,9 @@ export class FlatViewItem implements IViewItem {
         });
     }
 
-    GetRender(): IViewRenderItem | null {
-        return this._render;
+    GetRender(tolist: IViewRenderItem[]): void {
+        if (this._render != null)
+            tolist.push(this._render);
     }
 
 }
@@ -54,8 +59,7 @@ export class FlatView implements IView {
     //impl for view
     tag: string;
     sortvalue: number = 0;
-    GetSortValue(): number
-    {
+    GetSortValue(): number {
         return this.sortvalue;
     }
     target: IRenderTarget = null;

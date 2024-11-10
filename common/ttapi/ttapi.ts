@@ -1,4 +1,4 @@
-export module tt {
+export namespace tt {
     export var graphic: IGraphic;
     export var platform: IPlatform;
     export var store: IStore

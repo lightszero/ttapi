@@ -119,10 +119,10 @@ export class PackTexture extends Texture {
         this.dirty = true;
         let s = new Sprite(this, null);
         s.effect = RenderEffect.GrayAsAlpha;
-        s.uv.U1 = rect.x;
-        s.uv.V1 = rect.y;
-        s.uv.U2 = rect.x + data.width;
-        s.uv.V2 = rect.y + data.height;
+        s.uv.U1 = rect.x / this._width;
+        s.uv.V1 = rect.y / this._height;
+        s.uv.U2 = (rect.x + data.width) / this._width;
+        s.uv.V2 = (rect.y + data.height) / this._height;
         s.pixelwidth = data.width;
         s.pixelheight = data.height;
 

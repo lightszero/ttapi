@@ -10,7 +10,7 @@ export interface ITexture {
     getFormat(): TextureFormat;
     getWidth(): number;
     getHeight(): number;
-   
+
     getGLTex(): WebGLTexture;
     IsStatic(): boolean;
     IsTarget(): boolean;
@@ -26,7 +26,7 @@ export interface IRenderTarget extends ITexture {
     //RenderTarget 的观察点
     IsMainOutput(): boolean
     Begin(): void;
-    Clear(color:Color):void
+    Clear(color: Color): void
     End(): void;
 
     PushLimitRect(rect: Rectangle): void;
@@ -41,7 +41,8 @@ export function getWhiteTexture(): ITexture {
         let data = new Uint8Array(64);
         for (let i = 0; i < 64; i++)
             data[i] = 255;
-        _whitetexture = new Texture(tt.graphic.GetWebGL(), 4, 4, TextureFormat.RGBA32, data);
+        _whitetexture = new Texture(tt.graphic.GetWebGL(), 4, 4, TextureFormat.RGBA32, null);
+        _whitetexture.UploadTexture(0, 0, 4, 4, data);
     }
     return _whitetexture;
 }
@@ -79,7 +80,7 @@ export class Texture implements ITexture {
                 formatGL,
                 type
                 , null);
-          
+
         }
         else {
             let bitsize = format == TextureFormat.RGBA32 ? 4 : 1;
@@ -142,11 +143,11 @@ export class Texture implements ITexture {
     UploadTexture(x: number, y: number, w: number, h: number, data: Uint8Array | Uint8ClampedArray): void {
         if (this._static)
             throw new Error("this is a closed texture.");
-    
+
         this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
         var formatGL = this._format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.LUMINANCE;
         var type = this._webgl.UNSIGNED_BYTE;
-        this._webgl.texSubImage2D(this._webgl.TEXTURE_2D, 0,x,y,w,h,formatGL,type,data);
+        this._webgl.texSubImage2D(this._webgl.TEXTURE_2D, 0, x, y, w, h, formatGL, type, data);
     }
 
     Destory(): void {

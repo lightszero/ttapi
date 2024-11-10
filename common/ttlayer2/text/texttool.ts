@@ -1,3 +1,4 @@
+import { Font } from "../ttlayer2.js";
 import { tt } from "../../ttapi/ttapi.js";
 export class TextTool {
 
@@ -26,7 +27,8 @@ export class TextTool {
         c2d.fillText(text, x, y);// + m.ideographicBaseline);
 
 
-        let imagedata = c2d.getImageData(0, 0, width, height);
+        let pixelwidth = c2d.measureText(text).width;
+        let imagedata = c2d.getImageData(0, 0, pixelwidth, height);
         return imagedata;
     }
 }

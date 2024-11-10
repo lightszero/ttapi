@@ -12,3 +12,5 @@ export { IState, GameApp } from "./app/gameapp.js";
 export { SceneItem, SceneItem_Group } from "./scene/sceneitem.js";
 export { Sprite } from "./atlas/sprite.js";
 export { Font } from "./atlas/font.js";
+export * from "./pipeline/flatview.js";
+

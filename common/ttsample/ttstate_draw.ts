@@ -73,7 +73,7 @@ export class TTState_Draw implements IState, IRenderExt {
         this.pts.push(p2);
         this.pts.push(p3);
 
-        let data = TextTool.LoadTextPixel("中国17你好H2o", "VonwaonBitmap-16px", 32, 320, 32, 0, 0);
+        let data = TextTool.LoadTextPixel("H", "VonwaonBitmap-16px", 24, 26, 26, 0, 0);
         let bdata = new Uint8Array(data.width * data.height * 4);
         for (let i = 0; i < data.width * data.height; i++) {
 
