@@ -4,26 +4,33 @@ import { Comp_Label } from "../ttlayer2/pipeline/component/comp_label.js";
 import { Comp_Sprite } from "../ttlayer2/pipeline/component/comp_sprite.js";
 
 
-import { Font, GameApp, IState, FlatView, FlatViewItem, Texture, TextureFormat } from "../ttlayer2/ttlayer2.js";
+import { Font, GameApp, IState, FlatView, FlatViewItem, Texture, TextureFormat, Sprite } from "../ttlayer2/ttlayer2.js";
 import { GUIView } from "../ttlayer2/pipeline/guiview.js";
+import { QUI_Image } from "../ttui/qui_image.js";
 
 export class TTState_UI implements IState {
-    uiview:GUIView;
+    uiview: GUIView;
     mainview: FlatView;
     font: Font;
+    uiimg: QUI_Image;
     OnInit(): void {
         let gl = tt.graphic.GetWebGL();
 
         ///准备一个视图,FlatView 是一个简洁的View,他下面可以放置若干个FlatViewItem
-        this.uiview =new GUIView();
+        this.uiview = new GUIView();
         GameApp.GetViewList().AddView(this.uiview);
-    
+
+        let img = this.uiimg = new QUI_Image();
+        this.uiview.canvas.addChild(img);
+        img.localRect.setHPosFill(0, 0);
+        img.localRect.setVPosByTopBorder(100, 0);
+
         let view1 = this.mainview = new FlatView();//View 代表一个试图
         GameApp.GetViewList().AddView(view1);
 
 
         this.font = new Font(gl, "VonwaonBitmap-16px", 24);
-      
+
         {
             let viewItem = new FlatViewItem();//视图对象是视图里面可以排序的内容,可以可见,也可以不可见
 
@@ -56,6 +63,9 @@ export class TTState_UI implements IState {
             sprite.size.X = 100;
             sprite.size.Y = 100;
             viewItem.AddComponment(sprite);
+
+            
+            this.uiimg.sprite = new Sprite(tex,null);
         }
     }
     OnUpdate(delta: number): void {

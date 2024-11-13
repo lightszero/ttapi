@@ -11,13 +11,13 @@ import { Render } from "./render.js";
 export enum SpriteFormat {
     RGBA = 0,
     Gray = 1,
- 
+
     //将来扩展 调色板用uniformbuffer 传入
     //PAL8 = 2,暂时去除调色板支持
     //P5A3 只能32色,这种用法必然要引入一个二维PAL图,因为图不多,可以完全用一个RGB化的方法搞,不需要一开始就限制他
     //P5A3 = 3,32color 8alpha
     //P7A1 = 128 color,2alpha
-    
+
     GrayAsAlpha = 4,//for Font
 }
 //#region  -----Code From DrawPoint
@@ -129,6 +129,15 @@ export class Render_Batcher {
         this._mesh = new Mesh();
         this._mesh.UpdateVertexFormat(webgl, VertexFormatMgr.GetFormat_Vertex_UV_Color_Ext());
         this._mat = new Material(GetShaderProgram("default"));
+
+
+        //reset default matrixworld
+        let matrix = this.matrixWorld = new Float32Array(16);
+
+        matrix[0] = 1; matrix[4] = 0; matrix[8] = 0; matrix[12] = 0;
+        matrix[1] = 0; matrix[5] = 1; matrix[9] = 0; matrix[13] = 0;
+        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
+        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
     }
     //_shader: ShaderProgram;
     _webgl: WebGL2RenderingContext
@@ -229,7 +238,22 @@ export class Render_Batcher {
     }
     LookAt: Vector2;
     Scale: number;
+    matrixView: Float32Array = new Float32Array(16);
+    matrixWorld: Float32Array = new Float32Array(16);
+    UpdateMatView() {
+        let matrix = this.matrixView;
 
+        let sx = this.Scale;
+        let sy = this.Scale;
+        let offx = -this.LookAt.X;
+        let offy = -this.LookAt.Y;
+        matrix[0] = sx; matrix[4] = 0; matrix[8] = 0; matrix[12] = offx * sx;
+        matrix[1] = 0; matrix[5] = sy; matrix[9] = 0; matrix[13] = offy * sy;
+        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
+        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
+
+
+    }
     ResetMatrix(): void {
         this._Render();
         this._mat.UpdateMatModel();
@@ -251,6 +275,9 @@ export class Render_Batcher {
         // this._MatDefault(this._modelMatrix);
         // this._MatView(this._viewMatrix);
         // this._MatProj(this._projMatrix, 0, 0);
+        this.UpdateMatView();
+        this._mat.UpdateMatModel(this.matrixWorld);
+        this._mat.UpdateMatView(this.matrixView);
         this._mat.UpdateMatProj(this._target);
         let webgl = this._webgl;
 
