@@ -20,7 +20,7 @@ export class TTState_Scene implements IState {
     private comp_l: Comp_Label = null;
     OnInit(): void {
         let view1 = new SceneView();
-        GameApp.GetViewList().views.push(view1);
+        GameApp.GetViewList().AddView(view1);
 
         //10个子物体
         for (var i = 0; i < 1; i++) {
@@ -48,7 +48,7 @@ export class TTState_Scene implements IState {
         console.log("hello ha.")
 
         let view = new FlatView();
-        GameApp.GetViewList().views.push(view);
+        GameApp.GetViewList().AddView(view);
         {
             let sceneitem = new FlatViewItem();
             sceneitem.scale.X = 5;
@@ -104,7 +104,7 @@ export class TTState_Scene implements IState {
     }
     OnExit(): void {
         //状态机过分暴躁,清理一下,需要一个UI栈
-        GameApp.GetViewList().views.splice(0, GameApp.GetViewList().views.length);
+        //GameApp.GetViewList().views.splice(0, GameApp.GetViewList().views.length);
     }
     OnResize(width: number, height: number): void {
 

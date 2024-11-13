@@ -18,6 +18,7 @@ export interface IRenderExt {
   OnPostRender(): void;
 }
 export class GameApp {
+  static gameData: object;
   //Start 之前 ttapi 的某一个impl 应该提前初始化
   static Start(state: IState): void {
 

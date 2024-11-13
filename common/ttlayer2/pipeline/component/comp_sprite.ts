@@ -1,7 +1,7 @@
 import { tt } from "../../../ttapi/ttapi.js";
 import { Matrix3x2Math } from "../../math/Matrix3x2.js";
 import { Color, Rectangle, UVRect, Vector2 } from "../../math/vector.js";
-import { GameApp, getWhiteTexture, ITexture, Render_Batcher , DrawPoint} from "../../ttlayer2.js";
+import { GameApp, getWhiteTexture, ITexture, Render_Batcher , DrawPoint, IRenderTarget} from "../../ttlayer2.js";
 import { IView, IViewComponent, IViewItem, IViewRenderItem } from "../viewlist.js";
 import { SceneView } from "../../scene/sceneview.js";
 
@@ -83,10 +83,10 @@ export class Comp_Sprite implements IViewComponent, IViewRenderItem {
         let y = this.sceneitem.GetWorldMatrix().values[5];
         return y;
     }
-    OnRender(view: IView, tag: number): void {
+    OnRender(_target:IRenderTarget,view: IView, tag: number): void {
         if (tag == 0) {
             if (!Comp_Sprite._begin) {
-                let target = view.GetTarget();
+                let target = _target;
                 if (target == null)
                     target = GameApp.GetMainScreen();
                 Comp_Sprite._batcher.BeginDraw(target);

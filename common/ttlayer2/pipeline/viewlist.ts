@@ -19,8 +19,8 @@ export interface ITran {
 
 export interface IViewRenderItem extends IViewComponent {
     GetSortValue(): number
-    OnRender(view: IView, tag: number): void;
-    GetRenderObject(): any;
+    OnRender(target: IRenderTarget, view: IView, tag: number): void;
+    GetRenderObject(): object;
     EndRender(): void;
 }
 export interface IViewComponent {
@@ -41,41 +41,85 @@ export interface IViewItem extends ITran {
 }
 
 
+export enum ViewTag {
+    ERROR,
+    Main,//主输出
+    GUI,//GUI
+    PreRender,//预渲染
+    POSTRender,//后渲染
+    CUSTOM,
+}
+
+//View 也不会太多
+//GUIView，已GUI为核心的View
+//CanvasView，用于绘制大量图素的组件
+
+//粒子View，用于绘制大量图素的视图，不受控
+//粒子和Canvas 或许可以组合为一个。
+
+//SceneView 用场景树组织的结构
+
+//一个View 代表一个Camera
 export interface IView {
-    tag: string;
-    GetSortValue():number;
-    GetTarget(): IRenderTarget;
+    GetTag(): ViewTag;//View Tag 是不能动态调整的
+
+    //在相同Tag之间的View的排序值。不需要，自己组织去
+    //GetSortValue():number;
+
+    //Target 去掉，由管线去控制
+    //GetTarget(): IRenderTarget;
+
+    //相当于Camera
     GetViewMatrix(): Float32Array;
     Update(delta: number): void;
-    CollRenderItem(tolist: IViewRenderItem[]): void;
+
+    //绘制View
+    Render(target: IRenderTarget, rendertag: number): void
+    //CollRenderItem(tolist: IViewRenderItem[]): void;
 }
 
 export class ViewList {
-    views: IView[] = []
-   
-    Update(delta: number): void {
-        for (var i = 0; i < this.views.length; i++) {
-            this.views[i].Update(delta);
-            //ClearColor 不重要
+    //private views: IView[] = []
+    private mapviews: { [id: number]: IView[] } = {};
+    AddView(view: IView): void {
+        let tag = view.GetTag();
+        if (this.mapviews[tag] == undefined) {
+            this.mapviews[tag] = [];
         }
+        this.mapviews[tag].push(view);
     }
-
-    RenderList(view: IView, renders: IViewRenderItem[], tag: number): void {
-        renders.sort((a, b) => a.GetSortValue() - b.GetSortValue());
-        let lastRender: IViewRenderItem = null;
-        for (var i = 0; i < renders.length; i++) {
-            let render = renders[i];
-            if (lastRender != null && render.GetRenderObject() != lastRender.GetRenderObject()) {
-                lastRender.EndRender();
+    GetViews(tag: number): IView[] {
+        return this.mapviews[tag];
+    }
+    RenderViews(tag: number, target: IRenderTarget, rendertag: number): number {
+        let views = this.GetViews(tag);
+        if (views != null) {
+            for (let i = 0; i < views.length; i++) {
+                views[i].Render(target, rendertag);
             }
-            renders[i].OnRender(view, tag);
-            lastRender = renders[i];
+            return views.length;
         }
-        if (lastRender != null)
-            lastRender.EndRender();
+        return 0;
+    }
+    GetViewTags(): number[] {
+        let tags: ViewTag[] = [];
+        for (let key in this.mapviews) {
+            tags.push(key as any as number);
+        }
+        return tags;
+    }
+    Update(delta: number): void {
+        for (let key in this.mapviews) {
+            let group = this.mapviews[key];
+            for (let i = 0; i < group.length; i++) {
+                group[i].Update(delta);
+            }
+        }
     }
 
-    pipeline:IPileLine =new PipeLine_Default();
+
+
+    pipeline: IPileLine = new PipeLine_Default();
     Render(): void {
         this.pipeline.Render(this);
     }

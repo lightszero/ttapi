@@ -1,13 +1,13 @@
 import { IRenderTarget } from "../graphics/texture.js";
 import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
 import { Vector2 } from "../math/vector.js";
-import { IView, IViewComponent, IViewItem, IViewRenderItem } from "./viewlist.js";
+import { IView, IViewComponent, IViewItem, IViewRenderItem, ViewTag } from "./viewlist.js";
 
 
 export class FlatViewItem implements IViewItem {
 
     private _worldMatrix: Matrix3x2 = new Matrix3x2();
-    private componments: IViewComponent[] = null;
+    private componments: IViewComponent[] = [];
     private _render: IViewRenderItem = null;
     pos: Vector2 = Vector2.Zero;
     scale: Vector2 = Vector2.One;
@@ -57,11 +57,14 @@ export class FlatViewItem implements IViewItem {
 }
 export class FlatView implements IView {
     //impl for view
-    tag: string;
-    sortvalue: number = 0;
-    GetSortValue(): number {
-        return this.sortvalue;
+    constructor(tag: ViewTag = ViewTag.Main) {
+        this.tag = tag;
     }
+    private tag: ViewTag;
+    GetTag(): ViewTag {
+        return this.tag;
+    }
+ 
     target: IRenderTarget = null;
     viewmatrix: Float32Array = new Float32Array(16);
     GetTarget(): IRenderTarget {
@@ -87,6 +90,25 @@ export class FlatView implements IView {
 
         }
 
+    }
+    static RenderList(target: IRenderTarget,view: IView, renders: IViewRenderItem[], tag: number): void {
+        renders.sort((a, b) => a.GetSortValue() - b.GetSortValue());
+        let lastRender: IViewRenderItem = null;
+        for (var i = 0; i < renders.length; i++) {
+            let render = renders[i];
+            if (lastRender != null && render.GetRenderObject() != lastRender.GetRenderObject()) {
+                lastRender.EndRender();
+            }
+            renders[i].OnRender(target,view, tag);
+            lastRender = renders[i];
+        }
+        if (lastRender != null)
+            lastRender.EndRender();
+    }
+    Render(target: IRenderTarget, tag: number): void {
+        let renders: IViewRenderItem[] = [];
+        this.CollRenderItem(renders);
+        FlatView.RenderList(target,this, renders, tag);
     }
     CollRenderItem(list: IViewRenderItem[]): void {
 

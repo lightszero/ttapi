@@ -3,20 +3,27 @@ import { tt } from "../ttapi/ttapi.js";
 import { Comp_Label } from "../ttlayer2/pipeline/component/comp_label.js";
 import { Comp_Sprite } from "../ttlayer2/pipeline/component/comp_sprite.js";
 
+
 import { Font, GameApp, IState, FlatView, FlatViewItem, Texture, TextureFormat } from "../ttlayer2/ttlayer2.js";
+import { GUIView } from "../ttlayer2/pipeline/guiview.js";
 
 export class TTState_UI implements IState {
+    uiview:GUIView;
     mainview: FlatView;
+    font: Font;
     OnInit(): void {
         let gl = tt.graphic.GetWebGL();
 
         ///准备一个视图,FlatView 是一个简洁的View,他下面可以放置若干个FlatViewItem
+        this.uiview =new GUIView();
+        GameApp.GetViewList().AddView(this.uiview);
+    
         let view1 = this.mainview = new FlatView();//View 代表一个试图
-        GameApp.GetViewList().views.push(view1);
+        GameApp.GetViewList().AddView(view1);
 
 
-        let font = new Font(gl, "VonwaonBitmap-16px", 24);
-
+        this.font = new Font(gl, "VonwaonBitmap-16px", 24);
+      
         {
             let viewItem = new FlatViewItem();//视图对象是视图里面可以排序的内容,可以可见,也可以不可见
 
@@ -24,7 +31,7 @@ export class TTState_UI implements IState {
 
             //一个viewItem 上只能添加一个渲染组件
             let canvas = new Comp_Label();
-            canvas.font = font;
+            canvas.font = this.font;
             canvas.text = "Hello Label.";
             viewItem.AddComponment(canvas);
         }

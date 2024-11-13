@@ -3,7 +3,7 @@ import { VertexFormat, VertexFormatMgr } from "../../graphics/mesh.js";
 import { Vector3 } from "../../math/vector.js";
 import { Render, TransformFeedBack } from "../../graphics/render/render.js";
 import { GetShaderProgram } from "../../graphics/shader/shaders.js";
-import { Color, GameApp, Material, Mesh } from "../../ttlayer2.js";
+import { Color, GameApp, IRenderExt, IRenderTarget, Material, Mesh } from "../../ttlayer2.js";
 import { IView, IViewComponent, IViewItem, IViewRenderItem } from "../viewlist.js";
 import { SceneView } from "../../scene/sceneview.js";
 export class ParticleInfo {
@@ -241,9 +241,9 @@ export class Comp_ParticleSystem_TF implements IViewComponent, IViewRenderItem {
         let y = this.sceneitem.GetWorldMatrix().values[5];
         return y;
     }
-    OnRender(view: IView, tag: number): void {
+    OnRender(_target:IRenderTarget, view: IView, tag: number): void {
         if (tag == 0) {
-            let target = view.GetTarget();
+            let target = _target;
             if (target == null)
                 target = GameApp.GetMainScreen();
             this.matDraw.UpdateMatView();//这个应该跟着View走

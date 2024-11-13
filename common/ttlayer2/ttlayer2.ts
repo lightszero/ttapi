@@ -13,4 +13,5 @@ export * from "./scene/sceneitem.js";
 export * from "./atlas/sprite.js";
 export * from "./atlas/font.js";
 export * from "./pipeline/flatview.js";
-
+export * from "./pipeline/pipeline.js";
+export * from "./pipeline/viewlist.js";
