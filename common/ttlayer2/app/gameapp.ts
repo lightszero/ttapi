@@ -11,7 +11,7 @@ export interface IState {
   OnExit(): void;
   OnResize(width: number, height: number): void;
 
-  OnKey(keycode: string, press: boolean) : void
+  OnKey(keycode: string, press: boolean) : void;
   OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean):void;
 }
 

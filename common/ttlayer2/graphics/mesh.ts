@@ -68,6 +68,7 @@ export class VertexFormatMgr {
     private static vertexFormat_Vertex_UV_Color_Color2: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color_InstPos: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color_InstPosNormal: VertexFormat = null;
+    private static vertexFormat_Vertex_UV_Color_InstXYZRUVRectColor: VertexFormat = null;
     static RegFormat(format: VertexFormat): VertexFormat {
         format.Update();
         let f: VertexFormat = format;
@@ -152,6 +153,22 @@ export class VertexFormatMgr {
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, true));
             this.vertexFormat_Vertex_UV_Color_InstPosNormal = this.RegFormat(vecf);
+        }
+        return this.vertexFormat_Vertex_UV_Color_InstPosNormal;
+    }
+    static GetFormat_Vertex_UV_Color_InstXYZRUVRectColor(): VertexFormat {
+        if (this.vertexFormat_Vertex_UV_Color_InstXYZRUVRectColor == null) {
+            let vecf = new VertexFormat("Vertex_UV_Color_InstXYZRUVRectColor");
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[1].vertexAttribDivisor = 1;//instanced data
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//xyzr
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//uvrect xywh
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));//color
+            this.vertexFormat_Vertex_UV_Color_InstXYZRUVRectColor = this.RegFormat(vecf);
         }
         return this.vertexFormat_Vertex_UV_Color_InstPosNormal;
     }

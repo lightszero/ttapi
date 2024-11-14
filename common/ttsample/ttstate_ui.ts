@@ -43,9 +43,9 @@ export class TTState_UI implements IState {
         let atlas = new Atlas();
         await atlas.LoadAsync("./ttsample/data/uires_pack0.png.json");
 
-        let grid = atlas.GetSprite("grid");
+        let grid = atlas.GetSprite("panelback2");
         let uiimg = new QUI_ImageScale9();
-        uiimg.scale9 = new QUI_Scale9(grid, new Border(15, 10, 4, 4), 16, 16);
+        uiimg.scale9 = new QUI_Scale9(grid, new Border(4, 4, 4, 4), 16, 16);
         this.uiview.canvas.addChild(uiimg);
 
         uiimg.localRect.setHPosFill(0, 0);

@@ -17,8 +17,8 @@ export class Comp_ParticleSystem implements IViewComponent, IViewRenderItem {
     sceneitem: IViewItem = null;
 
     webgl: WebGL2RenderingContext;
-    private meshDraw: Mesh = null;
-    private matDraw: Material = null;
+        private meshDraw: Mesh = null;
+        private matDraw: Material = null;
 
 
 
@@ -34,9 +34,7 @@ export class Comp_ParticleSystem implements IViewComponent, IViewRenderItem {
 
 
         let gl = this.webgl = tt.graphic.GetWebGL();
-        this.meshDraw = new Mesh();
-        this.meshDraw.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_UV_Color_InstPosNormal());
-
+     
         //初始化渲染用的模型
         this.InitDrawMesh();
 
@@ -44,6 +42,8 @@ export class Comp_ParticleSystem implements IViewComponent, IViewRenderItem {
 
     }
     private InitDrawMesh() {
+        this.meshDraw = new Mesh();
+        this.meshDraw.UpdateVertexFormat(this.webgl, VertexFormatMgr.GetFormat_Vertex_UV_Color_InstPosNormal());
 
         let r = 255;
         let g = 128;
