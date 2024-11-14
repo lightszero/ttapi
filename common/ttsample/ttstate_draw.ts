@@ -15,6 +15,12 @@ import {
 } from "../ttlayer2/ttlayer2.js";
 
 export class TTState_Draw implements IState, IRenderExt {
+    OnKey(keycode: string, press: boolean): void {
+      
+    }
+    OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
+       
+    }
     private pts: DrawPoint[] = [];
     private tex: ITexture = null;
     private _quadbatcher: Render_Batcher = null;

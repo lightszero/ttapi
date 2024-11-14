@@ -4,7 +4,7 @@ import {QUI_Canvas} from "../../ttui/ttui.js"
 import { tt } from "../../ttapi/ttapi.js";
 export class GUIView implements IView
 {
-    constructor(tag: ViewTag = ViewTag.Main) {
+    constructor(tag: ViewTag = ViewTag.GUI) {
         this.tag = tag;
 
         

@@ -12,6 +12,12 @@ import { GameApp, IState, SceneItem, SceneItem_Group } from "../ttlayer2/ttlayer
 
 
 export class TTState_Scene implements IState {
+    OnKey(keycode: string, press: boolean): void {
+      
+    }
+    OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
+       
+    }
 
     subgroup: SceneItem_Group;
     comp_p: Comp_ParticleSystem;

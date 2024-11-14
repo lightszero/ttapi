@@ -4,69 +4,77 @@ import { Comp_Label } from "../ttlayer2/pipeline/component/comp_label.js";
 import { Comp_Sprite } from "../ttlayer2/pipeline/component/comp_sprite.js";
 
 
-import { Font, GameApp, IState, FlatView, FlatViewItem, Texture, TextureFormat, Sprite } from "../ttlayer2/ttlayer2.js";
+import { Font, GameApp, IState, FlatView, FlatViewItem, Texture, TextureFormat, Sprite, Color, Border } from "../ttlayer2/ttlayer2.js";
 import { GUIView } from "../ttlayer2/pipeline/guiview.js";
 import { QUI_Image } from "../ttui/qui_image.js";
+import { QUI_Label } from "../ttui/qui_label.js";
+import { QUI_Button } from "../ttui/qui_button.js";
+import { Atlas } from "../ttlayer2/atlas/atlas.js";
+import { QUI_Scale9 } from "../ttui/qui_scale9.js";
+import { QUI_ImageScale9 } from "../ttui/qui_imagescale9.js";
 
 export class TTState_UI implements IState {
+    OnKey(keycode: string, press: boolean): void {
+
+    }
+    OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
+
+    }
     uiview: GUIView;
-    mainview: FlatView;
+
     font: Font;
-    uiimg: QUI_Image;
+
     OnInit(): void {
         let gl = tt.graphic.GetWebGL();
 
         ///准备一个视图,FlatView 是一个简洁的View,他下面可以放置若干个FlatViewItem
         this.uiview = new GUIView();
         GameApp.GetViewList().AddView(this.uiview);
-
-        let img = this.uiimg = new QUI_Image();
-        this.uiview.canvas.addChild(img);
-        img.localRect.setHPosFill(0, 0);
-        img.localRect.setVPosByTopBorder(100, 0);
-
-        let view1 = this.mainview = new FlatView();//View 代表一个试图
-        GameApp.GetViewList().AddView(view1);
-
+        this.uiview.canvas.scale=4.0;
 
         this.font = new Font(gl, "VonwaonBitmap-16px", 24);
-
-        {
-            let viewItem = new FlatViewItem();//视图对象是视图里面可以排序的内容,可以可见,也可以不可见
-
-            view1.items.push(viewItem);
-
-            //一个viewItem 上只能添加一个渲染组件
-            let canvas = new Comp_Label();
-            canvas.font = this.font;
-            canvas.text = "Hello Label.";
-            viewItem.AddComponment(canvas);
-        }
 
         this.asyncinit();
     }
 
     async asyncinit() {
         //加载一张贴图
-        let img = await tt.loader.LoadImageAsync("./ttsample/data/uires_pack0.png");
-        console.log("log texture:" + img.width + "x" + img.height);
-        let gl = tt.graphic.GetWebGL();
-        let tex = new Texture(gl, 128, 128, TextureFormat.RGBA32, null);
-        tex.UploadImg(img);
 
-        {
-            let viewItem = new FlatViewItem();//视图对象是视图里面可以排序的内容,可以可见,也可以不可见
-            viewItem.pos.Y = 50;
-            this.mainview.items.push(viewItem);
-            let sprite = new Comp_Sprite();
-            sprite.tex = tex;
-            sprite.size.X = 100;
-            sprite.size.Y = 100;
-            viewItem.AddComponment(sprite);
+        let atlas = new Atlas();
+        await atlas.LoadAsync("./ttsample/data/uires_pack0.png.json");
 
-            
-            this.uiimg.sprite = new Sprite(tex,null);
-        }
+        let grid = atlas.GetSprite("grid");
+        let uiimg = new QUI_ImageScale9();
+        uiimg.scale9 = new QUI_Scale9(grid, new Border(15, 10, 4, 4), 16, 16);
+        this.uiview.canvas.addChild(uiimg);
+
+        uiimg.localRect.setHPosFill(0, 0);
+        uiimg.localRect.setVPosByTopBorder(100, 0);
+
+
+        let label = new QUI_Label(this.font, "Hello world");
+        this.uiview.canvas.addChild(label);
+        label.localRect.setHPosByLeftBorder(300, 64);
+        label.localRect.setVPosByTopBorder(30, 128);
+
+        let btn = new QUI_Button();
+
+        let btnNormal = new QUI_Image();
+        btnNormal.sprite = atlas.GetSprite("grid");
+        btnNormal.color = new Color(1, 0, 0, 1);
+        btnNormal.localRect.setAsFill();
+        btn.ElemNormal = btnNormal;
+
+        let btnClick = new QUI_Image();
+        btnClick.sprite = atlas.GetSprite("grid");
+        btnClick.color = new Color(0, 0, 1, 1);
+        btnClick.localRect.setAsFill();
+        btn.ElemPress = btnClick;
+
+        btn.localRect.setHPosByLeftBorder(300, 64);
+        btn.localRect.setVPosByTopBorder(30, 164);
+        this.uiview.canvas.addChild(btn);
+
     }
     OnUpdate(delta: number): void {
 
