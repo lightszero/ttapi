@@ -14,60 +14,60 @@ export class TransformFeedBack {
         // gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, this.buf);
         // this.bytelength = bytelength;
         // gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, bytelength, gl.STREAM_DRAW);
+        this.query = gl.createQuery();
     }
-    //query: WebGLQuery;
-    fence: WebGLSync = null;
+    query: WebGLQuery;
+
+    //fence: WebGLSync = null;
     Execute(gl: WebGL2RenderingContext, mesh: Mesh, mat: Material, outbufobj: WebGLBuffer, first: number, count: number) {
-        gl.finish();
-        
+      
+
         gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
         gl.enable(gl.RASTERIZER_DISCARD);
 
         mesh.Apply(gl);
         mat.Apply(gl);
-        // if (this.query == null) {
-        //     this.query = gl.createQuery();
-        //     gl.beginQuery(gl.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, this.query);
-        // }
-        if (this.fence == null) 
+
+
+
+        gl.beginQuery(gl.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, this.query);
         {
-            this.fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+            gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, this.obj);
+            gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, outbufobj);
+
+
+            gl.beginTransformFeedback(gl.POINTS);
+            {
+
+                gl.drawArrays(gl.POINTS, first, count);
+                gl.flush();
+                gl.finish();
+            }
+
+            gl.endTransformFeedback();
+            gl.disable(gl.RASTERIZER_DISCARD);
+
+
+            //gl.flush();
+            //gl.finish();
         }
-        gl.bindTransformFeedback(gl.TRANSFORM_FEEDBACK, this.obj);
-        gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, outbufobj);
-        gl.beginTransformFeedback(gl.POINTS);
-        {
-
-            gl.drawArrays(gl.POINTS, first, count);
-        }
-
-        //let p = gl.getQueryParameter(this.query, gl.QUERY_RESULT);
-        //console.log("p=" + p);
-        //gl.flush();
-        gl.finish();
-
-        gl.endTransformFeedback();
-        gl.disable(gl.RASTERIZER_DISCARD);
-
-      
         
-        
-       
-       
-      
-        //console.log("t=" + t);
-        //var fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
-        //gl.flush();
-
-        // let p1 = gl.getParameter(gl.MAX_CLIENT_WAIT_TIMEOUT_WEBGL);
-        // let t = gl.clientWaitSync(fence, gl.SYNC_FLUSH_COMMANDS_BIT, 1000);
-        // //37149 WAIT_FAILED
-        // gl.endQuery(gl.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN)
-
+ 
+        gl.endQuery(gl.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN)
+        //搞清楚了 endquery 也需要endfetch
 
         gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, null);
         gl.finish();
+    }
+    End(gl:WebGL2RenderingContext)
+    {
+        
+
+
+        //gl.endQuery(gl.TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN);
+        let p = gl.getQueryParameter(this.query, gl.QUERY_RESULT);
+        console.log("====>query tran=" + p);
     }
     ReadBuf(gl: WebGL2RenderingContext, bufobj: WebGLBuffer, readbuf: Uint8Array, bytelength: number) {
         gl.bindBuffer(gl.TRANSFORM_FEEDBACK_BUFFER, bufobj);

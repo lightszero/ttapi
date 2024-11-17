@@ -15,6 +15,7 @@ export class GUIView implements IView {
 
 
     canvas: QUI_Canvas = new QUI_Canvas(null);
+    //
     viewmatrix: Float32Array = new Float32Array(16);
     GetViewMatrix(): Float32Array {
         return this.viewmatrix;

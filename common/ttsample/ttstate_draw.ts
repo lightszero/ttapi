@@ -16,10 +16,10 @@ import {
 
 export class TTState_Draw implements IState, IRenderExt {
     OnKey(keycode: string, press: boolean): void {
-      
+
     }
     OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
-       
+
     }
     private pts: DrawPoint[] = [];
     private tex: ITexture = null;
@@ -46,6 +46,9 @@ export class TTState_Draw implements IState, IRenderExt {
         this.InitMesh(gl);
         this.InitMesh2(gl);
         this.InitTF(gl);
+        //GameApp.Pause(true);
+        return;
+       
         this._mainscreen = GameApp.GetMainScreen();
 
         this._quadbatcher = new Render_Batcher(gl);
@@ -302,21 +305,92 @@ export class TTState_Draw implements IState, IRenderExt {
         datavbo.setFloat32(3 * stride + 20, 0, true);//norz
 
         mesh.UploadVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
-
+        console.log("====>test feedback.");
         let mat = new Material(GetShaderProgram("feedback"));
         let outbuf = gl.createBuffer();
         gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, outbuf);
-        gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, stride * 4, gl.STREAM_COPY);
+        gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, stride * 4, gl.STREAM_READ);
 
         let tf = new TransformFeedBack(gl);
         tf.Execute(gl, mesh, mat, outbuf, 0, 4);
+       
+        {
+            gl.flush();
+            // readonly ALREADY_SIGNALED: 0x911A;
+            // readonly TIMEOUT_EXPIRED: 0x911B;
+            // readonly CONDITION_SATISFIED: 0x911C;
+            // readonly WAIT_FAILED: 0x911D;
+            let fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+            let timeout = gl.getParameter(gl.MAX_CLIENT_WAIT_TIMEOUT_WEBGL);
+            console.log("timeout max=" + timeout);
 
-        let bufdata = new Uint8Array(stride * 4);
-        bufdata[3] = 78;
-        tf.ReadBuf(gl, outbuf, bufdata, stride * 4);
-        let dv = new Float32Array(bufdata.buffer);
-        for (var i = 0; i < dv.length; i++) {
-            console.log("F[" + i + "]=" + dv[i]);
+            let checkfunc = () => {
+                //webgl 这东西咋没啥用
+
+                let r = gl.clientWaitSync(fence, 0, 0);
+                console.log("clientWaitSync state=0x" + r.toString(16));
+
+
+                let s = gl.getSyncParameter(fence, gl.SYNC_STATUS);
+                console.log("sync state=0x" + s.toString(16));
+
+                //gl.waitSync(fence, 0, gl.TIMEOUT_IGNORED);
+
+                // let s2 = gl.getSyncParameter(fence, gl.SYNC_STATUS);
+                // console.log("sync state2=0x" + s2.toString(16));
+                if (s == gl.UNSIGNALED) {
+                    console.log("=>not signed.");
+                }
+                else {
+                    console.log("=>signed.");
+                }
+                if(r == gl.ALREADY_SIGNALED || r == gl.CONDITION_SATISFIED)
+                {
+                    gl.deleteSync(fence);
+                }
+                else
+                {
+                    setTimeout(checkfunc, 0);
+                    return;
+                }
+
+               
+                tf.End(gl);
+
+
+
+                //
+                //
+                //if (r == gl.ALREADY_SIGNALED || r == gl.CONDITION_SATISFIED) {
+
+                //
+
+
+
+                //let r = gl.clientWaitSync(fence, gl.SYNC_FLUSH_COMMANDS_BIT, timeout);
+                //console.log("result=0x" + r.toString(16));
+
+                let bufdata = new Uint8Array(stride * 4);
+                bufdata[3] = 78;
+                tf.ReadBuf(gl, outbuf, bufdata, stride * 4);
+                let dv = new Float32Array(bufdata.buffer);
+                for (var i = 0; i < dv.length / 6; i++) {
+                    let x = dv[i * 6 + 0];
+                    let y = dv[i * 6 + 1];
+                    let z = dv[i * 6 + 2];
+                    console.log("F[" + i + "]=" + x + "," + y + "," + z);
+                }
+                // }
+                // else {
+
+                //     setTimeout(checkfunc, 0);
+                // }
+            }
+
+            //gl.deleteSync(fence);
+
+
+            setTimeout(checkfunc, 0);
         }
 
     }

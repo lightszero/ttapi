@@ -11,8 +11,8 @@ export interface IState {
   OnExit(): void;
   OnResize(width: number, height: number): void;
 
-  OnKey(keycode: string, press: boolean) : void;
-  OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean):void;
+  OnKey(keycode: string, press: boolean): void;
+  OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void;
 }
 
 //添加额外的绘制层
@@ -43,10 +43,13 @@ export class GameApp {
     tt.graphic.OnUpdate = this.OnUpdate.bind(this);
     tt.graphic.OnResize = this.OnResize.bind(this);
     tt.input.OnPoint = this.OnPoint.bind(this);
-    tt.input.OnKey=this.OnKey.bind(this);
+    tt.input.OnKey = this.OnKey.bind(this);
   }
- 
 
+  public static Pause(v: boolean) {
+    this._pause = v;
+  }
+  private static _pause: boolean = false;
 
   private static _mainscreen: MainScreen = null;
 
@@ -79,18 +82,24 @@ export class GameApp {
     }
   }
   private static OnUpdate(delta: number): void {
+    if (this._pause)
+      return;
     this._viewlist.Update(delta);
     if (this._state != null) {
       this._state.OnUpdate(delta);
     }
   }
   private static OnResize(width: number, height: number): void {
+    if (this._pause)
+      return;
     if (this._state != null) {
       this._state.OnResize(width, height);
     }
   }
   private static render_ext: IRenderExt[] = [];
   private static OnRender(): void {
+    if (this._pause)
+      return;
     let gl = tt.graphic.GetWebGL();
 
     for (var i = 0; i < this.render_ext.length; i++) {
@@ -108,6 +117,8 @@ export class GameApp {
 
   }
   private static OnPoint(id: number, x: number, y: number, press: boolean, move: boolean): void {
+    if (this._pause)
+      return;
     let guiview = this._viewlist.GetViews(ViewTag.GUI);
     if (guiview != null) {
       for (let i = guiview.length - 1; i >= 0; i--) {
@@ -121,11 +132,11 @@ export class GameApp {
       this._state.OnPointAfterGUI(id, x, y, press, move);
     }
   }
-  private static OnKey(keycode: string, press: boolean) : void
-  {
-    if(this._state!=null)
-    {
-      this._state.OnKey(keycode,press);
+  private static OnKey(keycode: string, press: boolean): void {
+    if (this._pause)
+      return;
+    if (this._state != null) {
+      this._state.OnKey(keycode, press);
     }
   }
 }
