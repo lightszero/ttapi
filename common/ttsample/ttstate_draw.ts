@@ -45,10 +45,10 @@ export class TTState_Draw implements IState, IRenderExt {
 
         this.InitMesh(gl);
         this.InitMesh2(gl);
-        this.InitTF(gl);
+
         //GameApp.Pause(true);
-        return;
-       
+        //return;
+
         this._mainscreen = GameApp.GetMainScreen();
 
         this._quadbatcher = new Render_Batcher(gl);
@@ -307,96 +307,49 @@ export class TTState_Draw implements IState, IRenderExt {
         mesh.UploadVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
         console.log("====>test feedback.");
         let mat = new Material(GetShaderProgram("feedback"));
-        let outbuf = gl.createBuffer();
-        gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, outbuf);
+        this.outbuf = gl.createBuffer();
+        gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, this.outbuf);
         gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, stride * 4, gl.STREAM_READ);
 
-        let tf = new TransformFeedBack(gl);
-        tf.Execute(gl, mesh, mat, outbuf, 0, 4);
-       
-        {
-            gl.flush();
-            // readonly ALREADY_SIGNALED: 0x911A;
-            // readonly TIMEOUT_EXPIRED: 0x911B;
-            // readonly CONDITION_SATISFIED: 0x911C;
-            // readonly WAIT_FAILED: 0x911D;
-            let fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
-            let timeout = gl.getParameter(gl.MAX_CLIENT_WAIT_TIMEOUT_WEBGL);
-            console.log("timeout max=" + timeout);
-
-            let checkfunc = () => {
-                //webgl 这东西咋没啥用
-
-                let r = gl.clientWaitSync(fence, 0, 0);
-                console.log("clientWaitSync state=0x" + r.toString(16));
+        let tf = this.tf = new TransformFeedBack(gl);
+        tf.Execute(gl, mesh, mat, this.outbuf, 0, 4);
 
 
-                let s = gl.getSyncParameter(fence, gl.SYNC_STATUS);
-                console.log("sync state=0x" + s.toString(16));
+        this.fenceid = GameApp.GetFenceID();
+        GameApp.Fence();
+    }
+    tf: TransformFeedBack;
+    outbuf: WebGLBuffer;
+    fence: WebGLSync;
+    hastfinit: boolean = false;
+    hasfence: boolean = false;
+    fenceid: number = 0;
+    TryFence(): void {
+        if (GameApp.GetFenceID() > this.fenceid) {
+            console.log("---->has fence.")
+            let gl =tt.graphic.GetWebGL();
+            let stride = this.mesh.GetVertexFormat().vbos[0].stride;
 
-                //gl.waitSync(fence, 0, gl.TIMEOUT_IGNORED);
-
-                // let s2 = gl.getSyncParameter(fence, gl.SYNC_STATUS);
-                // console.log("sync state2=0x" + s2.toString(16));
-                if (s == gl.UNSIGNALED) {
-                    console.log("=>not signed.");
-                }
-                else {
-                    console.log("=>signed.");
-                }
-                if(r == gl.ALREADY_SIGNALED || r == gl.CONDITION_SATISFIED)
-                {
-                    gl.deleteSync(fence);
-                }
-                else
-                {
-                    setTimeout(checkfunc, 0);
-                    return;
-                }
-
-               
-                tf.End(gl);
-
-
-
-                //
-                //
-                //if (r == gl.ALREADY_SIGNALED || r == gl.CONDITION_SATISFIED) {
-
-                //
-
-
-
-                //let r = gl.clientWaitSync(fence, gl.SYNC_FLUSH_COMMANDS_BIT, timeout);
-                //console.log("result=0x" + r.toString(16));
-
-                let bufdata = new Uint8Array(stride * 4);
-                bufdata[3] = 78;
-                tf.ReadBuf(gl, outbuf, bufdata, stride * 4);
-                let dv = new Float32Array(bufdata.buffer);
-                for (var i = 0; i < dv.length / 6; i++) {
-                    let x = dv[i * 6 + 0];
-                    let y = dv[i * 6 + 1];
-                    let z = dv[i * 6 + 2];
-                    console.log("F[" + i + "]=" + x + "," + y + "," + z);
-                }
-                // }
-                // else {
-
-                //     setTimeout(checkfunc, 0);
-                // }
+            let bufdata = new Uint8Array(stride * 4);
+            bufdata[3] = 78;
+            this.tf.ReadBuf(gl, this.outbuf, bufdata, stride * 4);
+            let dv = new Float32Array(bufdata.buffer);
+            for (var i = 0; i < dv.length / 6; i++) {
+                let x = dv[i * 6 + 0];
+                let y = dv[i * 6 + 1];
+                let z = dv[i * 6 + 2];
+                console.log("F[" + i + "]=" + x + "," + y + "," + z);
             }
-
-            //gl.deleteSync(fence);
-
-
-            setTimeout(checkfunc, 0);
+            this.hasfence = true;
         }
+
+
 
     }
     OnUpdate(delta: number): void {
+        let gl = tt.graphic.GetWebGL();
         {
-            let gl = tt.graphic.GetWebGL();
+
             let stride2 = this.mesh2.GetVertexFormat().vbos[1].stride;
             let instcount = 100;
             let vertexdata2 = new Uint8Array(stride2 * instcount);
@@ -414,6 +367,13 @@ export class TTState_Draw implements IState, IRenderExt {
             datavbo2.setFloat32(32, 0, true);
             this.mesh2.UploadVertexBuffer(gl, 1, vertexdata2, false, vertexdata2.byteLength);
             this.mesh2.instancecount = instcount;
+        }
+        if (!this.hastfinit) {
+            this.InitTF(gl);
+            this.hastfinit = true;
+        }
+        else if (!this.hasfence) {
+            this.TryFence();
         }
     }
     OnExit(): void {

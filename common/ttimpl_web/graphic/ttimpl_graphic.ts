@@ -75,7 +75,6 @@ export namespace tt_impl {
         OnResize: ((width: number, height: number) => void) | null = null;
         OnRender: (() => void) | null = null;
 
-
     }
 
 }

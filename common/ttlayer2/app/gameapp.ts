@@ -60,6 +60,15 @@ export class GameApp {
     return this._viewlist;
   }
 
+  private static _willfence: boolean = false;
+  static Fence(): void {
+    this._willfence = true;
+  }
+  private static _fenceid: number = 0;
+  static GetFenceID(): number {
+    return this._fenceid;
+  }
+
   static GetMainScreen(): MainScreen {
     return this._mainscreen;
   }
@@ -100,6 +109,7 @@ export class GameApp {
   private static OnRender(): void {
     if (this._pause)
       return;
+    console.log("============renderframe========<");
     let gl = tt.graphic.GetWebGL();
 
     for (var i = 0; i < this.render_ext.length; i++) {
@@ -114,7 +124,49 @@ export class GameApp {
       this.render_ext[i].OnPostRender();
     }
 
+    if (this._willfence) {
+      console.log("==>start fence");
+      this._willfence=false;
+      gl.flush();
+      // readonly ALREADY_SIGNALED: 0x911A;
+      // readonly TIMEOUT_EXPIRED: 0x911B;
+      // readonly CONDITION_SATISFIED: 0x911C;
+      // readonly WAIT_FAILED: 0x911D;
+      let fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+      let checkfunc = () => {
+        //webgl 这东西咋没啥用
 
+        let r = gl.clientWaitSync(fence, 0, 0);
+        console.log("clientWaitSync state=0x" + r.toString(16));
+
+        gl.waitSync(fence, 0, gl.TIMEOUT_IGNORED);
+
+        let s = gl.getSyncParameter(fence, gl.SYNC_STATUS);
+        console.log("sync state=0x" + s.toString(16));
+        //readonly UNSIGNALED: 0x9118;
+        //readonly SIGNALED: 0x9119;
+
+
+        // let s2 = gl.getSyncParameter(fence, gl.SYNC_STATUS);
+        // console.log("sync state2=0x" + s2.toString(16));
+        if (s == gl.UNSIGNALED) {
+          console.log("=>not signed.");
+          setTimeout(checkfunc, 0);
+          return;
+        }
+        else {
+          console.log("=>signed.");
+          gl.deleteSync(fence);
+
+          this._willfence = false;
+          this._fenceid++;
+        }
+
+
+
+      }
+      setTimeout(checkfunc, 0);
+    }
   }
   private static OnPoint(id: number, x: number, y: number, press: boolean, move: boolean): void {
     if (this._pause)

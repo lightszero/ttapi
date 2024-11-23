@@ -84,6 +84,7 @@ export namespace tt_impl {
             //render logic
             if (tt.graphic.OnRender != null)
                 tt.graphic.OnRender();
+
         }
 
     }
