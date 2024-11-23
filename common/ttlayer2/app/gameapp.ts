@@ -61,8 +61,14 @@ export class GameApp {
   }
 
   private static _willfence: boolean = false;
-  static Fence(): void {
+  static Fence(): boolean {
+    if (this._willfence)
+      return false;
     this._willfence = true;
+    return true;
+  }
+  static CanFence(): boolean {
+    return !this._willfence;
   }
   private static _fenceid: number = 0;
   static GetFenceID(): number {
@@ -106,6 +112,7 @@ export class GameApp {
     }
   }
   private static render_ext: IRenderExt[] = [];
+
   private static OnRender(): void {
     if (this._pause)
       return;
@@ -125,48 +132,51 @@ export class GameApp {
     }
 
     if (this._willfence) {
-      console.log("==>start fence");
-      this._willfence=false;
-      gl.flush();
+      this.DoFence(gl);
+    }
+  }
+  private static DoFence(gl: WebGL2RenderingContext) {
+    //console.log("==>start fence");
+    this._willfence = false;
+    gl.flush();
+
+    //用update 查fence 虽然也行，但感觉上setTimeout(0) 可能会更快一点？
+    let fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+    let checkfunc = () => {
+      //webgl 这东西咋没啥用
+
+
       // readonly ALREADY_SIGNALED: 0x911A;
       // readonly TIMEOUT_EXPIRED: 0x911B;
       // readonly CONDITION_SATISFIED: 0x911C;
       // readonly WAIT_FAILED: 0x911D;
-      let fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
-      let checkfunc = () => {
-        //webgl 这东西咋没啥用
+      let r = gl.clientWaitSync(fence, 0, 0);
+      //console.log("clientWaitSync state=0x" + r.toString(16));
 
-        let r = gl.clientWaitSync(fence, 0, 0);
-        console.log("clientWaitSync state=0x" + r.toString(16));
-
-        gl.waitSync(fence, 0, gl.TIMEOUT_IGNORED);
-
-        let s = gl.getSyncParameter(fence, gl.SYNC_STATUS);
-        console.log("sync state=0x" + s.toString(16));
-        //readonly UNSIGNALED: 0x9118;
-        //readonly SIGNALED: 0x9119;
+      //waitsync 和 clientwaitsync 都可以处理
+      //clientWaitSync的返回值可以直接判断，用waitsync 就需要用getSyncParameter来出判断
+      //gl.waitSync(fence, 0, gl.TIMEOUT_IGNORED);
+      //readonly UNSIGNALED: 0x9118;
+      //readonly SIGNALED: 0x9119;
+      //let s = gl.getSyncParameter(fence, gl.SYNC_STATUS);
+      //console.log("sync state=0x" + s.toString(16));
 
 
-        // let s2 = gl.getSyncParameter(fence, gl.SYNC_STATUS);
-        // console.log("sync state2=0x" + s2.toString(16));
-        if (s == gl.UNSIGNALED) {
-          console.log("=>not signed.");
-          setTimeout(checkfunc, 0);
-          return;
-        }
-        else {
-          console.log("=>signed.");
-          gl.deleteSync(fence);
-
-          this._willfence = false;
-          this._fenceid++;
-        }
-
-
-
+      if (r == gl.TIMEOUT_EXPIRED || r == gl.WAIT_FAILED) {
+        console.log("=>not signed.");
+        setTimeout(checkfunc, 0);
+        return;
       }
-      setTimeout(checkfunc, 0);
+      else {
+        console.log("=>signed.");
+        gl.deleteSync(fence);
+
+        this._willfence = false;
+        this._fenceid++;
+      }
+
     }
+    setTimeout(checkfunc, 0);
   }
   private static OnPoint(id: number, x: number, y: number, press: boolean, move: boolean): void {
     if (this._pause)

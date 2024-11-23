@@ -20,7 +20,7 @@ export class TTState_Scene implements IState {
     }
 
     subgroup: SceneItem_Group;
-    comp_p: Comp_ParticleSystem;
+    comp_p: Comp_ParticleSystem_TF;
 
     private font: Font = null;
     private comp_l: Comp_Label = null;
@@ -60,7 +60,7 @@ export class TTState_Scene implements IState {
             sceneitem.scale.X = 5;
             sceneitem.scale.Y = 5;
             view.items.push(sceneitem);
-            let comp = this.comp_p = new Comp_ParticleSystem();
+            let comp = this.comp_p = new Comp_ParticleSystem_TF();
 
             sceneitem.AddComponment(comp);
         }

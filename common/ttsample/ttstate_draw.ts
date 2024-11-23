@@ -327,7 +327,9 @@ export class TTState_Draw implements IState, IRenderExt {
     TryFence(): void {
         if (GameApp.GetFenceID() > this.fenceid) {
             console.log("---->has fence.")
+         
             let gl =tt.graphic.GetWebGL();
+            this.tf.End(gl);
             let stride = this.mesh.GetVertexFormat().vbos[0].stride;
 
             let bufdata = new Uint8Array(stride * 4);

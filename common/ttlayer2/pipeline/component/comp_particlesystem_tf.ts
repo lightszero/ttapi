@@ -12,7 +12,7 @@ export class ParticleInfo {
 }
 //基于TransformFeed 的 粒子系统,
 //手机上表现不好,没解决让TransformFeed强行完成的的问题
-export const ParticleSystemInstCount: number = 65536;
+export const ParticleSystemInstCount: number = 4096;
 export class Comp_ParticleSystem_TF implements IViewComponent, IViewRenderItem {
     sceneitem: IViewItem = null;
 
@@ -55,10 +55,6 @@ export class Comp_ParticleSystem_TF implements IViewComponent, IViewRenderItem {
         this.meshFeed2.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_Normal());
 
         this.matInst = new Material(GetShaderProgram("feedback"));
-
-        this.fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
-        this.webgl.finish();
-        this.webgl.waitSync(this.fence, 0, this.webgl.TIMEOUT_IGNORED);
     }
     private InitDrawMesh() {
 
@@ -157,7 +153,13 @@ export class Comp_ParticleSystem_TF implements IViewComponent, IViewRenderItem {
 
         this.feedback = new TransformFeedBack(this.webgl);
     }
+    ps: ParticleInfo[] = []
     UpdateParticles(ps: ParticleInfo[]) {
+        for (let i = 0; i < ps.length; i++)
+            this.ps.push(ps[i]);
+    }
+    private _UpdateParticles() {
+        let ps =this.ps;
         let len = ps.length;
         let maxlen = ParticleSystemInstCount - this.instIndex;
 
@@ -203,12 +205,14 @@ export class Comp_ParticleSystem_TF implements IViewComponent, IViewRenderItem {
             this.webgl.bindBuffer(this.webgl.ARRAY_BUFFER, null);
             this.instIndex += range2;
         }
-
+        this.ps = [];
     }
-    private sleep: number = 0;
-    private fence: WebGLSync = null;
-    OnUpdate(delta: number): void {
 
+
+    private fenceindex: number = -1;
+    private canrender: boolean = false;
+    OnUpdate(delta: number): void {
+        this.canrender = false;
         let mat = this.sceneitem.GetWorldMatrix();
         let mat4 = new Float32Array(16);
         mat4[0] = mat.values[0]; mat4[4] = mat.values[2]; mat4[8] = 0; mat4[12] = mat.values[4];
@@ -217,20 +221,35 @@ export class Comp_ParticleSystem_TF implements IViewComponent, IViewRenderItem {
         mat4[3] = 0; mat4[7] = 0; mat4[11] = 0; mat4[15] = 1;
         this.matDraw.UpdateMatModel(mat4);//这个跟着worldmatrix走
 
-        // if (this.sleep > 0) {
-        //     this.sleep--;
-        // }
-        if (this.usedraw == 1) {
-            this.feedback.Execute(this.webgl, this.meshFeed1, this.matInst, this.meshDraw2._vbos[1], 0, this.meshDraw1.instancecount);
-            this.usedraw = 2;
-            this.sleep = 1;
+        let fid = GameApp.GetFenceID();
+        if (this.fenceindex < fid && GameApp.CanFence())
+        {
+
+            this.fenceindex = fid;
+
+            this._UpdateParticles();
+
+            this.fenceindex = fid;
+
+
+            if (this.usedraw == 1) {
+                this.feedback.Execute(this.webgl, this.meshFeed1, this.matInst, this.meshDraw2._vbos[1], 0, this.meshDraw1.instancecount);
+                this.usedraw = 2;
+
+            }
+            else {
+                this.feedback.Execute(this.webgl, this.meshFeed2, this.matInst, this.meshDraw1._vbos[1], 0, this.meshDraw1.instancecount);
+                this.usedraw = 1;
+
+            }
+
+            GameApp.Fence();
+            this.canrender = true;
         }
-        else {
-            this.feedback.Execute(this.webgl, this.meshFeed2, this.matInst, this.meshDraw1._vbos[1], 0, this.meshDraw1.instancecount);
-            this.usedraw = 1;
-            this.sleep = 1;
-        }
- 
+
+
+
+
     }
     IsRender(): boolean {
         return true;
@@ -241,15 +260,17 @@ export class Comp_ParticleSystem_TF implements IViewComponent, IViewRenderItem {
         let y = this.sceneitem.GetWorldMatrix().values[5];
         return y;
     }
-    OnRender(_target:IRenderTarget, view: IView, tag: number): void {
+    OnRender(_target: IRenderTarget, view: IView, tag: number): void {
         if (tag == 0) {
-            let target = _target;
-            if (target == null)
-                target = GameApp.GetMainScreen();
-            this.matDraw.UpdateMatView();//这个应该跟着View走
-            this.matDraw.UpdateMatProj(target);
-            Render.DrawMeshInstanced(this.webgl, this.usedraw == 1 ? this.meshDraw1 : this.meshDraw2, this.matDraw);
-
+            //if (this.canrender)
+                 {
+                let target = _target;
+                if (target == null)
+                    target = GameApp.GetMainScreen();
+                this.matDraw.UpdateMatView();//这个应该跟着View走
+                this.matDraw.UpdateMatProj(target);
+                Render.DrawMeshInstanced(this.webgl, this.usedraw == 1 ? this.meshDraw1 : this.meshDraw2, this.matDraw);
+            }
         }
     }
 
