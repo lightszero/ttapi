@@ -155,8 +155,8 @@ export class Comp_ParticleSystem_TF implements IViewComponent, IViewRenderItem {
     }
     ps: ParticleInfo[] = []
     UpdateParticles(ps: ParticleInfo[]) {
-        for (let i = 0; i < ps.length; i++)
-            this.ps.push(ps[i]);
+        //for (let i = 0; i < ps.length; i++)
+        this.ps.push(...ps);
     }
     private _UpdateParticles() {
         let ps =this.ps;

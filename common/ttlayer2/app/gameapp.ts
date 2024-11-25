@@ -138,10 +138,11 @@ export class GameApp {
   private static DoFence(gl: WebGL2RenderingContext) {
     //console.log("==>start fence");
     this._willfence = false;
-    gl.flush();
+  
 
     //用update 查fence 虽然也行，但感觉上setTimeout(0) 可能会更快一点？
     let fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+    gl.flush(); 
     let checkfunc = () => {
       //webgl 这东西咋没啥用
 
