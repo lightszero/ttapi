@@ -38,7 +38,7 @@ export interface IRenderTarget extends ITexture {
 
 export class Texture implements ITexture {
     static texid: number = 1;
-    constructor(webgl: WebGLRenderingContext, width: number, height: number, format: TextureFormat, data: Uint8Array | Uint8ClampedArray | null) {
+    constructor(webgl: WebGL2RenderingContext, width: number, height: number, format: TextureFormat, data: Uint8Array | Uint8ClampedArray | null) {
         this._webgl = webgl;
         this._format = format;
         this._texobj = webgl.createTexture();
@@ -62,7 +62,7 @@ export class Texture implements ITexture {
 
         this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
         if (data == null) {
-           
+           this._webgl
             this._webgl.texImage2D(this._webgl.TEXTURE_2D,
                 0,
                 formatGL,
@@ -89,7 +89,7 @@ export class Texture implements ITexture {
 
         }
     }
-    _webgl: WebGLRenderingContext
+    _webgl: WebGL2RenderingContext
     _format: TextureFormat
     _texobj: WebGLTexture | null;
     _id: number;

@@ -1,6 +1,6 @@
 import { IRenderTarget, Material, Mesh, Render_Batcher, VertexFormatMgr } from "../ttlayer2.js";
 import {IDrawLayer, IViewRenderItem, DrawLayerTag } from "./drawlayer.js"
-import {QUI_Canvas} from "../../ttui/ttui.js"
+import {QUI_Canvas} from "../ttui/ttui.js"
 import { tt } from "../../ttapi/ttapi.js";
 import { GetShaderProgram } from "../graphics/shader/shaders.js";
 import { Render } from "../graphics/render/render.js";

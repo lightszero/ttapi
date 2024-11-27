@@ -80,18 +80,29 @@ export interface IDrawLayer {
 export class DrawLayerList {
     //private views: IView[] = []
     private mapviews: { [id: number]: IDrawLayer[] } = {};
-    AddView(view: IDrawLayer): void {
+    AddDrawLayers(view: IDrawLayer): void {
         let tag = view.GetTag();
         if (this.mapviews[tag] == undefined) {
             this.mapviews[tag] = [];
         }
         this.mapviews[tag].push(view);
     }
-    GetViews(tag: number): IDrawLayer[] {
+    RemoveDrawLayers(view: IDrawLayer): void {
+        let tag = view.GetTag();
+        let views = this.GetDrawLayers(tag);
+        let index = views.indexOf(view);
+        if (index >= 0) {
+            views.splice(index, 1);
+        }
+    }
+    GetDrawLayers(tag: number): IDrawLayer[] {
+        if (this.mapviews[tag] == undefined) {
+            this.mapviews[tag] = [];
+        }
         return this.mapviews[tag];
     }
-    RenderViews(tag: number, target: IRenderTarget, rendertag: number): number {
-        let views = this.GetViews(tag);
+    RenderDrawLayers(tag: number, target: IRenderTarget, rendertag: number): number {
+        let views = this.GetDrawLayers(tag);
         if (views != null) {
             for (let i = 0; i < views.length; i++) {
                 views[i].Render(target, rendertag);
@@ -100,7 +111,7 @@ export class DrawLayerList {
         }
         return 0;
     }
-    GetViewTags(): number[] {
+    GetDrawLayerTags(): number[] {
         let tags: DrawLayerTag[] = [];
         for (let key in this.mapviews) {
             tags.push(key as any as number);

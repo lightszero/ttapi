@@ -4,14 +4,11 @@ import { Comp_Label } from "../ttlayer2/scene/component/comp_label.js";
 import { Comp_Sprite } from "../ttlayer2/scene/component/comp_sprite.js";
 
 
-import { Font, GameApp, IState, Texture, TextureFormat, Sprite, Color, Border } from "../ttlayer2/ttlayer2.js";
+import { Font, GameApp, IState, Texture, TextureFormat, Sprite, Color, Border ,QUI_ImageScale9, QUI_Label, QUI_Scale9, QUI_Button, QUI_Image } from "../ttlayer2/ttlayer2.js";
 import { DrawLayer_GUI } from "../ttlayer2/pipeline/drawlayer_gui.js";
-import { QUI_Image } from "../ttui/qui_image.js";
-import { QUI_Label } from "../ttui/qui_label.js";
-import { QUI_Button } from "../ttui/qui_button.js";
+
 import { Atlas } from "../ttlayer2/atlas/atlas.js";
-import { QUI_Scale9 } from "../ttui/qui_scale9.js";
-import { QUI_ImageScale9 } from "../ttui/qui_imagescale9.js";
+
 
 export class TTState_UI implements IState<any> {
     OnKey(keycode: string, press: boolean): void {
@@ -29,7 +26,7 @@ export class TTState_UI implements IState<any> {
 
         ///准备一个视图,FlatView 是一个简洁的View,他下面可以放置若干个FlatViewItem
         this.uiview = new DrawLayer_GUI();
-        GameApp.GetViewList().AddView(this.uiview);
+        GameApp.GetViewList().AddDrawLayers(this.uiview);
         this.uiview.canvas.scale=4.0;
 
         this.font = new Font(gl, "VonwaonBitmap-16px", 24);

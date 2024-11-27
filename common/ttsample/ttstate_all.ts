@@ -2,62 +2,102 @@ import { tt } from "../ttapi/ttapi.js";
 import { DrawLayer_Canvas } from "../ttlayer2/pipeline/drawlayer_canvas.js";
 import { DrawLayer_GUI } from "../ttlayer2/pipeline/drawlayer_gui.js";
 import { Resources } from "../ttlayer2/resources/defaultres.js";
-import { Border, Font, GameApp, IState, StateMgr, Vector2 } from "../ttlayer2/ttlayer2.js";
-import { QUI_ImageScale9, QUI_Label, QUI_Scale9 } from "../ttui/ttui.js";
+import { Border, Font, GameApp, IState, StateMgr, Vector2, QUI_ImageScale9, QUI_Label, QUI_Scale9, Color, IUserLogic, Navigator, DrawLayerTag, QUI_Image, QUI_HAlign } from "../ttlayer2/ttlayer2.js";
+import { View_Menu } from "./view_menu.js";
+
 
 export class GContext {
     topuiview: DrawLayer_GUI;
-    canvasview: DrawLayer_Canvas;
-    font: Font;
-
+    //将TopUI置顶
+    TopUI2Top(): void {
+        let views = GameApp.GetViewList().GetDrawLayers(DrawLayerTag.GUI);
+        let index = views.indexOf(this.topuiview);
+        if (index != views.length - 1) {
+            views.splice(index, 1);
+            views.push(this.topuiview);
+        }
+    }
 }
-export class TTState_All implements IState<any> {
+export class TTState_All implements IUserLogic {
 
-    substatemgr: StateMgr<GContext>
+    nav: Navigator<GContext>
+    label_fps: QUI_Label;
     OnInit(): void {
-        this.substatemgr = new StateMgr<GContext>(new GContext());
+        //创建一个导航器框架
+        this.nav = new Navigator<GContext>(new GContext());
+
         let gl = tt.graphic.GetWebGL();
-        let ct = this.substatemgr.GetContextObj();
+        let ct = this.nav.GetContextObj();
         ct.topuiview = new DrawLayer_GUI();
         ct.topuiview.canvas.scale = 2.0;
+        GameApp.GetViewList().AddDrawLayers(ct.topuiview);
 
-        ct.canvasview = new DrawLayer_Canvas();
-        GameApp.GetViewList().AddView(ct.topuiview);
 
-        ct.font = new Font(gl, "VonwaonBitmap-16px", 32);//VonwaonBitmap-16px
-        this.asyncinit(ct);
-    }
-    async asyncinit(context: GContext) {
-        let grid = Resources.GetBorder2Block();
-        let uiimg = new QUI_ImageScale9();
-        uiimg.scale9 = new QUI_Scale9(grid, new Border(3, 3, 3, 3), 16, 16);
-        context.topuiview.canvas.addChild(uiimg);
 
-        uiimg.localRect.setHPosFill(0, 0);
-        uiimg.localRect.setVPosFill(0, 0);
+        Resources.SetDefFont(new Font(gl, "VonwaonBitmap-16px", 32));//VonwaonBitmap-16px
 
-        let label = new QUI_Label(context.font, "中国Hello world");
-        label.fontScale=new Vector2(0.5,0.5);
-        context.topuiview.canvas.addChild(label);
-        label.localRect.setHPosByLeftBorder(300, 64);
-        label.localRect.setVPosByTopBorder(30, 128);
-
+        this.InitTopUI(ct);
+        this.nav.NavigatorTo(new View_Menu());
 
     }
+    InitTopUI(context: GContext) {
+        {
+            //title
+            {
+                let labels = Resources.CreateGUI_Label("新TTAPI", new Color(0, 0, 0, 0.5));
+                context.topuiview.canvas.addChild(labels);
+                labels.localRect.setHPosFill(33, 31);
+                labels.localRect.setVPosByTopBorder(16, 9);
+    
+            }
+            let label = Resources.CreateGUI_Label("新TTAPI", new Color(0.8, 1.0, 0, 1));
+            context.topuiview.canvas.addChild(label);
+            label.localRect.setHPosFill(32, 32);
+            label.localRect.setVPosByTopBorder(16, 8);
+
+            let img = new QUI_Image(Resources.GetRoundBlock());
+            img.localRect.setHPosByLeftBorder(16, 0);
+            img.localRect.setVPosByTopBorder(16, 0);
+            context.topuiview.canvas.addChild(img);
+
+            //fps
+            let label_fps = this.label_fps = Resources.CreateGUI_Label("FPS:");
+            context.topuiview.canvas.addChild(label_fps);
+            label_fps.halign = QUI_HAlign.Left;
+            label_fps.localRect.setHPosByLeftBorder(100, 16);
+            label_fps.localRect.setVPosByTopBorder(16, 0);
+        }
+    }
+    frameCount: number = 0;
+    timer: number = 0;
+
     OnUpdate(delta: number): void {
-        this.substatemgr.GetState()?.OnUpdate(delta);
+        this.nav.GetLast()?.OnUpdate(delta);
+
+        this.frameCount++;
+        this.timer += delta;
+        if (this.timer > 1.0) {
+            let _fps = ((((this.frameCount / this.timer) * 10 + 0.5) | 0) / 10).toString();
+            if (_fps.indexOf(".") < 0)
+                _fps += ".0";
+
+            this.label_fps.text = "FPS:" + _fps;
+
+            this.timer = 0;
+            this.frameCount = 0;
+        }
     }
     OnExit(): void {
-        this.substatemgr.GetState()?.OnExit();
+        this.nav.GetLast()?.OnExit();
     }
     OnResize(width: number, height: number): void {
-        this.substatemgr.GetState()?.OnResize(width, height);
+        this.nav.GetLast()?.OnResize(width, height);
     }
 
     OnKey(keycode: string, press: boolean): void {
-        this.substatemgr.GetState()?.OnKey(keycode, press);
+        this.nav.GetLast()?.OnKey(keycode, press);
     }
     OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
-        this.substatemgr.GetState()?.OnPointAfterGUI(id, x, y, press, move);
+        this.nav.GetLast()?.OnPointAfterGUI(id, x, y, press, move);
     }
 }

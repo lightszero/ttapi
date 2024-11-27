@@ -95,7 +95,7 @@ export class Comp_Sprite implements IViewComponent, IViewRenderItem {
             }
             let tex = this.tex;
             if (tex == null) {
-                tex = Resources.getWhiteTexture();
+                tex = Resources.GetWhiteTexture();
             }
             Comp_Sprite._batcher.DrawQuads(tex, null, this.quad, 1);
         }

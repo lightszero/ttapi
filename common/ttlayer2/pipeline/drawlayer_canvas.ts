@@ -1,6 +1,6 @@
 import { IRenderTarget, Render_Batcher, Sprite, Vector2 } from "../ttlayer2.js";
 import { IDrawLayer, IViewRenderItem, DrawLayerTag } from "./drawlayer.js"
-import { QUI_Canvas } from "../../ttui/ttui.js"
+
 import { tt } from "../../ttapi/ttapi.js";
 
 //inst info
@@ -22,7 +22,7 @@ class CanvasItem
     targetRotate:number;
 }
 export class DrawLayer_Canvas implements IDrawLayer {
-    constructor(tag: DrawLayerTag = DrawLayerTag.GUI) {
+    constructor(tag: DrawLayerTag = DrawLayerTag.Main) {
         this.tag = tag;
 
         this.canvas = new Render_Batcher(tt.graphic.GetWebGL());

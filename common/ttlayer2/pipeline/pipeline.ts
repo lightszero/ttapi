@@ -26,8 +26,8 @@ export class PipeLine_Default implements IPileLine {
         this.maintarget.Begin();
         this.maintarget.Clear(new Color( 1,0.5,0.5,1));
        
-        viewlist.RenderViews(DrawLayerTag.Main,this.maintarget,0);
-        viewlist.RenderViews(DrawLayerTag.GUI,this.maintarget,0);
+        viewlist.RenderDrawLayers(DrawLayerTag.Main,this.maintarget,0);
+        viewlist.RenderDrawLayers(DrawLayerTag.GUI,this.maintarget,0);
   
         
 

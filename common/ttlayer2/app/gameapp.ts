@@ -9,7 +9,15 @@ import { Resources } from "../ttlayer2.js";
 
 
 
+export interface IUserLogic {
+  OnInit(): void;
+  OnUpdate(delta: number): void
+  OnExit(): void;
+  OnResize(width: number, height: number): void;
 
+  OnKey(keycode: string, press: boolean): void;
+  OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void;
+}
 //添加额外的绘制层
 export interface IRenderExt {
   OnPreRender(): void;
@@ -18,7 +26,7 @@ export interface IRenderExt {
 export class GameApp {
   static gameData: object;
   //Start 之前 ttapi 的某一个impl 应该提前初始化
-  static Start(state: IState<any>): void {
+  static Start(userlogic: IUserLogic): void {
 
 
     let gl = tt.graphic.GetWebGL();
@@ -29,8 +37,8 @@ export class GameApp {
     this._viewlist = new DrawLayerList();
 
     this.regevent();
-    this.ChangeState(state);
 
+    this.SetUserLogic(userlogic);
   }
 
   private static regevent(): void {
@@ -48,8 +56,17 @@ export class GameApp {
 
   private static _mainscreen: MainScreen = null;
 
-  private static _state: IState<any> = null;
+  private static _state: IUserLogic = null;
 
+  static SetUserLogic(_logic: IUserLogic) {
+    if (this._state != null) {
+      this._state.OnExit();
+    }
+    this._state = _logic;
+    if (this._state != null) {
+      this._state.OnInit();
+    }
+  }
   private static _viewlist: DrawLayerList = null;
   static GetViewList(): DrawLayerList {
     return this._viewlist;
@@ -73,15 +90,7 @@ export class GameApp {
   static GetMainScreen(): MainScreen {
     return this._mainscreen;
   }
-  static ChangeState(state: IState<any>): void {
-    if (this._state != null) {
-      this._state.OnExit();
-    }
-    this._state = state;
-    if (this._state != null) {
-      this._state.OnInit(null);
-    }
-  }
+
   static AddRenderExt(ext: IRenderExt) {
     this.render_ext.push(ext);
   }
@@ -177,7 +186,7 @@ export class GameApp {
   private static OnPoint(id: number, x: number, y: number, press: boolean, move: boolean): void {
     if (this._pause)
       return;
-    let guiview = this._viewlist.GetViews(DrawLayerTag.GUI);
+    let guiview = this._viewlist.GetDrawLayers(DrawLayerTag.GUI);
     if (guiview != null) {
       for (let i = guiview.length - 1; i >= 0; i--) {
         let v = guiview[i] as DrawLayer_GUI;

@@ -15,7 +15,7 @@ export enum ToROption {
 }
 export class SpriteData {
     format: TextureFormat
-    isByte: boolean = true;
+   
     toRgba: ToRGBAOption = ToRGBAOption.R2Alpha;
     toR: ToROption = ToROption.GRAY;
     width: number;
@@ -25,8 +25,7 @@ export class SpriteData {
         //同格式,直接copy
         if (format == TextureFormat.R8 && this.format == TextureFormat.R8) {
             let r = this.data[y * this.width + x];
-            if (!this.isByte)
-                r = (r * 255) | 0;
+
             buf[index] = r;
         }
         else if (format == TextureFormat.RGBA32 && this.format == TextureFormat.RGBA32) {
@@ -34,12 +33,7 @@ export class SpriteData {
             let g = this.data[(y * this.width + x) * 4 + 1];
             let b = this.data[(y * this.width + x) * 4 + 2];
             let a = this.data[(y * this.width + x) * 4 + 3];
-            if (!this.isByte) {
-                r = (r * 255) | 0;
-                g = (g * 255) | 0;
-                b = (b * 255) | 0;
-                a = (a * 255) | 0;
-            }
+
             buf[index] = r;
             buf[index + 1] = g;
             buf[index + 2] = b;
@@ -65,15 +59,13 @@ export class SpriteData {
                 let a = this.data[(y * this.width + x) * 4 + 3];
                 c = a;
             }
-            if (!this.isByte)
-                c = (c * 255) | 0;
+
             buf[index] = c;
         }
         //convtorgba
         else if (format == TextureFormat.RGBA32 && this.format == TextureFormat.R8) {
             let r = this.data[y * this.width + x];
-            if (!this.isByte)
-                r = (r * 255) | 0;
+
             if (this.toRgba == ToRGBAOption.R2Gray) {
                 buf[index] = r;
                 buf[index + 1] = r;
