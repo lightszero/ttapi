@@ -1,6 +1,7 @@
 
+import { Resources } from "../resources/defaultres.js";
 import { ShaderProgram, uniformInfo, UniformType } from "./shader/shaders.js";
-import { getWhiteTexture, IRenderTarget, ITexture } from "./texture.js";
+import { IRenderTarget, ITexture } from "./texture.js";
 
 export class UniformValue_Tex {
     loc: WebGLUniformLocation;
@@ -41,7 +42,7 @@ export class Material {
                 case UniformType.sampler2D:
                     this.uniformTexs[key] = {
                         loc: info.loc,
-                        value: getWhiteTexture()
+                        value: Resources.getWhiteTexture()
                     };
                     break;
                 case UniformType.mat4:

@@ -1,9 +1,10 @@
 import { tt } from "../../../ttapi/ttapi.js";
 import { Matrix3x2Math } from "../../math/Matrix3x2.js";
 import { Color, Rectangle, UVRect, Vector2 } from "../../math/vector.js";
-import { GameApp, getWhiteTexture, ITexture, Render_Batcher , DrawPoint, IRenderTarget} from "../../ttlayer2.js";
-import { IView, IViewComponent, IViewItem, IViewRenderItem } from "../viewlist.js";
-import { SceneView } from "../../scene/sceneview.js";
+import { GameApp,  ITexture, Render_Batcher , DrawPoint, IRenderTarget} from "../../ttlayer2.js";
+import { IDrawLayer, IViewComponent, IViewItem, IViewRenderItem } from "../../pipeline/drawlayer.js";
+import { SceneView } from "../sceneview.js";
+import { Resources } from "../../resources/defaultres.js";
 
 export class Comp_Sprite implements IViewComponent, IViewRenderItem {
     GetType(): string { return "sprite" };
@@ -83,7 +84,7 @@ export class Comp_Sprite implements IViewComponent, IViewRenderItem {
         let y = this.sceneitem.GetWorldMatrix().values[5];
         return y;
     }
-    OnRender(_target:IRenderTarget,view: IView, tag: number): void {
+    OnRender(_target:IRenderTarget,view: IDrawLayer, tag: number): void {
         if (tag == 0) {
             if (!Comp_Sprite._begin) {
                 let target = _target;
@@ -94,7 +95,7 @@ export class Comp_Sprite implements IViewComponent, IViewRenderItem {
             }
             let tex = this.tex;
             if (tex == null) {
-                tex = getWhiteTexture();
+                tex = Resources.getWhiteTexture();
             }
             Comp_Sprite._batcher.DrawQuads(tex, null, this.quad, 1);
         }

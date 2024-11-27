@@ -1,18 +1,18 @@
 import { IRenderTarget } from "../graphics/texture.js";
 import { Color, Vector2 } from "../math/vector.js";
-import { IView, IViewRenderItem, ViewTag } from "../pipeline/viewlist.js";
+import { IDrawLayer, IViewRenderItem, DrawLayerTag } from "../pipeline/drawlayer.js";
 import { SceneItem_Group } from "../scene/sceneitem.js";
 import { ISceneItemNode } from "../scene/scene.js";
 import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
 
 
-export class SceneView implements IView {
+export class SceneView implements IDrawLayer {
     //impl for view
-    constructor(tag: ViewTag = ViewTag.Main) {
+    constructor(tag: DrawLayerTag = DrawLayerTag.Main) {
         this.tag = tag;
     }
-    private tag: ViewTag;
-    GetTag(): ViewTag {
+    private tag: DrawLayerTag;
+    GetTag(): DrawLayerTag {
         return this.tag;
     }
     target: IRenderTarget = null;
@@ -38,7 +38,7 @@ export class SceneView implements IView {
         this.root.GetRender(list);
 
     }
-    static RenderList(target: IRenderTarget, view: IView, renders: IViewRenderItem[], tag: number): void {
+    static RenderList(target: IRenderTarget, view: IDrawLayer, renders: IViewRenderItem[], tag: number): void {
         renders.sort((a, b) => a.GetSortValue() - b.GetSortValue());
         let lastRender: IViewRenderItem = null;
         for (var i = 0; i < renders.length; i++) {

@@ -20,9 +20,12 @@ export namespace tt_impl {
             this.webgl = canvas.getContext("webgl2", { antialias: false });
 
             if (this.webgl != null) {
-                let canvas =new OffscreenCanvas(32,32); 
+                
+                //普通canvas
                 //let c = window.document.createElement("canvas");
-// c.getContext("2d",{ colorSpace:"srgb", willReadFrequently:true})
+                //let c2d = c.getContext("2d",{ colorSpace:"srgb", willReadFrequently:true})
+                //离屏canvas
+                let canvas =new OffscreenCanvas(32,32); 
                 let c2d = canvas.getContext("2d",{ colorSpace:"srgb", willReadFrequently:true}) as OffscreenCanvasRenderingContext2D; 
             
                 tt.graphic = new impl_g.tt_impl.ttimpl_graphics(this.webgl,c2d);

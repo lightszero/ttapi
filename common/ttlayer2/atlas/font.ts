@@ -1,6 +1,6 @@
 import { Color, Rectangle, Vector2 } from "../math/vector.js";
-import { Render_Batcher, Sprite, TextTool, Texture, TextureFormat } from "../ttlayer2.js";
-import { PackTexture, SpriteData } from "./packtex.js";
+import { Render_Batcher, Sprite, SpriteFormat, TextTool, Texture, TextureFormat } from "../ttlayer2.js";
+import { PackTexture, SpriteData, ToROption } from "./packtex.js";
 
 export class Font {
     constructor(webgl: WebGL2RenderingContext, font: string, size: number) {
@@ -40,13 +40,21 @@ export class Font {
             let imgdata = TextTool.LoadTextPixel(txt, this.fontname, this.fontsize, this.fontsize + 2, this.fontsize + 2, 0, 0);
             if (imgdata.height == 0 || imgdata.width == 0)
                 return null;
+            // for (let i = 3; i < imgdata.data.length; i += 4) {
+
+            //     let a = imgdata.data[i];
+            //     if (a == 0) continue;
+            //     a /= 255;
+            //     imgdata.data[i] = (a * a * 255) | 0;
+            // }
             let data = new SpriteData()
             data.format = TextureFormat.RGBA32;
+            data.toR= ToROption.Alpha;
             data.data = imgdata.data;
             data.width = imgdata.width;
             data.height = imgdata.height;
-           
-            s = this.fonttex.AddSprite(data, txt);
+
+            s = this.fonttex.AddSprite(data, SpriteFormat.GrayAsAlpha, txt);
 
             return s;
         }

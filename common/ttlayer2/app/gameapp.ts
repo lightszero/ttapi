@@ -1,10 +1,11 @@
 import { tt } from "../../ttapi/ttapi.js"
 import { MainScreen } from "../graphics/mainscreen.js";
-import { InitInnerShader } from "../graphics/shader/shaderress.js";
-import { GUIView } from "../pipeline/guiview.js";
-import { ViewList, ViewTag } from "../pipeline/viewlist.js";
-import { Resources } from "../resources/defaultres.js";
+import { InitInnerShader } from "../resources/shaderress.js";
+import { DrawLayer_GUI } from "../pipeline/drawlayer_gui.js";
+import { DrawLayerList, DrawLayerTag } from "../pipeline/drawlayer.js";
+
 import { IState } from "./statemgr.js";
+import { Resources } from "../ttlayer2.js";
 
 
 
@@ -23,11 +24,9 @@ export class GameApp {
     let gl = tt.graphic.GetWebGL();
 
     Resources.InitInnerResource();
-    //准备内置shader
-    InitInnerShader(gl);
 
     this._mainscreen = new MainScreen(gl);
-    this._viewlist = new ViewList();
+    this._viewlist = new DrawLayerList();
 
     this.regevent();
     this.ChangeState(state);
@@ -51,8 +50,8 @@ export class GameApp {
 
   private static _state: IState<any> = null;
 
-  private static _viewlist: ViewList = null;
-  static GetViewList(): ViewList {
+  private static _viewlist: DrawLayerList = null;
+  static GetViewList(): DrawLayerList {
     return this._viewlist;
   }
 
@@ -112,7 +111,7 @@ export class GameApp {
   private static OnRender(): void {
     if (this._pause)
       return;
-    console.log("============renderframe========<");
+    //console.log("============renderframe========<");
     let gl = tt.graphic.GetWebGL();
 
     for (var i = 0; i < this.render_ext.length; i++) {
@@ -178,10 +177,10 @@ export class GameApp {
   private static OnPoint(id: number, x: number, y: number, press: boolean, move: boolean): void {
     if (this._pause)
       return;
-    let guiview = this._viewlist.GetViews(ViewTag.GUI);
+    let guiview = this._viewlist.GetViews(DrawLayerTag.GUI);
     if (guiview != null) {
       for (let i = guiview.length - 1; i >= 0; i--) {
-        let v = guiview[i] as GUIView;
+        let v = guiview[i] as DrawLayer_GUI;
         let kill = v.canvas.OnTouch(id, press, move, x, y);
         if (kill)
           break;

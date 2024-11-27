@@ -3,7 +3,7 @@ import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
 import { PerlinNoise } from "../perlin/perlin.js";
 import { Render } from "../graphics/render/render.js";
 import { GetShaderProgram } from "../graphics/shader/shaders.js";
-import { GameApp, Material, Mesh, TextureFormat } from "../ttlayer2.js";
+import { GameApp, Material, Mesh, SpriteFormat, TextureFormat } from "../ttlayer2.js";
 import { PackTexture, SpriteData } from "./packtex.js";
 
 export class Tiled {
@@ -135,7 +135,7 @@ export class TiledMap {
             reddata.data[i * 4 + 2] = 0;
             reddata.data[i * 4 + 3] = 255;
         }
-        let sred = this.tiledsprite.AddSprite(reddata, "red");
+        let sred = this.tiledsprite.AddSprite(reddata, SpriteFormat.RGBA, "red");
 
 
         let bluedata = new SpriteData();
@@ -149,7 +149,7 @@ export class TiledMap {
             bluedata.data[i * 4 + 2] = i * 3;
             bluedata.data[i * 4 + 3] = 255;
         }
-        let sblue = this.tiledsprite.AddSprite(bluedata, "blue");
+        let sblue = this.tiledsprite.AddSprite(bluedata,  SpriteFormat.RGBA,"blue");
         this.tiledsprite.Apply();
 
         PerlinNoise.Reset();
@@ -159,7 +159,7 @@ export class TiledMap {
                 let z = PerlinNoise.GenNoise(x / 128, y / 128, 0, 3, 2);
                 let c = z > 0.5;
                 this.mapinfo.pixelbuf[index] = c ? sred.uv.U1 : sblue.uv.U1;
-                this.mapinfo.pixelbuf[index + 1] = c ? sred.uv.U1: sblue.uv.V1;
+                this.mapinfo.pixelbuf[index + 1] = c ? sred.uv.U1 : sblue.uv.V1;
                 this.mapinfo.pixelbuf[index + 2] = 255;
                 this.mapinfo.pixelbuf[index + 3] = 255;
             }

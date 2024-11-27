@@ -1,5 +1,5 @@
 import { IRenderTarget, Material, Mesh, Render_Batcher, VertexFormatMgr } from "../ttlayer2.js";
-import {IView, IViewRenderItem, ViewTag } from "./viewlist.js"
+import {IDrawLayer, IViewRenderItem, DrawLayerTag } from "./drawlayer.js"
 import {QUI_Canvas} from "../../ttui/ttui.js"
 import { tt } from "../../ttapi/ttapi.js";
 import { GetShaderProgram } from "../graphics/shader/shaders.js";
@@ -16,9 +16,9 @@ export class ISprite
     v1:number;
 }
 export const ParticleSystemInstCount: number = 4096;
-export class ParticleView implements IView
+export class ParticleView implements IDrawLayer
 {
-    constructor(tag: ViewTag = ViewTag.Main) {
+    constructor(tag: DrawLayerTag = DrawLayerTag.Main) {
         this.tag = tag;
 
         
@@ -133,8 +133,8 @@ export class ParticleView implements IView
         this.meshDraw.UploadVertexBuffer(this.webgl, 1, vertexdata, true, vertexdata.byteLength);
 
     }
-    private tag: ViewTag;
-    GetTag(): ViewTag {
+    private tag: DrawLayerTag;
+    GetTag(): DrawLayerTag {
         return this.tag;
     }
  

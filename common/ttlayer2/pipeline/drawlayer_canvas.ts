@@ -1,15 +1,35 @@
-import { IRenderTarget, Render_Batcher } from "../ttlayer2.js";
-import { IView, IViewRenderItem, ViewTag } from "./viewlist.js"
+import { IRenderTarget, Render_Batcher, Sprite, Vector2 } from "../ttlayer2.js";
+import { IDrawLayer, IViewRenderItem, DrawLayerTag } from "./drawlayer.js"
 import { QUI_Canvas } from "../../ttui/ttui.js"
 import { tt } from "../../ttapi/ttapi.js";
-export class CanvasView implements IView {
-    constructor(tag: ViewTag = ViewTag.GUI) {
+
+//inst info
+//uv
+//textureid inlayer
+//pos
+//scale
+//rotate
+
+//gui用的Batcher去合
+//canvas 想用DrawInstance实现,并且配合TextureArray
+class CanvasItem 
+{
+    texid:number;
+    uvCenter:Vector2;
+    uvHalfSize:Vector2;
+    targetPos:Vector2;
+    targetHalfsize:Vector2;
+    targetRotate:number;
+}
+export class DrawLayer_Canvas implements IDrawLayer {
+    constructor(tag: DrawLayerTag = DrawLayerTag.GUI) {
         this.tag = tag;
 
         this.canvas = new Render_Batcher(tt.graphic.GetWebGL());
+        
     }
-    private tag: ViewTag;
-    GetTag(): ViewTag {
+    private tag: DrawLayerTag;
+    GetTag(): DrawLayerTag {
         return this.tag;
     }
 

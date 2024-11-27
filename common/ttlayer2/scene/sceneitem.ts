@@ -1,7 +1,7 @@
 import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
 import { Vector2 } from "../math/vector.js";
 import { ISceneItem, ISceneItemNode, ISceneItemSetParent } from "../scene/scene.js";
-import { IViewComponent, IViewItem, IViewRenderItem } from "../pipeline/viewlist.js";
+import { IViewComponent, IViewItem, IViewRenderItem } from "../pipeline/drawlayer.js";
 
 export class SceneItem implements IViewItem, ISceneItemSetParent {
     private parent: ISceneItemNode;

@@ -4,8 +4,8 @@ import { Vector3 } from "../../math/vector.js";
 import { Render, TransformFeedBack } from "../../graphics/render/render.js";
 import { GetShaderProgram } from "../../graphics/shader/shaders.js";
 import { Color, GameApp, IRenderExt, IRenderTarget, Material, Mesh } from "../../ttlayer2.js";
-import { IView, IViewComponent, IViewItem, IViewRenderItem } from "../viewlist.js";
-import { SceneView } from "../../scene/sceneview.js";
+import { IDrawLayer, IViewComponent, IViewItem, IViewRenderItem } from "../../pipeline/drawlayer.js";
+import { SceneView } from "../sceneview.js";
 export class ParticleInfo {
     pos: Vector3;
     normal: Vector3
@@ -260,7 +260,7 @@ export class Comp_ParticleSystem_TF implements IViewComponent, IViewRenderItem {
         let y = this.sceneitem.GetWorldMatrix().values[5];
         return y;
     }
-    OnRender(_target: IRenderTarget, view: IView, tag: number): void {
+    OnRender(_target: IRenderTarget, view: IDrawLayer, tag: number): void {
         if (tag == 0) {
             //if (this.canrender)
                  {

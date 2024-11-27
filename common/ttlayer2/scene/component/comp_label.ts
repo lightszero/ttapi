@@ -3,8 +3,8 @@ import { Font } from "../../atlas/font.js";
 import { Matrix3x2Math } from "../../math/Matrix3x2.js";
 import { Color, Vector2 } from "../../math/vector.js";
 import { GameApp, IRenderTarget, Render_Batcher } from "../../ttlayer2.js";
-import { IView, IViewComponent, IViewItem, IViewRenderItem } from "../viewlist.js";
-import { SceneView } from "../../scene/sceneview.js";
+import { IDrawLayer, IViewComponent, IViewItem, IViewRenderItem } from "../../pipeline/drawlayer.js";
+import { SceneView } from "../sceneview.js";
 import { Comp_Sprite } from "./comp_sprite.js";
 
 export class Comp_Label implements IViewComponent, IViewRenderItem {
@@ -33,7 +33,7 @@ export class Comp_Label implements IViewComponent, IViewRenderItem {
         let y = this.sceneitem.GetWorldMatrix().values[5];
         return y;
     }
-    OnRender(_target:IRenderTarget,view: IView, tag: number): void {
+    OnRender(_target:IRenderTarget,view: IDrawLayer, tag: number): void {
         if (tag == 0) {
             if (!Comp_Sprite._begin) {
                 let target = _target;

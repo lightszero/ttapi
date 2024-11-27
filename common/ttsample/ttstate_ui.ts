@@ -1,11 +1,11 @@
 
 import { tt } from "../ttapi/ttapi.js";
-import { Comp_Label } from "../ttlayer2/pipeline/component/comp_label.js";
-import { Comp_Sprite } from "../ttlayer2/pipeline/component/comp_sprite.js";
+import { Comp_Label } from "../ttlayer2/scene/component/comp_label.js";
+import { Comp_Sprite } from "../ttlayer2/scene/component/comp_sprite.js";
 
 
-import { Font, GameApp, IState, FlatView, FlatViewItem, Texture, TextureFormat, Sprite, Color, Border } from "../ttlayer2/ttlayer2.js";
-import { GUIView } from "../ttlayer2/pipeline/guiview.js";
+import { Font, GameApp, IState, Texture, TextureFormat, Sprite, Color, Border } from "../ttlayer2/ttlayer2.js";
+import { DrawLayer_GUI } from "../ttlayer2/pipeline/drawlayer_gui.js";
 import { QUI_Image } from "../ttui/qui_image.js";
 import { QUI_Label } from "../ttui/qui_label.js";
 import { QUI_Button } from "../ttui/qui_button.js";
@@ -20,7 +20,7 @@ export class TTState_UI implements IState<any> {
     OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
 
     }
-    uiview: GUIView;
+    uiview: DrawLayer_GUI;
 
     font: Font;
 
@@ -28,7 +28,7 @@ export class TTState_UI implements IState<any> {
         let gl = tt.graphic.GetWebGL();
 
         ///准备一个视图,FlatView 是一个简洁的View,他下面可以放置若干个FlatViewItem
-        this.uiview = new GUIView();
+        this.uiview = new DrawLayer_GUI();
         GameApp.GetViewList().AddView(this.uiview);
         this.uiview.canvas.scale=4.0;
 

@@ -1,7 +1,7 @@
 import { tt } from "../../ttapi/ttapi.js";
 import { Atlas } from "../atlas/atlas.js";
-import { PackTexture, SpriteData } from "../atlas/packtex";
-import { InitInnerShader, ITexture, Sprite, Texture, TextureFormat } from "../ttlayer2.js";
+import { PackTexture, SpriteData } from "../atlas/packtex.js";
+import { InitInnerShader, ITexture, Sprite, SpriteFormat, Texture, TextureFormat } from "../ttlayer2.js";
 
 export class Resources {
     static InitInnerResource(): void {
@@ -12,6 +12,7 @@ export class Resources {
         //white Texture
         {
             let data = new Uint8Array(64);
+            
             for (let i = 0; i < 64; i++)
                 data[i] = 255;
             this._whitetexture = new Texture(gl, 4, 4, TextureFormat.RGBA32, null);
@@ -30,7 +31,7 @@ export class Resources {
             this._blackTexture.UploadTexture(0, 0, 4, 4, data);
         }
         this.atlas = new Atlas();
-        this.packed_r = new PackTexture(gl, 2048, 2048, TextureFormat.R8, 0);
+        this.packed_r = new PackTexture(gl, 1024, 1024, TextureFormat.R8, 0);
         //WhiteSprite
         {
             let spdata = new SpriteData();
@@ -43,11 +44,12 @@ export class Resources {
                     spdata.data[y * spdata.width + x] = 255;
                 }
             }
-            this.packed_r.AddSprite(spdata, "white");
+            this.packed_r.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "white");
         }
         //border
         {
             let spdata = new SpriteData();
+            spdata.isByte = false;
             spdata.format = TextureFormat.R8;
             spdata.width = 8;
             spdata.height = 8;
@@ -63,11 +65,12 @@ export class Resources {
                     1, 1, 1, 1, 1, 1, 1, 1,
                 ]
             );
-            this.packed_r.AddSprite(spdata, "border");
+            this.packed_r.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "border");
         }
         //border2
         {
             let spdata = new SpriteData();
+            spdata.isByte = false;
             spdata.format = TextureFormat.R8;
             spdata.width = 8;
             spdata.height = 8;
@@ -83,8 +86,9 @@ export class Resources {
                     1, 1, 1, 1, 1, 1, 1, 1,
                 ]
             );
-            this.packed_r.AddSprite(spdata, "border2");
+            this.packed_r.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "border2");
         }
+        this.packed_r.Apply();
     }
 
     private static _whitetexture: ITexture = null;
@@ -100,12 +104,12 @@ export class Resources {
         return this._blackTexture;
     }
     static getWhiteBlock(): Sprite {
-        return this.atlas.GetSprite("white");
+        return this.packed_r.GetSprite("white");
     }
     static GetBorderBlock(): Sprite {
-        return this.atlas.GetSprite("border");
+        return this.packed_r.GetSprite("border");
     }
     static GetBorder2Block(): Sprite {
-        return this.atlas.GetSprite("border2");
+        return this.packed_r.GetSprite("border2");
     }
 }

@@ -1,6 +1,6 @@
 
 import { Color, GameApp, IRenderTarget } from "../ttlayer2.js";
-import { IView, IViewRenderItem, ViewList, ViewTag } from "./viewlist.js";
+import { IDrawLayer, IViewRenderItem, DrawLayerList, DrawLayerTag } from "./drawlayer.js";
 
 
 
@@ -13,12 +13,12 @@ import { IView, IViewRenderItem, ViewList, ViewTag } from "./viewlist.js";
 //view 不需要暴露ViewItem概念
 
 export interface IPileLine {
-    Render(views: ViewList): void;
+    Render(views: DrawLayerList): void;
 }
 export class PipeLine_Default implements IPileLine {
 
     private maintarget: IRenderTarget = null;
-    Render(viewlist: ViewList): void {
+    Render(viewlist: DrawLayerList): void {
         if (this.maintarget == null)
             this.maintarget = GameApp.GetMainScreen();
         //默认管线,后期把这玩意儿搞成容易配置的
@@ -26,8 +26,8 @@ export class PipeLine_Default implements IPileLine {
         this.maintarget.Begin();
         this.maintarget.Clear(new Color( 1,0.5,0.5,1));
        
-        viewlist.RenderViews(ViewTag.Main,this.maintarget,0);
-        viewlist.RenderViews(ViewTag.GUI,this.maintarget,0);
+        viewlist.RenderViews(DrawLayerTag.Main,this.maintarget,0);
+        viewlist.RenderViews(DrawLayerTag.GUI,this.maintarget,0);
   
         
 

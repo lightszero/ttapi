@@ -19,7 +19,7 @@ export interface ITran {
 
 export interface IViewRenderItem extends IViewComponent {
     GetSortValue(): number
-    OnRender(target: IRenderTarget, view: IView, tag: number): void;
+    OnRender(target: IRenderTarget, view: IDrawLayer, tag: number): void;
     GetRenderObject(): object;
     EndRender(): void;
 }
@@ -41,7 +41,7 @@ export interface IViewItem extends ITran {
 }
 
 
-export enum ViewTag {
+export enum DrawLayerTag {
     ERROR,
     Main,//主输出
     GUI,//GUI
@@ -60,8 +60,8 @@ export enum ViewTag {
 //SceneView 用场景树组织的结构
 
 //一个View 代表一个Camera
-export interface IView {
-    GetTag(): ViewTag;//View Tag 是不能动态调整的
+export interface IDrawLayer {
+    GetTag(): DrawLayerTag;//View Tag 是不能动态调整的
 
     //在相同Tag之间的View的排序值。不需要，自己组织去
     //GetSortValue():number;
@@ -69,8 +69,7 @@ export interface IView {
     //Target 去掉，由管线去控制
     //GetTarget(): IRenderTarget;
 
-    //相当于Camera
-    GetViewMatrix(): Float32Array;
+
     Update(delta: number): void;
 
     //绘制View
@@ -78,17 +77,17 @@ export interface IView {
     //CollRenderItem(tolist: IViewRenderItem[]): void;
 }
 
-export class ViewList {
+export class DrawLayerList {
     //private views: IView[] = []
-    private mapviews: { [id: number]: IView[] } = {};
-    AddView(view: IView): void {
+    private mapviews: { [id: number]: IDrawLayer[] } = {};
+    AddView(view: IDrawLayer): void {
         let tag = view.GetTag();
         if (this.mapviews[tag] == undefined) {
             this.mapviews[tag] = [];
         }
         this.mapviews[tag].push(view);
     }
-    GetViews(tag: number): IView[] {
+    GetViews(tag: number): IDrawLayer[] {
         return this.mapviews[tag];
     }
     RenderViews(tag: number, target: IRenderTarget, rendertag: number): number {
@@ -102,7 +101,7 @@ export class ViewList {
         return 0;
     }
     GetViewTags(): number[] {
-        let tags: ViewTag[] = [];
+        let tags: DrawLayerTag[] = [];
         for (let key in this.mapviews) {
             tags.push(key as any as number);
         }

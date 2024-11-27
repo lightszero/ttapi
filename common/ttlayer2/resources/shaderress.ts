@@ -1,4 +1,4 @@
-import * as s from "./shaders.js"
+import * as s from "../graphics/shader/shaders.js"
 
 
 
@@ -55,8 +55,9 @@ var fs_default: string = `#version 300 es
         else if(effect==4)//gray as alpha model
         {
             //outc.a *= texc.r;
-            vec4 c = vec4(1.0,1.0,1.0,texc.r);
-            outc = vColor * c;
+            outc = vColor;
+            outc.a =texc.r; 
+            //outc = vColor * 0.5;
         }
         fragColor =  outc;
     }

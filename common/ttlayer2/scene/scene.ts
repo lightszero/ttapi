@@ -1,4 +1,4 @@
-import { IViewItem } from "../pipeline/viewlist";
+import { IViewItem } from "../pipeline/drawlayer";
 
 //节点也必须继承这个,不过不想让用户可以随时访问当
 export interface ISceneItemSetParent {

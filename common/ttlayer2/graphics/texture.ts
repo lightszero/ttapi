@@ -35,17 +35,7 @@ export interface IRenderTarget extends ITexture {
 
     Resize(width: number, height: number): void;
 }
-let _whitetexture: ITexture = null;
-export function getWhiteTexture(): ITexture {
-    if (_whitetexture == null) {
-        let data = new Uint8Array(64);
-        for (let i = 0; i < 64; i++)
-            data[i] = 255;
-        _whitetexture = new Texture(tt.graphic.GetWebGL(), 4, 4, TextureFormat.RGBA32, null);
-        _whitetexture.UploadTexture(0, 0, 4, 4, data);
-    }
-    return _whitetexture;
-}
+
 export class Texture implements ITexture {
     static texid: number = 1;
     constructor(webgl: WebGLRenderingContext, width: number, height: number, format: TextureFormat, data: Uint8Array | Uint8ClampedArray | null) {

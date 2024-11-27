@@ -2,7 +2,7 @@ import { Vector2 } from "../../math/vector.js"
 
 
 
-import { ITexture, getWhiteTexture, IRenderTarget } from "../texture.js"
+import { ITexture,IRenderTarget } from "../texture.js"
 import { GetShaderProgram, ShaderProgram } from "../shader/shaders.js";
 import { Mesh } from "../../ttlayer2.js";
 import { Material } from "../material.js";
@@ -138,7 +138,7 @@ export class Render_Batcher {
         matrix[1] = 0; matrix[5] = 1; matrix[9] = 0; matrix[13] = 0;
         matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
         matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
-        this.ResetMatrix();
+        
     }
     //_shader: ShaderProgram;
     _webgl: WebGL2RenderingContext
