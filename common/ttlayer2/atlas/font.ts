@@ -46,7 +46,7 @@ export class Font {
             data.width = imgdata.width;
             data.height = imgdata.height;
            
-            s = this.fonttex.AddfontSprite(data, txt);
+            s = this.fonttex.AddSprite(data, txt);
 
             return s;
         }

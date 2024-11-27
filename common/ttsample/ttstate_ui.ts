@@ -13,7 +13,7 @@ import { Atlas } from "../ttlayer2/atlas/atlas.js";
 import { QUI_Scale9 } from "../ttui/qui_scale9.js";
 import { QUI_ImageScale9 } from "../ttui/qui_imagescale9.js";
 
-export class TTState_UI implements IState {
+export class TTState_UI implements IState<any> {
     OnKey(keycode: string, press: boolean): void {
 
     }

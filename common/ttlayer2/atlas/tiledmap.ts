@@ -158,8 +158,8 @@ export class TiledMap {
                 let index = (y * this.mapinfo._width + x) * 4;
                 let z = PerlinNoise.GenNoise(x / 128, y / 128, 0, 3, 2);
                 let c = z > 0.5;
-                this.mapinfo.pixelbuf[index] = c ? sred.X / this.tiledsize : sblue.X / this.tiledsize;
-                this.mapinfo.pixelbuf[index + 1] = c ? sred.Y / this.tiledsize : sblue.Y / this.tiledsize;
+                this.mapinfo.pixelbuf[index] = c ? sred.uv.U1 : sblue.uv.U1;
+                this.mapinfo.pixelbuf[index + 1] = c ? sred.uv.U1: sblue.uv.V1;
                 this.mapinfo.pixelbuf[index + 2] = 255;
                 this.mapinfo.pixelbuf[index + 3] = 255;
             }

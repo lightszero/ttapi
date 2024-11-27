@@ -14,7 +14,7 @@ import {
     Mesh,
 } from "../ttlayer2/ttlayer2.js";
 
-export class TTState_Draw implements IState, IRenderExt {
+export class TTState_Draw implements IState<any>, IRenderExt {
     OnKey(keycode: string, press: boolean): void {
 
     }

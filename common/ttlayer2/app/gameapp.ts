@@ -3,17 +3,11 @@ import { MainScreen } from "../graphics/mainscreen.js";
 import { InitInnerShader } from "../graphics/shader/shaderress.js";
 import { GUIView } from "../pipeline/guiview.js";
 import { ViewList, ViewTag } from "../pipeline/viewlist.js";
+import { Resources } from "../resources/defaultres.js";
+import { IState } from "./statemgr.js";
 
 
-export interface IState {
-  OnInit(): void;
-  OnUpdate(delta: number): void
-  OnExit(): void;
-  OnResize(width: number, height: number): void;
 
-  OnKey(keycode: string, press: boolean): void;
-  OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void;
-}
 
 //添加额外的绘制层
 export interface IRenderExt {
@@ -23,10 +17,12 @@ export interface IRenderExt {
 export class GameApp {
   static gameData: object;
   //Start 之前 ttapi 的某一个impl 应该提前初始化
-  static Start(state: IState): void {
+  static Start(state: IState<any>): void {
 
 
     let gl = tt.graphic.GetWebGL();
+
+    Resources.InitInnerResource();
     //准备内置shader
     InitInnerShader(gl);
 
@@ -53,7 +49,7 @@ export class GameApp {
 
   private static _mainscreen: MainScreen = null;
 
-  private static _state: IState = null;
+  private static _state: IState<any> = null;
 
   private static _viewlist: ViewList = null;
   static GetViewList(): ViewList {
@@ -78,13 +74,13 @@ export class GameApp {
   static GetMainScreen(): MainScreen {
     return this._mainscreen;
   }
-  static ChangeState(state: IState): void {
+  static ChangeState(state: IState<any>): void {
     if (this._state != null) {
       this._state.OnExit();
     }
     this._state = state;
     if (this._state != null) {
-      this._state.OnInit();
+      this._state.OnInit(null);
     }
   }
   static AddRenderExt(ext: IRenderExt) {
@@ -138,11 +134,11 @@ export class GameApp {
   private static DoFence(gl: WebGL2RenderingContext) {
     //console.log("==>start fence");
     this._willfence = false;
-  
+
 
     //用update 查fence 虽然也行，但感觉上setTimeout(0) 可能会更快一点？
     let fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
-    gl.flush(); 
+    gl.flush();
     let checkfunc = () => {
       //webgl 这东西咋没啥用
 

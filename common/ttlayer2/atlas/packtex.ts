@@ -66,7 +66,7 @@ export class SpriteData {
     }
 }
 export class PackTexture extends Texture {
-    constructor(webgl: WebGL2RenderingContext, width: number, height: number, format: TextureFormat, border: number = 1) {
+    constructor(webgl: WebGL2RenderingContext, width: number, height: number, format: TextureFormat, border: number = 0) {
         super(webgl, width, height, format, null);
         this.maxrect = new maxrect.MaxRectsPacker(width, height, border);
         this.sprites = [];
@@ -80,27 +80,8 @@ export class PackTexture extends Texture {
     pixelbuf: Uint8Array;
     dirty: boolean = false;
     //UploadImg,必须是4x4的
-    AddSprite(data: SpriteData, name: string = null): Vector2 {
-        if (name != null && this.namedsprites[name] != undefined)
-            throw "Sprite Key 冲突";
-        let rect = this.maxrect.add(data.width, data.height, null);
-        for (let y = 0; y < data.height; y++) {
-            for (let x = 0; x < data.width; x++) {
-                let index = ((y + rect.y) * this._width + (rect.x + x));
-                if (this._format == TextureFormat.RGBA32) {
-                    data.CopyPixel(this.pixelbuf, index * 4, TextureFormat.RGBA32, x, y);
-                }
-                else {
-                    data.CopyPixel(this.pixelbuf, index, TextureFormat.R8, x, y);
-                }
-            }
-        }
-        this.dirty = true;
 
-
-        return new Vector2(rect.x, rect.y);
-    }
-    AddfontSprite(data: SpriteData, name: string = null): Sprite {
+    AddSprite(data: SpriteData, name: string = null): Sprite {
         if (name != null && this.namedsprites[name] != undefined)
             throw "Sprite Key 冲突";
         let rect = this.maxrect.add(data.width, data.height, null);
@@ -118,7 +99,7 @@ export class PackTexture extends Texture {
         }
         this.dirty = true;
         let s = new Sprite(this, null);
-        s.effect = SpriteFormat.GrayAsAlpha;
+        s.effect = data.format == TextureFormat.R8 ? SpriteFormat.GrayAsAlpha : SpriteFormat.RGBA;
         s.uv.U1 = rect.x / this._width;
         s.uv.V1 = rect.y / this._height;
         s.uv.U2 = (rect.x + data.width) / this._width;

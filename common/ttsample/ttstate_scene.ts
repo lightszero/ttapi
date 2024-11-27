@@ -11,7 +11,7 @@ import { SceneView } from "../ttlayer2/scene/sceneview.js";
 import { GameApp, IState, SceneItem, SceneItem_Group } from "../ttlayer2/ttlayer2.js";
 
 
-export class TTState_Scene implements IState {
+export class TTState_Scene implements IState<any> {
     OnKey(keycode: string, press: boolean): void {
       
     }
