@@ -1,6 +1,6 @@
 
-import { tt } from "../../ttapi/ttapi.js";
-import { ITexture, Texture, TextureFormat } from "../ttlayer2.js";
+import { tt } from "../../../ttapi/ttapi.js";
+import { ITexture, Texture, TextureFormat } from "../../ttlayer2.js";
 import { Sprite } from "./sprite.js";
 
 //#region  Atalas

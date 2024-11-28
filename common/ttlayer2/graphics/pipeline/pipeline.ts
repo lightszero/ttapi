@@ -1,5 +1,5 @@
 
-import { Color, GameApp, IRenderTarget } from "../ttlayer2.js";
+import { Color, GameApp, IRenderTarget } from "../../ttlayer2.js";
 import { DrawLayer, DrawLayerList, DrawLayerTag } from "./drawlayer.js";
 
 

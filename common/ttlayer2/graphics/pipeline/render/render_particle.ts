@@ -1,9 +1,9 @@
-import { IRenderTarget, Material, Mesh, Render_Batcher, VertexFormatMgr } from "../../ttlayer2.js";
+import { IRenderTarget, Material, Mesh, Render_Batcher, VertexFormatMgr } from "../../../ttlayer2.js";
 import { Camera, DrawLayer, DrawLayerTag, IRender } from "../drawlayer.js"
-import { QUI_Canvas } from "../../ttui/ttui.js"
-import { tt } from "../../../ttapi/ttapi.js";
-import { GetShaderProgram } from "../../graphics/shader/shaders.js";
-import { Render } from "../../graphics/render/render.js";
+import { QUI_Canvas } from "../../../ttui/ttui.js"
+import { tt } from "../../../../ttapi/ttapi.js";
+import { GetShaderProgram } from "../../../graphics/shader/shaders.js";
+import { Render } from "../../../graphics/render/render.js";
 
 
 export class ISprite {

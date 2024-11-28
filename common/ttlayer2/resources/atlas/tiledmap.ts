@@ -1,9 +1,9 @@
-import { VertexFormatMgr } from "../graphics/mesh.js";
-import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
-import { PerlinNoise } from "../math/perlin/perlin.js";
-import { Render } from "../graphics/render/render.js";
-import { GetShaderProgram } from "../graphics/shader/shaders.js";
-import { GameApp, Material, Mesh, SpriteFormat, TextureFormat } from "../ttlayer2.js";
+import { VertexFormatMgr } from "../../graphics/mesh.js";
+import { Matrix3x2, Matrix3x2Math } from "../../math/Matrix3x2.js";
+import { PerlinNoise } from "../../math/perlin/perlin.js";
+import { Render } from "../../graphics/render/render.js";
+import { GetShaderProgram } from "../../graphics/shader/shaders.js";
+import { GameApp, Material, Mesh, SpriteFormat, TextureFormat } from "../../ttlayer2.js";
 import { PackTexture, SpriteData } from "./packtex.js";
 
 export class Tiled {

@@ -1,7 +1,7 @@
-import { IRenderTarget } from "../graphics/texture.js";
-import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
-import { Color, Vector2 } from "../math/vector.js";
-import { GameApp, QUI_Canvas } from "../ttlayer2.js";
+import { IRenderTarget } from "../../graphics/texture.js";
+import { Matrix3x2, Matrix3x2Math } from "../../math/Matrix3x2.js";
+import { Color, Vector2 } from "../../math/vector.js";
+import { GameApp, QUI_Canvas } from "../../ttlayer2.js";
 import { IPileLine, PipeLine_Default } from "./pipeline.js";
 
 

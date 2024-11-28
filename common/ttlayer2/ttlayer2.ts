@@ -6,17 +6,19 @@ export * from "./graphics/mainscreen.js";
 export * from "./graphics/texture.js";
 export * from "./graphics/material.js";
 export * from "./math/vector.js";
+
 export * from "./resources/shaderress.js";
-export * from "./text/texttool.js";
+export * from "./utils/text/texttool.js";
 export * from "./graphics/render/render_batcher.js";
 export * from "./graphics/mesh.js";
 
 
-export * from "./atlas/sprite.js";
-export * from "./atlas/font.js";
+export * from "./resources/atlas/sprite.js";
+export * from "./resources/atlas/font.js";
 
-export * from "./pipeline/pipeline.js";
-export * from "./pipeline/drawlayer.js";
+export * from "./graphics/pipeline/pipeline.js";
+export * from "./graphics/pipeline/drawlayer.js";
+export * from "./graphics/pipeline/drawlayer_gui.js";
 export * from "./resources/shaderress.js";
 export * from "./resources/defaultres.js"
 

@@ -1,7 +1,7 @@
 import { tt } from "../ttapi/ttapi.js";
 import { IRenderExt } from "../ttlayer2/app/gameapp.js";
-import { Font } from "../ttlayer2/atlas/font.js";
-import { TiledMap } from "../ttlayer2/atlas/tiledmap.js";
+import { Font } from "../ttlayer2/resources/atlas/font.js";
+import { TiledMap } from "../ttlayer2/resources/atlas/tiledmap.js";
 import { Material } from "../ttlayer2/graphics/material.js";
 import { VertexFormatMgr } from "../ttlayer2/graphics/mesh.js";
 import { Vector2 } from "../ttlayer2/math/vector.js";

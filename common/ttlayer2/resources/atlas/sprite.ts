@@ -1,5 +1,5 @@
-import { Border, Color, Rectangle, UVRect, Vector2 } from "../math/vector.js";
-import { ITexture, Render_Batcher, DrawPoint, SpriteFormat } from "../ttlayer2.js";
+import { Border, Color, Rectangle, UVRect, Vector2 } from "../../math/vector.js";
+import { ITexture, Render_Batcher, DrawPoint, SpriteFormat } from "../../ttlayer2.js";
 
 
 export class Sprite {

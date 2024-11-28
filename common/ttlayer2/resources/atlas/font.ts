@@ -1,5 +1,5 @@
-import { Color, Rectangle, Vector2 } from "../math/vector.js";
-import { Render_Batcher, Sprite, SpriteFormat, TextTool, Texture, TextureFormat } from "../ttlayer2.js";
+import { Color, Rectangle, Vector2 } from "../../math/vector.js";
+import { Render_Batcher, Sprite, SpriteFormat, TextTool, Texture, TextureFormat } from "../../ttlayer2.js";
 import { PackTexture, SpriteData, ToROption } from "./packtex.js";
 
 export class Font {

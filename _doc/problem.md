@@ -1,19 +1,23 @@
-管线的设计太复杂了
+这里记录问题,以供后续改进
 
-管线操作ViewList 完成功能，这里没问题
+## 一、特性问题
 
-IView 不需要暴露 IViewItem
+### 1.b[50%] drawinstance
 
-IView 只提供多个渲染组就行了
+已经实现通过第二个vbo 作为 instance 来源的方式
+
+还缺一个 通过ubo作为instance来源的方式
+
+### 1.c[50%] 调色板缺失
+
+### 1.d[50%] tiledmap无例子
+
+### 1.e[50%] 粒子系统无例子
+
+## 2.框架
+
+ttlayer2目录结构还有些混乱
+
+## 3.内容
 
 
-管线基本调整完毕，
-UI也有个基本的图画出来了。
-这个UI经受过考验，问题应该不大。
-
-最终保留了
-
-VIEWGUI
-
-ViewCanvas 就够了
-View 粒子可以认为是View Canvas的特例

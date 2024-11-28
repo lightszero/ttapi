@@ -1,8 +1,5 @@
-import { tt } from "../ttapi/ttapi.js";
 
-import { DrawLayer_GUI } from "../ttlayer2/pipeline/drawlayer_gui.js";
-import { Resources } from "../ttlayer2/resources/defaultres.js";
-import { Border, Font, GameApp, IState, StateMgr, Vector2, QUI_ImageScale9, QUI_Label, QUI_Scale9, Color, IUserLogic, Navigator, DrawLayerTag, QUI_Image, QUI_HAlign } from "../ttlayer2/ttlayer2.js";
+import { DrawLayer_GUI,Resources,Border, Font, GameApp, IState, StateMgr, Vector2, QUI_ImageScale9, QUI_Label, QUI_Scale9, Color, IUserLogic, Navigator, DrawLayerTag, QUI_Image, QUI_HAlign } from "../ttlayer2/ttlayer2.js";
 import { View_Menu } from "./view_menu.js";
 
 
@@ -26,15 +23,16 @@ export class TTState_All implements IUserLogic {
         //创建一个导航器框架
         this.nav = new Navigator<GContext>(new GContext());
 
-        let gl = tt.graphic.GetWebGL();
+      
         let ct = this.nav.GetContextObj();
         ct.topuiview = new DrawLayer_GUI();
         ct.topuiview.GetCanvas().scale = 2.0;
         GameApp.GetViewList().AddDrawLayers(ct.topuiview);
 
 
+        let font = Resources.CreateFont("VonwaonBitmap-16px", 32);
 
-        Resources.SetDefFont(new Font(gl, "VonwaonBitmap-16px", 32));//VonwaonBitmap-16px
+        Resources.SetDefFont(font);//VonwaonBitmap-16px
 
         this.InitTopUI(ct);
         this.nav.NavigatorTo(new View_Menu());

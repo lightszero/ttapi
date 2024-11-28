@@ -1,5 +1,5 @@
-import { Font } from "../ttlayer2.js";
-import { tt } from "../../ttapi/ttapi.js";
+import { Font } from "../../ttlayer2.js";
+import { tt } from "../../../ttapi/ttapi.js";
 export class TextTool {
 
     static LoadTextPixel(text: string, font: string, fontsize: number, width: number, height: number, x: number, y: number): ImageData {

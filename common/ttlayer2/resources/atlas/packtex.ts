@@ -1,6 +1,6 @@
-import { Color, Rectangle, Vector2 } from "../math/vector.js";
-import * as maxrect from "../maxrects_packer/src/index.js"
-import { ITexture, Render_Batcher, Sprite, Texture, TextureFormat, DrawPoint, SpriteFormat } from "../ttlayer2.js"
+import { Color, Rectangle, Vector2 } from "../../math/vector.js";
+import * as maxrect from "../../math/maxrects_packer/src/index.js"
+import { ITexture, Render_Batcher, Sprite, Texture, TextureFormat, DrawPoint, SpriteFormat } from "../../ttlayer2.js"
 
 
 //精灵,为啥又重写,之前的分层做的不清晰

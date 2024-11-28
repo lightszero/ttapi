@@ -1,6 +1,6 @@
-import { DataStream } from "../utils/stream/datastream.js";
-import { ITransfer, Transfer_Uint8, TransferMode } from "../utils/stream/transfer.js";
-import { SpriteFormat } from "../ttlayer2.js";
+import { DataStream } from "../../utils/stream/datastream.js";
+import { ITransfer, Transfer_Uint8, TransferMode } from "../../utils/stream/transfer.js";
+import { SpriteFormat } from "../../ttlayer2.js";
 
 
 

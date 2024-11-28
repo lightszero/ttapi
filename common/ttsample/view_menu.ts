@@ -1,6 +1,4 @@
-import { tt } from "../ttapi/ttapi.js";
-import { DrawLayer_GUI } from "../ttlayer2/pipeline/drawlayer_gui.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp } from "../ttlayer2/ttlayer2.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp,DrawLayer_GUI } from "../ttlayer2/ttlayer2.js";
 import { GContext } from "./ttstate_all.js";
 
 export class View_Menu implements IState<Navigator<GContext>> {

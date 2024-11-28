@@ -1,7 +1,7 @@
-import { IRenderTarget, QUI_Canvas } from "../ttlayer2.js";
+import { IRenderTarget, QUI_Canvas } from "../../ttlayer2.js";
 import { DrawLayer, DrawLayerTag } from "./drawlayer.js"
 
-import { tt } from "../../ttapi/ttapi.js";
+import { tt } from "../../../ttapi/ttapi.js";
 import { Render_GUI } from "./render/render_gui.js";
 export class DrawLayer_GUI extends DrawLayer {
     constructor(tag: DrawLayerTag = DrawLayerTag.GUI) {

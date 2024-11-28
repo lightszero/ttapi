@@ -1,6 +1,6 @@
 import { tt } from "../../ttapi/ttapi.js";
-import { Atlas } from "../atlas/atlas.js";
-import { PackTexture, SpriteData, ToROption } from "../atlas/packtex.js";
+import { Atlas } from "../resources/atlas/atlas.js";
+import { PackTexture, SpriteData, ToROption } from "../resources/atlas/packtex.js";
 import { Border, Color, Font, InitInnerShader, ITexture, QUI_Button, QUI_HAlign, QUI_Image, QUI_ImageScale9, QUI_Label, QUI_Scale9, QUI_VAlign, Sprite, SpriteFormat, Texture, TextureFormat, Vector2 } from "../ttlayer2.js";
 
 export class Resources {
@@ -147,6 +147,10 @@ export class Resources {
         return this.scale_border;
     }
     private static deffont: Font = null;
+    static CreateFont(fontname: string, fontsize: number):Font {
+        let font = new Font(tt.graphic.GetWebGL(), fontname, fontsize);
+        return font;
+    }
     static SetDefFont(font: Font) {
         if (this.deffont != null)
             throw "已经初始化过了,要指定deffont就赶早";
