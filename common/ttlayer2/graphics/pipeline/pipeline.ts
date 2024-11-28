@@ -16,7 +16,7 @@ export interface IPileLine {
     Render(views: DrawLayerList): void;
 }
 export class PipeLine_Default implements IPileLine {
-
+    clearcolor: Color = new Color(1, 0.5, 0.5, 1);
     private maintarget: IRenderTarget = null;
     Render(viewlist: DrawLayerList): void {
         if (this.maintarget == null)
@@ -24,15 +24,15 @@ export class PipeLine_Default implements IPileLine {
         //默认管线,后期把这玩意儿搞成容易配置的
 
         this.maintarget.Begin();
-        this.maintarget.Clear(new Color( 1,0.5,0.5,1));
-       
-        viewlist.RenderDrawLayers(DrawLayerTag.Main,this.maintarget,0);
-        viewlist.RenderDrawLayers(DrawLayerTag.GUI,this.maintarget,0);
-  
-        
+        this.maintarget.Clear(this.clearcolor);
+
+        viewlist.RenderDrawLayers(DrawLayerTag.Main, this.maintarget, 0);
+        viewlist.RenderDrawLayers(DrawLayerTag.GUI, this.maintarget, 0);
+
+
 
         this.maintarget.End();
-     
+
 
     }
 }
