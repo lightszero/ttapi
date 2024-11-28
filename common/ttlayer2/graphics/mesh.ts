@@ -69,6 +69,7 @@ export class VertexFormatMgr {
     private static vertexFormat_Vertex_UV_Color_InstPos: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color_InstPosNormal: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color_InstXYZRUVRectColor: VertexFormat = null;
+    private static vertexFormat_Vertex_InstFull: VertexFormat = null;
     static RegFormat(format: VertexFormat): VertexFormat {
         format.Update();
         let f: VertexFormat = format;
@@ -153,6 +154,34 @@ export class VertexFormatMgr {
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, true));
             this.vertexFormat_Vertex_UV_Color_InstPosNormal = this.RegFormat(vecf);
+        }
+        return this.vertexFormat_Vertex_UV_Color_InstPosNormal;
+    }
+
+    //in test
+    //普通 顶点信息(pos XYZ + uv +COLOR)*6= 24*6 = 144 
+    //InstFull
+    //{ //:0 //一个实体52个字节
+    //Pos XYZ  :12
+    //PosExtend HalfX,HalfY,OffsetX,OffsetU :28 //Offset 可以不要，永恒中心
+    //UvExtent HalfU,HalfV,CenterU,CenterV :44 //UV 没得省
+    //Rotate    :48
+    //Color     :52
+    //}使用InstFull 则刷新带宽只有原来的36%，旋转计算被移到GPU
+    static GetFormat_Vertex_InstFull(): VertexFormat {
+        if (this.vertexFormat_Vertex_InstFull == null) {
+            let vecf = new VertexFormat("Vertex_InstFull");
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[1].vertexAttribDivisor = 1;//instanced data
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));//Pos
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//PosExtend
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//UVExtend
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 1, false));//rotate
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));//color
+            this.vertexFormat_Vertex_InstFull = this.RegFormat(vecf);
         }
         return this.vertexFormat_Vertex_UV_Color_InstPosNormal;
     }
