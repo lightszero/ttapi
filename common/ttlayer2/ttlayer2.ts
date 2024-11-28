@@ -11,7 +11,7 @@ export * from "./text/texttool.js";
 export * from "./graphics/render/render_batcher.js";
 export * from "./graphics/mesh.js";
 
-export * from "./scene/sceneitem.js";
+
 export * from "./atlas/sprite.js";
 export * from "./atlas/font.js";
 

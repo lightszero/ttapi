@@ -15,7 +15,7 @@ export class View_Menu implements IState<Navigator<GContext>> {
 
 
         this.guilayer = new DrawLayer_GUI();
-        this.guilayer.canvas.scale = 2.0;
+        this.guilayer.GetCanvas().scale = 2.0;
 
         GameApp.GetViewList().AddDrawLayers(this.guilayer);
 
@@ -34,7 +34,7 @@ export class View_Menu implements IState<Navigator<GContext>> {
         let btn = Resources.CreateGUI_Button(name, new Color(1, 1, 1, 1));
         btn.localRect.setHPosByLeftBorder(196, this.x);
         btn.localRect.setVPosByTopBorder(20, this.y);
-        this.guilayer.canvas.addChild(btn);
+        this.guilayer.GetCanvas().addChild(btn);
         if (target != null) {
             btn.OnClick = () => {
                 this.nav.NavigatorTo(target);

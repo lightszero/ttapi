@@ -189,8 +189,19 @@ export class GameApp {
     let guiview = this._viewlist.GetDrawLayers(DrawLayerTag.GUI);
     if (guiview != null) {
       for (let i = guiview.length - 1; i >= 0; i--) {
-        let v = guiview[i] as DrawLayer_GUI;
-        let kill = v.canvas.OnTouch(id, press, move, x, y);
+
+        let kill = false;
+
+        let rs = guiview[i].GetRenders();
+        for (let j = rs.length - 1; j >= 0; j--) {
+          let gui = rs[j].GetGUI();
+          if (gui != null) {
+            kill = gui.OnTouch(id, press, move, x, y);
+            if (kill)
+              break;
+          }
+        }
+
         if (kill)
           break;
       }

@@ -1,5 +1,5 @@
 import { tt } from "../ttapi/ttapi.js";
-import { DrawLayer_Canvas } from "../ttlayer2/pipeline/drawlayer_canvas.js";
+
 import { DrawLayer_GUI } from "../ttlayer2/pipeline/drawlayer_gui.js";
 import { Resources } from "../ttlayer2/resources/defaultres.js";
 import { Border, Font, GameApp, IState, StateMgr, Vector2, QUI_ImageScale9, QUI_Label, QUI_Scale9, Color, IUserLogic, Navigator, DrawLayerTag, QUI_Image, QUI_HAlign } from "../ttlayer2/ttlayer2.js";
@@ -29,7 +29,7 @@ export class TTState_All implements IUserLogic {
         let gl = tt.graphic.GetWebGL();
         let ct = this.nav.GetContextObj();
         ct.topuiview = new DrawLayer_GUI();
-        ct.topuiview.canvas.scale = 2.0;
+        ct.topuiview.GetCanvas().scale = 2.0;
         GameApp.GetViewList().AddDrawLayers(ct.topuiview);
 
 
@@ -45,24 +45,24 @@ export class TTState_All implements IUserLogic {
             //title
             {
                 let labels = Resources.CreateGUI_Label("新TTAPI", new Color(0, 0, 0, 0.5));
-                context.topuiview.canvas.addChild(labels);
+                context.topuiview.GetCanvas().addChild(labels);
                 labels.localRect.setHPosFill(33, 31);
                 labels.localRect.setVPosByTopBorder(16, 9);
     
             }
             let label = Resources.CreateGUI_Label("新TTAPI", new Color(0.8, 1.0, 0, 1));
-            context.topuiview.canvas.addChild(label);
+            context.topuiview.GetCanvas().addChild(label);
             label.localRect.setHPosFill(32, 32);
             label.localRect.setVPosByTopBorder(16, 8);
 
             let img = new QUI_Image(Resources.GetRoundBlock());
             img.localRect.setHPosByLeftBorder(16, 0);
             img.localRect.setVPosByTopBorder(16, 0);
-            context.topuiview.canvas.addChild(img);
+            context.topuiview.GetCanvas().addChild(img);
 
             //fps
             let label_fps = this.label_fps = Resources.CreateGUI_Label("FPS:");
-            context.topuiview.canvas.addChild(label_fps);
+            context.topuiview.GetCanvas().addChild(label_fps);
             label_fps.halign = QUI_HAlign.Left;
             label_fps.localRect.setHPosByLeftBorder(100, 16);
             label_fps.localRect.setVPosByTopBorder(16, 0);

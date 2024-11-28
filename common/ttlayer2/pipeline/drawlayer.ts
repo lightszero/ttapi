@@ -1,44 +1,11 @@
 import { IRenderTarget } from "../graphics/texture.js";
 import { Matrix3x2, Matrix3x2Math } from "../math/Matrix3x2.js";
 import { Color, Vector2 } from "../math/vector.js";
-import { GameApp } from "../ttlayer2.js";
+import { GameApp, QUI_Canvas } from "../ttlayer2.js";
 import { IPileLine, PipeLine_Default } from "./pipeline.js";
 
 
-///一个场景化的系统是通用的
-///tiledmap系统 用来绘制背景
-///粒子系统 用来绘制大量粒子
-///粒子系统的变种可以用来绘制大量精灵
-///Canvas系统 用来绘制大量精灵
-export interface ITran {
-    pos: Vector2;
-    scale: Vector2;
-    rotate: number;
 
-}
-
-export interface IViewRenderItem extends IViewComponent {
-    GetSortValue(): number
-    OnRender(target: IRenderTarget, view: IDrawLayer, tag: number): void;
-    GetRenderObject(): object;
-    EndRender(): void;
-}
-export interface IViewComponent {
-    GetType(): string;
-    OnAdd(item: IViewItem): void;
-    OnUpdate(delta: number): void;
-    IsRender(): boolean;
-}
-export interface IViewItem extends ITran {
-    GetWorldMatrix(): Matrix3x2;
-
-    OnUpdate(delta: number): void;
-    GetRender(tolist: IViewRenderItem[]): void;
-
-    AddComponment(comp: IViewComponent): void
-    GetComponments(): IViewComponent[];
-    GetComponment(Type: string): IViewComponent;
-}
 
 
 export enum DrawLayerTag {
@@ -59,35 +26,104 @@ export enum DrawLayerTag {
 
 //SceneView 用场景树组织的结构
 
+export class Camera {
+    LookAt: Vector2 = Vector2.Zero;
+    Scale: number = 1;
+    private _viewmatrix: Float32Array = new Float32Array(16);
+    private _projmatrix: Float32Array = new Float32Array(16);
+
+    GetViewMatrix(): Float32Array {
+        let matrix = this._viewmatrix;
+        let sx = this.Scale;
+        let sy = this.Scale;
+        let offx = -this.LookAt.X;
+        let offy = -this.LookAt.Y;
+        matrix[0] = sx; matrix[4] = 0; matrix[8] = 0; matrix[12] = offx * sx;
+        matrix[1] = 0; matrix[5] = sy; matrix[9] = 0; matrix[13] = offy * sy;
+        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
+        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
+        return this._viewmatrix;
+    }
+    GetProjMatrix(_target: IRenderTarget): Float32Array {
+        let matrix = this._projmatrix;
+        let offx: number = 0;
+        let offy: number = 0;
+
+        let sx = 1.0 * 2 / _target.getWidth()
+        let sy = 1 * 2 / _target.getHeight()
+        if (_target.IsMainOutput())//isMainoutput
+            sy *= -1;
+
+        matrix[0] = sx; matrix[4] = 0; matrix[8] = 0; matrix[12] = offx;
+        matrix[1] = 0; matrix[5] = sy; matrix[9] = 0; matrix[13] = offy;
+        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
+        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
+
+        return matrix;
+    }
+}
+export interface IRender {
+    GetGUI(): QUI_Canvas;
+   
+    OnUpdate(delta: number): void;
+    OnRender(target: IRenderTarget, camera: Camera, tag: number): void;
+}
 //一个View 代表一个Camera
-export interface IDrawLayer {
-    GetTag(): DrawLayerTag;//View Tag 是不能动态调整的
+export class DrawLayer {
+    constructor(tag: DrawLayerTag) {
+        this.numbertag = tag;
+    }
+    private numbertag: number;
+    private camera: Camera = new Camera();
+    private renders: IRender[] = [];
 
-    //在相同Tag之间的View的排序值。不需要，自己组织去
-    //GetSortValue():number;
-
-    //Target 去掉，由管线去控制
-    //GetTarget(): IRenderTarget;
-
-
-    Update(delta: number): void;
+    GetTag(): DrawLayerTag//View Tag 是不能动态调整的
+    {
+        return this.numbertag;
+    }
+    GetCamera(): Camera {
+        return this.camera;
+    }
+    GetRenders(): IRender[] {
+        return this.renders;
+    }
+    GetGUIs(result: QUI_Canvas[]): void {
+        for (let i = 0; i < this.renders.length; i++) {
+            let r = this.renders[i];
+            if (r.GetGUI() != null) {
+                result.push(r.GetGUI());
+            }
+        }
+    }
+    AddRender(render: IRender): void {
+        this.renders.push(render);
+    }
+    Update(delta: number): void {
+        for (let i = 0; i < this.renders.length; i++) {
+            this.renders[i].OnUpdate(delta);
+        }
+    }
 
     //绘制View
-    Render(target: IRenderTarget, rendertag: number): void
+    Render(target: IRenderTarget, rendertag: number): void {
+        for (let i = 0; i < this.renders.length; i++) {
+            this.renders[i].OnRender(target, this.camera, rendertag);
+        }
+    }
     //CollRenderItem(tolist: IViewRenderItem[]): void;
 }
 
 export class DrawLayerList {
     //private views: IView[] = []
-    private mapviews: { [id: number]: IDrawLayer[] } = {};
-    AddDrawLayers(view: IDrawLayer): void {
+    private mapviews: { [id: number]: DrawLayer[] } = {};
+    AddDrawLayers(view: DrawLayer): void {
         let tag = view.GetTag();
         if (this.mapviews[tag] == undefined) {
             this.mapviews[tag] = [];
         }
         this.mapviews[tag].push(view);
     }
-    RemoveDrawLayers(view: IDrawLayer): void {
+    RemoveDrawLayers(view: DrawLayer): void {
         let tag = view.GetTag();
         let views = this.GetDrawLayers(tag);
         let index = views.indexOf(view);
@@ -95,7 +131,7 @@ export class DrawLayerList {
             views.splice(index, 1);
         }
     }
-    GetDrawLayers(tag: number): IDrawLayer[] {
+    GetDrawLayers(tag: number): DrawLayer[] {
         if (this.mapviews[tag] == undefined) {
             this.mapviews[tag] = [];
         }

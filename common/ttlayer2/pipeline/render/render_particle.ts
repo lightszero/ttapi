@@ -1,27 +1,25 @@
-import { IRenderTarget, Material, Mesh, Render_Batcher, VertexFormatMgr } from "../ttlayer2.js";
-import {IDrawLayer, IViewRenderItem, DrawLayerTag } from "./drawlayer.js"
-import {QUI_Canvas} from "../ttui/ttui.js"
-import { tt } from "../../ttapi/ttapi.js";
-import { GetShaderProgram } from "../graphics/shader/shaders.js";
-import { Render } from "../graphics/render/render.js";
+import { IRenderTarget, Material, Mesh, Render_Batcher, VertexFormatMgr } from "../../ttlayer2.js";
+import { Camera, DrawLayer, DrawLayerTag, IRender } from "../drawlayer.js"
+import { QUI_Canvas } from "../../ttui/ttui.js"
+import { tt } from "../../../ttapi/ttapi.js";
+import { GetShaderProgram } from "../../graphics/shader/shaders.js";
+import { Render } from "../../graphics/render/render.js";
 
 
-export class ISprite
-{
-    x:number;
-    y:number;
-    u0:number;
-    v0:number;
-    u1:number;
-    v1:number;
+export class ISprite {
+    x: number;
+    y: number;
+    u0: number;
+    v0: number;
+    u1: number;
+    v1: number;
 }
 export const ParticleSystemInstCount: number = 4096;
-export class ParticleView implements IDrawLayer
-{
+export class ParticleView implements IRender {
     constructor(tag: DrawLayerTag = DrawLayerTag.Main) {
         this.tag = tag;
 
-        
+
         this.matDraw = new Material(GetShaderProgram("simple_inst"));
 
 
@@ -40,7 +38,7 @@ export class ParticleView implements IDrawLayer
     private InstVboView: DataView = null;
 
     private InitDrawMesh() {
-        
+
 
         let r = 255;
         let g = 128;
@@ -137,20 +135,20 @@ export class ParticleView implements IDrawLayer
     GetTag(): DrawLayerTag {
         return this.tag;
     }
- 
+
 
     viewmatrix: Float32Array = new Float32Array(16);
-    GetViewMatrix():Float32Array
-    {
+    GetViewMatrix(): Float32Array {
         return this.viewmatrix;
     }
 
-  
-    Update(delta: number): void {
-            
+    GetGUI(): QUI_Canvas {
+        return null;
     }
-    Render(target: IRenderTarget, rendertag: number):void
-    {
+    OnUpdate(delta: number): void {
+
+    }
+    OnRender(target: IRenderTarget, camera: Camera, rendertag: number): void {
         this.matDraw.UpdateMatView();//这个应该跟着View走
         this.matDraw.UpdateMatProj(target);
         Render.DrawMeshInstanced(this.webgl, this.meshDraw, this.matDraw);
