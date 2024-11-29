@@ -74,82 +74,97 @@ export function AddShader(webgl: WebGL2RenderingContext, type: ShaderType, name:
 
 }
 function findUniform(source: string, target: { [id: string]: UniformType }): void {
-  var lines = source.split("\n");
-  for (var i = 0; i < lines.length; i++) {
-    var line = lines[i].replace(new RegExp('\r', "g"), "");
-    line = line.replace(new RegExp('\n', "g"), "");
-    line = line.replace(new RegExp('\t', "g"), " ");
-    line = line.replace(new RegExp(';', "g"), " ");
-    
-    //拆注释
-    line = line.replace(new RegExp('//.+\n?', "g"), " ");
-    line = line.replace(new RegExp('\*.*\*', "g"), " ");
-    var words = line.split(" ");
-    var type = UniformType.empty;
-    var name = "";
-    var state = 0;//0 寻找uniform //1寻找type //2 寻找name //3 寻找end 或者block 标志
-    for (var j = 0; j < words.length; j++) {
-      var word = words[j];
-      var code = word.charCodeAt(0);
-      if (word == "") continue;
-      if (word == " ") continue;
-      else if (state == 0) {
-        if (word == "uniform") {
-          state++;
-        }
-        else {
-          break;
-        }
-      }
-      else if (state == 1) {
-        switch (word) {
-          case "mat4":
-            type = UniformType.mat4;
-            break;
-          case "sampler2D":
-            type = UniformType.sampler2D;
-            break;
-          case "float":
-            type = UniformType.float;
-            break;
-          case "vec4":
-            type = UniformType.vec4;
-            break;
-          case "ivec4":
-            type = UniformType.ivec4;
-            break;
+  //var lines = source.split("\n");
+  //for (var i = 0; i < lines.length; i++) {
+  var line = source
+  //拆注释
+  line = line.replace(new RegExp('\/\/.+\n?', "g"), " ");
+  //多行注释
+  //line = line.replace(new RegExp('\/\*(?:[^\*]|\*+[^\/\*])*\*+\/', "g"), " ");
+  //拆换行
+  line = line.replace(new RegExp('\r', "g"), "");
+  line = line.replace(new RegExp('\n', "g"), "");
+  line = line.replace(new RegExp('\t', "g"), " ");
+  //line = line.replace(new RegExp(';', "g"), " ");
 
-          default:
-            type = UniformType.unknown;
-        }
+  //封号作为一个word处理
+  line = line.replace(new RegExp(';', "g"), " ; ");
+  line = line.replace(new RegExp('{', "g"), " { ");
 
+  var words = line.split(" ");
+  var type = UniformType.empty;
+  var name = "";
+  var state = 0;//0 寻找uniform //1寻找type //2 寻找name //3 寻找end 或者block 标志
+  for (var j = 0; j < words.length; j++) {
+    var word = words[j];
+    var code = word.charCodeAt(0);
+    if (word == "") continue;
+    if (word == " ") continue;
+    else if (state == 0) {
+      if (word == "uniform") {
         state++;
       }
-      else if (state == 2) {
-        name = word;
-        state++;
-        //break;
-      }
-      else if (state == 3) {
-        if (word == ";")//end tag
-          break;
-        else if (word == "{")//block
-        {
-          type = UniformType.block;
-          break;
-        }
-        else
-        {
-          break;//未知结构
-        }
+      else {
+        continue;
       }
     }
+    else if (state == 1) {
+      switch (word) {
+        case "mat4":
+          type = UniformType.mat4;
+          break;
+        case "sampler2D":
+          type = UniformType.sampler2D;
+          break;
+        case "float":
+          type = UniformType.float;
+          break;
+        case "vec4":
+          type = UniformType.vec4;
+          break;
+        case "ivec4":
+          type = UniformType.ivec4;
+          break;
+
+        default:
+          type = UniformType.unknown;
+      }
+
+      state++;
+    }
+    else if (state == 2) {
+      name = word;
+      state++;
+      //break;
+    }
+    else if (state == 3) {
+      if (word == ";")//end tag
+      {
+        state = 0;
+      
+      }
+      else if (word == "{")//block
+      {
+        type = UniformType.block;
+        {
+          state = 0;
+        
+        }
+      }
+      else {
+        state = 0;
+      
+        //未知结构
+      }
+    }
+
     if (type != UniformType.empty) {
       target[name] = type;
     }
+  
   }
+ 
 }
-
 export function LinkShader(webgl: WebGL2RenderingContext, name: string, vs: ShaderObj, fs: ShaderObj): ShaderProgram | null {
   var prog = webgl.createProgram();
   if (prog != null) {

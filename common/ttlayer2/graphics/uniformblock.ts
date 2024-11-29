@@ -1,4 +1,4 @@
-import { tt } from "../../ttapi/ttapi";
+import { tt } from "../../ttapi/ttapi.js";
 
 
 export class UniformBlock {
