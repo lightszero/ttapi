@@ -7,7 +7,7 @@ import { GetShaderProgram, ShaderProgram } from "../shader/shaders.js";
 import { Mesh } from "../../ttlayer2.js";
 import { Material } from "../material.js";
 import { VertexFormatMgr } from "../mesh.js";
-import { Render } from "./render.js";
+import { MeshRender } from "./render.js";
 export enum SpriteFormat {
     RGBA = 0,
     Gray = 1,
@@ -310,7 +310,7 @@ export class Render_Batcher {
         this._pointseek = 0;
 
 
-        Render.DrawMesh(webgl, this._mesh, this._mat);
+        MeshRender.DrawMesh(webgl, this._mesh, this._mat);
 
 
     }

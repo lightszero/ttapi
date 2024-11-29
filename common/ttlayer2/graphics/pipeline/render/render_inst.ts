@@ -1,13 +1,13 @@
 
 import { tt } from "../../../../ttapi/ttapi.js";
 import { IRenderTarget, Material, Mesh, QUI_Canvas, Resources, VertexFormatMgr } from "../../../ttlayer2.js";
-import { Render } from "../../render/render.js";
+import { MeshRender } from "../../render/render.js";
 import { GetShaderProgram } from "../../shader/shaders.js";
-import { Camera, IRender } from "../drawlayer.js";
+import { Camera, ILayerRender } from "../drawlayer.js";
 
 const MaxInstCount = 65536;
 //实例渲染器
-export class Render_Inst implements IRender {
+export class Render_Inst implements ILayerRender {
 
     constructor() {
         this.matDraw = new Material(GetShaderProgram("simple_inst"));//Inst 材质
@@ -135,7 +135,7 @@ export class Render_Inst implements IRender {
             this.matDraw.UpdateMatProj(target);
             this.matDraw.UpdateMatView(camera.GetViewMatrix());
 
-            Render.DrawMeshInstanced(this.webgl, this.meshDraw, this.matDraw);
+            MeshRender.DrawMeshInstanced(this.webgl, this.meshDraw, this.matDraw);
         }
     }
 

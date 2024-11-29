@@ -2,10 +2,15 @@
 import { Resources } from "../resources/defaultres.js";
 import { ShaderProgram, uniformInfo, UniformType } from "./shader/shaders.js";
 import { IRenderTarget, ITexture } from "./texture.js";
+import { UniformBlock } from "./uniformblock.js";
 
 export class UniformValue_Tex {
     loc: WebGLUniformLocation;
     value: ITexture
+}
+export class UniformValue_Block {
+    index: number;
+    value: UniformBlock;
 }
 export class UniformValue_Vector {
     loc: WebGLUniformLocation;
@@ -45,6 +50,11 @@ export class Material {
                         value: Resources.GetWhiteTexture()
                     };
                     break;
+                case UniformType.block:
+                    this.uniformBlocks[key] = {
+                        index: info.locblock,
+                        value: UniformBlock.GetEmpty()
+                    }
                 case UniformType.mat4:
                     this.uniformMats[key] = {
                         loc: info.loc,
@@ -76,6 +86,7 @@ export class Material {
     uniformTexs: { [id: string]: UniformValue_Tex } = {};
     uniformVecs: { [id: string]: UniformValue_Vector } = {};
     uniformIVecs: { [id: string]: UniformValue_IVector } = {};
+    uniformBlocks: { [id: string]: UniformValue_Block } = {};
     GetShader(): ShaderProgram {
         return this.shader;
     }
@@ -166,6 +177,11 @@ export class Material {
             webgl.uniform1i(uni.loc, texcount);
             texcount++;
         }
-
+        let blockcount = 0;
+        for (var key in this.uniformBlocks) {
+            let uni = this.uniformBlocks[key];
+            webgl.bindBufferBase(webgl.UNIFORM_BUFFER, blockcount, uni.value.GetGLBuf());
+            webgl.uniformBlockBinding(this.shader.program, uni.index, blockcount);
+        }
     }
 }

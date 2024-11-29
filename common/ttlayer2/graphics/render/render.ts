@@ -75,7 +75,7 @@ export class TransformFeedBack {
     }
 
 }
-export class Render {
+export class MeshRender {
     static DrawMesh(gl: WebGL2RenderingContext, mesh: Mesh, mat: Material): void {
         mesh.Apply(gl);
         mat.Apply(gl);

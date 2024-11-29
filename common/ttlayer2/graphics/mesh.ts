@@ -159,31 +159,31 @@ export class VertexFormatMgr {
     }
 
     //in test
-    //普通 顶点信息(pos XYZ + uv +COLOR)*6= 24*6 = 144 
-    //InstFull
-    //{ //:0 //一个实体52个字节
-    //Pos XYZ  :12
-    //PosExtend HalfX,HalfY,OffsetX,OffsetU :28 //Offset 可以不要，永恒中心
-    //UvExtent HalfU,HalfV,CenterU,CenterV :44 //UV 没得省
-    //Rotate    :48
-    //Color     :52
+    //普通 顶点信息(pos XYZ + uv +COLOR+ext)*6= 28*6 = 168 
+    //32/168 <20%, 带宽只需要1/5
+    //InstFull //实例信息32字节
+    //{
+    //  Pos XYZ  :12
+    //  Roate    :4
+    //  Scale    :8
+    //  Color    :4
+    //  Ext      :4
     //}使用InstFull 则刷新带宽只有原来的36%，旋转计算被移到GPU
     static GetFormat_Vertex_InstFull(): VertexFormat {
         if (this.vertexFormat_Vertex_InstFull == null) {
             let vecf = new VertexFormat("Vertex_InstFull");
             vecf.vbos.push(new VBOInfo());
-            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
-            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//basemesh uv only
+
             vecf.vbos.push(new VBOInfo());
             vecf.vbos[1].vertexAttribDivisor = 1;//instanced data
-            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));//Pos
-            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//PosExtend
-            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//UVExtend
-            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 1, false));//rotate
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//Pos xyz + rotate
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//Scale
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));//color
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 1, false));//ext
             this.vertexFormat_Vertex_InstFull = this.RegFormat(vecf);
         }
-        return this.vertexFormat_Vertex_UV_Color_InstPosNormal;
+        return this.vertexFormat_Vertex_InstFull;
     }
     static GetFormat_Vertex_UV_Color_InstXYZRUVRectColor(): VertexFormat {
         if (this.vertexFormat_Vertex_UV_Color_InstXYZRUVRectColor == null) {

@@ -5,7 +5,7 @@ import { TiledMap } from "../ttlayer2/resources/atlas/tiledmap.js";
 import { Material } from "../ttlayer2/graphics/material.js";
 import { VertexFormatMgr } from "../ttlayer2/graphics/mesh.js";
 import { Vector2 } from "../ttlayer2/math/vector.js";
-import { Render, TransformFeedBack } from "../ttlayer2/graphics/render/render.js";
+import { MeshRender, TransformFeedBack } from "../ttlayer2/graphics/render/render.js";
 import { GetShaderProgram } from "../ttlayer2/graphics/shader/shaders.js";
 
 
@@ -400,12 +400,12 @@ export class TTState_Draw implements IState<any>, IRenderExt {
         this.mat.UpdateMatProj(this._mainscreen);
         this.mat.UpdateMatModel();
         this.mat.UpdateMatView();
-        Render.DrawMesh(gl, this.mesh, this.mat);
+        MeshRender.DrawMesh(gl, this.mesh, this.mat);
 
         this.mat2.UpdateMatProj(this._mainscreen);
         this.mat2.UpdateMatModel();
         this.mat2.UpdateMatView();
-        Render.DrawMeshInstanced(gl, this.mesh2, this.mat2);
+        MeshRender.DrawMeshInstanced(gl, this.mesh2, this.mat2);
 
         {
             this._quadbatcher.BeginDraw(this._mainscreen);

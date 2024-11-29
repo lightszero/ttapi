@@ -1,9 +1,9 @@
 import { IRenderTarget, Material, Mesh, Render_Batcher, VertexFormatMgr } from "../../../ttlayer2.js";
-import { Camera, DrawLayer, DrawLayerTag, IRender } from "../drawlayer.js"
+import { Camera, DrawLayer, DrawLayerTag, ILayerRender } from "../drawlayer.js"
 import { QUI_Canvas } from "../../../ttui/ttui.js"
 import { tt } from "../../../../ttapi/ttapi.js";
 import { GetShaderProgram } from "../../../graphics/shader/shaders.js";
-import { Render } from "../../../graphics/render/render.js";
+import { MeshRender } from "../../../graphics/render/render.js";
 
 
 export class ISprite {
@@ -15,7 +15,7 @@ export class ISprite {
     v1: number;
 }
 export const ParticleSystemInstCount: number = 4096;
-export class ParticleView implements IRender {
+export class ParticleView implements ILayerRender {
     constructor(tag: DrawLayerTag = DrawLayerTag.Main) {
         this.tag = tag;
 
@@ -151,7 +151,7 @@ export class ParticleView implements IRender {
     OnRender(target: IRenderTarget, camera: Camera, rendertag: number): void {
         this.matDraw.UpdateMatView();//这个应该跟着View走
         this.matDraw.UpdateMatProj(target);
-        Render.DrawMeshInstanced(this.webgl, this.meshDraw, this.matDraw);
+        MeshRender.DrawMeshInstanced(this.webgl, this.meshDraw, this.matDraw);
     }
 
 

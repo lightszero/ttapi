@@ -62,7 +62,7 @@ export class Camera {
         return matrix;
     }
 }
-export interface IRender {
+export interface ILayerRender {
     GetGUI(): QUI_Canvas;
    
     OnUpdate(delta: number): void;
@@ -75,7 +75,7 @@ export class DrawLayer {
     }
     private numbertag: number;
     private camera: Camera = new Camera();
-    private renders: IRender[] = [];
+    private renders: ILayerRender[] = [];
 
     GetTag(): DrawLayerTag//View Tag 是不能动态调整的
     {
@@ -84,7 +84,7 @@ export class DrawLayer {
     GetCamera(): Camera {
         return this.camera;
     }
-    GetRenders(): IRender[] {
+    GetRenders(): ILayerRender[] {
         return this.renders;
     }
     GetGUIs(result: QUI_Canvas[]): void {
@@ -95,7 +95,7 @@ export class DrawLayer {
             }
         }
     }
-    AddRender(render: IRender): void {
+    AddRender(render: ILayerRender): void {
         this.renders.push(render);
     }
     Update(delta: number): void {

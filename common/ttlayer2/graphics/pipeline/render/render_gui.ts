@@ -1,7 +1,7 @@
 import { IRenderTarget, QUI_Canvas } from "../../../ttlayer2.js";
-import { Camera, IRender } from "../drawlayer.js";
+import { Camera, ILayerRender } from "../drawlayer.js";
 
-export class Render_GUI implements IRender {
+export class Render_GUI implements ILayerRender {
     canvas: QUI_Canvas = new QUI_Canvas(null);
     GetGUI(): QUI_Canvas
     {

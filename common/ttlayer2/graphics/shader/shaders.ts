@@ -9,6 +9,7 @@ export enum UniformType {
   unknown,
   mat4,
   sampler2D,
+  block,
   float,
   vec4,
   ivec4
@@ -79,11 +80,14 @@ function findUniform(source: string, target: { [id: string]: UniformType }): voi
     line = line.replace(new RegExp('\n', "g"), "");
     line = line.replace(new RegExp('\t', "g"), " ");
     line = line.replace(new RegExp(';', "g"), " ");
-    line = line.replace("//", " ");
+    
+    //拆注释
+    line = line.replace(new RegExp('//.+\n?', "g"), " ");
+    line = line.replace(new RegExp('\*.*\*', "g"), " ");
     var words = line.split(" ");
     var type = UniformType.empty;
     var name = "";
-    var state = 0;//0 寻找uniform //1寻找type //2 寻找name
+    var state = 0;//0 寻找uniform //1寻找type //2 寻找name //3 寻找end 或者block 标志
     for (var j = 0; j < words.length; j++) {
       var word = words[j];
       var code = word.charCodeAt(0);
@@ -114,6 +118,7 @@ function findUniform(source: string, target: { [id: string]: UniformType }): voi
           case "ivec4":
             type = UniformType.ivec4;
             break;
+
           default:
             type = UniformType.unknown;
         }
@@ -122,7 +127,21 @@ function findUniform(source: string, target: { [id: string]: UniformType }): voi
       }
       else if (state == 2) {
         name = word;
-        break;
+        state++;
+        //break;
+      }
+      else if (state == 3) {
+        if (word == ";")//end tag
+          break;
+        else if (word == "{")//block
+        {
+          type = UniformType.block;
+          break;
+        }
+        else
+        {
+          break;//未知结构
+        }
       }
     }
     if (type != UniformType.empty) {
@@ -181,7 +200,7 @@ var programs: { [id: string]: ShaderProgram } = {};
 export class uniformInfo {
   type: UniformType;
   loc: WebGLUniformLocation;
-
+  locblock: number;
 }
 export class ShaderProgram {
   name: string;
@@ -210,10 +229,16 @@ export class ShaderProgram {
 
   }
   private AddUniform(webgl: WebGL2RenderingContext, key: string, type: UniformType) {
-
-    var loc = webgl.getUniformLocation(this.program, key);
-    if (loc == null) return;
-    this.uniformInfos[key] = { loc: loc, type: type }
+    if (type == UniformType.block) {
+      let locindex = webgl.getUniformBlockIndex(this.program, key);
+      if (locindex == null || locindex < 0) return;
+      this.uniformInfos[key] = { loc: null, locblock: locindex, type: type }
+    }
+    else {
+      let loc = webgl.getUniformLocation(this.program, key);
+      if (loc == null) return;
+      this.uniformInfos[key] = { loc: loc, locblock: -1, type: type }
+    }
   }
 }
 
