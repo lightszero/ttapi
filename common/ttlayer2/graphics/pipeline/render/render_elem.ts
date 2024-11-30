@@ -2,11 +2,12 @@
 //Render elem 是一种高性能的绘制方式
 //不追求性能就用Render_Batcher 和 Sprite去折腾就好
 
-import { Color, Mesh, Resources, UVRect, Vector2, Vector3, VertexFormatMgr } from "../../ttlayer2.js";
-import { Material } from "../material.js";
-import { GetShaderProgram } from "../shader/shaders";
-import { ITexture } from "../texture.js";
-import { MeshRender } from "./render.js";
+import { Camera, Color, ILayerRender, Mesh, QUI_Canvas, Resources, UVRect, Vector2, Vector3, VertexFormatMgr } from "../../../ttlayer2.js";
+import { Material } from "../../material.js";
+
+import { IRenderTarget, ITexture } from "../../texture.js";
+import { MeshRender } from "../../render/render.js";
+import { tt } from "../../../../ttapi/ttapi.js";
 
 export class Element {
     //pos 来自Attr
@@ -26,7 +27,7 @@ export class ElementInst {
 }
 const elementSize = 32;
 const elementInstSize = 32;
-export class Render_Element {
+export class Render_Element implements ILayerRender {
     //公共材质,所有的元素只能使用同一个材质,这也是这种渲染器效率的来源
     //降低提交元素的带宽到原来的1/5
     //元素支持povit 和 GPU旋转
@@ -203,23 +204,35 @@ export class Render_Element {
 
 
     }
-    Render(gl: WebGL2RenderingContext) {
-        if (this.mesh == null) {
-            this.material = new Material(GetShaderProgram(""));
+    GetGUI(): QUI_Canvas {
+        return null;
+    }
 
-            this.mesh = new Mesh();
-            this.mesh.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_InstFull());
-            this.InitDrawMesh(gl);
-        }
-        if (this.elemInstDirty) {
-            this.mesh.UploadVertexBuffer(gl, 1, this.elemInstBufData, true, this.elemInstBufData.byteLength);
-        }
-        if (this.elemDirty) {//Upload Ubo size
-            let uniformblock = this.material.uniformBlocks["sprites"].value;
-            uniformblock.UploadData(gl, this.elemBufData, true);
-        }
-        this.mesh.instancecount = this.elemInstCount;
+    OnUpdate(delta: number): void {
 
-        MeshRender.DrawMeshInstanced(gl, this.mesh, this.material);
+    }
+    OnRender(target: IRenderTarget, camera: Camera, tag: number) {
+        if (tag == 0) {
+            let gl = tt.graphic.GetWebGL();
+            if (this.mesh == null) {
+                this.material = new Material(Resources.GetShaderProgram(""));
+
+                this.mesh = new Mesh();
+                this.mesh.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_InstFull());
+                this.InitDrawMesh(gl);
+            }
+            if (this.elemInstDirty) {
+                this.mesh.UploadVertexBuffer(gl, 1, this.elemInstBufData, true, this.elemInstBufData.byteLength);
+            }
+            if (this.elemDirty) {//Upload Ubo size
+                let uniformblock = this.material.uniformBlocks["sprites"].value;
+                uniformblock.UploadData(gl, this.elemBufData, true);
+            }
+            this.mesh.instancecount = this.elemInstCount;
+
+            this.material.UpdateMatProj(target);
+            this.material.UpdateMatView(camera.GetViewMatrix());
+            MeshRender.DrawMeshInstanced(gl, this.mesh, this.material);
+        }
     }
 }

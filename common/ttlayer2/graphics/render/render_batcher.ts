@@ -3,11 +3,12 @@ import { Vector2 } from "../../math/vector.js"
 
 
 import { ITexture,IRenderTarget } from "../texture.js"
-import { GetShaderProgram, ShaderProgram } from "../shader/shaders.js";
-import { Mesh } from "../../ttlayer2.js";
+
+import { Mesh, Resources } from "../../ttlayer2.js";
 import { Material } from "../material.js";
 import { VertexFormatMgr } from "../mesh.js";
 import { MeshRender } from "./render.js";
+import { ShaderProgram } from "../shader/shaders.js";
 export enum SpriteFormat {
     RGBA = 0,
     Gray = 1,
@@ -128,7 +129,7 @@ export class Render_Batcher {
         // this._projMatrix = new Float32Array(16);
         this._mesh = new Mesh();
         this._mesh.UpdateVertexFormat(webgl, VertexFormatMgr.GetFormat_Vertex_UV_Color_Ext());
-        this._mat = new Material(GetShaderProgram("default"));
+        this._mat = new Material(Resources.GetShaderProgram("default"));
 
 
         //reset default matrixworld

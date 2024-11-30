@@ -17,30 +17,19 @@ export enum UniformType {
 export class ShaderObj {
   name: string
   type: ShaderType;
-  source: string;
+
   shader: WebGLShader;
-  uniformInfo: { [id: string]: UniformType };
-  constructor(type: ShaderType, name: string, source: string, shader: WebGLShader, uniformInfo: { [id: string]: UniformType }) {
+
+  constructor(type: ShaderType, name: string,  shader: WebGLShader) {
     this.type = type;
     this.name = name;
-    this.source = source;
+
     this.shader = shader;
-    this.uniformInfo = uniformInfo;
+
   }
 }
+export function CompileShader(webgl: WebGL2RenderingContext, type: ShaderType, name: string, source: string): ShaderObj | null {
 
-var vsp: { [id: string]: ShaderObj } = {};
-var fsp: { [id: string]: ShaderObj } = {};
-
-export function AddShader(webgl: WebGL2RenderingContext, type: ShaderType, name: string, source: string, keepsource: boolean): ShaderObj | null {
-  if (type == ShaderType.VertexShader) {
-    if (vsp[name] != undefined)
-      return null;
-  }
-  else {
-    if (fsp[name] != undefined)
-      return null;
-  }
   var _shader = webgl.createShader(type == ShaderType.VertexShader ? webgl.VERTEX_SHADER : webgl.FRAGMENT_SHADER);
   if (_shader == null) {
     console.error("AddShader error webgl.createShader:" + type + ":" + name);
@@ -58,126 +47,29 @@ export function AddShader(webgl: WebGL2RenderingContext, type: ShaderType, name:
   else {
     console.log("AddShader:" + ShaderType[type].toString() + ":" + name);
   }
-  var uinfo: { [id: string]: UniformType } = {};
+ 
 
-  findUniform(source, uinfo);
+  var shaderobj = new ShaderObj(type, name, _shader);
 
-  var shaderobj = new ShaderObj(type, name, keepsource ? source : "", _shader, uinfo);
-  if (type == ShaderType.VertexShader) {
-    vsp[name] = shaderobj;
-  }
-  else {
-    fsp[name] = shaderobj;
-  }
   return shaderobj;
 
 
 }
-function findUniform(source: string, target: { [id: string]: UniformType }): void {
-  //var lines = source.split("\n");
-  //for (var i = 0; i < lines.length; i++) {
-  var line = source
-  //拆注释
-  line = line.replace(new RegExp('\/\/.+\n?', "g"), " ");
-  //多行注释
-  //line = line.replace(new RegExp('\/\*(?:[^\*]|\*+[^\/\*])*\*+\/', "g"), " ");
-  //拆换行
-  line = line.replace(new RegExp('\r', "g"), "");
-  line = line.replace(new RegExp('\n', "g"), "");
-  line = line.replace(new RegExp('\t', "g"), " ");
-  //line = line.replace(new RegExp(';', "g"), " ");
 
-  //封号作为一个word处理
-  line = line.replace(new RegExp(';', "g"), " ; ");
-  line = line.replace(new RegExp('{', "g"), " { ");
 
-  var words = line.split(" ");
-  var type = UniformType.empty;
-  var name = "";
-  var state = 0;//0 寻找uniform //1寻找type //2 寻找name //3 寻找end 或者block 标志
-  for (var j = 0; j < words.length; j++) {
-    var word = words[j];
-    var code = word.charCodeAt(0);
-    if (word == "") continue;
-    if (word == " ") continue;
-    else if (state == 0) {
-      if (word == "uniform") {
-        state++;
-      }
-      else {
-        continue;
-      }
-    }
-    else if (state == 1) {
-      switch (word) {
-        case "mat4":
-          type = UniformType.mat4;
-          break;
-        case "sampler2D":
-          type = UniformType.sampler2D;
-          break;
-        case "float":
-          type = UniformType.float;
-          break;
-        case "vec4":
-          type = UniformType.vec4;
-          break;
-        case "ivec4":
-          type = UniformType.ivec4;
-          break;
-
-        default:
-          type = UniformType.unknown;
-      }
-
-      state++;
-    }
-    else if (state == 2) {
-      name = word;
-      state++;
-      //break;
-    }
-    else if (state == 3) {
-      if (word == ";")//end tag
-      {
-        state = 0;
-      
-      }
-      else if (word == "{")//block
-      {
-        type = UniformType.block;
-        {
-          state = 0;
-        
-        }
-      }
-      else {
-        state = 0;
-      
-        //未知结构
-      }
-    }
-
-    if (type != UniformType.empty) {
-      target[name] = type;
-    }
-  
-  }
- 
-}
 export function LinkShader(webgl: WebGL2RenderingContext, name: string, vs: ShaderObj, fs: ShaderObj): ShaderProgram | null {
   var prog = webgl.createProgram();
   if (prog != null) {
     webgl.attachShader(prog, vs.shader);
     webgl.attachShader(prog, fs.shader);
     webgl.linkProgram(prog);
+
     var r3 = webgl.getProgramParameter(prog, webgl.LINK_STATUS);
     if (r3 == false) {
       console.error("LinkShader error webgl.linkProgram:" + webgl.getProgramInfoLog(prog));
       return null;
     }
     var _prog = new ShaderProgram(webgl, name, prog, vs, fs);
-    programs[name] = _prog;
     console.log("LinkShader:" + name);
     return _prog;
   }
@@ -201,7 +93,7 @@ export function LinkShaderFeedBack(webgl: WebGL2RenderingContext, name: string, 
       return null;
     }
     var _prog = new ShaderProgram(webgl, name, prog, vs, fs);
-    programs[name] = _prog;
+   
     console.log("LinkShader:" + name);
     return _prog;
   }
@@ -211,7 +103,7 @@ export function LinkShaderFeedBack(webgl: WebGL2RenderingContext, name: string, 
   return null;
 }
 
-var programs: { [id: string]: ShaderProgram } = {};
+
 export class uniformInfo {
   type: UniformType;
   loc: WebGLUniformLocation;
@@ -229,18 +121,67 @@ export class ShaderProgram {
     this.program = program;
 
 
+    //Attr 固定,不查
+    // var attrs = webgl.getProgramParameter(program, webgl.ACTIVE_ATTRIBUTES);
+    // for (let i = 0; i < attrs; i++) {
+    //   var attr= webgl.getActiveAttrib(program, i);
+    // }
+
 
     this.uniformInfos = {};
+    // readonly INT: 0x1404;
+    // readonly UNSIGNED_INT: 0x1405;
+    // readonly FLOAT: 0x1406;
+    // readonly FLOAT_VEC2: 0x8B50;
+    // readonly FLOAT_VEC3: 0x8B51;
+    // readonly FLOAT_VEC4: 0x8B52;
+    // readonly INT_VEC2: 0x8B53;
+    // readonly INT_VEC3: 0x8B54;
+    // readonly INT_VEC4: 0x8B55;
+    // readonly BOOL: 0x8B56;
+    // readonly BOOL_VEC2: 0x8B57;
+    // readonly BOOL_VEC3: 0x8B58;
+    // readonly BOOL_VEC4: 0x8B59;
+    // readonly FLOAT_MAT2: 0x8B5A;
+    // readonly FLOAT_MAT3: 0x8B5B;
+    // readonly FLOAT_MAT4: 0x8B5C;
+    // readonly SAMPLER_2D: 0x8B5E;
+    var useuni = webgl.getProgramParameter(program, webgl.ACTIVE_UNIFORMS);
+    for (let i = 0; i < useuni; i++) {
+      var info = webgl.getActiveUniform(program, i);
+      let loc = webgl.getUniformLocation(this.program, info.name);
+      if (loc == null)
+        continue;
+      let type: UniformType = UniformType.empty;
+      switch (info.type) {
+        case 0x8B52:
+          type = UniformType.vec4
+          break;
+        case 0x8B52:
+          type = UniformType.ivec4;
+          break;
+        case 0x8B5C:
+          type = UniformType.mat4;
+          break;
+        case 0x8B5E:
+          type = UniformType.sampler2D;
+          break;
+        default:
+          throw "not supported." + info.type.toString(16);
+      }
+      this.uniformInfos[info.name] = { loc: loc, locblock: -1, type: type }
+    }
 
-    for (var key in vs.uniformInfo) {
-      let type = vs.uniformInfo[key];
-      this.AddUniform(webgl, key, type);
+    var useblock = webgl.getProgramParameter(program, webgl.ACTIVE_UNIFORM_BLOCKS);
+    for (let i = 0; i < useblock; i++) {
+      var key = webgl.getActiveUniformBlockName(program, i);
+      let locindex = webgl.getUniformBlockIndex(this.program, key);
+      if (locindex == null || locindex < 0) continue;
+      this.uniformInfos[key] = { loc: null, locblock: locindex, type: UniformType.block }
 
     }
-    for (var key in fs.uniformInfo) {
-      let type = fs.uniformInfo[key];
-      this.AddUniform(webgl, key, type);
-    }
+
+
 
   }
   private AddUniform(webgl: WebGL2RenderingContext, key: string, type: UniformType) {
@@ -257,7 +198,3 @@ export class ShaderProgram {
   }
 }
 
-export function GetShaderProgram(name: string): ShaderProgram | undefined {
-  //if (programs[name] == undefined) return null;
-  return programs[name];
-}

@@ -2,7 +2,7 @@
 import { tt } from "../../../../ttapi/ttapi.js";
 import { IRenderTarget, Material, Mesh, QUI_Canvas, Resources, VertexFormatMgr } from "../../../ttlayer2.js";
 import { MeshRender } from "../../render/render.js";
-import { GetShaderProgram } from "../../shader/shaders.js";
+
 import { Camera, ILayerRender } from "../drawlayer.js";
 
 const MaxInstCount = 65536;
@@ -10,7 +10,7 @@ const MaxInstCount = 65536;
 export class Render_Inst implements ILayerRender {
 
     constructor() {
-        this.matDraw = new Material(GetShaderProgram("simple_inst"));//Inst 材质
+        this.matDraw = new Material(Resources.GetShaderProgram("simple_inst"));//Inst 材质
 
         let gl = this.webgl = tt.graphic.GetWebGL();
         this.meshDraw = new Mesh();

@@ -1,6 +1,6 @@
 import { tt } from "../../ttapi/ttapi.js"
 import { MainScreen } from "../graphics/mainscreen.js";
-import { InitInnerShader } from "../resources/shaderress.js";
+import { InitInnerShader } from "../resources/defshader.js";
 import { DrawLayer_GUI } from "../graphics/pipeline/drawlayer_gui.js";
 import { DrawLayerList, DrawLayerTag } from "../graphics/pipeline/drawlayer.js";
 

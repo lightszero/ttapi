@@ -2,8 +2,8 @@ import { VertexFormatMgr } from "../../graphics/mesh.js";
 import { Matrix3x2, Matrix3x2Math } from "../../math/Matrix3x2.js";
 import { PerlinNoise } from "../../math/perlin/perlin.js";
 import { MeshRender } from "../../graphics/render/render.js";
-import { GetShaderProgram } from "../../graphics/shader/shaders.js";
-import { GameApp, Material, Mesh, SpriteFormat, TextureFormat } from "../../ttlayer2.js";
+
+import { GameApp, Material, Mesh, Resources, SpriteFormat, TextureFormat } from "../../ttlayer2.js";
 import { PackTexture, SpriteData } from "./packtex.js";
 
 export class Tiled {
@@ -31,7 +31,7 @@ export class TiledMap {
         this.mapinfo = new PackTexture(gl, mapWidth, mapHeight, TextureFormat.RGBA32, 0);
 
 
-        this._mat = new Material(GetShaderProgram("tiledmap"));
+        this._mat = new Material(Resources.GetShaderProgram("tiledmap"));
         if (this._mat.uniformTexs["tex"] != undefined)
             this._mat.uniformTexs["tex"].value = this.mapinfo;
         if (this._mat.uniformTexs["tex2"] != undefined)
@@ -149,7 +149,7 @@ export class TiledMap {
             bluedata.data[i * 4 + 2] = i * 3;
             bluedata.data[i * 4 + 3] = 255;
         }
-        let sblue = this.tiledsprite.AddSprite(bluedata,  SpriteFormat.RGBA,"blue");
+        let sblue = this.tiledsprite.AddSprite(bluedata, SpriteFormat.RGBA, "blue");
         this.tiledsprite.Apply();
 
         PerlinNoise.Reset();

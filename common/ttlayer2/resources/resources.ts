@@ -1,6 +1,7 @@
 import { tt } from "../../ttapi/ttapi.js";
-import { Atlas } from "../resources/atlas/atlas.js";
-import { PackTexture, SpriteData, ToROption } from "../resources/atlas/packtex.js";
+import { CompileShader, LinkShader, LinkShaderFeedBack, ShaderObj, ShaderProgram, ShaderType } from "../graphics/shader/shaders.js";
+import { Atlas } from "./atlas/atlas.js";
+import { PackTexture, SpriteData, ToROption } from "./atlas/packtex.js";
 import { Border, Color, Font, InitInnerShader, ITexture, QUI_Button, QUI_HAlign, QUI_Image, QUI_ImageScale9, QUI_Label, QUI_Scale9, QUI_VAlign, Sprite, SpriteFormat, Texture, TextureFormat, Vector2 } from "../ttlayer2.js";
 
 export class Resources {
@@ -147,7 +148,7 @@ export class Resources {
         return this.scale_border;
     }
     private static deffont: Font = null;
-    static CreateFont(fontname: string, fontsize: number):Font {
+    static CreateFont(fontname: string, fontsize: number): Font {
         let font = new Font(tt.graphic.GetWebGL(), fontname, fontsize);
         return font;
     }
@@ -208,5 +209,56 @@ export class Resources {
         btn.localRect.setHPosByLeftBorder(100, 100);
         btn.localRect.setVPosByTopBorder(25, 100);
         return btn;
+    }
+
+    private static programs: { [id: string]: ShaderProgram } = {};
+    static GetShaderProgram(name: string): ShaderProgram | null {
+        if (this.programs[name] == undefined) return null;
+        return this.programs[name];
+    }
+
+
+    private static vsp: { [id: string]: ShaderObj } = {};
+    private static fsp: { [id: string]: ShaderObj } = {};
+
+
+
+    static AddShader(webgl: WebGL2RenderingContext, type: ShaderType, name: string, source: string): ShaderObj | null {
+        if (type == ShaderType.VertexShader) {
+            if (this.vsp[name] != undefined)
+                throw "Have as VertexShader " + name;
+        }
+        else {
+            if (this.fsp[name] != undefined)
+                throw "Have as FragmentShader " + name;
+        }
+
+
+
+
+        var shaderobj = CompileShader(webgl, type, name, source);
+        return shaderobj;
+
+
+    }
+    static GetVertexShader(name: string): ShaderObj {
+        return this.vsp[name];
+    }
+    static GetFragmentShader(name: string): ShaderObj {
+        return this.fsp[name];
+    }
+    static AddProgram(webgl: WebGL2RenderingContext, name: string, vs: ShaderObj, fs: ShaderObj): ShaderProgram | null {
+        if (this.programs[name] != undefined)
+            throw "have a shader program:" + name;
+        let prog = LinkShader(webgl, name, vs, fs);
+        this.programs[name] = prog;
+        return prog;
+    }
+    static AddProgramFeedback(webgl: WebGL2RenderingContext, name: string, vs: ShaderObj, fs: ShaderObj, feedbackvaring: string[]): ShaderProgram | null {
+        if (this.programs[name] != undefined)
+            throw "have a shader program:" + name;
+        let prog = LinkShaderFeedBack(webgl, name, vs, fs, feedbackvaring);
+        this.programs[name] = prog;
+        return prog;
     }
 }

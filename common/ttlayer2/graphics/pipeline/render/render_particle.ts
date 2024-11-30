@@ -1,8 +1,8 @@
-import { IRenderTarget, Material, Mesh, Render_Batcher, VertexFormatMgr } from "../../../ttlayer2.js";
+import { IRenderTarget, Material, Mesh, Render_Batcher, Resources, VertexFormatMgr } from "../../../ttlayer2.js";
 import { Camera, DrawLayer, DrawLayerTag, ILayerRender } from "../drawlayer.js"
 import { QUI_Canvas } from "../../../ttui/ttui.js"
 import { tt } from "../../../../ttapi/ttapi.js";
-import { GetShaderProgram } from "../../../graphics/shader/shaders.js";
+
 import { MeshRender } from "../../../graphics/render/render.js";
 
 
@@ -20,7 +20,7 @@ export class ParticleView implements ILayerRender {
         this.tag = tag;
 
 
-        this.matDraw = new Material(GetShaderProgram("simple_inst"));
+        this.matDraw = new Material(Resources.GetShaderProgram("simple_inst"));
 
 
         let gl = this.webgl = tt.graphic.GetWebGL();

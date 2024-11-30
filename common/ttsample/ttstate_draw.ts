@@ -6,12 +6,12 @@ import { Material } from "../ttlayer2/graphics/material.js";
 import { VertexFormatMgr } from "../ttlayer2/graphics/mesh.js";
 import { Vector2 } from "../ttlayer2/math/vector.js";
 import { MeshRender, TransformFeedBack } from "../ttlayer2/graphics/render/render.js";
-import { GetShaderProgram } from "../ttlayer2/graphics/shader/shaders.js";
 
 
 import {
     GameApp, IState, TextTool, Render_Batcher, DrawPoint, MainScreen, Color, ITexture, Texture, TextureFormat,
     Mesh,
+    Resources,
 } from "../ttlayer2/ttlayer2.js";
 
 export class TTState_Draw implements IState<any>, IRenderExt {
@@ -168,7 +168,7 @@ export class TTState_Draw implements IState<any>, IRenderExt {
         this.mesh.UploadVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
 
         this.mesh.UploadIndexBuffer(gl, element, false, 12);
-        this.mat = new Material(GetShaderProgram("simple"));
+        this.mat = new Material(Resources.GetShaderProgram("simple"));
         this.mat.UpdateMatModel();
         this.mat.UpdateMatView();
     }
@@ -264,7 +264,7 @@ export class TTState_Draw implements IState<any>, IRenderExt {
             this.mesh2.UploadIndexBuffer(gl, element, false, 12);
         }
 
-        this.mat2 = new Material(GetShaderProgram("simple_inst"));
+        this.mat2 = new Material(Resources.GetShaderProgram("simple_inst"));
         this.mat2.UpdateMatModel();
         this.mat2.UpdateMatView();
     }
@@ -306,7 +306,7 @@ export class TTState_Draw implements IState<any>, IRenderExt {
 
         mesh.UploadVertexBuffer(gl, 0, vertexdata, false, vertexdata.byteLength);
         console.log("====>test feedback.");
-        let mat = new Material(GetShaderProgram("feedback"));
+        let mat = new Material(Resources.GetShaderProgram("feedback"));
         this.outbuf = gl.createBuffer();
         gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, 0, this.outbuf);
         gl.bufferData(gl.TRANSFORM_FEEDBACK_BUFFER, stride * 4, gl.STREAM_READ);

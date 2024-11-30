@@ -1,4 +1,6 @@
-import * as s from "../graphics/shader/shaders.js"
+
+import { ShaderType } from "../graphics/shader/shaders.js";
+import { Resources } from "./resources.js";
 
 
 
@@ -14,7 +16,7 @@ var vs_default: string = `#version 300 es
 
     out vec4 vColor;//输出给fs的参数
     out vec2 vUv;//输出给fs的参数2
-    flat out vec4 vExt;
+    flat out int vExt;
 
     void main(void) 
     {
@@ -22,16 +24,76 @@ var vs_default: string = `#version 300 es
         gl_Position = matrix * vec4(position,1);// uViewProjMatrix * uModelMatrix * position;
         vColor = color;
         vUv = uv;
-        vExt = ext;
+        vExt = int(ext.w);
     }
     `;
+var vs_inst_full: string = `#version 300 es
+    //form vbo1 as mesh
+    layout(location = 0) in vec2 elemuv; 
+    //from vbo2 as inst
+    layout(location = 1) in vec4 posrotate;
+    layout(location = 2) in vec2 scale;
+    layout(location = 3) in vec4 color; //rgba32
+    layout(location = 4) in int  ext;
 
+    layout(std140, column_major) uniform;
+    struct Sprite
+    {
+        vec2 posLT;
+        vec2 posRB;
+        vec2 uvCenter;
+        vec2 uvHalfSize;
+    };
+
+    uniform SpritesBlock {
+        Sprite data[1024];    
+    } sprites;
+    
+    uniform mat4 matModel;
+    uniform mat4 matView;
+    uniform mat4 matProj;
+
+    out vec4 vColor;
+    out vec2 vUv;
+    flat out int vExt;
+    void main(void)
+    { 
+        //get sprite
+        Sprite s = sprites.data[gl_InstanceID];
+       
+      
+      
+        //calc final pos
+        float cosv=cos(posrotate.w);
+        float sinv =sin(posrotate.w);
+        vec2 posscale =elemuv*scale;
+       
+        posscale.x*=elemuv.x<0.0?s.posLT.x:s.posRB.x;
+        posscale.y*=elemuv.y<0.0?s.posLT.y:s.posRB.y;
+
+        vec4 pos = vec4(0,0,0,1);
+        pos.x = cosv*posscale.x + sinv*posscale.y;
+        pos.y = sinv*posscale.x + -cosv*posscale.y;
+       
+        //apply tran
+        mat4 matrix = matProj*matView*matModel;
+        gl_Position = matrix * pos;
+
+        //pass uv
+        vec2 uv = s.uvCenter + elemuv*s.uvHalfSize;
+        vUv = uv;
+        //pass color
+        vColor = color;
+        //pass ext
+        vExt=ext;
+    }
+`;
 var fs_default: string = `#version 300 es
     precision mediump float;//指定浮点型精确度
     
     in vec2 vUv;//从vs接收的参数
     in vec4 vColor;//从vs接收的参数
-    flat in vec4 vExt;
+    flat in int vExt;
 
         
     layout(location = 0) out vec4 fragColor;
@@ -42,7 +104,7 @@ var fs_default: string = `#version 300 es
     {
         vec4 texc = texture(tex,vUv);
         vec4 outc = vColor;
-        int effect = int(vExt.w);
+        int effect = vExt;//int(vExt.w);
         if(effect==0)//rgba model 
         {
             outc = vColor*texc;
@@ -187,30 +249,38 @@ var fs_tiledmap: string = `#version 300 es
     }
     `;
 export function InitInnerShader(webgl: WebGL2RenderingContext): void {
-    var vsdef = s.AddShader(webgl, s.ShaderType.VertexShader, "default", vs_default, true);
-    var fsdef = s.AddShader(webgl, s.ShaderType.FragmentShader, "default", fs_default, true);
+
+    var vsinst_full = Resources.AddShader(webgl, ShaderType.VertexShader, "inst_full", vs_inst_full);
+
+    var vsdef = Resources.AddShader(webgl, ShaderType.VertexShader, "default", vs_default);
+    var fsdef = Resources.AddShader(webgl, ShaderType.FragmentShader, "default", fs_default);
 
     if (vsdef != null && fsdef != null)
-        s.LinkShader(webgl, "default", vsdef, fsdef);
+        Resources.AddProgram(webgl, "default", vsdef, fsdef);
 
-    var vssim = s.AddShader(webgl, s.ShaderType.VertexShader, "simple", vs_simple, true);
-    var fssim = s.AddShader(webgl, s.ShaderType.FragmentShader, "simple", fs_simple, true);
+    var vssim = Resources.AddShader(webgl, ShaderType.VertexShader, "simple", vs_simple);
+    var fssim = Resources.AddShader(webgl, ShaderType.FragmentShader, "simple", fs_simple);
 
     if (vssim != null && fssim != null)
-        s.LinkShader(webgl, "simple", vssim, fssim);
+        Resources.AddProgram(webgl, "simple", vssim, fssim);
 
-    var vssim_inst = s.AddShader(webgl, s.ShaderType.VertexShader, "simple_inst", vs_simple_inst, true);
+    var vssim_inst = Resources.AddShader(webgl, ShaderType.VertexShader, "simple_inst", vs_simple_inst);
     if (vssim_inst != null && fssim != null)
-        s.LinkShader(webgl, "simple_inst", vssim_inst, fssim);
+        Resources.AddProgram(webgl, "simple_inst", vssim_inst, fssim);
 
-    var vsfeedback = s.AddShader(webgl, s.ShaderType.VertexShader, "feedback", vs_feedback, true);
-    var fsempty = s.AddShader(webgl, s.ShaderType.FragmentShader, "empty", fs_empty, true);
+
+    var vsfeedback = Resources.AddShader(webgl, ShaderType.VertexShader, "feedback", vs_feedback);
+    var fsempty = Resources.AddShader(webgl, ShaderType.FragmentShader, "empty", fs_empty);
     if (vsfeedback != null && fsempty != null)
-        s.LinkShaderFeedBack(webgl, "feedback", vsfeedback, fsempty, ["outPos", "outNormal"]);
+        Resources.AddProgramFeedback(webgl, "feedback", vsfeedback, fsempty, ["outPos", "outNormal"]);
 
 
-    var fstiledmap = s.AddShader(webgl, s.ShaderType.FragmentShader, "tiledmap", fs_tiledmap, true);
+    var fstiledmap = Resources.AddShader(webgl, ShaderType.FragmentShader, "tiledmap", fs_tiledmap);
     if (vsdef != null && fstiledmap != null)
-        s.LinkShader(webgl, "tiledmap", vsdef, fstiledmap);
+        Resources.AddProgram(webgl, "tiledmap", vsdef, fstiledmap);
 
+
+
+    if (vssim_inst != null && fsdef != null)
+        Resources.AddProgram(webgl, "inst_full", vsinst_full, fsdef);
 }
