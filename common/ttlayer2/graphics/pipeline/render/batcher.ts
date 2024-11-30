@@ -307,6 +307,8 @@ export class Render_Batcher {
 
         if (this._mat.uniformTexs["tex"] != undefined)
             this._mat.uniformTexs["tex"].value = this._lastTex;
+        if (this._mat.uniformTexs["tex2"] != undefined)
+            this._mat.uniformTexs["tex2"].value = this._lastTex2;
         this._mesh.UploadVertexBuffer(webgl, 0, this._buffer, true, this._pointseek * 28);
         this._pointseek = 0;
 

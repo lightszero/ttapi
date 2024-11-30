@@ -136,7 +136,7 @@ export class PackTexture extends TextureArray {
         s.pixelwidth = data.width;
         s.pixelheight = data.height;
         s.uvlayer = this.curlayer;
-        s.tex = this;
+        s.texrgba = this;
         this.sprites.push(s);
         if (name != null) {
             this.namedsprites[name] = s;
@@ -152,4 +152,29 @@ export class PackTexture extends TextureArray {
     }
 
 
+}
+
+export class PackTextureDuo {
+    packRGBA: PackTexture;
+    packGray: PackTexture;
+    GetSprite(name: string): Sprite {
+        let sgray = this.packGray.GetSprite(name);
+        if (sgray != undefined)
+            return sgray;
+        return this.packRGBA.GetSprite(name);
+    }
+    AddSprite(data: SpriteData, effect: SpriteFormat, name: string = null): Sprite {
+        if (effect == SpriteFormat.RGBA) {
+            let s = this.packRGBA.AddSprite(data, effect, name);
+            s.texrgba = this.packRGBA;
+            s.texgray = this.packGray;
+            return s;
+        }
+        else {
+            let s = this.packGray.AddSprite(data, effect, name);
+            s.texrgba = this.packRGBA;
+            s.texgray = this.packGray;
+            return s;
+        }
+    }
 }

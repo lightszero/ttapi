@@ -17,8 +17,9 @@ export class QUI_Scale9 {
         this.t = border.YTop;
         this.b = border.YBottom;
 
-        this._texwidth = sprite.tex.getWidth();
-        this._texheight = sprite.tex.getHeight();
+        let acttex = sprite.effect == 0 ? sprite.texrgba : sprite.texgray;
+        this._texwidth = acttex.getWidth();
+        this._texheight = acttex.getHeight();
         let uv = sprite.uv;
 
         this.u0 = uv.U1;//left
@@ -67,7 +68,7 @@ export class QUI_Scale9 {
         return this._minheight;
     }
 
-    private _Render1RectWithLimit(u1: number, u2: number, v1: number, v2: number, batcher: Render_Batcher, rect: Rectangle, limitRect: Rectangle, color: Color , palindex: number = -1): void {
+    private _Render1RectWithLimit(u1: number, u2: number, v1: number, v2: number, batcher: Render_Batcher, rect: Rectangle, limitRect: Rectangle, color: Color, palindex: number = -1): void {
         let rectbuf = Sprite._rectbuf
         while (rectbuf.length < 4) {
             rectbuf.push(new DrawPoint());
@@ -182,9 +183,9 @@ export class QUI_Scale9 {
         rectbuf[3].palx = this.sprite.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.sprite.effect;
-        batcher.DrawQuads(this.sprite.tex, this.sprite.texpal, rectbuf, 1);
+        batcher.DrawQuads(this.sprite.texrgba, this.sprite.texgray, rectbuf, 1);
     }
-    private _Render1Rect(u1: number, u2: number, v1: number, v2: number, batcher: Render_Batcher, rect: Rectangle, color: Color ,palindex: number = -1) {
+    private _Render1Rect(u1: number, u2: number, v1: number, v2: number, batcher: Render_Batcher, rect: Rectangle, color: Color, palindex: number = -1) {
         if (u1 == u2 || v1 == v2)
             return;
         let rectbuf = Sprite._rectbuf
@@ -244,7 +245,7 @@ export class QUI_Scale9 {
         rectbuf[3].palx = this.sprite.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.sprite.effect;
-        batcher.DrawQuads(this.sprite.tex, this.sprite.texpal, rectbuf, 1);
+        batcher.DrawQuads(this.sprite.texrgba, this.sprite.texgray, rectbuf, 1);
     }
     RenderRect(batcher: Render_Batcher, rect: Rectangle, color: Color | null = null, palindex: number = -1, imgscale: number) {
         let l = this.l * imgscale;

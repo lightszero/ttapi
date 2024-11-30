@@ -109,7 +109,7 @@ var vs_inst_full: string = `#version 300 es
         vColor = color;
         //pass ext
         vExt=int(ext.y);
-        vLayer=int(0.0);
+        vLayer=int(0);
     }
 `;
 var fs_default: string = `#version 300 es
@@ -122,11 +122,12 @@ var fs_default: string = `#version 300 es
         
     layout(location = 0) out vec4 fragColor;
 
-    //uniform sampler2D tex2;
+    uniform sampler2DArray tex2;
     uniform sampler2DArray tex;  //从外部设置的参数
     void main(void) 
     {
-        vec4 texc = texture(tex,vec3(vUv,vLayer));
+        vec4 texc = vExt==0? texture(tex,vec3(vUv,vLayer))
+        : texture(tex2,vec3(vUv,vLayer));
         vec4 outc = vColor;
         int effect = vExt;//int(vExt.w);
         if(effect==0)//rgba model 

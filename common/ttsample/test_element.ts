@@ -52,7 +52,8 @@ export class Test_Element implements IState<Navigator<GContext>> {
 
         let s = Resources.GetBorder2Block();
         let s2 = Resources.GetRoundBlock();
-        this.render.material.uniformTexs["tex"].value = s.tex;
+        this.render.material.uniformTexs["tex"].value = s.texrgba;
+        this.render.material.uniformTexs["tex2"].value = s.texgray;
 
         let elemindex = 0;
         let elemindex2 = 0;

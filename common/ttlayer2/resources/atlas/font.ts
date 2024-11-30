@@ -1,16 +1,16 @@
 import { Color, Rectangle, Vector2 } from "../../math/vector.js";
 import { Render_Batcher, Sprite, SpriteFormat, TextTool, Texture, TextureFormat } from "../../ttlayer2.js";
-import { PackTexture, SpriteData, ToROption } from "./packtex.js";
+import { PackTexture, PackTextureDuo, SpriteData, ToROption } from "./packtex.js";
 
 export class Font {
-    constructor(webgl: WebGL2RenderingContext, font: string, size: number, packtex: PackTexture) {
+    constructor(webgl: WebGL2RenderingContext, font: string, size: number, packtex: PackTextureDuo) {
         this.fonttex = packtex;
         this.fontsize = size;
         this.fontname = font;
     }
     private fontname: string;
     private fontsize: number;
-    private fonttex: PackTexture;
+    private fonttex: PackTextureDuo;
     //     private _pool: Texture8Pool
     //     private _fontdata: TTFontData
     //     private _mapSprites: { [id: number]: Sprite } = {}
@@ -24,7 +24,7 @@ export class Font {
 
         let s = this._CacheCharSprite(charCode);
         if (s != null) {
-            this.fonttex.Apply();
+            this.fonttex.packGray.Apply();
         }
         return s;
     }
@@ -32,7 +32,7 @@ export class Font {
 
 
         let txt = String.fromCharCode(charCode);
-        let s = this.fonttex.namedsprites[txt];
+        let s = this.fonttex.packGray.namedsprites[txt];
         if (s != null)
             return s;
 
@@ -77,7 +77,7 @@ export class Font {
             }
 
         }
-        this.fonttex.Apply();
+        this.fonttex.packGray.Apply();
         return width;
     }
     RenderText(bathcer: Render_Batcher, text: string, pos: Vector2, scale: Vector2, color: Color): void {

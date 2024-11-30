@@ -4,8 +4,8 @@ import { ITexture, Render_Batcher, DrawPoint, SpriteFormat } from "../../ttlayer
 
 export class Sprite {
     constructor(tex: ITexture, texpal: ITexture) {
-        this.tex = tex;
-        this.texpal = texpal;
+        this.texrgba = tex;
+        this.texgray = texpal;
         this.effect = SpriteFormat.RGBA;
         this.uv = new UVRect(0, 0, 1, 1);
         this.border = new Border(0, 0, 0, 0);
@@ -14,8 +14,8 @@ export class Sprite {
      
         this.uvlayer = 0;
     }
-    tex: ITexture;
-    texpal: ITexture;
+    texrgba: ITexture;
+    texgray: ITexture;
     effect: SpriteFormat;
 
     uv: UVRect;//xywz
@@ -154,7 +154,7 @@ export class Sprite {
         rectbuf[3].palx = this.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
+        batcher.DrawQuads(this.texrgba, this.texgray, rectbuf, 1);
     }
     RenderRect(batcher: Render_Batcher, rect: Rectangle, color: Color | null = null, palindex: number = -1) {
         let rectbuf = Sprite._rectbuf
@@ -216,7 +216,7 @@ export class Sprite {
         rectbuf[3].palx = this.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
+        batcher.DrawQuads(this.texrgba, this.texgray, rectbuf, 1);
     }
     RenderRect2(batcher: Render_Batcher, x1: number, y1: number, x2: number, y2: number, color: Color | null = null, palindex: number = -1) {
         let rectbuf = Sprite._rectbuf
@@ -278,7 +278,7 @@ export class Sprite {
         rectbuf[3].palx = this.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
+        batcher.DrawQuads(this.texrgba, this.texgray, rectbuf, 1);
     }
     Render(batcher: Render_Batcher, pos: Vector2, scale: Vector2, color: Color | null = null, palindex: number = -1): void {
         let rectbuf = Sprite._rectbuf
@@ -345,7 +345,7 @@ export class Sprite {
         rectbuf[3].palx = this.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
+        batcher.DrawQuads(this.texrgba, this.texgray, rectbuf, 1);
     }
     RenderWithRotate(batcher: Render_Batcher, pos: Vector2, scale: Vector2, rotate: number, rotate_povit_x: number, rotate_povit_y: number, color: Color | null = null, palindex: number = -1): void {
         let rectbuf = Sprite._rectbuf
@@ -431,6 +431,6 @@ export class Sprite {
         rectbuf[3].palx = this.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
+        batcher.DrawQuads(this.texrgba, this.texgray, rectbuf, 1);
     }
 }
