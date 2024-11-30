@@ -1,5 +1,6 @@
 
-import { DrawLayer_GUI,Resources,Border, Font, GameApp, IState, StateMgr, Vector2, QUI_ImageScale9, QUI_Label, QUI_Scale9, Color, IUserLogic, Navigator, DrawLayerTag, QUI_Image, QUI_HAlign } from "../ttlayer2/ttlayer2.js";
+import { tt } from "../ttapi/ttapi.js";
+import { DrawLayer_GUI, Resources, Border, Font, GameApp, IState, StateMgr, Vector2, QUI_ImageScale9, QUI_Label, QUI_Scale9, Color, IUserLogic, Navigator, DrawLayerTag, QUI_Image, QUI_HAlign, TextureArray, TextureFormat, Texture, Sprite, SpriteFormat } from "../ttlayer2/ttlayer2.js";
 import { View_Menu } from "./view_menu.js";
 
 
@@ -23,10 +24,10 @@ export class TTState_All implements IUserLogic {
         //创建一个导航器框架
         this.nav = new Navigator<GContext>(new GContext());
 
-      
+
         let ct = this.nav.GetContextObj();
         ct.topuiview = new DrawLayer_GUI();
-        ct.topuiview.GetCanvas().scale = 2.0;
+
         GameApp.GetViewList().AddDrawLayers(ct.topuiview);
 
 
@@ -40,13 +41,14 @@ export class TTState_All implements IUserLogic {
     }
     InitTopUI(context: GContext) {
         {
+            context.topuiview.GetCamera().Scale = 3.0;
             //title
             {
                 let labels = Resources.CreateGUI_Label("新TTAPI", new Color(0, 0, 0, 0.5));
                 context.topuiview.GetCanvas().addChild(labels);
                 labels.localRect.setHPosFill(33, 31);
                 labels.localRect.setVPosByTopBorder(16, 9);
-    
+
             }
             let label = Resources.CreateGUI_Label("新TTAPI", new Color(0.8, 1.0, 0, 1));
             context.topuiview.GetCanvas().addChild(label);
@@ -64,6 +66,36 @@ export class TTState_All implements IUserLogic {
             label_fps.halign = QUI_HAlign.Left;
             label_fps.localRect.setHPosByLeftBorder(100, 16);
             label_fps.localRect.setVPosByTopBorder(16, 0);
+        }
+        {
+
+            let gl = tt.graphic.GetWebGL();
+
+            let t = new TextureArray(gl, 16, 16, 5, TextureFormat.R8);
+            let t2 = new Texture(gl, 16, 16, TextureFormat.R8, null);
+            let data1 = new Uint8Array(256);
+            for (let i = 0; i < 256; i++) {
+                data1[i] = i;
+            }
+
+            t.UploadSubTexture(0, 0, 0, 16, 16, data1);
+            t2.UploadTexture(0, 0, 16, 16, data1);
+
+            let s = new Sprite(t, null);
+            let s2 = new Sprite(t2, null);
+            s.effect = s2.effect = SpriteFormat.GrayAsAlpha;
+            {
+                let img = new QUI_Image(s);
+                img.localRect.setHPosByLeftBorder(256, 32);
+                img.localRect.setVPosByTopBorder(256, 32);
+                context.topuiview.GetCanvas().addChild(img);
+            }
+            {
+                let img = new QUI_Image(s2);
+                img.localRect.setHPosByLeftBorder(256, 300);
+                img.localRect.setVPosByTopBorder(256, 32);
+                context.topuiview.GetCanvas().addChild(img);
+            }
         }
     }
     frameCount: number = 0;

@@ -1,6 +1,6 @@
 import { Color, Rectangle, Vector2 } from "../../math/vector.js";
 import * as maxrect from "../../math/maxrects_packer/src/index.js"
-import { ITexture, Render_Batcher, Sprite, Texture, TextureFormat, DrawPoint, SpriteFormat } from "../../ttlayer2.js"
+import { ITexture, Render_Batcher, Sprite, Texture, TextureFormat, DrawPoint, SpriteFormat, TextureArray } from "../../ttlayer2.js"
 
 
 //精灵,为啥又重写,之前的分层做的不清晰
@@ -15,7 +15,7 @@ export enum ToROption {
 }
 export class SpriteData {
     format: TextureFormat
-   
+
     toRgba: ToRGBAOption = ToRGBAOption.R2Alpha;
     toR: ToROption = ToROption.GRAY;
     width: number;
@@ -82,9 +82,9 @@ export class SpriteData {
     }
 
 }
-export class PackTexture extends Texture {
-    constructor(webgl: WebGL2RenderingContext, width: number, height: number, format: TextureFormat, border: number = 0) {
-        super(webgl, width, height, format, null);
+export class PackTexture extends TextureArray {
+    constructor(webgl: WebGL2RenderingContext, width: number, height: number, format: TextureFormat, layercount: number, border: number = 0) {
+        super(webgl, width, height, 10, format);
         this.maxrect = new maxrect.MaxRectsPacker(width, height, border);
         this.sprites = [];
         this.namedsprites = {};
@@ -133,9 +133,10 @@ export class PackTexture extends Texture {
         }
         return s;
     }
+    curlayer: number = 0;
     Apply(force: boolean = false): void {
         if (this.dirty || force) {
-            this.UploadTexture(0, 0, this._width, this._height, this.pixelbuf);
+            this.UploadSubTexture(this.curlayer, 0, 0, this._width, this._height, this.pixelbuf);
             this.dirty = false;
         }
     }

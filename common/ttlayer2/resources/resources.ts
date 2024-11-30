@@ -32,7 +32,7 @@ export class Resources {
             this._blackTexture.UploadTexture(0, 0.0, 4, 4, data);
         }
         this.atlas = new Atlas();
-        this.packed_r = new PackTexture(gl, 1024, 1024, TextureFormat.R8, 0);
+        this.packed_r = new PackTexture(gl, 1024, 1024, TextureFormat.R8, 10, 0);
         //WhiteSprite
         {
             let spdata = new SpriteData();
@@ -114,8 +114,8 @@ export class Resources {
         this.packed_r.Apply();
     }
 
-    private static _whitetexture: ITexture = null;
-    private static _blackTexture: ITexture = null;
+    private static _whitetexture: Texture = null;
+    private static _blackTexture: Texture = null;
     private static packed_r: PackTexture;
 
     private static atlas: Atlas;

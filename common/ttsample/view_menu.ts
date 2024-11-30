@@ -1,5 +1,7 @@
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp,DrawLayer_GUI } from "../ttlayer2/ttlayer2.js";
 import { Test_Element } from "./test_element.js";
+import { Test_Info } from "./test_info.js";
+import { Test_TexArr } from "./test_texarr.js";
 import { GContext } from "./ttstate_all.js";
 
 export class View_Menu implements IState<Navigator<GContext>> {
@@ -14,7 +16,7 @@ export class View_Menu implements IState<Navigator<GContext>> {
 
 
         this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCanvas().scale = 2.0;
+        this.guilayer.GetCamera().Scale = 3.0;
 
         GameApp.GetViewList().AddDrawLayers(this.guilayer);
 
@@ -22,9 +24,10 @@ export class View_Menu implements IState<Navigator<GContext>> {
 
         this.x=32;
         this.y=16;
-        this.AddButton("Test UI");
+        this.AddButton("Test Info",new Test_Info());
         
-        this.AddButton("Test Element 渲染器",new Test_Element());
+        this.AddButton("Test Element 渲染器(UBO)",new Test_Element());
+        this.AddButton("Test TexArray",new Test_TexArr());
         this.AddButton("Test TiledMap");
         this.AddButton("Test ParticleSystem");
     }

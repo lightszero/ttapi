@@ -168,8 +168,11 @@ export class ShaderProgram {
         case 0x8B5E:
           type = UniformType.sampler2D;
           break;
+        case 0x8DC1:
+          type = UniformType.sampler2D;
+          break;
         default:
-          throw "not supported." + info.type.toString(16);
+          throw "ShaderProgram.ctor not supported." + info.type.toString(16);
       }
       this.uniformInfos[info.name] = { loc: loc, locblock: -1, type: type }
     }

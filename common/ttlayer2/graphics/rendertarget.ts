@@ -44,6 +44,15 @@ export namespace tt_impl {
         IsMainOutput(): boolean {
             return false;
         }
+        IsArray():boolean
+        {
+            return false;
+        }
+        GetLayer():number
+        {
+            return 0;
+        }
+       
         Begin(): void {
             this._webgl.bindFramebuffer(this._webgl.FRAMEBUFFER, this._fbo);
             this._webgl.viewport(0, 0, this._width, this._height);

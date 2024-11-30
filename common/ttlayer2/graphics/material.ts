@@ -172,8 +172,13 @@ export class Material {
             webgl.activeTexture(webgl.TEXTURE0 + texcount);
 
 
-
-            webgl.bindTexture(webgl.TEXTURE_2D, uni.value.getGLTex());
+            let tex = uni.value;
+            if (tex.IsArray()) {
+                webgl.bindTexture(webgl.TEXTURE_2D_ARRAY, tex.getGLTex());
+            }
+            else {
+                webgl.bindTexture(webgl.TEXTURE_2D, tex.getGLTex());
+            }
             webgl.uniform1i(uni.loc, texcount);
             texcount++;
         }

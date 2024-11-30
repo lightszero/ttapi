@@ -4,7 +4,7 @@ import { PackTexture, SpriteData, ToROption } from "./packtex.js";
 
 export class Font {
     constructor(webgl: WebGL2RenderingContext, font: string, size: number) {
-        this.fonttex = new PackTexture(webgl, 256, 256, TextureFormat.R8, 0);
+        this.fonttex = new PackTexture(webgl, 256, 256, TextureFormat.R8, 10,0);
         this.fontsize = size;
         this.fontname = font;
     }

@@ -11,7 +11,14 @@ export class MainScreen implements IRenderTarget {
         console.log("webgl init size:" + webgl.canvas.width + "," + webgl.canvas.height);
        
     }
-
+    IsArray():boolean
+    {
+        return false;
+    }
+    GetLayer():number
+    {
+        return 0;
+    }
    
     IsMainOutput(): boolean {
         return true;

@@ -45,9 +45,10 @@ var vs_inst_full: string = `#version 300 es
         vec2 uvHalfSize;
     };
 
-    uniform SpritesBlock {
-        Sprite data[1024];    
-        int endtag; //不加一点,在firefox会报错
+    uniform SpritesBlock {//手机一个UniformBlock中允许的元素数量有限，我测试的手机是1024
+        //所以这里设置为1023+1
+        Sprite data[1023];    
+        int endtag; //不加一点,在firefox会报错,在chrome 画不出来，手机却是正常的
     } sprites;
     
     uniform mat4 matModel;
@@ -110,7 +111,7 @@ var vs_inst_full: string = `#version 300 es
 `;
 var fs_default: string = `#version 300 es
     precision mediump float;//指定浮点型精确度
-    
+    precision highp sampler2DArray;
     in vec2 vUv;//从vs接收的参数
     in vec4 vColor;//从vs接收的参数
     flat in int vExt;
@@ -119,10 +120,10 @@ var fs_default: string = `#version 300 es
     layout(location = 0) out vec4 fragColor;
 
     //uniform sampler2D tex2;
-    uniform sampler2D tex;  //从外部设置的参数
+    uniform sampler2DArray tex;  //从外部设置的参数
     void main(void) 
     {
-        vec4 texc = texture(tex,vUv);
+        vec4 texc = texture(tex,vec3(vUv,0));
         vec4 outc = vColor;
         int effect = vExt;//int(vExt.w);
         if(effect==0)//rgba model 
@@ -194,7 +195,8 @@ void main(void)
 `;
 var fs_simple: string = `#version 300 es
     precision mediump float;//指定浮点型精确度
-    
+    precision highp sampler2DArray;
+
     in vec2 vUv;//从vs接收的参数
     in vec4 vColor;//从vs接收的参数
     //flat in vec4 vExt;
@@ -203,10 +205,10 @@ var fs_simple: string = `#version 300 es
     layout(location = 0) out vec4 fragColor;
 
     //uniform sampler2D tex2;
-    uniform sampler2D tex;  //从外部设置的参数
+    uniform sampler2DArray tex;  //从外部设置的参数
     void main(void) 
     {
-        vec4 texc = texture(tex,vUv);
+        vec4 texc = texture(tex,vec3(vUv,0));
         vec4 outc = vColor;
        
         outc = vColor * texc;
@@ -238,7 +240,8 @@ var fs_empty: string = `#version 300 es
     `;
 var fs_tiledmap: string = `#version 300 es
     precision mediump float;//指定浮点型精确度
-   
+    precision highp sampler2DArray;
+    
     in vec2 vUv;//从vs接收的参数
     in vec4 vColor;//从vs接收的参数
 

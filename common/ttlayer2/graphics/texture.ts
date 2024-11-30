@@ -1,4 +1,4 @@
-import { tt } from "../../ttapi/ttapi.js"; 
+import { tt } from "../../ttapi/ttapi.js";
 import { Color, Rectangle } from "../math/vector.js";
 
 export enum TextureFormat {
@@ -12,13 +12,11 @@ export interface ITexture {
     getHeight(): number;
 
     getGLTex(): WebGLTexture;
-  
-    IsTarget(): boolean;
-    Destory(): void;
-    UploadTexture(x: number, y: number,
-        w: number, h: number,
-        data: Uint8Array | Uint8ClampedArray): void
 
+    IsTarget(): boolean;
+    IsArray(): boolean;
+    GetLayer(): number;
+    Destory(): void;
 
 }
 
@@ -38,6 +36,12 @@ export interface IRenderTarget extends ITexture {
 
 export class Texture implements ITexture {
     static texid: number = 1;
+    IsArray(): boolean {
+        return false;
+    }
+    GetLayer(): number {
+        return 0;
+    }
     constructor(webgl: WebGL2RenderingContext, width: number, height: number, format: TextureFormat, data: Uint8Array | Uint8ClampedArray | null) {
         this._webgl = webgl;
         this._format = format;
@@ -62,7 +66,7 @@ export class Texture implements ITexture {
 
         this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
         if (data == null) {
-           this._webgl
+            this._webgl
             this._webgl.texImage2D(this._webgl.TEXTURE_2D,
                 0,
                 formatGL,
@@ -128,11 +132,105 @@ export class Texture implements ITexture {
             img);
     }
     UploadTexture(x: number, y: number, w: number, h: number, data: Uint8Array | Uint8ClampedArray): void {
-     
+
         this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
         var formatGL = this._format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.LUMINANCE;
         var type = this._webgl.UNSIGNED_BYTE;
         this._webgl.texSubImage2D(this._webgl.TEXTURE_2D, 0, x, y, w, h, formatGL, type, data);
+    }
+
+    Destory(): void {
+        if (this._texobj != null)
+            this._webgl.deleteTexture(this._texobj);
+        this._texobj = null;
+    }
+
+}
+
+export class TextureArray implements ITexture {
+    IsArray(): boolean {
+        return true;
+    }
+    GetLayer(): number {
+        return this._layer;
+    }
+    //默认一层，可以慢慢扩
+    constructor(webgl: WebGL2RenderingContext, width: number, height: number, layer: number, format: TextureFormat) {
+        this._webgl = webgl;
+        this._format = format;
+        this._layer = layer;
+        this._texobj = webgl.createTexture();
+        let n = (this._texobj as number)
+        this._id = Texture.texid;
+        this._width = width;
+        this._height = height;
+
+        Texture.texid++;
+        this._webgl.bindTexture(this._webgl.TEXTURE_2D_ARRAY, this._texobj);
+        this._webgl.pixelStorei(this._webgl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
+        this._webgl.pixelStorei(this._webgl.UNPACK_FLIP_Y_WEBGL, 0);
+        this._webgl.texParameteri(this._webgl.TEXTURE_2D_ARRAY, this._webgl.TEXTURE_MIN_FILTER, this._webgl.NEAREST);
+        this._webgl.texParameteri(this._webgl.TEXTURE_2D_ARRAY, this._webgl.TEXTURE_MAG_FILTER, this._webgl.NEAREST);
+        this._webgl.texParameteri(this._webgl.TEXTURE_2D_ARRAY, this._webgl.TEXTURE_WRAP_S, this._webgl.CLAMP_TO_EDGE);
+        this._webgl.texParameteri(this._webgl.TEXTURE_2D_ARRAY, this._webgl.TEXTURE_WRAP_T, this._webgl.CLAMP_TO_EDGE);
+
+        var formatGL = format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.LUMINANCE;
+        var type = this._webgl.UNSIGNED_BYTE;
+
+
+        this._webgl.bindTexture(this._webgl.TEXTURE_2D_ARRAY, this._texobj);
+        {
+            this._webgl
+            this._webgl.texImage3D(this._webgl.TEXTURE_2D_ARRAY,
+                0,
+                formatGL,
+                width, height, this._layer,
+                0,
+                formatGL,
+                type
+                , null);
+
+        }
+    }
+    _webgl: WebGL2RenderingContext
+    _format: TextureFormat
+    _texobj: WebGLTexture | null;
+    _layer: number
+    _id: number;
+    _width: number;
+    _height: number;
+
+    getID(): number {
+        return this._id;
+    }
+    getGLTex(): WebGLTexture {
+        return this._texobj;
+    }
+    getFormat(): TextureFormat {
+        return this._format;
+    }
+    getWidth(): number {
+        return this._width;
+    }
+    getHeight(): number {
+        return this._height;
+    }
+
+
+    IsTarget(): boolean {
+        return false;
+    }
+    // ResetLayer(layer: number): void {
+    //     throw "webgl 暂时没办法读取TextureArray,存一份内存镜像顶不住";
+    // }
+    UploadSubTexture(layer: number, x: number, y: number, w: number, h: number, data: Uint8Array | Uint8ClampedArray): void {
+
+        this._webgl.bindTexture(this._webgl.TEXTURE_2D_ARRAY, this._texobj);
+        var formatGL = this._format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.LUMINANCE;
+        var type = this._webgl.UNSIGNED_BYTE;
+        this._webgl.texSubImage3D(this._webgl.TEXTURE_2D_ARRAY, 0,
+            x, y, layer,
+            w, h, 1, formatGL, type, data);
     }
 
     Destory(): void {
