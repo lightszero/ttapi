@@ -69,7 +69,7 @@ export class Test_Canvas implements IState<Navigator<GContext>> {
             inst.pos = new Vector3(Math.random() * 100 - 50, Math.random() * 100 - 50, 0);
             inst.rotate = Math.random() * Math.PI;
             inst.scale = new Vector2(1, 1);
-            inst.eff = 0;
+            inst.eff = 4;
             inst.color = new Color(1, 1, 1, 1);
             this.render.AddElementInst(inst);
             this.inst.push(inst);
