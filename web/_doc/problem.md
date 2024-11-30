@@ -2,19 +2,28 @@
 
 ## 一、特性问题
 
-### 1.b[50%] drawinstance （优化）
+### 1.a[100%] drawinstance （优化）
 
-已经实现通过第二个vbo 作为 instance 来源的方式
+    各种类型的DrawInstance 都实现了
+    
+    DrawInstance 在降低CPU方面很有益处
 
-还缺一个 通过ubo作为instance来源的方式
+### 1.b[50%] transform feedback
 
-缺drawinstance 替代 render_batcher的方式，优化而已。
+    实现了通过tf实现的简单粒子系统，但是需要syncfence  
+    如果用ubo信息去刷增加的顶点信息，可能可以做到 无需syncfence  
 
 ### 1.c[0%] 调色板 （功能）
 
 缺失，暂时屏蔽了，只保留了 GrayAsAlpha 和 RGBA 模式
 
 调色板，lut 等都有过去的代码。加上 +ZTest 和 alphatest
+
+文字 用32 像素，要做到 2048*2048 一张 R8 =4MB
+
+导入调色板可以缩减75%的贴图容量，但是大面积的有tiledmap
+
+调色板图像可能就没啥用。
 
 ### 1.d[50%] tiledmap无例子 （功能）
 

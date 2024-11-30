@@ -28,7 +28,7 @@ export enum DrawLayerTag {
 
 export class Camera {
     LookAt: Vector2 = Vector2.Zero;
-    Scale: number = 1;
+    Scale: number = 2.0;
     private _viewmatrix: Float32Array = new Float32Array(16);
     private _projmatrix: Float32Array = new Float32Array(16);
 

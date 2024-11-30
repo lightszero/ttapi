@@ -23,6 +23,7 @@ export class ElementInst {
     rotate: number;
     scale: Vector2;
     color: Color;
+    instid:number;//忘了一个
     eff: number;//int
 }
 const elementSize = 32;
@@ -126,20 +127,21 @@ export class Render_Element implements ILayerRender {
         this.elemInstCount = 0;
     }
     AddElementInst(elem: ElementInst): number {
-        if (this.elemInstCount * elementInstSize == this.elemInstBufData.length) {
-            //满了,扩容
-            let newarr = new Uint8Array(this.elemInstBufData.length + 1024 * elementSize);
-            for (let i = 0; i < this.elemInstBufData.length; i++) {
-                newarr[i] = this.elemInstBufData[i];
-            }
-            this.elemInstBufData = newarr;
-        }
+
         let index = this.elemInstCount;
         this.elemInstCount++;
         this.WriteElementInst(elem, index);
         return index;
     }
     WriteElementInst(elem: ElementInst, index: number): void {
+        if (index * elementInstSize >= this.elemInstBufData.length) {//满了,扩容
+            let newarr = new Uint8Array((1024 + index) * elementSize);
+            for (let i = 0; i < this.elemInstBufData.length; i++) {
+                newarr[i] = this.elemInstBufData[i];
+            }
+            this.elemInstBufData = newarr;
+            this.elemInstBufView = new DataView(this.elemInstBufData.buffer);
+        }
         let byteIndex = index * elementInstSize;
         this.elemInstBufView.setFloat32(byteIndex + 0, elem.pos.X, true);
         this.elemInstBufView.setFloat32(byteIndex + 4, elem.pos.Y, true);
@@ -151,7 +153,8 @@ export class Render_Element implements ILayerRender {
         this.elemInstBufView.setUint8(byteIndex + 25, elem.color.G * 255);
         this.elemInstBufView.setUint8(byteIndex + 26, elem.color.B * 255);
         this.elemInstBufView.setUint8(byteIndex + 27, elem.color.A * 255);
-        this.elemInstBufView.setFloat32(byteIndex + 28, elem.eff, true);
+        this.elemInstBufView.setUint16(byteIndex + 28, elem.instid, true);
+        this.elemInstBufView.setUint16(byteIndex + 30, elem.eff, true);
         this.elemInstDirty = true;
     }
     GetElementInst(index: number): ElementInst {
@@ -170,7 +173,8 @@ export class Render_Element implements ILayerRender {
         elem.color.G = this.elemBufView.getUint8(byteIndex + 25) / 255;
         elem.color.B = this.elemBufView.getUint8(byteIndex + 26) / 255;
         elem.color.A = this.elemBufView.getUint8(byteIndex + 27) / 255;
-        elem.eff = this.elemBufView.getFloat32(byteIndex + 28, true);
+        elem.instid = this.elemBufView.getUint16(byteIndex + 28, true);
+        elem.eff = this.elemBufView.getUint16(byteIndex + 30, true);
         return elem;
     }
     //#endregion

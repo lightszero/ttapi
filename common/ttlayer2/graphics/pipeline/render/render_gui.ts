@@ -13,7 +13,7 @@ export class Render_GUI implements ILayerRender {
     OnRender(target: IRenderTarget, camera: Camera, rendertag: number): void {
         if (rendertag == 0) {
             //this.canvas.batcherUI.LookAt = camera.LookAt;
-            //this.canvas.batcherUI.Scale = camera.Scale;
+            this.canvas.scale = camera.Scale;
             this.canvas.target = target;
             this.canvas.FIllTarget();
             this.canvas.OnRender(null);

@@ -1,8 +1,10 @@
 import { Material } from "./material.js";
 
 export enum VertexAttribType {
+    UNSIGNED_BYTE = 0x1401,
+    UNSIGNED_SHORT = 0x1403,
+    UNSIGNED_INT= 0x1405,
     FLOAT = 0x1406,
-    UNSIGNED_BYTE = 0x1401
 }
 export class VertexAttribItem {
     constructor(type: VertexAttribType, size: number, normalize: boolean) {
@@ -35,6 +37,12 @@ export class VBOInfo {
             }
             else if (a.type == VertexAttribType.UNSIGNED_BYTE) {
                 this.stride += 1 * a.size;
+            }
+            else if (a.type == VertexAttribType.UNSIGNED_SHORT) {
+                this.stride += 2 * a.size;
+            }
+            else if (a.type == VertexAttribType.UNSIGNED_INT) {
+                this.stride += 4 * a.size;
             }
             else
             {
@@ -185,7 +193,7 @@ export class VertexFormatMgr {
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//Pos xyz + rotate
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//Scale
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));//color
-            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 1, false));//ext
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_SHORT, 2, false));//INSTid&ext
             this.vertexFormat_Vertex_InstFull = this.RegFormat(vecf);
         }
         return this.vertexFormat_Vertex_InstFull;

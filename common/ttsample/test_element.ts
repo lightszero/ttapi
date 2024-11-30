@@ -1,9 +1,8 @@
 import { ElementInst, ElementSprite, Render_Element } from "../ttlayer2/graphics/pipeline/render/render_elem.js";
-import { Render_Inst } from "../ttlayer2/graphics/pipeline/render/render_inst.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3 } from "../ttlayer2/ttlayer2.js";
 import { GContext } from "./ttstate_all.js";
 
-export class Test_Canvas implements IState<Navigator<GContext>> {
+export class Test_Element implements IState<Navigator<GContext>> {
     nav: Navigator<GContext>;
     guilayer: DrawLayer_GUI;
     canvaslayer: DrawLayer;
@@ -27,7 +26,8 @@ export class Test_Canvas implements IState<Navigator<GContext>> {
 
     AddBackButton(): void {
         this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCanvas().scale = 2.0;
+        this.guilayer.GetCamera().Scale = 2.0;
+        //this.guilayer.GetCanvas().scale = 2.0;
 
         GameApp.GetViewList().AddDrawLayers(this.guilayer);
         let btn = Resources.CreateGUI_Button("<--", new Color(1, 1, 1, 1));
@@ -45,14 +45,17 @@ export class Test_Canvas implements IState<Navigator<GContext>> {
     AddSprites(): void {
 
         this.canvaslayer = new DrawLayer(DrawLayerTag.Main);
+        this.canvaslayer.GetCamera().Scale = 2.0;
         this.render = new Render_Element();
         this.canvaslayer.AddRender(this.render);
         GameApp.GetViewList().AddDrawLayers(this.canvaslayer);
 
         let s = Resources.GetBorder2Block();
+        let s2 = Resources.GetRoundBlock();
         this.render.material.uniformTexs["tex"].value = s.tex;
 
         let elemindex = 0;
+        let elemindex2 = 0;
         {//Add a Sprite 原型
 
 
@@ -64,13 +67,25 @@ export class Test_Canvas implements IState<Navigator<GContext>> {
             elem.uvHalfSize = new Vector2((s.uv.U2 - s.uv.U1) * 0.5, (s.uv.V2 - s.uv.V1) * 0.5);
             elemindex = this.render.AddElement(elem);
         }
-        for (var i = 0; i < 100; i++) {
+        {//Add a Sprite 原型
+
+
+            let elem = new ElementSprite();
+            elem.posTL = new Vector2(-8, -8);
+            elem.posRB = new Vector2(8, 8);
+
+            elem.uvCenter = new Vector2(s2.uv.U1 * 0.5 + s2.uv.U2 * 0.5, s2.uv.V1 * 0.5 + s2.uv.V2 * 0.5);
+            elem.uvHalfSize = new Vector2((s2.uv.U2 - s2.uv.U1) * 0.5, (s2.uv.V2 - s2.uv.V1) * 0.5);
+            elemindex2 = this.render.AddElement(elem);
+        }
+        for (var i = 0; i < 1024*50; i++) {
             let inst = new ElementInst();
-            inst.pos = new Vector3(Math.random() * 100 - 50, Math.random() * 100 - 50, 0);
+            inst.pos = new Vector3(Math.random() * 400 - 200, Math.random() * 400 - 200, 0);
             inst.rotate = Math.random() * Math.PI;
             inst.scale = new Vector2(1, 1);
+            inst.instid = i % 2 == 0 ? elemindex : elemindex2;
             inst.eff = 4;
-            inst.color = new Color(1, 1, 1, 1);
+            inst.color = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             this.render.AddElementInst(inst);
             this.inst.push(inst);
         }

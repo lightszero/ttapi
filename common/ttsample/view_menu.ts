@@ -1,5 +1,5 @@
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp,DrawLayer_GUI } from "../ttlayer2/ttlayer2.js";
-import { Test_Canvas } from "./test_canvas.js";
+import { Test_Element } from "./test_element.js";
 import { GContext } from "./ttstate_all.js";
 
 export class View_Menu implements IState<Navigator<GContext>> {
@@ -23,8 +23,8 @@ export class View_Menu implements IState<Navigator<GContext>> {
         this.x=32;
         this.y=16;
         this.AddButton("Test UI");
-        this.AddButton("Test InstCanvas");
-        this.AddButton("Test Canvas",new Test_Canvas());
+        
+        this.AddButton("Test Element 渲染器",new Test_Element());
         this.AddButton("Test TiledMap");
         this.AddButton("Test ParticleSystem");
     }

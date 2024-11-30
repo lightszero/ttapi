@@ -34,7 +34,7 @@ var vs_inst_full: string = `#version 300 es
     layout(location = 1) in vec4 posrotate;
     layout(location = 2) in vec2 scale;
     layout(location = 3) in vec4 color; //rgba32
-    layout(location = 4) in float ext;
+    layout(location = 4) in vec2 ext;
 
     layout(std140, column_major) uniform;
     struct Sprite
@@ -60,7 +60,7 @@ var vs_inst_full: string = `#version 300 es
     void main(void)
     { 
         //get sprite
-        Sprite s = sprites.data[0];
+        Sprite s = sprites.data[int(ext.x)];
        
       
       
@@ -105,7 +105,7 @@ var vs_inst_full: string = `#version 300 es
         //pass color
         vColor = color;
         //pass ext
-        vExt=int(ext);
+        vExt=int(ext.y);
     }
 `;
 var fs_default: string = `#version 300 es
