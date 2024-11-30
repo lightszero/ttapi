@@ -1,6 +1,6 @@
 import { tt_impl } from "./ttimpl_web/ttimpl_web.js";
 import { tt } from "./ttapi/ttapi.js";
-import { GameApp } from "./ttlayer2/ttlayer2.js";
+import { GameApp, ResourceOption } from "./ttlayer2/ttlayer2.js";
 import { TTState_All } from "./ttsample/ttstate_all.js";
 
 
@@ -27,8 +27,12 @@ async function start() {
     let font = await tt.loader.LoadCustomFont("VonwaonBitmap-16px", "./VonwaonBitmap-16px.ttf");
 
     console.log("add font:" + font);
-
-    GameApp.Start(new TTState_All());
+    let op = new ResourceOption();
+    op.defFontName = "VonwaonBitmap-16px";
+    op.defFontSize = 32;
+    op.packedGrayHeight=128;
+    op.packedGrayWidth =128;
+    GameApp.Start(op, new TTState_All());
 
 
 }

@@ -11,13 +11,15 @@ export class Sprite {
         this.border = new Border(0, 0, 0, 0);
         this.pixelwidth = tex.getWidth();
         this.pixelheight = tex.getHeight();
-        this.paluvs = [];
+     
+        this.uvlayer = 0;
     }
     tex: ITexture;
     texpal: ITexture;
     effect: SpriteFormat;
-    paluvs: Vector2[]
+
     uv: UVRect;//xywz
+    uvlayer: number = 0;
     //border
     border: Border;
     //total width
@@ -42,12 +44,7 @@ export class Sprite {
         }
         let _color = color == null ? Sprite._colorbuf : color;
 
-        let palu = 0;
-        let palv = 0;
-        if (palindex >= 0) {
-            palu = this.paluvs[palindex].X;
-            palv = this.paluvs[palindex].Y;
-        }
+   
         let sx = rect.Width / this.totalWidth;
         let sy = rect.Height / this.totalHeight;
 
@@ -118,8 +115,8 @@ export class Sprite {
         rectbuf[0].g = _color.G;
         rectbuf[0].b = _color.B;
         rectbuf[0].a = _color.A;
-        rectbuf[0].palx = palu;
-        rectbuf[0].paly = palv;
+        rectbuf[0].palx = this.uvlayer;
+        rectbuf[0].paly = 0;
         rectbuf[0].eff = this.effect
 
         rectbuf[1].x = x2;
@@ -130,8 +127,8 @@ export class Sprite {
         rectbuf[1].g = _color.G
         rectbuf[1].b = _color.B
         rectbuf[1].a = _color.A
-        rectbuf[1].palx = palu;
-        rectbuf[1].paly = palv;
+        rectbuf[1].palx = this.uvlayer;
+        rectbuf[1].paly = 0;
         rectbuf[1].eff = this.effect;
 
         rectbuf[2].x = x1;
@@ -142,8 +139,8 @@ export class Sprite {
         rectbuf[2].g = _color.G
         rectbuf[2].b = _color.B
         rectbuf[2].a = _color.A
-        rectbuf[2].palx = palu;
-        rectbuf[2].paly = palv;
+        rectbuf[2].palx = this.uvlayer;
+        rectbuf[2].paly = 0;
         rectbuf[2].eff = this.effect;
 
         rectbuf[3].x = x2;
@@ -154,8 +151,8 @@ export class Sprite {
         rectbuf[3].g = _color.G
         rectbuf[3].b = _color.B
         rectbuf[3].a = _color.A
-        rectbuf[3].palx = palu;
-        rectbuf[3].paly = palv;
+        rectbuf[3].palx = this.uvlayer;
+        rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
         batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
     }
@@ -169,12 +166,7 @@ export class Sprite {
         }
         let _color = color == null ? Sprite._colorbuf : color;
 
-        let palu = 0;
-        let palv = 0;
-        if (palindex >= 0) {
-            palu = this.paluvs[palindex].X;
-            palv = this.paluvs[palindex].Y;
-        }
+
         let sx = rect.Width / this.totalWidth;
         let sy = rect.Height / this.totalHeight;
         rectbuf[0].x = rect.X + sx * this.border.XLeft;
@@ -185,8 +177,8 @@ export class Sprite {
         rectbuf[0].g = _color.G;
         rectbuf[0].b = _color.B;
         rectbuf[0].a = _color.A;
-        rectbuf[0].palx = palu;
-        rectbuf[0].paly = palv;
+        rectbuf[0].palx = this.uvlayer;
+        rectbuf[0].paly = 0;
         rectbuf[0].eff = this.effect
 
         rectbuf[1].x = rect.X + rect.Width - sx * this.border.XRight;
@@ -197,8 +189,8 @@ export class Sprite {
         rectbuf[1].g = _color.G
         rectbuf[1].b = _color.B
         rectbuf[1].a = _color.A
-        rectbuf[1].palx = palu;
-        rectbuf[1].paly = palv;
+        rectbuf[1].palx = this.uvlayer;
+        rectbuf[1].paly = 0;
         rectbuf[1].eff = this.effect;
 
         rectbuf[2].x = rect.X + sx * this.border.XLeft;
@@ -209,8 +201,8 @@ export class Sprite {
         rectbuf[2].g = _color.G
         rectbuf[2].b = _color.B
         rectbuf[2].a = _color.A
-        rectbuf[2].palx = palu;
-        rectbuf[2].paly = palv;
+        rectbuf[2].palx = this.uvlayer;
+        rectbuf[2].paly = 0;
         rectbuf[2].eff = this.effect;
 
         rectbuf[3].x = rect.X + rect.Width - sx * this.border.XRight;
@@ -221,8 +213,8 @@ export class Sprite {
         rectbuf[3].g = _color.G
         rectbuf[3].b = _color.B
         rectbuf[3].a = _color.A
-        rectbuf[3].palx = palu;
-        rectbuf[3].paly = palv;
+        rectbuf[3].palx = this.uvlayer;
+        rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
         batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
     }
@@ -236,12 +228,7 @@ export class Sprite {
         }
         let _color = color == null ? Sprite._colorbuf : color;
 
-        let palu = 0;
-        let palv = 0;
-        if (palindex >= 0) {
-            palu = this.paluvs[palindex].X;
-            palv = this.paluvs[palindex].Y;
-        }
+
         let sx = (x2 - x1) / this.totalWidth;
         let sy = (y2 - y1) / this.totalHeight;
         rectbuf[0].x = x1 + sx * this.border.XLeft;
@@ -252,8 +239,8 @@ export class Sprite {
         rectbuf[0].g = _color.G;
         rectbuf[0].b = _color.B;
         rectbuf[0].a = _color.A;
-        rectbuf[0].palx = palu;
-        rectbuf[0].paly = palv;
+        rectbuf[0].palx = this.uvlayer;
+        rectbuf[0].paly = 0;
         rectbuf[0].eff = this.effect
 
         rectbuf[1].x = x2 - sx * this.border.XRight;
@@ -264,8 +251,8 @@ export class Sprite {
         rectbuf[1].g = _color.G
         rectbuf[1].b = _color.B
         rectbuf[1].a = _color.A
-        rectbuf[1].palx = palu;
-        rectbuf[1].paly = palv;
+        rectbuf[1].palx = this.uvlayer;
+        rectbuf[1].paly = 0;
         rectbuf[1].eff = this.effect;
 
         rectbuf[2].x = x1 + sx * this.border.XLeft;
@@ -276,8 +263,8 @@ export class Sprite {
         rectbuf[2].g = _color.G
         rectbuf[2].b = _color.B
         rectbuf[2].a = _color.A
-        rectbuf[2].palx = palu;
-        rectbuf[2].paly = palv;
+        rectbuf[2].palx = this.uvlayer;
+        rectbuf[2].paly = 0;
         rectbuf[2].eff = this.effect;
 
         rectbuf[3].x = x2 - sx * this.border.XRight;
@@ -288,8 +275,8 @@ export class Sprite {
         rectbuf[3].g = _color.G
         rectbuf[3].b = _color.B
         rectbuf[3].a = _color.A
-        rectbuf[3].palx = palu;
-        rectbuf[3].paly = palv;
+        rectbuf[3].palx = this.uvlayer;
+        rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
         batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
     }
@@ -303,13 +290,7 @@ export class Sprite {
         }
         let _color = color == null ? Sprite._colorbuf : color;
 
-        let palu = 0;
-        let palv = 0;
-        if (palindex >= 0) {
-            palu = this.paluvs[palindex].X;
-            palv = this.paluvs[palindex].Y;
-        }
-
+  
 
         //  let rect = new Rectangle(x, y, s.totalWidth * scale.X, s.totalHeight * scale.Y);
         //   rectbuf[0].x = rect.X + sx * this.border.XLeft;
@@ -324,8 +305,8 @@ export class Sprite {
         rectbuf[0].g = _color.G;
         rectbuf[0].b = _color.B;
         rectbuf[0].a = _color.A;
-        rectbuf[0].palx = palu;
-        rectbuf[0].paly = palv;
+        rectbuf[0].palx = this.uvlayer;
+        rectbuf[0].paly = 0;
         rectbuf[0].eff = this.effect
 
         //(this.totalWidth - this.border.XRight) * scale.X;
@@ -337,8 +318,8 @@ export class Sprite {
         rectbuf[1].g = _color.G
         rectbuf[1].b = _color.B
         rectbuf[1].a = _color.A
-        rectbuf[1].palx = palu;
-        rectbuf[1].paly = palv;
+        rectbuf[1].palx = this.uvlayer;
+        rectbuf[1].paly = 0;
         rectbuf[1].eff = this.effect;
 
         rectbuf[2].x = pos.X + scale.X * this.border.XLeft;
@@ -349,8 +330,8 @@ export class Sprite {
         rectbuf[2].g = _color.G
         rectbuf[2].b = _color.B
         rectbuf[2].a = _color.A
-        rectbuf[2].palx = palu;
-        rectbuf[2].paly = palv;
+        rectbuf[2].palx = this.uvlayer;
+        rectbuf[2].paly = 0;
         rectbuf[2].eff = this.effect;
 
         rectbuf[3].x = pos.X + scale.X * (this.totalWidth - this.border.XRight);
@@ -361,8 +342,8 @@ export class Sprite {
         rectbuf[3].g = _color.G
         rectbuf[3].b = _color.B
         rectbuf[3].a = _color.A
-        rectbuf[3].palx = palu;
-        rectbuf[3].paly = palv;
+        rectbuf[3].palx = this.uvlayer;
+        rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
         batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
     }
@@ -376,12 +357,7 @@ export class Sprite {
         }
         let _color = color == null ? Sprite._colorbuf : color;
 
-        let palu = 0;
-        let palv = 0;
-        if (palindex >= 0) {
-            palu = this.paluvs[palindex].X;
-            palv = this.paluvs[palindex].Y;
-        }
+
         let x1 = pos.X + scale.X * this.border.XLeft;
         let x2 = pos.X + scale.X * (this.totalWidth - this.border.XRight);
         let y1 = pos.Y + scale.Y * this.border.YTop;
@@ -415,8 +391,8 @@ export class Sprite {
         rectbuf[0].g = _color.G;
         rectbuf[0].b = _color.B;
         rectbuf[0].a = _color.A;
-        rectbuf[0].palx = palu;
-        rectbuf[0].paly = palv;
+        rectbuf[0].palx = this.uvlayer;
+        rectbuf[0].paly = 0;
         rectbuf[0].eff = this.effect
 
         //(this.totalWidth - this.border.XRight) * scale.X;
@@ -428,8 +404,8 @@ export class Sprite {
         rectbuf[1].g = _color.G
         rectbuf[1].b = _color.B
         rectbuf[1].a = _color.A
-        rectbuf[1].palx = palu;
-        rectbuf[1].paly = palv;
+        rectbuf[1].palx = this.uvlayer;
+        rectbuf[1].paly = 0;
         rectbuf[1].eff = this.effect;
 
         rectbuf[2].x = p2x;
@@ -440,8 +416,8 @@ export class Sprite {
         rectbuf[2].g = _color.G
         rectbuf[2].b = _color.B
         rectbuf[2].a = _color.A
-        rectbuf[2].palx = palu;
-        rectbuf[2].paly = palv;
+        rectbuf[2].palx = this.uvlayer;
+        rectbuf[2].paly = 0;
         rectbuf[2].eff = this.effect;
 
         rectbuf[3].x = p3x;
@@ -452,8 +428,8 @@ export class Sprite {
         rectbuf[3].g = _color.G
         rectbuf[3].b = _color.B
         rectbuf[3].a = _color.A
-        rectbuf[3].palx = palu;
-        rectbuf[3].paly = palv;
+        rectbuf[3].palx = this.uvlayer;
+        rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
         batcher.DrawQuads(this.tex, this.texpal, rectbuf, 1);
     }

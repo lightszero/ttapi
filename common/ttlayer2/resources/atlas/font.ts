@@ -3,8 +3,8 @@ import { Render_Batcher, Sprite, SpriteFormat, TextTool, Texture, TextureFormat 
 import { PackTexture, SpriteData, ToROption } from "./packtex.js";
 
 export class Font {
-    constructor(webgl: WebGL2RenderingContext, font: string, size: number) {
-        this.fonttex = new PackTexture(webgl, 256, 256, TextureFormat.R8, 10,0);
+    constructor(webgl: WebGL2RenderingContext, font: string, size: number, packtex: PackTexture) {
+        this.fonttex = packtex;
         this.fontsize = size;
         this.fontname = font;
     }
@@ -49,7 +49,7 @@ export class Font {
             // }
             let data = new SpriteData()
             data.format = TextureFormat.RGBA32;
-            data.toR= ToROption.Alpha;
+            data.toR = ToROption.Alpha;
             data.data = imgdata.data;
             data.width = imgdata.width;
             data.height = imgdata.height;
@@ -58,7 +58,8 @@ export class Font {
 
             return s;
         }
-        catch {
+        catch (e) {
+            console.error("cache char error:" + e);
             return null;
         }
 

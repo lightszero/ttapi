@@ -47,7 +47,7 @@ export class Material {
                 case UniformType.sampler2D:
                     this.uniformTexs[key] = {
                         loc: info.loc,
-                        value: Resources.GetWhiteTexture()
+                        value: Resources.getWhiteBlock().tex
                     };
                     break;
                 case UniformType.block:

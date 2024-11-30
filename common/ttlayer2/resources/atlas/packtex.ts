@@ -85,7 +85,7 @@ export class SpriteData {
 export class PackTexture extends TextureArray {
     constructor(webgl: WebGL2RenderingContext, width: number, height: number, format: TextureFormat, layercount: number, border: number = 0) {
         super(webgl, width, height, 10, format);
-        this.maxrect = new maxrect.MaxRectsPacker(width, height, border);
+        this.maxrect = new maxrect.MaxRectsBin(width, height, border);
         this.sprites = [];
         this.namedsprites = {};
         this.pixelbuf = new Uint8Array(width * height * (format == TextureFormat.RGBA32 ? 4 : 1));
@@ -93,7 +93,8 @@ export class PackTexture extends TextureArray {
     }
     sprites: Sprite[];
     namedsprites: { [id: string]: Sprite };
-    maxrect: maxrect.MaxRectsPacker;
+    maxrect: maxrect.MaxRectsBin;
+
     pixelbuf: Uint8Array;
     dirty: boolean = false;
     //UploadImg,必须是4x4的
@@ -102,8 +103,17 @@ export class PackTexture extends TextureArray {
     }
     AddSprite(data: SpriteData, effect: SpriteFormat, name: string = null): Sprite {
         if (name != null && this.namedsprites[name] != undefined)
-            throw "Sprite Key 冲突";
+            throw "AddSprite:Sprite Key 冲突";
         let rect = this.maxrect.add(data.width, data.height, null);
+        if (rect == undefined) {
+            this.maxrect.reset();
+            rect = this.maxrect.add(data.width, data.height, null);
+            this.Apply();
+            this.curlayer++;
+            if (this.curlayer >= this._layer)
+                throw "AddSprite:Layer 满了"
+        }
+
         for (let y = 0; y < data.height; y++) {
             for (let x = 0; x < data.width; x++) {
                 let index = ((y + rect.y) * this._width + (rect.x + x));
@@ -125,7 +135,7 @@ export class PackTexture extends TextureArray {
         s.uv.V2 = (rect.y + data.height) / this._height;
         s.pixelwidth = data.width;
         s.pixelheight = data.height;
-
+        s.uvlayer = this.curlayer;
         s.tex = this;
         this.sprites.push(s);
         if (name != null) {

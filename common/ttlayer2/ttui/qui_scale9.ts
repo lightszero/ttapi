@@ -67,7 +67,7 @@ export class QUI_Scale9 {
         return this._minheight;
     }
 
-    private _Render1RectWithLimit(u1: number, u2: number, v1: number, v2: number, batcher: Render_Batcher, rect: Rectangle, limitRect: Rectangle, color: Color | null = null, palindex: number = -1): void {
+    private _Render1RectWithLimit(u1: number, u2: number, v1: number, v2: number, batcher: Render_Batcher, rect: Rectangle, limitRect: Rectangle, color: Color , palindex: number = -1): void {
         let rectbuf = Sprite._rectbuf
         while (rectbuf.length < 4) {
             rectbuf.push(new DrawPoint());
@@ -77,12 +77,7 @@ export class QUI_Scale9 {
         }
         let _color = color == null ? Sprite._colorbuf : color;
 
-        let palu = 0;
-        let palv = 0;
-        if (palindex >= 0) {
-            palu = this.sprite.paluvs[palindex].X;
-            palv = this.sprite.paluvs[palindex].Y;
-        }
+
 
         let x1 = rect.X
         let x2 = rect.X + rect.Width
@@ -148,8 +143,8 @@ export class QUI_Scale9 {
         rectbuf[0].g = _color.G;
         rectbuf[0].b = _color.B;
         rectbuf[0].a = _color.A;
-        rectbuf[0].palx = palu;
-        rectbuf[0].paly = palv;
+        rectbuf[0].palx = this.sprite.uvlayer;
+        rectbuf[0].paly = 0;
         rectbuf[0].eff = this.sprite.effect
 
         rectbuf[1].x = x2;
@@ -160,8 +155,8 @@ export class QUI_Scale9 {
         rectbuf[1].g = _color.G
         rectbuf[1].b = _color.B
         rectbuf[1].a = _color.A
-        rectbuf[1].palx = palu;
-        rectbuf[1].paly = palv;
+        rectbuf[1].palx = this.sprite.uvlayer;
+        rectbuf[1].paly = 0;
         rectbuf[1].eff = this.sprite.effect;
 
         rectbuf[2].x = x1;
@@ -172,8 +167,8 @@ export class QUI_Scale9 {
         rectbuf[2].g = _color.G
         rectbuf[2].b = _color.B
         rectbuf[2].a = _color.A
-        rectbuf[2].palx = palu;
-        rectbuf[2].paly = palv;
+        rectbuf[2].palx = this.sprite.uvlayer;
+        rectbuf[2].paly = 0;
         rectbuf[2].eff = this.sprite.effect;
 
         rectbuf[3].x = x2;
@@ -184,12 +179,12 @@ export class QUI_Scale9 {
         rectbuf[3].g = _color.G
         rectbuf[3].b = _color.B
         rectbuf[3].a = _color.A
-        rectbuf[3].palx = palu;
-        rectbuf[3].paly = palv;
+        rectbuf[3].palx = this.sprite.uvlayer;
+        rectbuf[3].paly = 0;
         rectbuf[3].eff = this.sprite.effect;
         batcher.DrawQuads(this.sprite.tex, this.sprite.texpal, rectbuf, 1);
     }
-    private _Render1Rect(u1: number, u2: number, v1: number, v2: number, batcher: Render_Batcher, rect: Rectangle, color: Color | null = null, palindex: number = -1) {
+    private _Render1Rect(u1: number, u2: number, v1: number, v2: number, batcher: Render_Batcher, rect: Rectangle, color: Color ,palindex: number = -1) {
         if (u1 == u2 || v1 == v2)
             return;
         let rectbuf = Sprite._rectbuf
@@ -201,12 +196,6 @@ export class QUI_Scale9 {
         }
         let _color = color == null ? Sprite._colorbuf : color;
 
-        let palu = 0;
-        let palv = 0;
-        if (palindex >= 0) {
-            palu = this.sprite.paluvs[palindex].X;
-            palv = this.sprite.paluvs[palindex].Y;
-        }
 
         rectbuf[0].x = rect.X;
         rectbuf[0].y = rect.Y;
@@ -216,8 +205,8 @@ export class QUI_Scale9 {
         rectbuf[0].g = _color.G;
         rectbuf[0].b = _color.B;
         rectbuf[0].a = _color.A;
-        rectbuf[0].palx = palu;
-        rectbuf[0].paly = palv;
+        rectbuf[0].palx = this.sprite.uvlayer;
+        rectbuf[0].paly = 0;
         rectbuf[0].eff = this.sprite.effect
 
         rectbuf[1].x = rect.X + rect.Width;
@@ -228,8 +217,8 @@ export class QUI_Scale9 {
         rectbuf[1].g = _color.G
         rectbuf[1].b = _color.B
         rectbuf[1].a = _color.A
-        rectbuf[1].palx = palu;
-        rectbuf[1].paly = palv;
+        rectbuf[1].palx = this.sprite.uvlayer;
+        rectbuf[1].paly = 0;
         rectbuf[1].eff = this.sprite.effect;
 
         rectbuf[2].x = rect.X
@@ -240,8 +229,8 @@ export class QUI_Scale9 {
         rectbuf[2].g = _color.G
         rectbuf[2].b = _color.B
         rectbuf[2].a = _color.A
-        rectbuf[2].palx = palu;
-        rectbuf[2].paly = palv;
+        rectbuf[2].palx = this.sprite.uvlayer;
+        rectbuf[2].paly = 0;
         rectbuf[2].eff = this.sprite.effect;
 
         rectbuf[3].x = rect.X + rect.Width;
@@ -252,8 +241,8 @@ export class QUI_Scale9 {
         rectbuf[3].g = _color.G
         rectbuf[3].b = _color.B
         rectbuf[3].a = _color.A
-        rectbuf[3].palx = palu;
-        rectbuf[3].paly = palv;
+        rectbuf[3].palx = this.sprite.uvlayer;
+        rectbuf[3].paly = 0;
         rectbuf[3].eff = this.sprite.effect;
         batcher.DrawQuads(this.sprite.tex, this.sprite.texpal, rectbuf, 1);
     }

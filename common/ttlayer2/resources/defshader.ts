@@ -17,7 +17,7 @@ var vs_default: string = `#version 300 es
     out vec4 vColor;//输出给fs的参数
     out vec2 vUv;//输出给fs的参数2
     flat out int vExt;
-
+    flat out int vLayer;
     void main(void) 
     {
         mat4 matrix = matProj*matView*matModel;
@@ -25,6 +25,7 @@ var vs_default: string = `#version 300 es
         vColor = color;
         vUv = uv;
         vExt = int(ext.w);
+        vLayer =int(ext.x);
     }
     `;
 var vs_inst_full: string = `#version 300 es
@@ -58,6 +59,7 @@ var vs_inst_full: string = `#version 300 es
     out vec4 vColor;
     out vec2 vUv;
     flat out int vExt;
+    flat out int vLayer;
     void main(void)
     { 
         //get sprite
@@ -107,6 +109,7 @@ var vs_inst_full: string = `#version 300 es
         vColor = color;
         //pass ext
         vExt=int(ext.y);
+        vLayer=int(0.0);
     }
 `;
 var fs_default: string = `#version 300 es
@@ -115,7 +118,7 @@ var fs_default: string = `#version 300 es
     in vec2 vUv;//从vs接收的参数
     in vec4 vColor;//从vs接收的参数
     flat in int vExt;
-
+    flat in int vLayer;
         
     layout(location = 0) out vec4 fragColor;
 
@@ -123,7 +126,7 @@ var fs_default: string = `#version 300 es
     uniform sampler2DArray tex;  //从外部设置的参数
     void main(void) 
     {
-        vec4 texc = texture(tex,vec3(vUv,0));
+        vec4 texc = texture(tex,vec3(vUv,vLayer));
         vec4 outc = vColor;
         int effect = vExt;//int(vExt.w);
         if(effect==0)//rgba model 
@@ -241,7 +244,7 @@ var fs_empty: string = `#version 300 es
 var fs_tiledmap: string = `#version 300 es
     precision mediump float;//指定浮点型精确度
     precision highp sampler2DArray;
-    
+
     in vec2 vUv;//从vs接收的参数
     in vec4 vColor;//从vs接收的参数
 

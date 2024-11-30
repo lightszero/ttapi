@@ -5,7 +5,7 @@ import { DrawLayer_GUI } from "../graphics/pipeline/drawlayer_gui.js";
 import { DrawLayerList, DrawLayerTag } from "../graphics/pipeline/drawlayer.js";
 
 import { IState } from "./statemgr.js";
-import { Resources } from "../ttlayer2.js";
+import { ResourceOption, Resources } from "../ttlayer2.js";
 
 
 
@@ -22,12 +22,12 @@ export interface IUserLogic {
 export class GameApp {
   static gameData: object;
   //Start 之前 ttapi 的某一个impl 应该提前初始化
-  static Start(userlogic: IUserLogic): void {
+  static Start(op: ResourceOption, userlogic: IUserLogic): void {
 
 
     let gl = tt.graphic.GetWebGL();
 
-    Resources.InitInnerResource();
+    Resources.Init(op);
 
     this._mainscreen = new MainScreen(gl);
     this._viewlist = new DrawLayerList();
