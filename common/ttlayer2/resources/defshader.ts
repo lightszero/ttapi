@@ -1,5 +1,5 @@
 
-import { ShaderType } from "../graphics/shader/shaders.js";
+import { ShaderType } from "../graphics/shader.js";
 import { Resources } from "./resources.js";
 
 
@@ -34,7 +34,7 @@ var vs_inst_full: string = `#version 300 es
     layout(location = 1) in vec4 posrotate;
     layout(location = 2) in vec2 scale;
     layout(location = 3) in vec4 color; //rgba32
-    layout(location = 4) in int  ext;
+    layout(location = 4) in float ext;
 
     layout(std140, column_major) uniform;
     struct Sprite
@@ -47,6 +47,7 @@ var vs_inst_full: string = `#version 300 es
 
     uniform SpritesBlock {
         Sprite data[1024];    
+        int endtag; //不加一点,在firefox会报错
     } sprites;
     
     uniform mat4 matModel;
@@ -59,33 +60,52 @@ var vs_inst_full: string = `#version 300 es
     void main(void)
     { 
         //get sprite
-        Sprite s = sprites.data[gl_InstanceID];
+        Sprite s = sprites.data[0];
        
       
       
-        //calc final pos
-        float cosv=cos(posrotate.w);
-        float sinv =sin(posrotate.w);
-        vec2 posscale =elemuv*scale;
-       
-        posscale.x*=elemuv.x<0.0?s.posLT.x:s.posRB.x;
-        posscale.y*=elemuv.y<0.0?s.posLT.y:s.posRB.y;
+        //----begin calc final pos
+        vec2 poslocal;
+        poslocal.x=elemuv.x<0.0?s.posLT.x:s.posRB.x;
+        poslocal.y=elemuv.y<0.0?s.posLT.y:s.posRB.y;
+        poslocal*=scale;
 
-        vec4 pos = vec4(0,0,0,1);
-        pos.x = cosv*posscale.x + sinv*posscale.y;
-        pos.y = sinv*posscale.x + -cosv*posscale.y;
-       
-        //apply tran
-        mat4 matrix = matProj*matView*matModel;
-        gl_Position = matrix * pos;
+        //poslocal is work
 
+
+        //--begin rotate
+        float cosv = cos(posrotate.w);
+        float sinv = sin(posrotate.w);
+        
+        float poslocallen = sqrt(dot(poslocal,poslocal));
+        if(poslocallen<0.001)   
+        {
+            gl_Position =vec4(0,0,0,0);
+        }
+        else
+        {
+            vec2 poslocalnor = poslocal / poslocallen;
+            poslocal.x = cosv*poslocalnor.x + -sinv*poslocalnor.y;
+            poslocal.y = sinv*poslocalnor.x + cosv*poslocalnor.y;
+            poslocal *= poslocallen;
+            //--end rorate
+
+            vec4 pos = vec4(posrotate.xyz,1);
+
+            //apply tran
+            pos.xy+=poslocal;
+            //----end finalpos
+            mat4 matrix = matProj*matView*matModel;
+            gl_Position = matrix * pos;
+        }
         //pass uv
-        vec2 uv = s.uvCenter + elemuv*s.uvHalfSize;
+        vec2 uv =  s.uvCenter + elemuv*s.uvHalfSize;
+       
         vUv = uv;
         //pass color
         vColor = color;
         //pass ext
-        vExt=ext;
+        vExt=int(ext);
     }
 `;
 var fs_default: string = `#version 300 es

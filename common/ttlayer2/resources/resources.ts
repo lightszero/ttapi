@@ -1,5 +1,5 @@
 import { tt } from "../../ttapi/ttapi.js";
-import { CompileShader, LinkShader, LinkShaderFeedBack, ShaderObj, ShaderProgram, ShaderType } from "../graphics/shader/shaders.js";
+import { CompileShader, LinkShader, LinkShaderFeedBack, ShaderObj, ShaderProgram, ShaderType } from "../graphics/shader.js";
 import { Atlas } from "./atlas/atlas.js";
 import { PackTexture, SpriteData, ToROption } from "./atlas/packtex.js";
 import { Border, Color, Font, InitInnerShader, ITexture, QUI_Button, QUI_HAlign, QUI_Image, QUI_ImageScale9, QUI_Label, QUI_Scale9, QUI_VAlign, Sprite, SpriteFormat, Texture, TextureFormat, Vector2 } from "../ttlayer2.js";

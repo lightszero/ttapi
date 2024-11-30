@@ -3,7 +3,7 @@ import { Camera, DrawLayer, DrawLayerTag, ILayerRender } from "../drawlayer.js"
 import { QUI_Canvas } from "../../../ttui/ttui.js"
 import { tt } from "../../../../ttapi/ttapi.js";
 
-import { MeshRender } from "../../../graphics/render/render.js";
+
 
 
 export class ISprite {
@@ -151,7 +151,7 @@ export class ParticleView implements ILayerRender {
     OnRender(target: IRenderTarget, camera: Camera, rendertag: number): void {
         this.matDraw.UpdateMatView();//这个应该跟着View走
         this.matDraw.UpdateMatProj(target);
-        MeshRender.DrawMeshInstanced(this.webgl, this.meshDraw, this.matDraw);
+        Mesh.DrawMeshInstanced(this.webgl, this.meshDraw, this.matDraw);
     }
 
 

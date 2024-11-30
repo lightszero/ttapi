@@ -1,7 +1,7 @@
 import { VertexFormatMgr } from "../../graphics/mesh.js";
 import { Matrix3x2, Matrix3x2Math } from "../../math/Matrix3x2.js";
 import { PerlinNoise } from "../../math/perlin/perlin.js";
-import { MeshRender } from "../../graphics/render/render.js";
+
 
 import { GameApp, Material, Mesh, Resources, SpriteFormat, TextureFormat } from "../../ttlayer2.js";
 import { PackTexture, SpriteData } from "./packtex.js";
@@ -170,6 +170,6 @@ export class TiledMap {
 
     Render(gl: WebGL2RenderingContext): void {
 
-        MeshRender.DrawMesh(gl, this._mesh, this._mat);
+        Mesh.DrawMesh(gl, this._mesh, this._mat);
     }
 }

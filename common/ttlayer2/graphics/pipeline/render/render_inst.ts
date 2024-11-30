@@ -1,7 +1,6 @@
 
 import { tt } from "../../../../ttapi/ttapi.js";
 import { IRenderTarget, Material, Mesh, QUI_Canvas, Resources, VertexFormatMgr } from "../../../ttlayer2.js";
-import { MeshRender } from "../../render/render.js";
 
 import { Camera, ILayerRender } from "../drawlayer.js";
 
@@ -135,7 +134,7 @@ export class Render_Inst implements ILayerRender {
             this.matDraw.UpdateMatProj(target);
             this.matDraw.UpdateMatView(camera.GetViewMatrix());
 
-            MeshRender.DrawMeshInstanced(this.webgl, this.meshDraw, this.matDraw);
+            Mesh.DrawMeshInstanced(this.webgl, this.meshDraw, this.matDraw);
         }
     }
 

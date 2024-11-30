@@ -1,6 +1,6 @@
 
 import { Resources } from "../resources/resources.js";
-import { ShaderProgram, uniformInfo, UniformType } from "./shader/shaders.js";
+import { ShaderProgram, uniformInfo, UniformType } from "./shader.js";
 import { IRenderTarget, ITexture } from "./texture.js";
 import { UniformBlock } from "./uniformblock.js";
 

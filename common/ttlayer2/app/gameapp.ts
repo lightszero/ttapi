@@ -18,11 +18,7 @@ export interface IUserLogic {
   OnKey(keycode: string, press: boolean): void;
   OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void;
 }
-//添加额外的绘制层
-export interface IRenderExt {
-  OnPreRender(): void;
-  OnPostRender(): void;
-}
+
 export class GameApp {
   static gameData: object;
   //Start 之前 ttapi 的某一个impl 应该提前初始化
@@ -91,15 +87,7 @@ export class GameApp {
     return this._mainscreen;
   }
 
-  static AddRenderExt(ext: IRenderExt) {
-    this.render_ext.push(ext);
-  }
-  static RemoveRenderExt(ext: IRenderExt) {
-    let i = this.render_ext.indexOf(ext);
-    if (i >= 0) {
-      this.render_ext.splice(i, 1);
-    }
-  }
+
   private static OnUpdate(delta: number): void {
     if (this._pause)
       return;
@@ -115,7 +103,7 @@ export class GameApp {
       this._state.OnResize(width, height);
     }
   }
-  private static render_ext: IRenderExt[] = [];
+
 
   private static OnRender(): void {
     if (this._pause)
@@ -123,17 +111,12 @@ export class GameApp {
     //console.log("============renderframe========<");
     let gl = tt.graphic.GetWebGL();
 
-    for (var i = 0; i < this.render_ext.length; i++) {
-      this.render_ext[i].OnPreRender();
-    }
+
 
     //Scene part
     this._viewlist.Render();
 
 
-    for (var i = 0; i < this.render_ext.length; i++) {
-      this.render_ext[i].OnPostRender();
-    }
 
     if (this._willfence) {
       this.DoFence(gl);

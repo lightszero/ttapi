@@ -1,12 +1,15 @@
+import { ElementInst, ElementSprite, Render_Element } from "../ttlayer2/graphics/pipeline/render/render_elem.js";
 import { Render_Inst } from "../ttlayer2/graphics/pipeline/render/render_inst.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag } from "../ttlayer2/ttlayer2.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3 } from "../ttlayer2/ttlayer2.js";
 import { GContext } from "./ttstate_all.js";
 
 export class Test_Canvas implements IState<Navigator<GContext>> {
     nav: Navigator<GContext>;
     guilayer: DrawLayer_GUI;
     canvaslayer: DrawLayer;
-    canvasInst: Render_Inst;
+    render: Render_Element;
+
+    inst: ElementInst[] = []
     OnInit(nav: Navigator<GContext>): void {
         if (this.nav == null) {
             this.nav = nav;
@@ -38,15 +41,47 @@ export class Test_Canvas implements IState<Navigator<GContext>> {
 
         this.nav.GetContextObj().TopUI2Top();
     }
+
     AddSprites(): void {
-    
+
         this.canvaslayer = new DrawLayer(DrawLayerTag.Main);
-        this.canvasInst = new Render_Inst();
-        this.canvaslayer.AddRender(this.canvasInst);
+        this.render = new Render_Element();
+        this.canvaslayer.AddRender(this.render);
         GameApp.GetViewList().AddDrawLayers(this.canvaslayer);
+
+        let s = Resources.GetBorder2Block();
+        this.render.material.uniformTexs["tex"].value = s.tex;
+
+        let elemindex = 0;
+        {//Add a Sprite 原型
+
+
+            let elem = new ElementSprite();
+            elem.posTL = new Vector2(-8, -8);
+            elem.posRB = new Vector2(8, 8);
+
+            elem.uvCenter = new Vector2(s.uv.U1 * 0.5 + s.uv.U2 * 0.5, s.uv.V1 * 0.5 + s.uv.V2 * 0.5);
+            elem.uvHalfSize = new Vector2((s.uv.U2 - s.uv.U1) * 0.5, (s.uv.V2 - s.uv.V1) * 0.5);
+            elemindex = this.render.AddElement(elem);
+        }
+        for (var i = 0; i < 100; i++) {
+            let inst = new ElementInst();
+            inst.pos = new Vector3(Math.random() * 100 - 50, Math.random() * 100 - 50, 0);
+            inst.rotate = Math.random() * Math.PI;
+            inst.scale = new Vector2(1, 1);
+            inst.eff = 0;
+            inst.color = new Color(1, 1, 1, 1);
+            this.render.AddElementInst(inst);
+            this.inst.push(inst);
+        }
+
+
     }
     OnUpdate(delta: number): void {
-
+        for (var i = 0; i < this.inst.length; i++) {
+            this.inst[i].rotate += delta * Math.PI;
+            this.render.WriteElementInst(this.inst[i], i);
+        }
     }
     OnExit(): void {
         GameApp.GetViewList().RemoveDrawLayers(this.guilayer);

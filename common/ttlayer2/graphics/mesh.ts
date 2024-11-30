@@ -1,7 +1,8 @@
+import { Material } from "./material.js";
 
 export enum VertexAttribType {
     FLOAT = 0x1406,
-    UNSIGNED_BYTE = 0x1401,
+    UNSIGNED_BYTE = 0x1401
 }
 export class VertexAttribItem {
     constructor(type: VertexAttribType, size: number, normalize: boolean) {
@@ -34,6 +35,10 @@ export class VBOInfo {
             }
             else if (a.type == VertexAttribType.UNSIGNED_BYTE) {
                 this.stride += 1 * a.size;
+            }
+            else
+            {
+                throw "unknown stride";
             }
             this.hash += a.type + "(" + a.size + ");";
         }
@@ -176,7 +181,7 @@ export class VertexFormatMgr {
             vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//basemesh uv only
 
             vecf.vbos.push(new VBOInfo());
-            vecf.vbos[1].vertexAttribDivisor = 1;//instanced data
+            vecf.vbos[1].vertexAttribDivisor = 4;//instanced data
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//Pos xyz + rotate
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//Scale
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));//color
@@ -314,4 +319,32 @@ export class Mesh {
             webgl.bindBuffer(webgl.ELEMENT_ARRAY_BUFFER, this._ebo);
         }
     }
+
+    static DrawMesh(gl: WebGL2RenderingContext, mesh: Mesh, mat: Material): void {
+        mesh.Apply(gl);
+        mat.Apply(gl);
+        if (mesh._ebo == null) {
+            gl.drawArrays(gl.TRIANGLES, 0, mesh.vertexcount[0]);
+        }
+        else {
+            gl.drawElements(gl.TRIANGLES, mesh.indexcount, gl.UNSIGNED_SHORT, gl.ZERO);
+        }
+    }
+    static DrawMeshInstanced(gl: WebGL2RenderingContext, mesh: Mesh, mat: Material): void {
+        mesh.Apply(gl);
+        mat.Apply(gl);
+
+        //把ubo bind进去
+        //通过改动ubo 绘制
+        //ubo 用处不大，先搞定第二个vbo
+        //gl.bindBufferBase(gl.UNIFORM_BUFFER,0,buffer);
+
+        if (mesh._ebo == null) {
+            gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.vertexcount[0], mesh.instancecount);
+        }
+        else {
+            gl.drawElementsInstanced(gl.TRIANGLES, mesh.indexcount, gl.UNSIGNED_SHORT, gl.ZERO, mesh.instancecount);
+        }
+    }
+
 }
