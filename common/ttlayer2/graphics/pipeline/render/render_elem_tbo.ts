@@ -5,14 +5,14 @@
 import { Camera, Color, ILayerRender, Mesh, QUI_Canvas, Resources, UVRect, VBOInfo, Vector2, Vector3, VertexAttribItem, VertexAttribType, VertexFormat, VertexFormatMgr } from "../../../ttlayer2.js";
 import { Material } from "../../material.js";
 
-import { IRenderTarget, ITexture } from "../../texture.js";
+import { IRenderTarget, ITexture, Texture, TextureFormat } from "../../texture.js";
 
 import { tt } from "../../../../ttapi/ttapi.js";
 import { ElementInst, ElementSprite, ElementUtil } from "./elem.js";
-const elementSpriteSize = 48;//基线4N 必有浪费
+
 
 const elementInstSize = 32;
-export class Render_Element_Ubo implements ILayerRender {
+export class Render_Element_Tbo implements ILayerRender {
     //公共材质,所有的元素只能使用同一个材质,这也是这种渲染器效率的来源
     //降低提交元素的带宽到原来的1/5
     //元素支持povit 和 GPU旋转
@@ -30,16 +30,36 @@ export class Render_Element_Ubo implements ILayerRender {
         this.mesh.UpdateVertexFormat(gl, ElementUtil.GetFormat_Vertex_Ubo());
         this.InitDrawMesh(gl);
     }
+    static inst_ubo: VertexFormat;
+    static GetFormat_Vertex_Ubo(): VertexFormat {
+        if (this.inst_ubo == null) {
+            let vecf = new VertexFormat("Vertex_InstFull");
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//basemesh uv only
+
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[1].vertexAttribDivisor = 4;//instanced data
+            //vbo 存在四字节对齐要求
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//Pos xyz + rotate
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//Scale
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));//color
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_SHORT, 2, false));//INSTid&ext
+            this.inst_ubo = vecf;
+            vecf.Update();
+        }
+        return this.inst_ubo;
+    }
 
     //元素管理数据部分
     //#region 元素管理
     private elemCount: number;
-    private elemBufData: Uint8Array;
-    private elemBufView: DataView;
+    private elemBufData: Float32Array;
+    private elemTex: Texture;
     private elemDirty: boolean;
     private ElemInit() {
-        this.elemBufData = new Uint8Array(1023 * elementSpriteSize + 4);
-        this.elemBufView = new DataView(this.elemBufData.buffer);
+        this.elemBufData = new Float32Array(512 * 512 * 4);
+        let gl = tt.graphic.GetWebGL();
+        this.elemTex = new Texture(gl, 512, 512, TextureFormat.F_RGBA32, null);
         this.elemCount = 0;
         this.elemDirty = false;
     }
@@ -48,50 +68,46 @@ export class Render_Element_Ubo implements ILayerRender {
     }
 
     AddElement(elem: ElementSprite): number {
-        //UBO 是固定尺寸的
-        // if (this.elemCount * elementSize == this.elemBufData.length) {
-        //     //满了,扩容
-        //     let newarr = new Uint8Array(this.elemBufData.length + 1024 * elementSize);
-        //     for (let i = 0; i < this.elemBufData.length; i++) {
-        //         newarr[i] = this.elemBufData[i];
-        //     }
-        //     this.elemBufData = newarr;
-        // }
         let index = this.elemCount;
         this.elemCount++;
         this.WriteElement(elem, index);
 
         return index;
     }
+
     WriteElement(elem: ElementSprite, index: number): void {
         elem.index = index;
-        let byteIndex = index * elementSpriteSize;
-        this.elemBufView.setFloat32(byteIndex + 0, elem.sizeTL.X, true);
-        this.elemBufView.setFloat32(byteIndex + 4, elem.sizeTL.Y, true);
-        this.elemBufView.setFloat32(byteIndex + 8, elem.sizeRB.X, true);
-        this.elemBufView.setFloat32(byteIndex + 12, elem.sizeRB.Y, true);
-        this.elemBufView.setFloat32(byteIndex + 16, elem.uvCenter.X, true);
-        this.elemBufView.setFloat32(byteIndex + 20, elem.uvCenter.Y, true);
-        this.elemBufView.setFloat32(byteIndex + 24, elem.uvHalfSize.X, true);
-        this.elemBufView.setFloat32(byteIndex + 28, elem.uvHalfSize.Y, true);
-        this.elemBufView.setFloat32(byteIndex + 32, elem.uvLayer, true);
-        this.elemBufView.setFloat32(byteIndex + 44, elem.eff, true);
+        const ElemFSize = 16;
+        let Findex = index * ElemFSize;
+        this.elemBufData[Findex + 0] = elem.sizeTL.X;
+        this.elemBufData[Findex + 0] = elem.sizeTL.Y;
+        this.elemBufData[Findex + 0] = elem.sizeRB.X;
+        this.elemBufData[Findex + 0] = elem.sizeRB.Y;
+        this.elemBufData[Findex + 0] = elem.uvCenter.X;
+        this.elemBufData[Findex + 0] = elem.uvCenter.Y;
+        this.elemBufData[Findex + 0] = elem.uvHalfSize.X;
+        this.elemBufData[Findex + 0] = elem.uvHalfSize.Y;;
+        this.elemBufData[Findex + 0] = elem.uvLayer;
+        this.elemBufData[Findex + 0] = elem.eff;
         this.elemDirty = true;
     }
     GetElement(index: number): ElementSprite {
-        let byteIndex = index * elementSpriteSize;
+        const ElemFSize = 16;
+        let Findex = index * ElemFSize;
         let elem = new ElementSprite();
         elem.sizeTL = new Vector2(0, 0);
-        elem.sizeTL.X = this.elemBufView.getFloat32(byteIndex + 0, true);
-        elem.sizeTL.Y = this.elemBufView.getFloat32(byteIndex + 4, true);
-        elem.sizeRB.X = this.elemBufView.getFloat32(byteIndex + 8, true);
-        elem.sizeRB.Y = this.elemBufView.getFloat32(byteIndex + 12, true);
-        elem.uvCenter.X = this.elemBufView.getFloat32(byteIndex + 16, true);
-        elem.uvCenter.Y = this.elemBufView.getFloat32(byteIndex + 20, true);
-        elem.uvHalfSize.X = this.elemBufView.getFloat32(byteIndex + 24, true);
-        elem.uvHalfSize.Y = this.elemBufView.getFloat32(byteIndex + 28, true);
-        elem.uvLayer = this.elemBufView.getFloat32(byteIndex + 32, true);
-        elem.eff = this.elemBufView.getFloat32(byteIndex + 44, true);
+        elem.sizeTL.X = this.elemBufData[Findex + 0];
+        elem.sizeTL.Y = this.elemBufData[Findex + 1];
+        elem.sizeRB.X = this.elemBufData[Findex + 2];
+        elem.sizeRB.Y = this.elemBufData[Findex + 3];
+
+        elem.uvCenter.X = this.elemBufData[Findex + 4];
+        elem.uvCenter.Y = this.elemBufData[Findex + 5];
+        elem.uvHalfSize.X = this.elemBufData[Findex + 6];
+        elem.uvHalfSize.Y = this.elemBufData[Findex + 7];
+
+        elem.uvLayer = this.elemBufData[Findex + 8];
+        elem.eff = this.elemBufData[Findex + 11];
         return elem;
     }
     //#endregion
@@ -230,10 +246,14 @@ export class Render_Element_Ubo implements ILayerRender {
             }
             if (this.elemInstDirty) {
                 this.mesh.UploadVertexBuffer(gl, 1, this.elemInstBufData, true, this.elemInstBufData.byteLength);
+                this.elemInstDirty = false;
             }
-            if (this.elemDirty) {//Upload Ubo size
-                let uniformblock = this.material.uniformBlocks["SpritesBlock"].value;
-                uniformblock.UploadData(gl, this.elemBufData, true);
+            if (this.elemDirty) {//Upload tbo
+                this.elemTex.UploadTexture(0,0,512,512,
+                    this.elemBufData
+                );
+
+                this.elemDirty = false;
             }
             this.mesh.instancecount = this.elemInstCount;
 

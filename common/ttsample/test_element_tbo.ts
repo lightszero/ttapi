@@ -1,13 +1,13 @@
 import { ElementInst, ElementSprite } from "../ttlayer2/graphics/pipeline/render/elem.js";
-import { Render_Element_Ubo } from "../ttlayer2/graphics/pipeline/render/render_elem_ubo.js";
+import { Render_Element_Tbo } from "../ttlayer2/graphics/pipeline/render/render_elem_tbo.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3 } from "../ttlayer2/ttlayer2.js";
 import { GContext } from "./ttstate_all.js";
 
-export class Test_Element implements IState<Navigator<GContext>> {
+export class Test_Element_TBO implements IState<Navigator<GContext>> {
     nav: Navigator<GContext>;
     guilayer: DrawLayer_GUI;
     canvaslayer: DrawLayer;
-    render: Render_Element_Ubo;
+    render: Render_Element_Tbo;
 
     inst: ElementInst[] = []
     OnInit(nav: Navigator<GContext>): void {
@@ -47,7 +47,7 @@ export class Test_Element implements IState<Navigator<GContext>> {
 
         this.canvaslayer = new DrawLayer(DrawLayerTag.Main);
         this.canvaslayer.GetCamera().Scale = 2.0;
-        this.render = new Render_Element_Ubo();
+        this.render = new Render_Element_Tbo();
         this.canvaslayer.AddRender(this.render);
         GameApp.GetViewList().AddDrawLayers(this.canvaslayer);
 

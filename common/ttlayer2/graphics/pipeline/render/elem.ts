@@ -1,4 +1,4 @@
-import { Color, Vector2, Vector3 } from "../../../ttlayer2.js";
+import { Color, VBOInfo, Vector2, Vector3, VertexAttribItem, VertexAttribType, VertexFormat } from "../../../ttlayer2.js";
 
 export class ElementSprite {
     index: number = -1;//未分配索引
@@ -20,4 +20,27 @@ export class ElementInst {
 
     elem: ElementSprite;
     //instid: number;//忘了一个
+}
+export class ElementUtil
+{
+    static GetElementInstSize() {return 32;}
+    static inst_ubo: VertexFormat;
+    static GetFormat_Vertex_Ubo(): VertexFormat {
+        if (this.inst_ubo == null) {
+            let vecf = new VertexFormat("Vertex_InstFull");
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//basemesh uv only
+
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[1].vertexAttribDivisor = 4;//instanced data
+            //vbo 存在四字节对齐要求
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//Pos xyz + rotate
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//Scale
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));//color
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_SHORT, 2, false));//INSTid&ext
+            this.inst_ubo = vecf;
+            vecf.Update();
+        }
+        return this.inst_ubo;
+    }
 }

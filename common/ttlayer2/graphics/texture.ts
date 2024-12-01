@@ -4,6 +4,8 @@ import { Color, Rectangle } from "../math/vector.js";
 export enum TextureFormat {
     R8,
     RGBA32,
+    F_R8,
+    F_RGBA32,
 }
 export interface ITexture {
     getID(): number;
@@ -46,7 +48,7 @@ export class Texture implements ITexture {
         this._webgl = webgl;
         this._format = format;
         this._texobj = webgl.createTexture();
-        let n = (this._texobj as number)
+
         this._id = Texture.texid;
         this._width = width;
         this._height = height;
@@ -60,19 +62,43 @@ export class Texture implements ITexture {
         this._webgl.texParameteri(this._webgl.TEXTURE_2D, this._webgl.TEXTURE_WRAP_S, this._webgl.CLAMP_TO_EDGE);
         this._webgl.texParameteri(this._webgl.TEXTURE_2D, this._webgl.TEXTURE_WRAP_T, this._webgl.CLAMP_TO_EDGE);
 
-        var formatGL = format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.LUMINANCE;
-        var type = this._webgl.UNSIGNED_BYTE;
 
 
+
+
+        if (this._format == TextureFormat.F_R8 || this._format == TextureFormat.F_RGBA32) {
+            this._typeGL = this._webgl.FLOAT;
+
+            if (this._format == TextureFormat.F_RGBA32) {
+                this._formatInnerGL = this._webgl.RGBA32F;
+                this._formatGL = this._webgl.RGBA;
+            }
+            else {
+                this._formatInnerGL = this._webgl.R32F;
+                this._formatGL = this._webgl.RED;
+            }
+        }
+        else {
+            this._typeGL = this._webgl.UNSIGNED_BYTE;
+
+            if (this._format == TextureFormat.RGBA32) {
+                this._formatInnerGL = this._webgl.RGBA;
+                this._formatGL = this._webgl.RGBA;
+            }
+            else {
+                this._formatInnerGL = this._webgl.R8;//用R8 也行
+                this._formatGL = this._webgl.RED;//用RED也行
+            }
+        }
         this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
         if (data == null) {
             this._webgl
             this._webgl.texImage2D(this._webgl.TEXTURE_2D,
                 0,
-                formatGL,
+                this._formatInnerGL,
                 width, height, 0,
-                formatGL,
-                type
+                this._formatGL,
+                this._typeGL
                 , null);
 
         }
@@ -82,10 +108,10 @@ export class Texture implements ITexture {
                 throw new Error("wrong texSize");
             this._webgl.texImage2D(this._webgl.TEXTURE_2D,
                 0,
-                formatGL,
+                this._formatInnerGL,
                 width, height, 0,
-                formatGL,
-                type
+                this._formatGL,
+                this._typeGL
                 , data);
 
 
@@ -95,6 +121,9 @@ export class Texture implements ITexture {
     }
     _webgl: WebGL2RenderingContext
     _format: TextureFormat
+    _formatGL: GLenum;
+    _formatInnerGL: GLenum;
+    _typeGL: GLenum;
     _texobj: WebGLTexture | null;
     _id: number;
     _width: number;
@@ -124,19 +153,21 @@ export class Texture implements ITexture {
     UploadImg(img: TexImageSource): void {
         this._width = (img as any)["width"] as number;
         this._height = (img as any)["height"] as number;
-        var formatGL = this._format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.LUMINANCE;
-        var type = this._webgl.UNSIGNED_BYTE;
-        this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
-        this._webgl.texImage2D(this._webgl.TEXTURE_2D, 0,
-            formatGL, formatGL, type,
-            img);
-    }
-    UploadTexture(x: number, y: number, w: number, h: number, data: Uint8Array | Uint8ClampedArray): void {
+
+
 
         this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
-        var formatGL = this._format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.LUMINANCE;
-        var type = this._webgl.UNSIGNED_BYTE;
-        this._webgl.texSubImage2D(this._webgl.TEXTURE_2D, 0, x, y, w, h, formatGL, type, data);
+        this._webgl.texImage2D(this._webgl.TEXTURE_2D, 0,
+            this._formatInnerGL, this._formatGL, this._typeGL,
+            img);
+    }
+    UploadTexture(x: number, y: number, w: number, h: number, data: ArrayBufferView): void {
+
+        this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
+
+        this._webgl.texSubImage2D(this._webgl.TEXTURE_2D, 0, x, y, w, h,
+            this._formatGL, this._typeGL
+            , data);
     }
 
     Destory(): void {
