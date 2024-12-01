@@ -9,6 +9,7 @@ import { IRenderTarget, ITexture } from "../../texture.js";
 
 import { tt } from "../../../../ttapi/ttapi.js";
 import { ElementInst, ElementSprite, ElementUtil } from "./elem.js";
+import { PackTextureDuo } from "../../../resources/atlas/packtex.js";
 const elementSpriteSize = 48;//基线4N 必有浪费
 
 const elementInstSize = 32;
@@ -38,7 +39,7 @@ export class Render_Element_Ubo implements ILayerRender {
     private elemBufView: DataView;
     private elemDirty: boolean;
     private ElemInit() {
-        this.elemBufData = new Uint8Array(1023 * elementSpriteSize + 4);
+        this.elemBufData = new Uint8Array(1000 * elementSpriteSize + 4);
         this.elemBufView = new DataView(this.elemBufData.buffer);
         this.elemCount = 0;
         this.elemDirty = false;
@@ -62,6 +63,10 @@ export class Render_Element_Ubo implements ILayerRender {
         this.WriteElement(elem, index);
 
         return index;
+    }
+    SetTexture(tex: PackTextureDuo): void {
+        this.material.uniformTexs["tex"].value = tex.packRGBA;
+        this.material.uniformTexs["tex2"].value = tex.packGray;
     }
     WriteElement(elem: ElementSprite, index: number): void {
         elem.index = index;

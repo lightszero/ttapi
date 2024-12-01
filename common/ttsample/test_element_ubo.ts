@@ -1,6 +1,7 @@
+import { tt } from "../ttapi/ttapi.js";
 import { ElementInst, ElementSprite } from "../ttlayer2/graphics/pipeline/render/elem.js";
 import { Render_Element_Ubo } from "../ttlayer2/graphics/pipeline/render/render_elem_ubo.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3 } from "../ttlayer2/ttlayer2.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign } from "../ttlayer2/ttlayer2.js";
 import { GContext } from "./ttstate_all.js";
 
 export class Test_Element_UBO implements IState<Navigator<GContext>> {
@@ -23,12 +24,18 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
         this.AddBackButton();
 
         this.AddSprites();
+        this.AddLabel("DrawElement,UBO模式");
+        this.AddLabel("vb0 是一个小方块");
+        this.AddLabel("vb1 是instance 数据");
+        this.AddLabel("sprite 数据放在Uniform里，尺寸受到设备限制");
+        this.AddLabel("移动平台可使用1023种精灵");
+        this.AddLabel("这个模式不如TBO模式");
+
     }
 
     AddBackButton(): void {
         this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = 2.0;
-        //this.guilayer.GetCanvas().scale = 2.0;
+        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
 
         GameApp.GetViewList().AddDrawLayers(this.guilayer);
         let btn = Resources.CreateGUI_Button("<--", new Color(1, 1, 1, 1));
@@ -42,7 +49,15 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
 
         this.nav.GetContextObj().TopUI2Top();
     }
-
+    y: number = 64;
+    AddLabel(text: string): void {
+        let label = Resources.CreateGUI_Label(text);
+        this.guilayer.GetCanvas().addChild(label);
+        label.halign = QUI_HAlign.Left;
+        label.localRect.setHPosByLeftBorder(196, 16);
+        label.localRect.setVPosByTopBorder(16, this.y);
+        this.y += 16;
+    }
     AddSprites(): void {
 
         this.canvaslayer = new DrawLayer(DrawLayerTag.Main);
@@ -53,8 +68,8 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
 
         let s = Resources.GetBorder2Block();
         let s2 = Resources.GetRoundBlock();
-        this.render.material.uniformTexs["tex"].value = s.texrgba;
-        this.render.material.uniformTexs["tex2"].value = s.texgray;
+
+        this.render.SetTexture(Resources.GetPackedTexture());
 
         let elem1: ElementSprite = null;
         let elem2: ElementSprite = null;

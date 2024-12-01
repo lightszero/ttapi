@@ -36,7 +36,7 @@ export class TTState_All implements IUserLogic {
     }
     InitTopUI(context: GContext) {
         {
-            context.topuiview.GetCamera().Scale = 3.0;
+            context.topuiview.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
             //title
             {
                 let labels = Resources.CreateGUI_Label("新TTAPI", new Color(0, 0, 0, 0.5));

@@ -19,6 +19,7 @@ export class Test_Info implements IState<Navigator<GContext>> {
         this.AddBackButton();
 
         let gl = tt.graphic.GetWebGL();
+        this.AddLabel("DevicePixelRadio=" + tt.graphic.getDevicePixelRadio());
         this.AddLabel("MAX_UNIFORM_BLOCK_SIZE=" + gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE));
         this.AddLabel("MAX_3D_TEXTURE_SIZE=" + gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
         this.AddLabel("MAX_ARRAY_TEXTURE_LAYERS=" + gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS));
@@ -30,14 +31,14 @@ export class Test_Info implements IState<Navigator<GContext>> {
     AddLabel(text: string): void {
         let label = Resources.CreateGUI_Label(text);
         this.guilayer.GetCanvas().addChild(label);
-        label.halign= QUI_HAlign.Left;
+        label.halign = QUI_HAlign.Left;
         label.localRect.setHPosByLeftBorder(196, 16);
-        label.localRect.setVPosByTopBorder(16,this.y);
+        label.localRect.setVPosByTopBorder(16, this.y);
         this.y += 16;
     }
     AddBackButton(): void {
         this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = 3.0;
+        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
         GameApp.GetViewList().AddDrawLayers(this.guilayer);
         let btn = Resources.CreateGUI_Button("<--", new Color(1, 1, 1, 1));
         btn.localRect.setHPosByLeftBorder(196, 16);

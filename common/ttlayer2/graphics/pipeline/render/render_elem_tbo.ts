@@ -90,15 +90,17 @@ export class Render_Element_Tbo implements ILayerRender {
         const ElemFSize = 16;
         let Findex = index * ElemFSize;
         this.elemBufData[Findex + 0] = elem.sizeTL.X;
-        this.elemBufData[Findex + 0] = elem.sizeTL.Y;
-        this.elemBufData[Findex + 0] = elem.sizeRB.X;
-        this.elemBufData[Findex + 0] = elem.sizeRB.Y;
-        this.elemBufData[Findex + 0] = elem.uvCenter.X;
-        this.elemBufData[Findex + 0] = elem.uvCenter.Y;
-        this.elemBufData[Findex + 0] = elem.uvHalfSize.X;
-        this.elemBufData[Findex + 0] = elem.uvHalfSize.Y;;
-        this.elemBufData[Findex + 0] = elem.uvLayer;
-        this.elemBufData[Findex + 0] = elem.eff;
+        this.elemBufData[Findex + 1] = elem.sizeTL.Y;
+        this.elemBufData[Findex + 2] = elem.sizeRB.X;
+        this.elemBufData[Findex + 3] = elem.sizeRB.Y;
+        
+        this.elemBufData[Findex + 4] = elem.uvCenter.X;
+        this.elemBufData[Findex + 5] = elem.uvCenter.Y;
+        this.elemBufData[Findex + 6] = elem.uvHalfSize.X;
+        this.elemBufData[Findex + 7] = elem.uvHalfSize.Y;;
+
+        this.elemBufData[Findex + 8] = elem.uvLayer;
+        this.elemBufData[Findex + 11] = elem.eff;
         this.elemDirty = true;
     }
     GetElement(index: number): ElementSprite {
@@ -253,7 +255,7 @@ export class Render_Element_Tbo implements ILayerRender {
                 this.elemInstDirty = false;
             }
             if (this.elemDirty) {//Upload tbo
-                this.elemTex.UploadTexture(0, 0, 512, 512,
+                this.elemTex.UploadTexture(0, 0, this.elemTex.getWidth(), this.elemTex.getHeight(),
                     this.elemBufData
                 );
 

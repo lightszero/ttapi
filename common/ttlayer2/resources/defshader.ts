@@ -73,11 +73,11 @@ var vs_inst_tbo: string = `#version 300 es
         
         Sprite s;
         s.posLT = v0.xy;
-        s.posRB =vec2(8.0,8.0);//v0.zw;
-        s.uvCenter =vec2(0.5,0.5);//v1.xy;
-        s.uvHalfSize =vec2(0.5,0.5);//v1.zw;
-        s.uvlayer =0.0;//v2.x;
-        s.eff =4.0;//v2.w;
+        s.posRB = v0.zw;
+        s.uvCenter = v1.xy;
+        s.uvHalfSize = v1.zw;
+        s.uvlayer = v2.x;
+        s.eff = v2.w;
        
       
       
@@ -151,7 +151,7 @@ var vs_inst_ubo: string = `#version 300 es
 
     uniform SpritesBlock {//手机一个UniformBlock中允许的元素数量有限，我测试的手机是1024
         //所以这里设置为1023+1
-        Sprite data[1023];    
+        Sprite data[512];    
         int endtag; //不加一点,在firefox会报错,在chrome 画不出来，手机却是正常的
     } sprites;
     

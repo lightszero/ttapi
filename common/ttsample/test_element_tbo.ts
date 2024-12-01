@@ -1,6 +1,7 @@
+import { tt } from "../ttapi/ttapi.js";
 import { ElementInst, ElementSprite } from "../ttlayer2/graphics/pipeline/render/elem.js";
 import { Render_Element_Tbo } from "../ttlayer2/graphics/pipeline/render/render_elem_tbo.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3 } from "../ttlayer2/ttlayer2.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign } from "../ttlayer2/ttlayer2.js";
 import { GContext } from "./ttstate_all.js";
 
 export class Test_Element_TBO implements IState<Navigator<GContext>> {
@@ -23,11 +24,27 @@ export class Test_Element_TBO implements IState<Navigator<GContext>> {
         this.AddBackButton();
 
         this.AddSprites();
-    }
+        this.AddLabel("DrawElement,TBO模式");
+        this.AddLabel("vb0 是一个小方块");
+        this.AddLabel("vb1 是instance 数据");
+        this.AddLabel("sprite 数据放在一张贴图里，尺寸几乎没有限制，这里使用了 512x512的float贴图");
+        this.AddLabel("这个贴图尺寸下,可使用65536种精灵");
 
+
+
+    }
+    y: number = 64;
+    AddLabel(text: string): void {
+        let label = Resources.CreateGUI_Label(text);
+        this.guilayer.GetCanvas().addChild(label);
+        label.halign = QUI_HAlign.Left;
+        label.localRect.setHPosByLeftBorder(196, 16);
+        label.localRect.setVPosByTopBorder(16, this.y);
+        this.y += 16;
+    }
     AddBackButton(): void {
         this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = 2.0;
+        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
         //this.guilayer.GetCanvas().scale = 2.0;
 
         GameApp.GetViewList().AddDrawLayers(this.guilayer);
@@ -53,8 +70,8 @@ export class Test_Element_TBO implements IState<Navigator<GContext>> {
 
         let s = Resources.GetBorder2Block();
         let s2 = Resources.GetRoundBlock();
-        this.render.material.uniformTexs["tex"].value = s.texrgba;
-        this.render.material.uniformTexs["tex2"].value = s.texgray;
+
+        this.render.SetTexture(Resources.GetPackedTexture());
 
         let elem1: ElementSprite = null;
         let elem2: ElementSprite = null;
