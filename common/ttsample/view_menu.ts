@@ -27,12 +27,14 @@ export class View_Menu implements IState<Navigator<GContext>> {
         this.x = 32;
         this.y = 16;
         this.AddButton("Test Info", new Test_Info());
-
-        this.AddButton("Test Element 渲染器(UBO)", new Test_Element_UBO());
-        this.AddButton("Test Element 渲染器(TBO)", new Test_Element_TBO());
-        this.AddButton("Test TexArray", new Test_TexArr());
-        this.AddButton("Test TiledMap");
-        this.AddButton("Test ParticleSystem");
+        this.AddButton("TextureArray", new Test_TexArr());
+        this.AddButton("Element 渲染器(UBO,废弃)", new Test_Element_UBO());
+        this.AddButton("Element 渲染器(TBO)", new Test_Element_TBO());
+        this.AddButton("Element Tilemap[欠]", null);
+        this.AddButton("Element + TF 粒子系统[欠]", null);
+        this.AddButton("GUI[欠]");
+        this.AddButton("Box2d[欠]");
+        this.AddButton("Ani[欠]");
     }
     y: number = 32;
     x: number = 16;

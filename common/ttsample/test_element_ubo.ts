@@ -43,7 +43,7 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
         btn.localRect.setVPosByTopBorder(20, 8);
         this.guilayer.GetCanvas().addChild(btn);
 
-        btn.OnClick = () => {
+        btn.OnClick = () => { 
             this.nav.Back();
         }
 
@@ -56,6 +56,8 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
         label.halign = QUI_HAlign.Left;
         label.localRect.setHPosByLeftBorder(196, 16);
         label.localRect.setVPosByTopBorder(16, this.y);
+        label.fontScale.X *= 0.5;
+        label.fontScale.Y *= 0.5;
         this.y += 16;
     }
     AddSprites(): void {

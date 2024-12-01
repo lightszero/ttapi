@@ -34,6 +34,8 @@ export class Test_Info implements IState<Navigator<GContext>> {
         label.halign = QUI_HAlign.Left;
         label.localRect.setHPosByLeftBorder(196, 16);
         label.localRect.setVPosByTopBorder(16, this.y);
+        label.fontScale.X *= 0.5;
+        label.fontScale.Y *= 0.5;
         this.y += 16;
     }
     AddBackButton(): void {

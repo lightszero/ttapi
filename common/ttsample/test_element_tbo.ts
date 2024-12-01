@@ -40,12 +40,13 @@ export class Test_Element_TBO implements IState<Navigator<GContext>> {
         label.halign = QUI_HAlign.Left;
         label.localRect.setHPosByLeftBorder(196, 16);
         label.localRect.setVPosByTopBorder(16, this.y);
+        label.fontScale.X *= 0.5;
+        label.fontScale.Y *= 0.5;
         this.y += 16;
     }
     AddBackButton(): void {
         this.guilayer = new DrawLayer_GUI();
         this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
-        //this.guilayer.GetCanvas().scale = 2.0;
 
         GameApp.GetViewList().AddDrawLayers(this.guilayer);
         let btn = Resources.CreateGUI_Button("<--", new Color(1, 1, 1, 1));

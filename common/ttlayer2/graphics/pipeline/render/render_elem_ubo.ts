@@ -39,7 +39,7 @@ export class Render_Element_Ubo implements ILayerRender {
     private elemBufView: DataView;
     private elemDirty: boolean;
     private ElemInit() {
-        this.elemBufData = new Uint8Array(1000 * elementSpriteSize + 4);
+        this.elemBufData = new Uint8Array(1023 * elementSpriteSize + 4);
         this.elemBufView = new DataView(this.elemBufData.buffer);
         this.elemCount = 0;
         this.elemDirty = false;

@@ -136,23 +136,19 @@ var vs_inst_ubo: string = `#version 300 es
     layout(location = 4) in vec2 ext;
 
     layout(std140, column_major) uniform;
-    struct Sprite //结构体的基线是4n的倍数
+    struct Sprite //
     {
         vec2 posLT;
         vec2 posRB;
         vec2 uvCenter;
         vec2 uvHalfSize;
-        float uvlayer;
-        float empty1;//占位，凑4N
-        float empty2;
-        float eff;
-       
+        vec4 ext;
     };
 
-    uniform SpritesBlock {//手机一个UniformBlock中允许的元素数量有限，我测试的手机是1024
-        //所以这里设置为1023+1
-        Sprite data[512];    
-        int endtag; //不加一点,在firefox会报错,在chrome 画不出来，手机却是正常的
+    uniform SpritesBlock {//
+        //
+        Sprite data[1023];    
+        int endtag; //
     } sprites;
     
     uniform mat4 matModel;
@@ -211,8 +207,8 @@ var vs_inst_ubo: string = `#version 300 es
         //pass color
         vColor = color;
         //pass ext
-        vExt=int(s.eff);
-        vLayer=int(s.uvlayer);
+        vExt=int(s.ext.w);
+        vLayer=int(s.ext.x);
     }
 `;
 var fs_default: string = `#version 300 es
