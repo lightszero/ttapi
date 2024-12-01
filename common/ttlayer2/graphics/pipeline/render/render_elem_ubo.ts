@@ -22,7 +22,7 @@ export class Render_Element_Ubo implements ILayerRender {
     constructor() {
         this.ElemInit();
         this.ElemInstInit();
-        this.material = new Material(Resources.GetShaderProgram("inst_full"));
+        this.material = new Material(Resources.GetShaderProgram("inst_ubo"));
         this.material.UpdateMatModel();
 
         let gl = tt.graphic.GetWebGL();
@@ -221,13 +221,7 @@ export class Render_Element_Ubo implements ILayerRender {
     OnRender(target: IRenderTarget, camera: Camera, tag: number) {
         if (tag == 0) {
             let gl = tt.graphic.GetWebGL();
-            if (this.mesh == null) {
-                this.material = new Material(Resources.GetShaderProgram("inst_full"));
-
-                this.mesh = new Mesh();
-                this.mesh.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_InstFull());
-                this.InitDrawMesh(gl);
-            }
+         
             if (this.elemInstDirty) {
                 this.mesh.UploadVertexBuffer(gl, 1, this.elemInstBufData, true, this.elemInstBufData.byteLength);
             }

@@ -205,8 +205,35 @@ export class TextureArray implements ITexture {
         this._webgl.texParameteri(this._webgl.TEXTURE_2D_ARRAY, this._webgl.TEXTURE_WRAP_S, this._webgl.CLAMP_TO_EDGE);
         this._webgl.texParameteri(this._webgl.TEXTURE_2D_ARRAY, this._webgl.TEXTURE_WRAP_T, this._webgl.CLAMP_TO_EDGE);
 
-        var formatGL = format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.LUMINANCE;
-        var type = this._webgl.UNSIGNED_BYTE;
+
+
+        if (this._format == TextureFormat.F_R8 || this._format == TextureFormat.F_RGBA32) {
+            this._typeGL = this._webgl.FLOAT;
+
+            if (this._format == TextureFormat.F_RGBA32) {
+                this._formatInnerGL = this._webgl.RGBA32F;
+                this._formatGL = this._webgl.RGBA;
+            }
+            else {
+                this._formatInnerGL = this._webgl.R32F;
+                this._formatGL = this._webgl.RED;
+            }
+        }
+        else {
+            this._typeGL = this._webgl.UNSIGNED_BYTE;
+
+            if (this._format == TextureFormat.RGBA32) {
+                this._formatInnerGL = this._webgl.RGBA;
+                this._formatGL = this._webgl.RGBA;
+            }
+            else {
+                this._formatInnerGL = this._webgl.R8;//用R8 也行
+                this._formatGL = this._webgl.RED;//用RED也行
+            }
+        }
+
+        //var formatGL = format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.R8;
+        //var type = this._webgl.UNSIGNED_BYTE;
 
 
         this._webgl.bindTexture(this._webgl.TEXTURE_2D_ARRAY, this._texobj);
@@ -214,17 +241,20 @@ export class TextureArray implements ITexture {
             this._webgl
             this._webgl.texImage3D(this._webgl.TEXTURE_2D_ARRAY,
                 0,
-                formatGL,
+                this._formatInnerGL,
                 width, height, this._layer,
                 0,
-                formatGL,
-                type
+                this._formatGL,
+                this._typeGL
                 , null);
 
         }
     }
     _webgl: WebGL2RenderingContext
     _format: TextureFormat
+    _formatGL: GLenum;
+    _formatInnerGL: GLenum;
+    _typeGL: GLenum;
     _texobj: WebGLTexture | null;
     _layer: number
     _id: number;
@@ -257,11 +287,13 @@ export class TextureArray implements ITexture {
     UploadSubTexture(layer: number, x: number, y: number, w: number, h: number, data: Uint8Array | Uint8ClampedArray): void {
 
         this._webgl.bindTexture(this._webgl.TEXTURE_2D_ARRAY, this._texobj);
-        var formatGL = this._format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.LUMINANCE;
+        var formatGL = this._format == TextureFormat.RGBA32 ? this._webgl.RGBA : this._webgl.R8;
         var type = this._webgl.UNSIGNED_BYTE;
         this._webgl.texSubImage3D(this._webgl.TEXTURE_2D_ARRAY, 0,
             x, y, layer,
-            w, h, 1, formatGL, type, data);
+            w, h, 1,
+            this._formatGL,
+            this._typeGL, data);
     }
 
     Destory(): void {

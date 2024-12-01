@@ -84,7 +84,7 @@ export class SpriteData {
 }
 export class PackTexture extends TextureArray {
     constructor(webgl: WebGL2RenderingContext, width: number, height: number, format: TextureFormat, layercount: number, border: number = 0) {
-        super(webgl, width, height, 10, format);
+        super(webgl, width, height, layercount, format);
         this.maxrect = new maxrect.MaxRectsBin(width, height, border);
         this.sprites = [];
         this.namedsprites = {};

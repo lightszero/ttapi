@@ -28,7 +28,105 @@ var vs_default: string = `#version 300 es
         vLayer =int(ext.x);
     }
     `;
-var vs_inst_full: string = `#version 300 es
+var vs_inst_tbo: string = `#version 300 es
+    //form vbo1 as mesh
+    layout(location = 0) in vec2 elemuv; 
+    //from vbo2 as inst
+    layout(location = 1) in vec4 posrotate;
+    layout(location = 2) in vec2 scale;
+    layout(location = 3) in vec4 color; //rgba32
+    layout(location = 4) in vec2 ext;
+
+    // layout(std140, column_major) uniform;
+    struct Sprite //结构体的基线是4n的倍数
+    {
+        vec2 posLT;
+        vec2 posRB;
+        vec2 uvCenter;
+        vec2 uvHalfSize;
+        float uvlayer;
+        float empty1;//占位，凑4N
+        float empty2;
+        float eff;
+       
+    };
+    uniform mat4 matModel;
+    uniform mat4 matView;
+    uniform mat4 matProj;
+    uniform sampler2D texelem;
+    out vec4 vColor;
+    out vec2 vUv;
+    flat out int vExt;
+    flat out int vLayer;
+    void main(void)
+    { 
+        //get sprite
+        int ext = int(ext.x);
+        int iuvx = ext%128 *4;
+        int iuvy = ext/128;
+
+        
+        vec4 v0 = texelFetch(texelem,ivec2(iuvx+0,iuvy),0);
+        vec4 v1 = texelFetch(texelem,ivec2(iuvx+1,iuvy),0);
+        vec4 v2 = texelFetch(texelem,ivec2(iuvx+2,iuvy),0);
+        //vec4 v3 =texelFetch(texelem,ivec2(iuvx+3,iuvy),0);
+        
+        Sprite s;
+        s.posLT = v0.xy;
+        s.posRB =vec2(8.0,8.0);//v0.zw;
+        s.uvCenter =vec2(0.5,0.5);//v1.xy;
+        s.uvHalfSize =vec2(0.5,0.5);//v1.zw;
+        s.uvlayer =0.0;//v2.x;
+        s.eff =4.0;//v2.w;
+       
+      
+      
+        //----begin calc final pos
+        vec2 poslocal;
+        poslocal.x=elemuv.x<0.0?s.posLT.x:s.posRB.x;
+        poslocal.y=elemuv.y<0.0?s.posLT.y:s.posRB.y;
+        poslocal*=scale;
+
+        //poslocal is work
+
+
+        //--begin rotate
+        float cosv = cos(posrotate.w);
+        float sinv = sin(posrotate.w);
+        
+        float poslocallen = sqrt(dot(poslocal,poslocal));
+        if(poslocallen<0.001)   
+        {
+            gl_Position =vec4(0,0,0,0);
+        }
+        else
+        {
+            vec2 poslocalnor = poslocal / poslocallen;
+            poslocal.x = cosv*poslocalnor.x + -sinv*poslocalnor.y;
+            poslocal.y = sinv*poslocalnor.x + cosv*poslocalnor.y;
+            poslocal *= poslocallen;
+            //--end rorate
+
+            vec4 pos = vec4(posrotate.xyz,1);
+
+            //apply tran
+            pos.xy+=poslocal;
+            //----end finalpos
+            mat4 matrix = matProj*matView*matModel;
+            gl_Position = matrix * pos;
+        }
+        //pass uv
+        vec2 uv =  s.uvCenter + elemuv*s.uvHalfSize;
+       
+        vUv = uv;
+        //pass color
+        vColor = color;
+        //pass ext
+        vExt=int(s.eff);
+        vLayer=int(s.uvlayer);
+    }
+`;
+var vs_inst_ubo: string = `#version 300 es
     //form vbo1 as mesh
     layout(location = 0) in vec2 elemuv; 
     //from vbo2 as inst
@@ -168,9 +266,10 @@ var vs_simple: string = `#version 300 es
     out vec4 vColor;//输出给fs的参数
     out vec2 vUv;//输出给fs的参数2
     //flat out vec4 vExt;
-
+    uniform sampler2D tex2;
     void main(void) 
     {
+        vec4 t1 = texelFetch(tex2,ivec2(0, 0), 0);
         mat4 matrix = matProj*matView*matModel;
         gl_Position = matrix * vec4(position,1);// uViewProjMatrix * uModelMatrix * position;
         vColor = color;
@@ -213,10 +312,11 @@ var fs_simple: string = `#version 300 es
         
     layout(location = 0) out vec4 fragColor;
 
-    //uniform sampler2D tex2;
+    uniform sampler2D tex2;
     uniform sampler2DArray tex;  //从外部设置的参数
     void main(void) 
     {
+        vec4 t1 = texelFetch(tex2,ivec2(0, 0), 0);
         vec4 texc = texture(tex,vec3(vUv,0));
         vec4 outc = vColor;
        
@@ -281,38 +381,41 @@ var fs_tiledmap: string = `#version 300 es
     }
     `;
 export function InitInnerShader(webgl: WebGL2RenderingContext): void {
+    var vsinst_tbo = Resources.CompileShader(webgl, ShaderType.VertexShader, "inst_tbo", vs_inst_tbo);
 
-    var vsinst_full = Resources.AddShader(webgl, ShaderType.VertexShader, "inst_full", vs_inst_full);
+    var vsinst_ubo = Resources.CompileShader(webgl, ShaderType.VertexShader, "inst_ubo", vs_inst_ubo);
 
-    var vsdef = Resources.AddShader(webgl, ShaderType.VertexShader, "default", vs_default);
-    var fsdef = Resources.AddShader(webgl, ShaderType.FragmentShader, "default", fs_default);
+    var vsdef = Resources.CompileShader(webgl, ShaderType.VertexShader, "default", vs_default);
+    var fsdef = Resources.CompileShader(webgl, ShaderType.FragmentShader, "default", fs_default);
 
     if (vsdef != null && fsdef != null)
         Resources.AddProgram(webgl, "default", vsdef, fsdef);
 
-    var vssim = Resources.AddShader(webgl, ShaderType.VertexShader, "simple", vs_simple);
-    var fssim = Resources.AddShader(webgl, ShaderType.FragmentShader, "simple", fs_simple);
+    var vssim = Resources.CompileShader(webgl, ShaderType.VertexShader, "simple", vs_simple);
+    var fssim = Resources.CompileShader(webgl, ShaderType.FragmentShader, "simple", fs_simple);
 
     if (vssim != null && fssim != null)
         Resources.AddProgram(webgl, "simple", vssim, fssim);
 
-    var vssim_inst = Resources.AddShader(webgl, ShaderType.VertexShader, "simple_inst", vs_simple_inst);
+    var vssim_inst = Resources.CompileShader(webgl, ShaderType.VertexShader, "simple_inst", vs_simple_inst);
     if (vssim_inst != null && fssim != null)
         Resources.AddProgram(webgl, "simple_inst", vssim_inst, fssim);
 
 
-    var vsfeedback = Resources.AddShader(webgl, ShaderType.VertexShader, "feedback", vs_feedback);
-    var fsempty = Resources.AddShader(webgl, ShaderType.FragmentShader, "empty", fs_empty);
+    var vsfeedback = Resources.CompileShader(webgl, ShaderType.VertexShader, "feedback", vs_feedback);
+    var fsempty = Resources.CompileShader(webgl, ShaderType.FragmentShader, "empty", fs_empty);
     if (vsfeedback != null && fsempty != null)
         Resources.AddProgramFeedback(webgl, "feedback", vsfeedback, fsempty, ["outPos", "outNormal"]);
 
 
-    var fstiledmap = Resources.AddShader(webgl, ShaderType.FragmentShader, "tiledmap", fs_tiledmap);
+    var fstiledmap = Resources.CompileShader(webgl, ShaderType.FragmentShader, "tiledmap", fs_tiledmap);
     if (vsdef != null && fstiledmap != null)
         Resources.AddProgram(webgl, "tiledmap", vsdef, fstiledmap);
 
 
 
-    if (vssim_inst != null && fsdef != null)
-        Resources.AddProgram(webgl, "inst_full", vsinst_full, fsdef);
+    if (vsinst_ubo != null && fsdef != null)
+        Resources.AddProgram(webgl, "inst_ubo", vsinst_ubo, fsdef);
+    if (vsinst_tbo != null && fsdef != null)
+        Resources.AddProgram(webgl, "inst_tbo", vsinst_tbo, fsdef);
 }

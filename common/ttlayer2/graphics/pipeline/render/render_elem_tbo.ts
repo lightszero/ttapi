@@ -9,6 +9,7 @@ import { IRenderTarget, ITexture, Texture, TextureFormat } from "../../texture.j
 
 import { tt } from "../../../../ttapi/ttapi.js";
 import { ElementInst, ElementSprite, ElementUtil } from "./elem.js";
+import { PackTextureDuo } from "../../../resources/atlas/packtex.js";
 
 
 const elementInstSize = 32;
@@ -20,10 +21,11 @@ export class Render_Element_Tbo implements ILayerRender {
     mesh: Mesh;
 
     constructor() {
+
+        this.material = new Material(Resources.GetShaderProgram("inst_tbo"));
+        this.material.UpdateMatModel();
         this.ElemInit();
         this.ElemInstInit();
-        this.material = new Material(Resources.GetShaderProgram("inst_full"));
-        this.material.UpdateMatModel();
 
         let gl = tt.graphic.GetWebGL();
         this.mesh = new Mesh();
@@ -62,7 +64,15 @@ export class Render_Element_Tbo implements ILayerRender {
         this.elemTex = new Texture(gl, 512, 512, TextureFormat.F_RGBA32, null);
         this.elemCount = 0;
         this.elemDirty = false;
+        let uni = this.material.uniformTexs["texelem"];
+        if (uni != undefined)
+            uni.value = this.elemTex;
     }
+    SetTexture(tex: PackTextureDuo): void {
+        this.material.uniformTexs["tex"].value = tex.packRGBA;
+        this.material.uniformTexs["tex2"].value = tex.packGray;
+    }
+
     GetElementCount(): number {
         return this.elemCount;
     }
@@ -237,19 +247,13 @@ export class Render_Element_Tbo implements ILayerRender {
     OnRender(target: IRenderTarget, camera: Camera, tag: number) {
         if (tag == 0) {
             let gl = tt.graphic.GetWebGL();
-            if (this.mesh == null) {
-                this.material = new Material(Resources.GetShaderProgram("inst_full"));
 
-                this.mesh = new Mesh();
-                this.mesh.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_InstFull());
-                this.InitDrawMesh(gl);
-            }
             if (this.elemInstDirty) {
                 this.mesh.UploadVertexBuffer(gl, 1, this.elemInstBufData, true, this.elemInstBufData.byteLength);
                 this.elemInstDirty = false;
             }
             if (this.elemDirty) {//Upload tbo
-                this.elemTex.UploadTexture(0,0,512,512,
+                this.elemTex.UploadTexture(0, 0, 512, 512,
                     this.elemBufData
                 );
 

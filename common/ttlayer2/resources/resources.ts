@@ -204,22 +204,10 @@ export class Resources {
     }
 
 
-    private static vsp: { [id: string]: ShaderObj } = {};
-    private static fsp: { [id: string]: ShaderObj } = {};
+  
 
-
-
-    static AddShader(webgl: WebGL2RenderingContext, type: ShaderType, name: string, source: string): ShaderObj | null {
-        if (type == ShaderType.VertexShader) {
-            if (this.vsp[name] != undefined)
-                throw "Have as VertexShader " + name;
-        }
-        else {
-            if (this.fsp[name] != undefined)
-                throw "Have as FragmentShader " + name;
-        }
-
-
+    static CompileShader(webgl: WebGL2RenderingContext, type: ShaderType, name: string, source: string): ShaderObj | null {
+  
 
 
         var shaderobj = CompileShader(webgl, type, name, source);
@@ -227,12 +215,7 @@ export class Resources {
 
 
     }
-    static GetVertexShader(name: string): ShaderObj {
-        return this.vsp[name];
-    }
-    static GetFragmentShader(name: string): ShaderObj {
-        return this.fsp[name];
-    }
+
     static AddProgram(webgl: WebGL2RenderingContext, name: string, vs: ShaderObj, fs: ShaderObj): ShaderProgram | null {
         if (this.programs[name] != undefined)
             throw "have a shader program:" + name;
