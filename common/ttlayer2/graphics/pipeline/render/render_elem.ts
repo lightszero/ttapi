@@ -8,13 +8,15 @@ import { Material } from "../../material.js";
 import { IRenderTarget, ITexture } from "../../texture.js";
 
 import { tt } from "../../../../ttapi/ttapi.js";
-
+const elementSpriteSize = 48;//基线4N 必有浪费
 export class ElementSprite {
     //pos 来自Attr
     sizeTL: Vector2; //最常见的值 (-8,-8)
     sizeRB: Vector2; //最常见的值 (8,8) //这样就能构成一个 中心定位的16x16的元素
     uvCenter: Vector2;//UV中心
     uvHalfSize: Vector2;//UV半径
+    uvLayer: number;
+    eff: number;
 }
 //directdraw pos3+uv+color+eff 4  *6 noebo = 42 float 最小
 //ElementAttr = 8 float 1/5
@@ -23,10 +25,10 @@ export class ElementInst {
     rotate: number;
     scale: Vector2;
     color: Color;
-    instid:number;//忘了一个
+    instid: number;//忘了一个
     eff: number;//int
 }
-const elementSize = 32;
+
 const elementInstSize = 32;
 export class Render_Element implements ILayerRender {
     //公共材质,所有的元素只能使用同一个材质,这也是这种渲染器效率的来源
@@ -54,7 +56,7 @@ export class Render_Element implements ILayerRender {
     private elemBufView: DataView;
     private elemDirty: boolean;
     private ElemInit() {
-        this.elemBufData = new Uint8Array(1024 * elementSize + 4);
+        this.elemBufData = new Uint8Array(1024 * elementSpriteSize + 4);
         this.elemBufView = new DataView(this.elemBufData.buffer);
         this.elemCount = 0;
         this.elemDirty = false;
@@ -79,7 +81,7 @@ export class Render_Element implements ILayerRender {
         return index;
     }
     WriteElement(elem: ElementSprite, index: number): void {
-        let byteIndex = index * elementSize;
+        let byteIndex = index * elementSpriteSize;
         this.elemBufView.setFloat32(byteIndex + 0, elem.sizeTL.X, true);
         this.elemBufView.setFloat32(byteIndex + 4, elem.sizeTL.Y, true);
         this.elemBufView.setFloat32(byteIndex + 8, elem.sizeRB.X, true);
@@ -88,10 +90,12 @@ export class Render_Element implements ILayerRender {
         this.elemBufView.setFloat32(byteIndex + 20, elem.uvCenter.Y, true);
         this.elemBufView.setFloat32(byteIndex + 24, elem.uvHalfSize.X, true);
         this.elemBufView.setFloat32(byteIndex + 28, elem.uvHalfSize.Y, true);
+        this.elemBufView.setFloat32(byteIndex + 32, elem.uvLayer, true);
+        this.elemBufView.setFloat32(byteIndex + 44, elem.eff, true);
         this.elemDirty = true;
     }
     GetElement(index: number): ElementSprite {
-        let byteIndex = index * elementSize;
+        let byteIndex = index * elementSpriteSize;
         let elem = new ElementSprite();
         elem.sizeTL = new Vector2(0, 0);
         elem.sizeTL.X = this.elemBufView.getFloat32(byteIndex + 0, true);
@@ -102,6 +106,8 @@ export class Render_Element implements ILayerRender {
         elem.uvCenter.Y = this.elemBufView.getFloat32(byteIndex + 20, true);
         elem.uvHalfSize.X = this.elemBufView.getFloat32(byteIndex + 24, true);
         elem.uvHalfSize.Y = this.elemBufView.getFloat32(byteIndex + 28, true);
+        elem.uvLayer = this.elemBufView.getFloat32(byteIndex + 32, true);
+        elem.eff = this.elemBufView.getFloat32(byteIndex + 44, true);
         return elem;
     }
     //#endregion
@@ -135,7 +141,7 @@ export class Render_Element implements ILayerRender {
     }
     WriteElementInst(elem: ElementInst, index: number): void {
         if (index * elementInstSize >= this.elemInstBufData.length) {//满了,扩容
-            let newarr = new Uint8Array((1024 + index) * elementSize);
+            let newarr = new Uint8Array((1024 + index) * elementInstSize);
             for (let i = 0; i < this.elemInstBufData.length; i++) {
                 newarr[i] = this.elemInstBufData[i];
             }
@@ -158,7 +164,7 @@ export class Render_Element implements ILayerRender {
         this.elemInstDirty = true;
     }
     GetElementInst(index: number): ElementInst {
-        let byteIndex = index * elementSize;
+        let byteIndex = index * elementInstSize;
         let elem = new ElementInst();
         elem.pos = new Vector3(0, 0, 0);
         elem.scale = new Vector2(0, 0);

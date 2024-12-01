@@ -66,6 +66,8 @@ export class Test_Element implements IState<Navigator<GContext>> {
 
             elem.uvCenter = new Vector2(s.uv.U1 * 0.5 + s.uv.U2 * 0.5, s.uv.V1 * 0.5 + s.uv.V2 * 0.5);
             elem.uvHalfSize = new Vector2((s.uv.U2 - s.uv.U1) * 0.5, (s.uv.V2 - s.uv.V1) * 0.5);
+            elem.uvLayer = s.uvlayer;
+            elem.eff = s.effect;
             elemindex = this.render.AddElement(elem);
         }
         {//Add a Sprite 原型
@@ -78,7 +80,9 @@ export class Test_Element implements IState<Navigator<GContext>> {
             elem.uvCenter = new Vector2(s2.uv.U1 * 0.5 + s2.uv.U2 * 0.5, s2.uv.V1 * 0.5 + s2.uv.V2 * 0.5);
             elem.uvHalfSize = new Vector2((s2.uv.U2 - s2.uv.U1) * 0.5, (s2.uv.V2 - s2.uv.V1) * 0.5);
             //elem.eff = 4;
-
+            elem.uvLayer = s2.uvlayer;
+            elem.eff = s2.effect;
+            
             elemindex2 = this.render.AddElement(elem);
         }
         for (var i = 0; i < 1024 * 50; i++) {

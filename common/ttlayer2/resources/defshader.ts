@@ -38,12 +38,17 @@ var vs_inst_full: string = `#version 300 es
     layout(location = 4) in vec2 ext;
 
     layout(std140, column_major) uniform;
-    struct Sprite
+    struct Sprite //结构体的基线是4n的倍数
     {
         vec2 posLT;
         vec2 posRB;
         vec2 uvCenter;
         vec2 uvHalfSize;
+        float uvlayer;
+        float empty1;//占位，凑4N
+        float empty2;
+        float eff;
+       
     };
 
     uniform SpritesBlock {//手机一个UniformBlock中允许的元素数量有限，我测试的手机是1024
@@ -108,8 +113,8 @@ var vs_inst_full: string = `#version 300 es
         //pass color
         vColor = color;
         //pass ext
-        vExt=int(ext.y);
-        vLayer=int(0);
+        vExt=int(s.eff);
+        vLayer=int(s.uvlayer);
     }
 `;
 var fs_default: string = `#version 300 es
