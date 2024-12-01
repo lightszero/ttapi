@@ -3,6 +3,7 @@ import { CompileShader, LinkShader, LinkShaderFeedBack, ShaderObj, ShaderProgram
 import { Atlas } from "./atlas/atlas.js";
 import { PackTexture, PackTextureDuo, SpriteData, ToROption } from "./atlas/packtex.js";
 import { Border, Color, Font, InitInnerShader, ITexture, QUI_Button, QUI_HAlign, QUI_Image, QUI_ImageScale9, QUI_Label, QUI_Scale9, QUI_VAlign, Sprite, SpriteFormat, Texture, TextureFormat, Vector2 } from "../ttlayer2.js";
+import { NamedElementPacked } from "./atlas/namedelem.js";
 
 export class ResourceOption {
     defFontName: string = "Arail";
@@ -18,13 +19,13 @@ export class Resources {
 
     static Init(op: ResourceOption): void {
         let gl = tt.graphic.GetWebGL();
-        this.packedtex = new PackTextureDuo();
-        this.packedtex.packGray = new PackTexture(gl, op.packedGrayWidth, op.packedGrayHeight,
+        let packedduo = new PackTextureDuo();
+        packedduo.packGray = new PackTexture(gl, op.packedGrayWidth, op.packedGrayHeight,
             TextureFormat.R8, op.packedGrayLayerCount, 0);
-        this.packedtex.packRGBA = new PackTexture(gl, op.packedRGBAWidth, op.packedRGBAHeight,
+        packedduo.packRGBA = new PackTexture(gl, op.packedRGBAWidth, op.packedRGBAHeight,
             TextureFormat.RGBA32, op.packedRGBALayerCount, 0);
-
-        this.deffont = new Font(gl, op.defFontName, op.defFontSize, this.packedtex);
+        this.packedelem = new NamedElementPacked(packedduo);
+        this.deffont = new Font(gl, op.defFontName, op.defFontSize, this.packedelem.GetPackTexDuo());
 
         this.InitInnerResource(gl);
 
@@ -46,7 +47,7 @@ export class Resources {
                     spdata.data[y * spdata.width + x] = 255;
                 }
             }
-            this.packedtex.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "white");
+            this.packedelem.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "white");
         }
         //border
         {
@@ -67,7 +68,7 @@ export class Resources {
                     255, 255, 255, 255, 255, 255, 255, 255,
                 ]
             );
-            this.packedtex.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "border");
+            this.packedelem.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "border");
         }
         //border2
         {
@@ -88,7 +89,7 @@ export class Resources {
                     255, 255, 255, 255, 255, 255, 255, 255,
                 ]
             );
-            this.packedtex.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "border2");
+            this.packedelem.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "border2");
         }
         //round
         {
@@ -110,28 +111,38 @@ export class Resources {
                     0.0, 0.0, 0.0, 255, 255, 0.0, 0.0, 0.0,
                 ]
             );
-            this.packedtex.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "round");
+            this.packedelem.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "round");
         }
-        this.packedtex.packGray.Apply();
+        this.packedelem.Apply();
     }
-    private static packedtex: PackTextureDuo;
+    private static packedelem: NamedElementPacked;
+
+
+
+    //private static packedtex: PackTextureDuo;
     // private static packed_rgb: PackTexture;
     // private static packed_gray: PackTexture;
-    static GetPackedTexture(): PackTextureDuo {
-        return this.packedtex;
+    static GetElementPack(): NamedElementPacked {
+        return this.packedelem;
     }
 
     static getWhiteBlock(): Sprite {
-        return this.packedtex.GetSprite("white");
+        let elem = this.packedelem.GetElementByName("white");;
+        return this.packedelem.ConvertElemToSprite(elem);
     }
     static GetRoundBlock(): Sprite {
-        return this.packedtex.GetSprite("round");
+      
+        let elem = this.packedelem.GetElementByName("round");;
+        return this.packedelem.ConvertElemToSprite(elem);
     }
     static GetBorderBlock(): Sprite {
-        return this.packedtex.GetSprite("border");
+       
+        let elem = this.packedelem.GetElementByName("border");;
+        return this.packedelem.ConvertElemToSprite(elem);
     }
     static GetBorder2Block(): Sprite {
-        return this.packedtex.GetSprite("border2");
+        let elem = this.packedelem.GetElementByName("border2");;
+        return this.packedelem.ConvertElemToSprite(elem);
     }
     static scale_border: QUI_Scale9 = null;
     static GetBorderScale(): QUI_Scale9 {
@@ -142,7 +153,7 @@ export class Resources {
     }
     private static deffont: Font = null;
     static CreateFont(fontname: string, fontsize: number): Font {
-        let font = new Font(tt.graphic.GetWebGL(), fontname, fontsize, this.packedtex);
+        let font = new Font(tt.graphic.GetWebGL(), fontname, fontsize, this.packedelem.GetPackTexDuo());
         return font;
     }
 
@@ -204,10 +215,10 @@ export class Resources {
     }
 
 
-  
+
 
     static CompileShader(webgl: WebGL2RenderingContext, type: ShaderType, name: string, source: string): ShaderObj | null {
-  
+
 
 
         var shaderobj = CompileShader(webgl, type, name, source);

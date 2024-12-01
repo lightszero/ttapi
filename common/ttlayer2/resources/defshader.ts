@@ -2,9 +2,10 @@
 import { ShaderType } from "../graphics/shader.js";
 import { Resources } from "./resources.js";
 
+//vscode 插件 webgl glsl editor 使用下面的/*glsl*/ 标记
+//来为嵌入shader提供高亮显示
 
-
-var vs_default: string = `#version 300 es
+var vs_default: string = /*glsl*/`#version 300 es
     layout(location = 0) in vec3 position;//顶点提供的数据
     layout(location = 1) in vec2 uv; 
     layout(location = 2) in vec4 color; 
@@ -28,7 +29,7 @@ var vs_default: string = `#version 300 es
         vLayer =int(ext.x);
     }
     `;
-var vs_inst_tbo: string = `#version 300 es
+var vs_inst_tbo: string = /*glsl*/`#version 300 es
     //form vbo1 as mesh
     layout(location = 0) in vec2 elemuv; 
     //from vbo2 as inst
@@ -126,7 +127,7 @@ var vs_inst_tbo: string = `#version 300 es
         vLayer=int(s.uvlayer);
     }
 `;
-var vs_inst_ubo: string = `#version 300 es
+var vs_inst_ubo: string = /*glsl*/`#version 300 es
     //form vbo1 as mesh
     layout(location = 0) in vec2 elemuv; 
     //from vbo2 as inst
@@ -211,7 +212,7 @@ var vs_inst_ubo: string = `#version 300 es
         vLayer=int(s.ext.x);
     }
 `;
-var fs_default: string = `#version 300 es
+var fs_default: string = /*glsl*/`#version 300 es
     precision mediump float;//指定浮点型精确度
     precision highp sampler2DArray;
     in vec2 vUv;//从vs接收的参数
@@ -246,6 +247,7 @@ var fs_default: string = `#version 300 es
             //outc = vColor * 0.5;
         }
         fragColor =  outc;
+        
     }
     `;
 

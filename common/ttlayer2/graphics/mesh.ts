@@ -342,11 +342,6 @@ export class Mesh {
         mesh.Apply(gl);
         mat.Apply(gl);
 
-        //把ubo bind进去
-        //通过改动ubo 绘制
-        //ubo 用处不大，先搞定第二个vbo
-        //gl.bindBufferBase(gl.UNIFORM_BUFFER,0,buffer);
-
         if (mesh._ebo == null) {
             gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.vertexcount[0], mesh.instancecount);
         }

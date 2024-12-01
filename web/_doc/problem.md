@@ -37,7 +37,10 @@
 
 ## 2.框架
 
-ttlayer2目录结构还有些混乱
+Sprite 和 SpriteElement 两套系统怎么平衡?
+Sprite 是 中心点在左上角的SpriteElement特例
+Border用不到
+方向 以SpriteElement为主，让Sprite兼容
 
 动画没引入，之前有配置动画的数据结构，json的，可以考虑迁移过来直接用
 

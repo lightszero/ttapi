@@ -71,7 +71,7 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
         let s = Resources.GetBorder2Block();
         let s2 = Resources.GetRoundBlock();
 
-        this.render.SetTexture(Resources.GetPackedTexture());
+        this.render.SetTexture(Resources.GetElementPack().GetPackTexDuo());
 
         let elem1: ElementSprite = null;
         let elem2: ElementSprite = null;
