@@ -27,13 +27,18 @@ export class Test_TexArr implements IState<Navigator<GContext>> {
         for (let i = 0; i < 256; i++) {
             data1[i] = i;
         }
+        let data2 = new Uint8Array(256);
+        for (let i = 0; i < 256; i++) {
+            data2[i] = 255 - i;
+        }
         this.AddLabel("tex1=" + t.getWidth() + "," + t.getHeight() + "," + t.GetLayer());
         t.UploadSubTexture(0, 0, 0, 16, 16, data1);
-        t2.UploadTexture( 0, 0, 16, 16, data1);
-        this.AddLabel("tex2=" + t.getWidth() + "," + t.getHeight() + "," + t.GetLayer());
+        t2.UploadTexture(0, 0, 16, 16, data2);
+        this.AddLabel("tex2=" + t2.getWidth() + "," + t2.getHeight() );
+        this.AddLabel("普通贴图传给texturearray不能正常渲染" );
 
-        let s = new Sprite(t, null);
-        let s2 = new Sprite(t2, null);
+        let s = new Sprite(Resources.GetPackedTexture().packRGBA, t);
+        let s2 = new Sprite(Resources.GetPackedTexture().packRGBA, t2);
         s.effect = s2.effect = SpriteFormat.GrayAsAlpha;
         {
             let img = new QUI_Image(s);
@@ -59,9 +64,8 @@ export class Test_TexArr implements IState<Navigator<GContext>> {
     }
     AddBackButton(): void {
         this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = 2.0;
-        //this.guilayer.GetCanvas().scale = 2.0;
-
+        this.guilayer.GetCamera().Scale = 3.0;
+      
         GameApp.GetViewList().AddDrawLayers(this.guilayer);
         let btn = Resources.CreateGUI_Button("<--", new Color(1, 1, 1, 1));
         btn.localRect.setHPosByLeftBorder(196, 16);

@@ -153,7 +153,7 @@ export class ShaderProgram {
       var info = webgl.getActiveUniform(program, i);
       let loc = webgl.getUniformLocation(this.program, info.name);
       if (loc == null)
-        continue;
+        break;
       let type: UniformType = UniformType.empty;
       switch (info.type) {
         case 0x8B52:

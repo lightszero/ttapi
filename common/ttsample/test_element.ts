@@ -61,8 +61,8 @@ export class Test_Element implements IState<Navigator<GContext>> {
 
 
             let elem = new ElementSprite();
-            elem.posTL = new Vector2(-8, -8);
-            elem.posRB = new Vector2(8, 8);
+            elem.sizeTL = new Vector2(-8, -8);
+            elem.sizeRB = new Vector2(8, 8);
 
             elem.uvCenter = new Vector2(s.uv.U1 * 0.5 + s.uv.U2 * 0.5, s.uv.V1 * 0.5 + s.uv.V2 * 0.5);
             elem.uvHalfSize = new Vector2((s.uv.U2 - s.uv.U1) * 0.5, (s.uv.V2 - s.uv.V1) * 0.5);
@@ -72,14 +72,16 @@ export class Test_Element implements IState<Navigator<GContext>> {
 
 
             let elem = new ElementSprite();
-            elem.posTL = new Vector2(-8, -8);
-            elem.posRB = new Vector2(8, 8);
+            elem.sizeTL = new Vector2(-8, -8);
+            elem.sizeRB = new Vector2(8, 8);
 
             elem.uvCenter = new Vector2(s2.uv.U1 * 0.5 + s2.uv.U2 * 0.5, s2.uv.V1 * 0.5 + s2.uv.V2 * 0.5);
             elem.uvHalfSize = new Vector2((s2.uv.U2 - s2.uv.U1) * 0.5, (s2.uv.V2 - s2.uv.V1) * 0.5);
+            //elem.eff = 4;
+
             elemindex2 = this.render.AddElement(elem);
         }
-        for (var i = 0; i < 1024*50; i++) {
+        for (var i = 0; i < 1024 * 50; i++) {
             let inst = new ElementInst();
             inst.pos = new Vector3(Math.random() * 400 - 200, Math.random() * 400 - 200, 0);
             inst.rotate = Math.random() * Math.PI;

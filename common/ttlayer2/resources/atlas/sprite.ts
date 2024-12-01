@@ -3,14 +3,14 @@ import { ITexture, Render_Batcher, DrawPoint, SpriteFormat } from "../../ttlayer
 
 
 export class Sprite {
-    constructor(tex: ITexture, texpal: ITexture) {
-        this.texrgba = tex;
-        this.texgray = texpal;
+    constructor(texrgba: ITexture, texgray: ITexture) {
+        this.texrgba = texrgba;
+        this.texgray = texgray;
         this.effect = SpriteFormat.RGBA;
         this.uv = new UVRect(0, 0, 1, 1);
         this.border = new Border(0, 0, 0, 0);
-        this.pixelwidth = tex.getWidth();
-        this.pixelheight = tex.getHeight();
+        this.pixelwidth = texrgba.getWidth();
+        this.pixelheight = texrgba.getHeight();
      
         this.uvlayer = 0;
     }

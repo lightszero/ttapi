@@ -11,8 +11,8 @@ import { tt } from "../../../../ttapi/ttapi.js";
 
 export class ElementSprite {
     //pos 来自Attr
-    posTL: Vector2; //最常见的值 (-8,-8)
-    posRB: Vector2; //最常见的值 (8,8) //这样就能构成一个 中心定位的16x16的元素
+    sizeTL: Vector2; //最常见的值 (-8,-8)
+    sizeRB: Vector2; //最常见的值 (8,8) //这样就能构成一个 中心定位的16x16的元素
     uvCenter: Vector2;//UV中心
     uvHalfSize: Vector2;//UV半径
 }
@@ -80,10 +80,10 @@ export class Render_Element implements ILayerRender {
     }
     WriteElement(elem: ElementSprite, index: number): void {
         let byteIndex = index * elementSize;
-        this.elemBufView.setFloat32(byteIndex + 0, elem.posTL.X, true);
-        this.elemBufView.setFloat32(byteIndex + 4, elem.posTL.Y, true);
-        this.elemBufView.setFloat32(byteIndex + 8, elem.posRB.X, true);
-        this.elemBufView.setFloat32(byteIndex + 12, elem.posRB.Y, true);
+        this.elemBufView.setFloat32(byteIndex + 0, elem.sizeTL.X, true);
+        this.elemBufView.setFloat32(byteIndex + 4, elem.sizeTL.Y, true);
+        this.elemBufView.setFloat32(byteIndex + 8, elem.sizeRB.X, true);
+        this.elemBufView.setFloat32(byteIndex + 12, elem.sizeRB.Y, true);
         this.elemBufView.setFloat32(byteIndex + 16, elem.uvCenter.X, true);
         this.elemBufView.setFloat32(byteIndex + 20, elem.uvCenter.Y, true);
         this.elemBufView.setFloat32(byteIndex + 24, elem.uvHalfSize.X, true);
@@ -93,11 +93,11 @@ export class Render_Element implements ILayerRender {
     GetElement(index: number): ElementSprite {
         let byteIndex = index * elementSize;
         let elem = new ElementSprite();
-        elem.posTL = new Vector2(0, 0);
-        elem.posTL.X = this.elemBufView.getFloat32(byteIndex + 0, true);
-        elem.posTL.Y = this.elemBufView.getFloat32(byteIndex + 4, true);
-        elem.posRB.X = this.elemBufView.getFloat32(byteIndex + 8, true);
-        elem.posRB.Y = this.elemBufView.getFloat32(byteIndex + 12, true);
+        elem.sizeTL = new Vector2(0, 0);
+        elem.sizeTL.X = this.elemBufView.getFloat32(byteIndex + 0, true);
+        elem.sizeTL.Y = this.elemBufView.getFloat32(byteIndex + 4, true);
+        elem.sizeRB.X = this.elemBufView.getFloat32(byteIndex + 8, true);
+        elem.sizeRB.Y = this.elemBufView.getFloat32(byteIndex + 12, true);
         elem.uvCenter.X = this.elemBufView.getFloat32(byteIndex + 16, true);
         elem.uvCenter.Y = this.elemBufView.getFloat32(byteIndex + 20, true);
         elem.uvHalfSize.X = this.elemBufView.getFloat32(byteIndex + 24, true);
