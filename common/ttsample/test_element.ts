@@ -1,4 +1,5 @@
-import { ElementInst, ElementSprite, Render_Element } from "../ttlayer2/graphics/pipeline/render/render_elem.js";
+import { ElementInst, ElementSprite } from "../ttlayer2/graphics/pipeline/render/elem.js";
+import { Render_Element_Ubo } from "../ttlayer2/graphics/pipeline/render/render_elem_ubo.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3 } from "../ttlayer2/ttlayer2.js";
 import { GContext } from "./ttstate_all.js";
 
@@ -6,7 +7,7 @@ export class Test_Element implements IState<Navigator<GContext>> {
     nav: Navigator<GContext>;
     guilayer: DrawLayer_GUI;
     canvaslayer: DrawLayer;
-    render: Render_Element;
+    render: Render_Element_Ubo;
 
     inst: ElementInst[] = []
     OnInit(nav: Navigator<GContext>): void {
@@ -46,7 +47,7 @@ export class Test_Element implements IState<Navigator<GContext>> {
 
         this.canvaslayer = new DrawLayer(DrawLayerTag.Main);
         this.canvaslayer.GetCamera().Scale = 2.0;
-        this.render = new Render_Element();
+        this.render = new Render_Element_Ubo();
         this.canvaslayer.AddRender(this.render);
         GameApp.GetViewList().AddDrawLayers(this.canvaslayer);
 
@@ -55,8 +56,8 @@ export class Test_Element implements IState<Navigator<GContext>> {
         this.render.material.uniformTexs["tex"].value = s.texrgba;
         this.render.material.uniformTexs["tex2"].value = s.texgray;
 
-        let elemindex = 0;
-        let elemindex2 = 0;
+        let elem1: ElementSprite = null;
+        let elem2: ElementSprite = null;
         {//Add a Sprite 原型
 
 
@@ -68,7 +69,7 @@ export class Test_Element implements IState<Navigator<GContext>> {
             elem.uvHalfSize = new Vector2((s.uv.U2 - s.uv.U1) * 0.5, (s.uv.V2 - s.uv.V1) * 0.5);
             elem.uvLayer = s.uvlayer;
             elem.eff = s.effect;
-            elemindex = this.render.AddElement(elem);
+            elem1 = elem;
         }
         {//Add a Sprite 原型
 
@@ -82,16 +83,15 @@ export class Test_Element implements IState<Navigator<GContext>> {
             //elem.eff = 4;
             elem.uvLayer = s2.uvlayer;
             elem.eff = s2.effect;
-            
-            elemindex2 = this.render.AddElement(elem);
+            elem2 = elem;
         }
         for (var i = 0; i < 1024 * 50; i++) {
             let inst = new ElementInst();
             inst.pos = new Vector3(Math.random() * 400 - 200, Math.random() * 400 - 200, 0);
             inst.rotate = Math.random() * Math.PI;
             inst.scale = new Vector2(1, 1);
-            inst.instid = i % 2 == 0 ? elemindex : elemindex2;
-            inst.eff = 4;
+            inst.elem = i % 2 == 0 ? elem1 : elem2;
+
             inst.color = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             this.render.AddElementInst(inst);
             this.inst.push(inst);

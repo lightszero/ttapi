@@ -2,35 +2,17 @@
 //Render elem 是一种高性能的绘制方式
 //不追求性能就用Render_Batcher 和 Sprite去折腾就好
 
-import { Camera, Color, ILayerRender, Mesh, QUI_Canvas, Resources, UVRect, Vector2, Vector3, VertexFormatMgr } from "../../../ttlayer2.js";
+import { Camera, Color, ILayerRender, Mesh, QUI_Canvas, Resources, UVRect, VBOInfo, Vector2, Vector3, VertexAttribItem, VertexAttribType, VertexFormat, VertexFormatMgr } from "../../../ttlayer2.js";
 import { Material } from "../../material.js";
 
 import { IRenderTarget, ITexture } from "../../texture.js";
 
 import { tt } from "../../../../ttapi/ttapi.js";
+import { ElementInst, ElementSprite } from "./elem.js";
 const elementSpriteSize = 48;//基线4N 必有浪费
-export class ElementSprite {
-    //pos 来自Attr
-    sizeTL: Vector2; //最常见的值 (-8,-8)
-    sizeRB: Vector2; //最常见的值 (8,8) //这样就能构成一个 中心定位的16x16的元素
-    uvCenter: Vector2;//UV中心
-    uvHalfSize: Vector2;//UV半径
-    uvLayer: number;
-    eff: number;
-}
-//directdraw pos3+uv+color+eff 4  *6 noebo = 42 float 最小
-//ElementAttr = 8 float 1/5
-export class ElementInst {
-    pos: Vector3; //32
-    rotate: number;
-    scale: Vector2;
-    color: Color;
-    instid: number;//忘了一个
-    eff: number;//int
-}
 
 const elementInstSize = 32;
-export class Render_Element implements ILayerRender {
+export class Render_Element_Ubo implements ILayerRender {
     //公共材质,所有的元素只能使用同一个材质,这也是这种渲染器效率的来源
     //降低提交元素的带宽到原来的1/5
     //元素支持povit 和 GPU旋转
@@ -45,10 +27,28 @@ export class Render_Element implements ILayerRender {
 
         let gl = tt.graphic.GetWebGL();
         this.mesh = new Mesh();
-        this.mesh.UpdateVertexFormat(gl, VertexFormatMgr.GetFormat_Vertex_InstFull());
+        this.mesh.UpdateVertexFormat(gl, Render_Element_Ubo.GetFormat_Vertex_Ubo());
         this.InitDrawMesh(gl);
     }
+    static inst_ubo: VertexFormat;
+    static GetFormat_Vertex_Ubo(): VertexFormat {
+        if (this.inst_ubo == null) {
+            let vecf = new VertexFormat("Vertex_InstFull");
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//basemesh uv only
 
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[1].vertexAttribDivisor = 4;//instanced data
+            //vbo 存在四字节对齐要求
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//Pos xyz + rotate
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//Scale
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));//color
+            vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_SHORT, 2, false));//INSTid&ext
+            this.inst_ubo = vecf;
+            vecf.Update();
+        }
+        return this.inst_ubo;
+    }
     //元素管理数据部分
     //#region 元素管理
     private elemCount: number;
@@ -56,7 +56,7 @@ export class Render_Element implements ILayerRender {
     private elemBufView: DataView;
     private elemDirty: boolean;
     private ElemInit() {
-        this.elemBufData = new Uint8Array(1024 * elementSpriteSize + 4);
+        this.elemBufData = new Uint8Array(1023 * elementSpriteSize + 4);
         this.elemBufView = new DataView(this.elemBufData.buffer);
         this.elemCount = 0;
         this.elemDirty = false;
@@ -78,9 +78,11 @@ export class Render_Element implements ILayerRender {
         let index = this.elemCount;
         this.elemCount++;
         this.WriteElement(elem, index);
+
         return index;
     }
     WriteElement(elem: ElementSprite, index: number): void {
+        elem.index = index;
         let byteIndex = index * elementSpriteSize;
         this.elemBufView.setFloat32(byteIndex + 0, elem.sizeTL.X, true);
         this.elemBufView.setFloat32(byteIndex + 4, elem.sizeTL.Y, true);
@@ -140,6 +142,9 @@ export class Render_Element implements ILayerRender {
         return index;
     }
     WriteElementInst(elem: ElementInst, index: number): void {
+        if (elem.elem.index < 0)
+            this.AddElement(elem.elem);
+
         if (index * elementInstSize >= this.elemInstBufData.length) {//满了,扩容
             let newarr = new Uint8Array((1024 + index) * elementInstSize);
             for (let i = 0; i < this.elemInstBufData.length; i++) {
@@ -159,8 +164,9 @@ export class Render_Element implements ILayerRender {
         this.elemInstBufView.setUint8(byteIndex + 25, elem.color.G * 255);
         this.elemInstBufView.setUint8(byteIndex + 26, elem.color.B * 255);
         this.elemInstBufView.setUint8(byteIndex + 27, elem.color.A * 255);
-        this.elemInstBufView.setUint16(byteIndex + 28, elem.instid, true);
-        this.elemInstBufView.setUint16(byteIndex + 30, elem.eff, true);
+
+        this.elemInstBufView.setUint16(byteIndex + 28, elem.elem.index, true);
+        //this.elemInstBufView.setUint16(byteIndex + 30, elem.eff, true);
         this.elemInstDirty = true;
     }
     GetElementInst(index: number): ElementInst {
@@ -179,8 +185,9 @@ export class Render_Element implements ILayerRender {
         elem.color.G = this.elemBufView.getUint8(byteIndex + 25) / 255;
         elem.color.B = this.elemBufView.getUint8(byteIndex + 26) / 255;
         elem.color.A = this.elemBufView.getUint8(byteIndex + 27) / 255;
-        elem.instid = this.elemBufView.getUint16(byteIndex + 28, true);
-        elem.eff = this.elemBufView.getUint16(byteIndex + 30, true);
+        let instid = this.elemBufView.getUint16(byteIndex + 28, true);
+        elem.elem = this.GetElement(instid);
+        //elem.eff = this.elemBufView.getUint16(byteIndex + 30, true);
         return elem;
     }
     //#endregion
