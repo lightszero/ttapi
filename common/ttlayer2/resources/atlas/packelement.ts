@@ -97,15 +97,15 @@ export class PackElement {
     }
 
     AddSprite(data: SpriteData, eff: SpriteFormat, name: string | null): ElementSprite {
-        let s = this.packTexDuo.AddSprite(data, eff, null);
-        let e = new ElementSprite();
+        let e = this.packTexDuo.AddSprite(data, eff);
+        //let e = new ElementSprite();
 
-        e.sizeTL = new Vector2(s.pixelwidth / -2, s.pixelheight / -2);
-        e.sizeRB = new Vector2(s.pixelwidth / 2, s.pixelheight / 2);
-        e.uvCenter = new Vector2(s.uv.U1 * 0.5 + s.uv.U2 * 0.5, s.uv.V1 * 0.5 + s.uv.V2 * 0.5);
-        e.uvHalfSize = new Vector2((s.uv.U2 - s.uv.U1) * 0.5, (s.uv.V2 - s.uv.V1) * 0.5);
-        e.uvLayer = s.uvlayer;
-        e.eff = eff;
+        // e.sizeTL = new Vector2(s.pixelwidth / -2, s.pixelheight / -2);
+        // e.sizeRB = new Vector2(s.pixelwidth / 2, s.pixelheight / 2);
+        // e.uvCenter = new Vector2(s.uv.U1 * 0.5 + s.uv.U2 * 0.5, s.uv.V1 * 0.5 + s.uv.V2 * 0.5);
+        // e.uvHalfSize = new Vector2((s.uv.U2 - s.uv.U1) * 0.5, (s.uv.V2 - s.uv.V1) * 0.5);
+        // e.uvLayer = s.uvlayer;
+        // e.eff = eff;
 
         return this.AddElement(name, e);
     }

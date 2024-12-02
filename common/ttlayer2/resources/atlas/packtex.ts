@@ -1,6 +1,7 @@
 import { Color, Rectangle, Vector2 } from "../../math/vector.js";
 import * as maxrect from "../../math/maxrects_packer/src/index.js"
 import { ITexture, Render_Batcher, Sprite, Texture, TextureFormat, DrawPoint, SpriteFormat, TextureArray } from "../../ttlayer2.js"
+import { ElementSprite } from "../../graphics/pipeline/render/elem.js";
 
 
 //精灵,为啥又重写,之前的分层做的不清晰
@@ -14,12 +15,14 @@ export enum ToROption {
     Alpha,//取Alpha
 }
 export class SpriteData {
-    format: TextureFormat
+    format: TextureFormat;
 
     toRgba: ToRGBAOption = ToRGBAOption.R2Alpha;
     toR: ToROption = ToROption.GRAY;
     width: number;
     height: number;
+    pivotX: number = 0;
+    pivotY: number = 0;
     data: Uint8Array | Uint8ClampedArray;
     CopyPixel(buf: Uint8Array | Uint8ClampedArray, index: number, format: TextureFormat, x: number, y: number): void {
         //同格式,直接copy
@@ -80,27 +83,67 @@ export class SpriteData {
             }
         }
     }
+    ConvertToR(): SpriteData {
+        if (this.format != TextureFormat.RGBA32)
+            throw "only rgba can convert to R";
+
+        let data = new SpriteData();
+        data.format = TextureFormat.R8;
+        data.width = this.width;
+        data.height = this.height;
+        data.pivotX = this.pivotX;
+        data.pivotY = this.pivotY;
+        data.data = new Uint8Array(this.width * this.height);
+        for (let y = 0; y < this.height; y++)
+            for (let x = 0; x < this.width; x++) {
+                let i = y * this.width + x;
+                this.CopyPixel(data.data, i, TextureFormat.R8, x, y);
+            }
+
+
+        return data;
+    }
+    ConvertToRGBA(): SpriteData {
+        if (this.format != TextureFormat.R8)
+            throw "only r8 can convert to Rgba";
+
+        let data = new SpriteData();
+        data.format = TextureFormat.RGBA32;
+        data.width = this.width;
+        data.height = this.height;
+        data.pivotX = this.pivotX;
+        data.pivotY = this.pivotY;
+        data.data = new Uint8Array(this.width * this.height);
+        for (let y = 0; y < this.height; y++)
+            for (let x = 0; x < this.width; x++) {
+                let i = (y * this.width + x) * 4;
+                this.CopyPixel(data.data, i, TextureFormat.RGBA32, x, y);
+            }
+
+
+        return data;
+
+    }
 
 }
 export class PackTexture extends TextureArray {
     constructor(webgl: WebGL2RenderingContext, width: number, height: number, format: TextureFormat, layercount: number, border: number = 0) {
         super(webgl, width, height, layercount, format);
         this.maxrect = new maxrect.MaxRectsBin(width, height, border);
-        this.sprites = [];
-        this.namedsprites = {};
+        //this.sprites = [];
+        //this.namedsprites = {};
         this.pixelbuf = new Uint8Array(width * height * (format == TextureFormat.RGBA32 ? 4 : 1));
         this.dirty = false;
     }
-    sprites: Sprite[];
-    namedsprites: { [id: string]: Sprite };
+    // sprites: Sprite[];
+    // namedsprites: { [id: string]: Sprite };
     maxrect: maxrect.MaxRectsBin;
 
     pixelbuf: Uint8Array;
     dirty: boolean = false;
 
-    AddSprite(data: SpriteData, effect: SpriteFormat, name: string = null): Sprite {
-        if (name != null && this.namedsprites[name] != undefined)
-            throw "AddSprite:Sprite Key 冲突";
+    AddSprite(data: SpriteData, effect: SpriteFormat): ElementSprite {
+
         let rect = this.maxrect.add(data.width, data.height, null);
         if (rect == undefined) {
             this.maxrect.reset();
@@ -124,20 +167,17 @@ export class PackTexture extends TextureArray {
             }
         }
         this.dirty = true;
-        let s = new Sprite(this, null);
-        s.effect = effect;
-        s.uv.U1 = rect.x / this._width;
-        s.uv.V1 = rect.y / this._height;
-        s.uv.U2 = (rect.x + data.width) / this._width;
-        s.uv.V2 = (rect.y + data.height) / this._height;
-        s.pixelwidth = data.width;
-        s.pixelheight = data.height;
-        s.uvlayer = this.curlayer;
-        s.texrgba = this;
-        this.sprites.push(s);
-        if (name != null) {
-            this.namedsprites[name] = s;
-        }
+        let s = new ElementSprite();
+        s.sizeTL = new Vector2(-data.pivotX, -data.pivotY);
+        s.sizeRB = new Vector2(data.width - data.pivotX, data.height - data.pivotY);
+        let u1 = rect.x / this._width;
+        let v1 = rect.y / this._height;
+        let u2 = (rect.x + data.width) / this._width;
+        let v2 = (rect.y + data.height) / this._height;
+        s.uvCenter = new Vector2((u1 + u2) * 0.5, (v1 + v2) * 0.5);
+        s.uvHalfSize = new Vector2((u2 - u1) * 0.5, (v2 - v1) * 0.5);
+        s.uvLayer = this.curlayer;
+        s.eff = effect;
         return s;
     }
     curlayer: number = 0;
@@ -155,17 +195,13 @@ export class PackTextureDuo {
     packRGBA: PackTexture;
     packGray: PackTexture;
 
-    AddSprite(data: SpriteData, effect: SpriteFormat, name: string = null): Sprite {
+    AddSprite(data: SpriteData, effect: SpriteFormat): ElementSprite {
         if (effect == SpriteFormat.RGBA) {
-            let s = this.packRGBA.AddSprite(data, effect, name);
-            s.texrgba = this.packRGBA;
-            s.texgray = this.packGray;
+            let s = this.packRGBA.AddSprite(data, effect);
             return s;
         }
         else {
-            let s = this.packGray.AddSprite(data, effect, name);
-            s.texrgba = this.packRGBA;
-            s.texgray = this.packGray;
+            let s = this.packGray.AddSprite(data, effect);
             return s;
         }
     }

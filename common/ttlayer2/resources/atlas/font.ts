@@ -1,16 +1,17 @@
 import { Color, Rectangle, Vector2 } from "../../math/vector.js";
 import { Render_Batcher, Sprite, SpriteFormat, TextTool, Texture, TextureFormat } from "../../ttlayer2.js";
+import { PackElement } from "./packelement.js";
 import { PackTexture, PackTextureDuo, SpriteData, ToROption } from "./packtex.js";
 
 export class Font {
-    constructor(webgl: WebGL2RenderingContext, font: string, size: number, packtex: PackTextureDuo) {
+    constructor(webgl: WebGL2RenderingContext, font: string, size: number, packtex: PackElement) {
         this.fonttex = packtex;
         this.fontsize = size;
         this.fontname = font;
     }
     private fontname: string;
     private fontsize: number;
-    private fonttex: PackTextureDuo;
+    private fonttex: PackElement;
     //     private _pool: Texture8Pool
     //     private _fontdata: TTFontData
     //     private _mapSprites: { [id: number]: Sprite } = {}
@@ -24,7 +25,7 @@ export class Font {
 
         let s = this._CacheCharSprite(charCode);
         if (s != null) {
-            this.fonttex.packGray.Apply();
+            this.fonttex.ApplyTextureData();
         }
         return s;
     }
@@ -32,9 +33,10 @@ export class Font {
 
 
         let txt = String.fromCharCode(charCode);
-        let s = this.fonttex.packGray.namedsprites[txt];
-        if (s != null)
-            return s;
+        let e = this.fonttex.GetElementByName(txt);
+        //  let s = this.fonttex.packGray.namedsprites[txt];
+        if (e != null)
+            return this.fonttex.ConvertElemToSprite(e);
 
         try {
             let imgdata = TextTool.LoadTextPixel(txt, this.fontname, this.fontsize, this.fontsize + 2, this.fontsize + 2, 0, 0);
@@ -49,14 +51,17 @@ export class Font {
             // }
             let data = new SpriteData()
             data.format = TextureFormat.RGBA32;
-            data.toR = ToROption.Alpha;
+
             data.data = imgdata.data;
             data.width = imgdata.width;
             data.height = imgdata.height;
 
-            s = this.fonttex.AddSprite(data, SpriteFormat.GrayAsAlpha, txt);
+            let data2 = data.ConvertToR();
+            data2.toR = ToROption.Alpha;
+            e = this.fonttex.AddSprite(data2, SpriteFormat.GrayAsAlpha, txt);
 
-            return s;
+            return this.fonttex.ConvertElemToSprite(e);
+
         }
         catch (e) {
             console.error("cache char error:" + e);
@@ -77,7 +82,7 @@ export class Font {
             }
 
         }
-        this.fonttex.packGray.Apply();
+        this.fonttex.ApplyTextureData();
         return width;
     }
     RenderText(bathcer: Render_Batcher, text: string, pos: Vector2, scale: Vector2, color: Color): void {

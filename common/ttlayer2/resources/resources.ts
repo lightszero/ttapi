@@ -25,7 +25,7 @@ export class Resources {
         packedduo.packRGBA = new PackTexture(gl, op.packedRGBAWidth, op.packedRGBAHeight,
             TextureFormat.RGBA32, op.packedRGBALayerCount, 0);
         this.packedelem = new PackElement(packedduo);
-        this.deffont = new Font(gl, op.defFontName, op.defFontSize, this.packedelem.GetPackTexDuo());
+        this.deffont = new Font(gl, op.defFontName, op.defFontSize, this.packedelem);
 
         this.InitInnerResource(gl);
 
@@ -153,7 +153,7 @@ export class Resources {
     }
     private static deffont: Font = null;
     static CreateFont(fontname: string, fontsize: number): Font {
-        let font = new Font(tt.graphic.GetWebGL(), fontname, fontsize, this.packedelem.GetPackTexDuo());
+        let font = new Font(tt.graphic.GetWebGL(), fontname, fontsize, this.packedelem);
         return font;
     }
 

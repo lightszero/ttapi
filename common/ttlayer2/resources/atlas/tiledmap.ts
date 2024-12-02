@@ -124,48 +124,48 @@ export class TiledMap {
     }
     _InitMapInfo(): void {
 
-        let reddata = new SpriteData();
-        reddata.format = TextureFormat.RGBA32;
-        reddata.width = this.tiledsize;
-        reddata.height = this.tiledsize;
-        reddata.data = new Uint8Array(this.tiledsize * this.tiledsize * 4);
-        for (let i = 0; i < this.tiledsize * this.tiledsize; i++) {
-            reddata.data[i * 4] = i * 3;
-            reddata.data[i * 4 + 1] = 0;
-            reddata.data[i * 4 + 2] = 0;
-            reddata.data[i * 4 + 3] = 255;
-        }
-        let sred = this.tiledsprite.AddSprite(reddata, SpriteFormat.RGBA, "red");
+        // let reddata = new SpriteData();
+        // reddata.format = TextureFormat.RGBA32;
+        // reddata.width = this.tiledsize;
+        // reddata.height = this.tiledsize;
+        // reddata.data = new Uint8Array(this.tiledsize * this.tiledsize * 4);
+        // for (let i = 0; i < this.tiledsize * this.tiledsize; i++) {
+        //     reddata.data[i * 4] = i * 3;
+        //     reddata.data[i * 4 + 1] = 0;
+        //     reddata.data[i * 4 + 2] = 0;
+        //     reddata.data[i * 4 + 3] = 255;
+        // }
+        // let sred = this.tiledsprite.AddSprite(reddata, SpriteFormat.RGBA, "red");
 
 
-        let bluedata = new SpriteData();
-        bluedata.format = TextureFormat.RGBA32;
-        bluedata.width = this.tiledsize;
-        bluedata.height = this.tiledsize;
-        bluedata.data = new Uint8Array(this.tiledsize * this.tiledsize * 4);
-        for (let i = 0; i < this.tiledsize * this.tiledsize; i++) {
-            bluedata.data[i * 4] = 0;
-            bluedata.data[i * 4 + 1] = 0;
-            bluedata.data[i * 4 + 2] = i * 3;
-            bluedata.data[i * 4 + 3] = 255;
-        }
-        let sblue = this.tiledsprite.AddSprite(bluedata, SpriteFormat.RGBA, "blue");
-        this.tiledsprite.Apply();
+        // let bluedata = new SpriteData();
+        // bluedata.format = TextureFormat.RGBA32;
+        // bluedata.width = this.tiledsize;
+        // bluedata.height = this.tiledsize;
+        // bluedata.data = new Uint8Array(this.tiledsize * this.tiledsize * 4);
+        // for (let i = 0; i < this.tiledsize * this.tiledsize; i++) {
+        //     bluedata.data[i * 4] = 0;
+        //     bluedata.data[i * 4 + 1] = 0;
+        //     bluedata.data[i * 4 + 2] = i * 3;
+        //     bluedata.data[i * 4 + 3] = 255;
+        // }
+        // let sblue = this.tiledsprite.AddSprite(bluedata, SpriteFormat.RGBA, "blue");
+        // this.tiledsprite.Apply();
 
-        PerlinNoise.Reset();
-        for (let y = 0; y < this.mapinfo._height; y++) {
-            for (let x = 0; x < this.mapinfo._width; x++) {
-                let index = (y * this.mapinfo._width + x) * 4;
-                let z = PerlinNoise.GenNoise(x / 128, y / 128, 0, 3, 2);
-                let c = z > 0.5;
-                this.mapinfo.pixelbuf[index] = c ? sred.uv.U1 : sblue.uv.U1;
-                this.mapinfo.pixelbuf[index + 1] = c ? sred.uv.U1 : sblue.uv.V1;
-                this.mapinfo.pixelbuf[index + 2] = 255;
-                this.mapinfo.pixelbuf[index + 3] = 255;
-            }
-        }
+        // PerlinNoise.Reset();
+        // for (let y = 0; y < this.mapinfo._height; y++) {
+        //     for (let x = 0; x < this.mapinfo._width; x++) {
+        //         let index = (y * this.mapinfo._width + x) * 4;
+        //         let z = PerlinNoise.GenNoise(x / 128, y / 128, 0, 3, 2);
+        //         let c = z > 0.5;
+        //         this.mapinfo.pixelbuf[index] = c ? sred.uv.U1 : sblue.uv.U1;
+        //         this.mapinfo.pixelbuf[index + 1] = c ? sred.uv.U1 : sblue.uv.V1;
+        //         this.mapinfo.pixelbuf[index + 2] = 255;
+        //         this.mapinfo.pixelbuf[index + 3] = 255;
+        //     }
+        // }
 
-        this.mapinfo.Apply(true);
+        //this.mapinfo.Apply(true);
     }
 
     Render(gl: WebGL2RenderingContext): void {
