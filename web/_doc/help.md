@@ -17,4 +17,6 @@
 
 当前目标
 
-封装好UBO,做好Render_ELEM
+已经引入texturearray 和 element tbo，基本绘制能力已经稳定
+
+往架构和工具方面动一动。
