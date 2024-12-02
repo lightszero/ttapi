@@ -1,15 +1,17 @@
 
+import { ElementSprite } from "../graphics/pipeline/render/elem.js";
+import { PackElement } from "../resources/packtex/packelement.js";
 import { Color, Rectangle, Sprite } from "../ttlayer2.js";
 import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
 
 
 export class QUI_Image extends QUI.QUI_BaseElement {
-    constructor(sprite: Sprite | null = null) {
+    constructor(sprite: ElementSprite = null, packelem: PackElement = null) {
         super();
-        this.sprite = sprite;
+        this.sprite = packelem.ConvertElemToSprite(sprite);
         if (this.sprite != null) {
-            this.localRect.setByRect(new Rectangle(0, 0, sprite.pixelwidth, sprite.pixelheight));
+            this.localRect.setByRect(new Rectangle(0, 0, this.sprite.pixelwidth, this.sprite.pixelheight));
         }
         else {
             this.localRect.setByRect(new Rectangle(0, 0, 100, 100));

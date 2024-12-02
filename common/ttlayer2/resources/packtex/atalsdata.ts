@@ -1,6 +1,6 @@
 import { DataStream } from "../../utils/stream/datastream.js";
 import { ITransfer, Transfer_Uint8, TransferMode } from "../../utils/stream/transfer.js";
-import { SpriteFormat } from "../../ttlayer2.js";
+import { ElementFormat } from "../../ttlayer2.js";
 
 
 
@@ -13,20 +13,20 @@ export class SpriteData implements ITransfer {
     sizeX: number = 0;
     sizeY: number = 0;
     //format
-    format: SpriteFormat = SpriteFormat.RGBA;
+    format: ElementFormat = ElementFormat.RGBA;
     //pixels
     data: number[] = [];//
 
     //得到一个像素的容量
     GetPixelSize(): number {
-        if (this.format == SpriteFormat.RGBA)
+        if (this.format == ElementFormat.RGBA)
             return 4;
         else
             return 1;
     }
     //得到Data的容量
     GetDataSize(): number {
-        if (this.format == SpriteFormat.RGBA)
+        if (this.format == ElementFormat.RGBA)
             return this.sizeX * this.sizeY * 4;
         else
             return this.sizeX * this.sizeY;

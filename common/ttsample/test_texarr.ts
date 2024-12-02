@@ -1,5 +1,5 @@
 import { tt } from "../ttapi/ttapi.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, TextureArray, TextureFormat, QUI_Image, Sprite, SpriteFormat, Texture } from "../ttlayer2/ttlayer2.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, TextureArray, TextureFormat, QUI_Image, Sprite, ElementFormat, Texture } from "../ttlayer2/ttlayer2.js";
 import { GContext } from "./ttstate_all.js";
 
 export class Test_TexArr implements IState<Navigator<GContext>> {
@@ -36,21 +36,21 @@ export class Test_TexArr implements IState<Navigator<GContext>> {
         this.AddLabel("tex2=" + t2.getWidth() + "," + t2.getHeight() );
         this.AddLabel("普通贴图传给texturearray不能正常渲染" );
 
-        let s = new Sprite(Resources.GetPackElement().GetPackTexDuo().packRGBA, t);
-        let s2 = new Sprite(Resources.GetPackElement().GetPackTexDuo().packRGBA, t2);
-        s.effect = s2.effect = SpriteFormat.GrayAsAlpha;
-        {
-            let img = new QUI_Image(s);
-            img.localRect.setHPosByLeftBorder(256, 32);
-            img.localRect.setVPosByTopBorder(256, 32);
-            this.guilayer.GetCanvas().addChild(img);
-        }
-        {
-            let img = new QUI_Image(s2);
-            img.localRect.setHPosByLeftBorder(256, 300);
-            img.localRect.setVPosByTopBorder(256, 32);
-            this.guilayer.GetCanvas().addChild(img);
-        }
+        // let s = Resources.GetPackElement().
+        // let s2 = new Sprite(Resources.GetPackElement().GetPackTexDuo().packRGBA, t2);
+        // s.effect = s2.effect = ElementFormat.GrayAsAlpha;
+        // {
+        //     let img = new QUI_Image(s);
+        //     img.localRect.setHPosByLeftBorder(256, 32);
+        //     img.localRect.setVPosByTopBorder(256, 32);
+        //     this.guilayer.GetCanvas().addChild(img);
+        // }
+        // {
+        //     let img = new QUI_Image(s2);
+        //     img.localRect.setHPosByLeftBorder(256, 300);
+        //     img.localRect.setVPosByTopBorder(256, 32);
+        //     this.guilayer.GetCanvas().addChild(img);
+        // }
     }
     y: number = 64;
     AddLabel(text: string): void {

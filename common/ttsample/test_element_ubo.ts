@@ -79,13 +79,13 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
 
 
             let elem = new ElementSprite();
-            elem.sizeTL = new Vector2(-8, -8);
-            elem.sizeRB = new Vector2(8, 8);
+            elem.sizeTL = new Vector2(0, 0);
+            elem.sizeRB = new Vector2(16, 16);
 
-            elem.uvCenter = new Vector2(s.uv.U1 * 0.5 + s.uv.U2 * 0.5, s.uv.V1 * 0.5 + s.uv.V2 * 0.5);
-            elem.uvHalfSize = new Vector2((s.uv.U2 - s.uv.U1) * 0.5, (s.uv.V2 - s.uv.V1) * 0.5);
-            elem.uvLayer = s.uvlayer;
-            elem.eff = s.effect;
+            elem.uvCenter = s.uvCenter.Clone();
+            elem.uvHalfSize = s.uvHalfSize.Clone();
+            elem.uvLayer = s.uvLayer;
+            elem.eff = s.eff
             this.render.AddElement(elem);
             elem1 = elem;
         }
@@ -96,15 +96,14 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
             elem.sizeTL = new Vector2(-8, -8);
             elem.sizeRB = new Vector2(8, 8);
 
-            elem.uvCenter = new Vector2(s2.uv.U1 * 0.5 + s2.uv.U2 * 0.5, s2.uv.V1 * 0.5 + s2.uv.V2 * 0.5);
-            elem.uvHalfSize = new Vector2((s2.uv.U2 - s2.uv.U1) * 0.5, (s2.uv.V2 - s2.uv.V1) * 0.5);
-            //elem.eff = 4;
-            elem.uvLayer = s2.uvlayer;
-            elem.eff = s2.effect;
+            elem.uvCenter = s2.uvCenter.Clone();
+            elem.uvHalfSize = s2.uvHalfSize.Clone();
+            elem.uvLayer = s2.uvLayer;
+            elem.eff = s2.eff
             this.render.AddElement(elem);
             elem2 = elem;
         }
-        for (var i = 0; i < 1024 * 50; i++) {
+        for (var i = 0; i < 1024 ; i++) {
             let inst = new ElementInst();
             inst.pos = new Vector3(Math.random() * 400 - 200, Math.random() * 400 - 200, 0);
             inst.rotate = Math.random() * Math.PI;

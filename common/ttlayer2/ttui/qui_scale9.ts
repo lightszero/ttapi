@@ -1,4 +1,6 @@
 
+import { ElementSprite } from "../graphics/pipeline/render/elem.js";
+import { PackElement } from "../resources/packtex/packelement.js";
 import { Sprite, Border, Render_Batcher, Rectangle, Color, DrawPoint } from "../ttlayer2.js";
 import * as QUI from "./qui_base.js"
 //9宫格,通常用于实现边角缩放的UI背景之类的功能
@@ -9,18 +11,18 @@ export class QUI_Scale9 {
     //minwidth 最小尺寸，如果给0，自动计算
     //minheight 最小尺寸，如果给0，自动计算
     //如果小于最小尺寸，无法正确渲染
-    constructor(sprite: Sprite, border: Border, minwidth: number = 0, minheight: number = 0) {
+    constructor(sprite: ElementSprite, packelem: PackElement, border: Border, minwidth: number = 0, minheight: number = 0) {
 
-        this.sprite = sprite;
+        this.sprite = packelem.ConvertElemToSprite(sprite);
         this.l = border.XLeft;
         this.r = border.XRight;
         this.t = border.YTop;
         this.b = border.YBottom;
 
-        let acttex = sprite.effect == 0 ? sprite.texrgba : sprite.texgray;
+        let acttex = this.sprite.effect == 0 ? this.sprite.texrgba : this.sprite.texgray;
         this._texwidth = acttex.getWidth();
         this._texheight = acttex.getHeight();
-        let uv = sprite.uv;
+        let uv = this.sprite.uv;
 
         this.u0 = uv.U1;//left
         this.u3 = uv.U2;//right

@@ -1,9 +1,10 @@
 import { tt } from "../../ttapi/ttapi.js";
 import { CompileShader, LinkShader, LinkShaderFeedBack, ShaderObj, ShaderProgram, ShaderType } from "../graphics/shader.js";
-import { Atlas } from "./atlas/atlas.js";
-import { PackTexture, PackTextureDuo, SpriteData, ToROption } from "./atlas/packtex.js";
-import { Border, Color, Font, InitInnerShader, ITexture, QUI_Button, QUI_HAlign, QUI_Image, QUI_ImageScale9, QUI_Label, QUI_Scale9, QUI_VAlign, Sprite, SpriteFormat, Texture, TextureFormat, Vector2 } from "../ttlayer2.js";
-import { PackElement } from "./atlas/packelement.js";
+
+import { PackTexture, PackTextureDuo, SpriteData, ToROption } from "./packtex/packtex.js";
+import { Border, Color, Font, InitInnerShader, ITexture, QUI_Button, QUI_HAlign, QUI_Image, QUI_ImageScale9, QUI_Label, QUI_Scale9, QUI_VAlign, Sprite, ElementFormat, Texture, TextureFormat, Vector2 } from "../ttlayer2.js";
+import { PackElement } from "./packtex/packelement.js";
+import { ElementSprite } from "../graphics/pipeline/render/elem.js";
 
 export class ResourceOption {
     defFontName: string = "Arail";
@@ -47,7 +48,7 @@ export class Resources {
                     spdata.data[y * spdata.width + x] = 255;
                 }
             }
-            this.packedelem.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "white");
+            this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "white");
         }
         //border
         {
@@ -68,7 +69,7 @@ export class Resources {
                     255, 255, 255, 255, 255, 255, 255, 255,
                 ]
             );
-            this.packedelem.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "border");
+            this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "border");
         }
         //border2
         {
@@ -89,7 +90,7 @@ export class Resources {
                     255, 255, 255, 255, 255, 255, 255, 255,
                 ]
             );
-            this.packedelem.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "border2");
+            this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "border2");
         }
         //round
         {
@@ -111,7 +112,7 @@ export class Resources {
                     0.0, 0.0, 0.0, 255, 255, 0.0, 0.0, 0.0,
                 ]
             );
-            this.packedelem.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "round");
+            this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "round");
         }
         this.packedelem.ApplyTextureData();
     }
@@ -126,28 +127,27 @@ export class Resources {
         return this.packedelem;
     }
 
-    static getWhiteBlock(): Sprite {
-        let elem = this.packedelem.GetElementByName("white");;
-        return this.packedelem.ConvertElemToSprite(elem);
+    static getWhiteBlock(): ElementSprite {
+        return this.packedelem.GetElementByName("white");;
+
     }
-    static GetRoundBlock(): Sprite {
-      
-        let elem = this.packedelem.GetElementByName("round");;
-        return this.packedelem.ConvertElemToSprite(elem);
+    static GetRoundBlock(): ElementSprite {
+
+        return this.packedelem.GetElementByName("round");;
     }
-    static GetBorderBlock(): Sprite {
-       
-        let elem = this.packedelem.GetElementByName("border");;
-        return this.packedelem.ConvertElemToSprite(elem);
+    static GetBorderBlock(): ElementSprite {
+
+        return this.packedelem.GetElementByName("border");;
+
     }
-    static GetBorder2Block(): Sprite {
-        let elem = this.packedelem.GetElementByName("border2");;
-        return this.packedelem.ConvertElemToSprite(elem);
+    static GetBorder2Block(): ElementSprite {
+        return this.packedelem.GetElementByName("border2");;
+
     }
     static scale_border: QUI_Scale9 = null;
     static GetBorderScale(): QUI_Scale9 {
         if (this.scale_border == null) {
-            this.scale_border = new QUI_Scale9(this.GetBorderBlock(), new Border(3, 3, 3, 3));
+            this.scale_border = new QUI_Scale9(this.GetBorderBlock(), this.packedelem, new Border(3, 3, 3, 3));
         }
         return this.scale_border;
     }

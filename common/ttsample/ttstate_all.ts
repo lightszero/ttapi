@@ -1,6 +1,6 @@
 
 import { tt } from "../ttapi/ttapi.js";
-import { DrawLayer_GUI, Resources, Border, Font, GameApp, IState, StateMgr, Vector2, QUI_ImageScale9, QUI_Label, QUI_Scale9, Color, IUserLogic, Navigator, DrawLayerTag, QUI_Image, QUI_HAlign, TextureArray, TextureFormat, Texture, Sprite, SpriteFormat } from "../ttlayer2/ttlayer2.js";
+import { DrawLayer_GUI, Resources, Border, Font, GameApp, IState, StateMgr, Vector2, QUI_ImageScale9, QUI_Label, QUI_Scale9, Color, IUserLogic, Navigator, DrawLayerTag, QUI_Image, QUI_HAlign, TextureArray, TextureFormat, Texture, ElementFormat } from "../ttlayer2/ttlayer2.js";
 import { View_Menu } from "./view_menu.js";
 
 
@@ -50,7 +50,7 @@ export class TTState_All implements IUserLogic {
             label.localRect.setHPosFill(32, 32);
             label.localRect.setVPosByTopBorder(16, 8);
 
-            let img = new QUI_Image(Resources.GetRoundBlock());
+            let img = new QUI_Image(Resources.GetRoundBlock(),Resources.GetPackElement());
             img.localRect.setHPosByLeftBorder(16, 0);
             img.localRect.setVPosByTopBorder(16, 0);
             context.topuiview.GetCanvas().addChild(img);

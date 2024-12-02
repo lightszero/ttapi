@@ -91,31 +91,33 @@ var vs_inst_tbo: string = /*glsl*/`#version 300 es
         //poslocal is work
 
 
-        //--begin rotate
-        float cosv = cos(posrotate.w);
-        float sinv = sin(posrotate.w);
-        
+    
         float poslocallen = sqrt(dot(poslocal,poslocal));
         if(poslocallen<0.001)   
         {
-            gl_Position =vec4(0,0,0,0);
+            //too near to zeropoint no rotate
+            //gl_Position =vec4(0,0,0,0);
         }
         else
         {
+            //--begin rotate
+            float cosv = cos(posrotate.w);
+            float sinv = sin(posrotate.w);
+            
             vec2 poslocalnor = poslocal / poslocallen;
             poslocal.x = cosv*poslocalnor.x + -sinv*poslocalnor.y;
             poslocal.y = sinv*poslocalnor.x + cosv*poslocalnor.y;
             poslocal *= poslocallen;
             //--end rorate
-
-            vec4 pos = vec4(posrotate.xyz,1);
-
-            //apply tran
-            pos.xy+=poslocal;
-            //----end finalpos
-            mat4 matrix = matProj*matView*matModel;
-            gl_Position = matrix * pos;
         }
+        vec4 pos = vec4(posrotate.xyz,1);
+
+        //apply tran
+        pos.xy+=poslocal;
+        //----end finalpos
+        mat4 matrix = matProj*matView*matModel;
+        gl_Position = matrix * pos;
+       
         //pass uv
         vec2 uv =  s.uvCenter + elemuv*s.uvHalfSize;
        
@@ -177,30 +179,33 @@ var vs_inst_ubo: string = /*glsl*/`#version 300 es
 
 
         //--begin rotate
-        float cosv = cos(posrotate.w);
-        float sinv = sin(posrotate.w);
-        
+       
         float poslocallen = sqrt(dot(poslocal,poslocal));
         if(poslocallen<0.001)   
         {
-            gl_Position =vec4(0,0,0,0);
+            //too near to zeropoint no rotate
+            //gl_Position =vec4(0,0,0,0);
         }
         else
         {
+            float cosv = cos(posrotate.w);
+            float sinv = sin(posrotate.w);
+            
             vec2 poslocalnor = poslocal / poslocallen;
             poslocal.x = cosv*poslocalnor.x + -sinv*poslocalnor.y;
             poslocal.y = sinv*poslocalnor.x + cosv*poslocalnor.y;
             poslocal *= poslocallen;
-            //--end rorate
-
-            vec4 pos = vec4(posrotate.xyz,1);
-
-            //apply tran
-            pos.xy+=poslocal;
-            //----end finalpos
-            mat4 matrix = matProj*matView*matModel;
-            gl_Position = matrix * pos;
         }
+        //--end rorate
+
+        vec4 pos = vec4(posrotate.xyz,1);
+
+        //apply tran
+        pos.xy+=poslocal;
+        //----end finalpos
+        mat4 matrix = matProj*matView*matModel;
+        gl_Position = matrix * pos;
+        
         //pass uv
         vec2 uv =  s.uvCenter + elemuv*s.uvHalfSize;
        

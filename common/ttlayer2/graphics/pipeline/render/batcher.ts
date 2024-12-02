@@ -9,7 +9,7 @@ import { Material } from "../../material.js";
 import { VertexFormatMgr } from "../../mesh.js";
 
 import { ShaderProgram } from "../../shader.js";
-export enum SpriteFormat {
+export enum ElementFormat {
     RGBA = 0,
     Gray = 1,
 
@@ -42,7 +42,7 @@ export class DrawPoint {
     palx: number = 0;   //offset 24
     paly: number = 0;   //offset 25
     anyz: number = 0;  //offset 26 //this can be auto,no need to public
-    eff: SpriteFormat = 0;    //offset 27
+    eff: ElementFormat = 0;    //offset 27
     //pixel length =28
 
     Clone(): DrawPoint {

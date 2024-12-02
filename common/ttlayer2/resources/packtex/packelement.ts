@@ -1,7 +1,7 @@
 import { version } from "../../../node_modules/typescript/lib/typescript.js";
 import { tt } from "../../../ttapi/ttapi.js";
 import { ElementSprite } from "../../graphics/pipeline/render/elem.js";
-import { Border, Sprite, SpriteFormat, Texture, TextureFormat, UVRect, Vector2 } from "../../ttlayer2.js";
+import { Border, Sprite, ElementFormat, Texture, TextureFormat, UVRect, Vector2 } from "../../ttlayer2.js";
 import { PackTextureDuo, SpriteData } from "./packtex.js";
 
 
@@ -66,7 +66,7 @@ export class PackElement {
         this.elemBufData[Findex + 4] = elem.uvCenter.X;
         this.elemBufData[Findex + 5] = elem.uvCenter.Y;
         this.elemBufData[Findex + 6] = elem.uvHalfSize.X;
-        this.elemBufData[Findex + 7] = elem.uvHalfSize.Y;;
+        this.elemBufData[Findex + 7] = elem.uvHalfSize.Y;
 
         this.elemBufData[Findex + 8] = elem.uvLayer;
         this.elemBufData[Findex + 11] = elem.eff;
@@ -96,7 +96,7 @@ export class PackElement {
         return elem;
     }
 
-    AddSprite(data: SpriteData, eff: SpriteFormat, name: string | null): ElementSprite {
+    AddSprite(data: SpriteData, eff: ElementFormat, name: string | null): ElementSprite {
         let e = this.packTexDuo.AddSprite(data, eff);
         //let e = new ElementSprite();
 

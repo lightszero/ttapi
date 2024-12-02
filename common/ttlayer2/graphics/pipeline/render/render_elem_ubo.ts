@@ -9,7 +9,7 @@ import { IRenderTarget, ITexture } from "../../texture.js";
 
 import { tt } from "../../../../ttapi/ttapi.js";
 import { ElementInst, ElementSprite, ElementUtil } from "./elem.js";
-import { PackTextureDuo } from "../../../resources/atlas/packtex.js";
+import { PackTextureDuo } from "../../../resources/packtex/packtex.js";
 const elementSpriteSize = 48;//基线4N 必有浪费
 
 const elementInstSize = 32;

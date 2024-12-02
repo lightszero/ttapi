@@ -74,43 +74,12 @@ export class Test_Element_TBO implements IState<Navigator<GContext>> {
 
         this.render.SetPackElement(Resources.GetPackElement());
 
-        let elem1: ElementSprite = null;
-        let elem2: ElementSprite = null;
-        {//Add a Sprite 原型
-
-
-            let elem = new ElementSprite();
-            elem.sizeTL = new Vector2(-8, -8);
-            elem.sizeRB = new Vector2(8, 8);
-
-            elem.uvCenter = new Vector2(s.uv.U1 * 0.5 + s.uv.U2 * 0.5, s.uv.V1 * 0.5 + s.uv.V2 * 0.5);
-            elem.uvHalfSize = new Vector2((s.uv.U2 - s.uv.U1) * 0.5, (s.uv.V2 - s.uv.V1) * 0.5);
-            elem.uvLayer = s.uvlayer;
-            elem.eff = s.effect;
-
-            elem1 = Resources.GetPackElement().AddElementNoname(elem);
-        }
-        {//Add a Sprite 原型
-
-
-            let elem = new ElementSprite();
-            elem.sizeTL = new Vector2(-8, -8);
-            elem.sizeRB = new Vector2(8, 8);
-
-            elem.uvCenter = new Vector2(s2.uv.U1 * 0.5 + s2.uv.U2 * 0.5, s2.uv.V1 * 0.5 + s2.uv.V2 * 0.5);
-            elem.uvHalfSize = new Vector2((s2.uv.U2 - s2.uv.U1) * 0.5, (s2.uv.V2 - s2.uv.V1) * 0.5);
-            //elem.eff = 4;
-            elem.uvLayer = s2.uvlayer;
-            elem.eff = s2.effect;
-           
-            elem2 = Resources.GetPackElement().AddElementNoname(elem);
-        }
         for (var i = 0; i < 1024 * 50; i++) {
             let inst = new ElementInst();
             inst.pos = new Vector3(Math.random() * 400 - 200, Math.random() * 400 - 200, 0);
             inst.rotate = Math.random() * Math.PI;
             inst.scale = new Vector2(1, 1);
-            inst.instid = i % 2 == 0 ? elem1.index : elem2.index;
+            inst.instid = i % 2 == 0 ? s.index : s2.index;
 
             inst.color = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             this.render.AddElementInst(inst);

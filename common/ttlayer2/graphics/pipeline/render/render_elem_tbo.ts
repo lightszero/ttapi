@@ -9,8 +9,8 @@ import { IRenderTarget, ITexture, Texture, TextureFormat } from "../../texture.j
 
 import { tt } from "../../../../ttapi/ttapi.js";
 import { ElementInst, ElementSprite, ElementUtil } from "./elem.js";
-import { PackTextureDuo } from "../../../resources/atlas/packtex.js";
-import { PackElement as PackElement } from "../../../resources/atlas/packelement.js";
+import { PackTextureDuo } from "../../../resources/packtex/packtex.js";
+import { PackElement as PackElement } from "../../../resources/packtex/packelement.js";
 
 
 const elementInstSize = 32;
@@ -192,7 +192,7 @@ export class Render_Element_Tbo implements ILayerRender {
             let gl = tt.graphic.GetWebGL();
 
             this.packelem.ApplyTextureData();
-            
+
             if (this.elemInstDirty) {
                 this.mesh.UploadVertexBuffer(gl, 1, this.elemInstBufData, true, this.elemInstBufData.byteLength);
                 this.elemInstDirty = false;

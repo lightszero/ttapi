@@ -3,7 +3,7 @@ import { Matrix3x2, Matrix3x2Math } from "../../math/Matrix3x2.js";
 import { PerlinNoise } from "../../math/perlin/perlin.js";
 
 
-import { GameApp, Material, Mesh, Resources, SpriteFormat, TextureFormat } from "../../ttlayer2.js";
+import { GameApp, Material, Mesh, Resources, ElementFormat, TextureFormat } from "../../ttlayer2.js";
 import { PackTexture, SpriteData } from "./packtex.js";
 
 export class Tiled {

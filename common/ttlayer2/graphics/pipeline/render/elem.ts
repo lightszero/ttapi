@@ -1,6 +1,6 @@
 import { tt } from "../../../../ttapi/ttapi.js";
-import { PackTextureDuo } from "../../../resources/atlas/packtex.js";
-import { Color, SpriteFormat, Texture, TextureFormat, VBOInfo, Vector2, Vector3, VertexAttribItem, VertexAttribType, VertexFormat } from "../../../ttlayer2.js";
+import { PackTextureDuo } from "../../../resources/packtex/packtex.js";
+import { Color, ElementFormat, Texture, TextureFormat, VBOInfo, Vector2, Vector3, VertexAttribItem, VertexAttribType, VertexFormat } from "../../../ttlayer2.js";
 
 export class ElementSprite {
     index: number = -1;//未分配索引
@@ -10,7 +10,7 @@ export class ElementSprite {
     uvCenter: Vector2;//UV中心
     uvHalfSize: Vector2;//UV半径
     uvLayer: number;
-    eff: SpriteFormat;
+    eff: ElementFormat;
 }
 //directdraw pos3+uv+color+eff 4  *6 noebo = 42 float 最小
 //ElementAttr = 8 float 1/5

@@ -1,6 +1,6 @@
 import { Color, Rectangle, Vector2 } from "../../math/vector.js";
 import * as maxrect from "../../math/maxrects_packer/src/index.js"
-import { ITexture, Render_Batcher, Sprite, Texture, TextureFormat, DrawPoint, SpriteFormat, TextureArray } from "../../ttlayer2.js"
+import { ITexture, Render_Batcher, Texture, TextureFormat, DrawPoint, ElementFormat, TextureArray } from "../../ttlayer2.js"
 import { ElementSprite } from "../../graphics/pipeline/render/elem.js";
 
 
@@ -142,7 +142,7 @@ export class PackTexture extends TextureArray {
     pixelbuf: Uint8Array;
     dirty: boolean = false;
 
-    AddSprite(data: SpriteData, effect: SpriteFormat): ElementSprite {
+    AddSprite(data: SpriteData, effect: ElementFormat): ElementSprite {
 
         let rect = this.maxrect.add(data.width, data.height, null);
         if (rect == undefined) {
@@ -195,8 +195,8 @@ export class PackTextureDuo {
     packRGBA: PackTexture;
     packGray: PackTexture;
 
-    AddSprite(data: SpriteData, effect: SpriteFormat): ElementSprite {
-        if (effect == SpriteFormat.RGBA) {
+    AddSprite(data: SpriteData, effect: ElementFormat): ElementSprite {
+        if (effect == ElementFormat.RGBA) {
             let s = this.packRGBA.AddSprite(data, effect);
             return s;
         }

@@ -26,7 +26,7 @@ export * from "./graphics/pipeline/render/batcher.js";
 export * from "./resources/resources.js"
 export * from "./resources/defshader.js";
 
-export * from "./resources/atlas/sprite.js";
-export * from "./resources/atlas/font.js";
+export * from "./resources/packtex/sprite.js";
+export * from "./resources/packtex/font.js";
 
 export * from "./ttui/ttui.js"

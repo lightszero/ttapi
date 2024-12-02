@@ -47,7 +47,7 @@ export class Material {
                 case UniformType.sampler2D:
                     this.uniformTexs[key] = {
                         loc: info.loc,
-                        value: Resources.getWhiteBlock().texrgba
+                        value: Resources.GetPackElement().GetPackTexDuo().packRGBA,
                     };
                     break;
                 case UniformType.block:

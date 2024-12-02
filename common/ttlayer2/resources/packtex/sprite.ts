@@ -1,12 +1,12 @@
 import { Border, Color, Rectangle, UVRect, Vector2 } from "../../math/vector.js";
-import { ITexture, Render_Batcher, DrawPoint, SpriteFormat } from "../../ttlayer2.js";
+import { ITexture, Render_Batcher, DrawPoint, ElementFormat } from "../../ttlayer2.js";
 
 
 export class Sprite {
     constructor(texrgba: ITexture, texgray: ITexture) {
         this.texrgba = texrgba;
         this.texgray = texgray;
-        this.effect = SpriteFormat.RGBA;
+        this.effect = ElementFormat.RGBA;
         this.uv = new UVRect(0, 0, 1, 1);
         this.border = new Border(0, 0, 0, 0);
         this.pixelwidth = texrgba.getWidth();
@@ -16,7 +16,7 @@ export class Sprite {
     }
     texrgba: ITexture;
     texgray: ITexture;
-    effect: SpriteFormat;
+    effect: ElementFormat;
 
     uv: UVRect;//xywz
     uvlayer: number = 0;
