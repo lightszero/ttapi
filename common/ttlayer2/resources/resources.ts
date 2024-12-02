@@ -3,7 +3,7 @@ import { CompileShader, LinkShader, LinkShaderFeedBack, ShaderObj, ShaderProgram
 import { Atlas } from "./atlas/atlas.js";
 import { PackTexture, PackTextureDuo, SpriteData, ToROption } from "./atlas/packtex.js";
 import { Border, Color, Font, InitInnerShader, ITexture, QUI_Button, QUI_HAlign, QUI_Image, QUI_ImageScale9, QUI_Label, QUI_Scale9, QUI_VAlign, Sprite, SpriteFormat, Texture, TextureFormat, Vector2 } from "../ttlayer2.js";
-import { NamedElementPacked } from "./atlas/namedelem.js";
+import { PackElement } from "./atlas/packelement.js";
 
 export class ResourceOption {
     defFontName: string = "Arail";
@@ -24,7 +24,7 @@ export class Resources {
             TextureFormat.R8, op.packedGrayLayerCount, 0);
         packedduo.packRGBA = new PackTexture(gl, op.packedRGBAWidth, op.packedRGBAHeight,
             TextureFormat.RGBA32, op.packedRGBALayerCount, 0);
-        this.packedelem = new NamedElementPacked(packedduo);
+        this.packedelem = new PackElement(packedduo);
         this.deffont = new Font(gl, op.defFontName, op.defFontSize, this.packedelem.GetPackTexDuo());
 
         this.InitInnerResource(gl);
@@ -113,16 +113,16 @@ export class Resources {
             );
             this.packedelem.AddSprite(spdata, SpriteFormat.GrayAsAlpha, "round");
         }
-        this.packedelem.Apply();
+        this.packedelem.ApplyTextureData();
     }
-    private static packedelem: NamedElementPacked;
+    private static packedelem: PackElement;
 
 
 
     //private static packedtex: PackTextureDuo;
     // private static packed_rgb: PackTexture;
     // private static packed_gray: PackTexture;
-    static GetElementPack(): NamedElementPacked {
+    static GetPackElement(): PackElement {
         return this.packedelem;
     }
 

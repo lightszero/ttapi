@@ -97,10 +97,7 @@ export class PackTexture extends TextureArray {
 
     pixelbuf: Uint8Array;
     dirty: boolean = false;
-    //UploadImg,必须是4x4的
-    GetSprite(name: string): Sprite {
-        return this.namedsprites[name];
-    }
+
     AddSprite(data: SpriteData, effect: SpriteFormat, name: string = null): Sprite {
         if (name != null && this.namedsprites[name] != undefined)
             throw "AddSprite:Sprite Key 冲突";
@@ -157,12 +154,7 @@ export class PackTexture extends TextureArray {
 export class PackTextureDuo {
     packRGBA: PackTexture;
     packGray: PackTexture;
-    GetSprite(name: string): Sprite {
-        let sgray = this.packGray.GetSprite(name);
-        if (sgray != undefined)
-            return sgray;
-        return this.packRGBA.GetSprite(name);
-    }
+
     AddSprite(data: SpriteData, effect: SpriteFormat, name: string = null): Sprite {
         if (effect == SpriteFormat.RGBA) {
             let s = this.packRGBA.AddSprite(data, effect, name);

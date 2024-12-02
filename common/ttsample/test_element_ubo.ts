@@ -43,7 +43,7 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
         btn.localRect.setVPosByTopBorder(20, 8);
         this.guilayer.GetCanvas().addChild(btn);
 
-        btn.OnClick = () => { 
+        btn.OnClick = () => {
             this.nav.Back();
         }
 
@@ -71,7 +71,7 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
         let s = Resources.GetBorder2Block();
         let s2 = Resources.GetRoundBlock();
 
-        this.render.SetTexture(Resources.GetElementPack().GetPackTexDuo());
+        this.render.SetTexture(Resources.GetPackElement().GetPackTexDuo());
 
         let elem1: ElementSprite = null;
         let elem2: ElementSprite = null;
@@ -86,6 +86,7 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
             elem.uvHalfSize = new Vector2((s.uv.U2 - s.uv.U1) * 0.5, (s.uv.V2 - s.uv.V1) * 0.5);
             elem.uvLayer = s.uvlayer;
             elem.eff = s.effect;
+            this.render.AddElement(elem);
             elem1 = elem;
         }
         {//Add a Sprite 原型
@@ -100,6 +101,7 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
             //elem.eff = 4;
             elem.uvLayer = s2.uvlayer;
             elem.eff = s2.effect;
+            this.render.AddElement(elem);
             elem2 = elem;
         }
         for (var i = 0; i < 1024 * 50; i++) {
@@ -107,7 +109,7 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
             inst.pos = new Vector3(Math.random() * 400 - 200, Math.random() * 400 - 200, 0);
             inst.rotate = Math.random() * Math.PI;
             inst.scale = new Vector2(1, 1);
-            inst.elem = i % 2 == 0 ? elem1 : elem2;
+            inst.instid = i % 2 == 0 ? elem1.index : elem2.index;
 
             inst.color = new Color(Math.random(), Math.random(), Math.random(), Math.random());
             this.render.AddElementInst(inst);

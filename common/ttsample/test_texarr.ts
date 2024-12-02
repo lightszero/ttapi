@@ -36,8 +36,8 @@ export class Test_TexArr implements IState<Navigator<GContext>> {
         this.AddLabel("tex2=" + t2.getWidth() + "," + t2.getHeight() );
         this.AddLabel("普通贴图传给texturearray不能正常渲染" );
 
-        let s = new Sprite(Resources.GetElementPack().GetPackTexDuo().packRGBA, t);
-        let s2 = new Sprite(Resources.GetElementPack().GetPackTexDuo().packRGBA, t2);
+        let s = new Sprite(Resources.GetPackElement().GetPackTexDuo().packRGBA, t);
+        let s2 = new Sprite(Resources.GetPackElement().GetPackTexDuo().packRGBA, t2);
         s.effect = s2.effect = SpriteFormat.GrayAsAlpha;
         {
             let img = new QUI_Image(s);

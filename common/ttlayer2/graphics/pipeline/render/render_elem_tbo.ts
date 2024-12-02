@@ -10,6 +10,7 @@ import { IRenderTarget, ITexture, Texture, TextureFormat } from "../../texture.j
 import { tt } from "../../../../ttapi/ttapi.js";
 import { ElementInst, ElementSprite, ElementUtil } from "./elem.js";
 import { PackTextureDuo } from "../../../resources/atlas/packtex.js";
+import { PackElement as PackElement } from "../../../resources/atlas/packelement.js";
 
 
 const elementInstSize = 32;
@@ -24,7 +25,7 @@ export class Render_Element_Tbo implements ILayerRender {
 
         this.material = new Material(Resources.GetShaderProgram("inst_tbo"));
         this.material.UpdateMatModel();
-        this.ElemInit();
+
         this.ElemInstInit();
 
         let gl = tt.graphic.GetWebGL();
@@ -51,78 +52,19 @@ export class Render_Element_Tbo implements ILayerRender {
         }
         return this.inst_ubo;
     }
-
-    //元素管理数据部分
-    //#region 元素管理
-    private elemCount: number;
-    private elemBufData: Float32Array;
-    private elemTex: Texture;
-    private elemDirty: boolean;
-    private ElemInit() {
-        this.elemBufData = new Float32Array(512 * 512 * 4);
-        let gl = tt.graphic.GetWebGL();
-        this.elemTex = new Texture(gl, 512, 512, TextureFormat.F_RGBA32, null);
-        this.elemCount = 0;
-        this.elemDirty = false;
+    private packelem: PackElement;
+    SetPackElement(tex: PackElement): void {
+        this.packelem = tex;
+        this.material.uniformTexs["tex"].value = tex.GetPackTexDuo().packRGBA;
+        this.material.uniformTexs["tex2"].value = tex.GetPackTexDuo().packGray;
         let uni = this.material.uniformTexs["texelem"];
         if (uni != undefined)
-            uni.value = this.elemTex;
+            uni.value = tex.GetElemTex();
     }
-    SetTexture(tex: PackTextureDuo): void {
-        this.material.uniformTexs["tex"].value = tex.packRGBA;
-        this.material.uniformTexs["tex2"].value = tex.packGray;
-    }
-
-    GetElementCount(): number {
-        return this.elemCount;
+    GetPackElement(): PackElement {
+        return this.packelem;
     }
 
-    AddElement(elem: ElementSprite): number {
-        let index = this.elemCount;
-        this.elemCount++;
-        this.WriteElement(elem, index);
-
-        return index;
-    }
-
-    WriteElement(elem: ElementSprite, index: number): void {
-        elem.index = index;
-        const ElemFSize = 16;
-        let Findex = index * ElemFSize;
-        this.elemBufData[Findex + 0] = elem.sizeTL.X;
-        this.elemBufData[Findex + 1] = elem.sizeTL.Y;
-        this.elemBufData[Findex + 2] = elem.sizeRB.X;
-        this.elemBufData[Findex + 3] = elem.sizeRB.Y;
-        
-        this.elemBufData[Findex + 4] = elem.uvCenter.X;
-        this.elemBufData[Findex + 5] = elem.uvCenter.Y;
-        this.elemBufData[Findex + 6] = elem.uvHalfSize.X;
-        this.elemBufData[Findex + 7] = elem.uvHalfSize.Y;;
-
-        this.elemBufData[Findex + 8] = elem.uvLayer;
-        this.elemBufData[Findex + 11] = elem.eff;
-        this.elemDirty = true;
-    }
-    GetElement(index: number): ElementSprite {
-        const ElemFSize = 16;
-        let Findex = index * ElemFSize;
-        let elem = new ElementSprite();
-        elem.sizeTL = new Vector2(0, 0);
-        elem.sizeTL.X = this.elemBufData[Findex + 0];
-        elem.sizeTL.Y = this.elemBufData[Findex + 1];
-        elem.sizeRB.X = this.elemBufData[Findex + 2];
-        elem.sizeRB.Y = this.elemBufData[Findex + 3];
-
-        elem.uvCenter.X = this.elemBufData[Findex + 4];
-        elem.uvCenter.Y = this.elemBufData[Findex + 5];
-        elem.uvHalfSize.X = this.elemBufData[Findex + 6];
-        elem.uvHalfSize.Y = this.elemBufData[Findex + 7];
-
-        elem.uvLayer = this.elemBufData[Findex + 8];
-        elem.eff = this.elemBufData[Findex + 11];
-        return elem;
-    }
-    //#endregion
 
     //元素实例数据部分
     //#region 元素实例管理
@@ -152,8 +94,7 @@ export class Render_Element_Tbo implements ILayerRender {
         return index;
     }
     WriteElementInst(elem: ElementInst, index: number): void {
-        if (elem.elem.index < 0)
-            this.AddElement(elem.elem);
+
 
         if (index * elementInstSize >= this.elemInstBufData.length) {//满了,扩容
             let newarr = new Uint8Array((1024 + index) * elementInstSize);
@@ -175,7 +116,7 @@ export class Render_Element_Tbo implements ILayerRender {
         this.elemInstBufView.setUint8(byteIndex + 26, elem.color.B * 255);
         this.elemInstBufView.setUint8(byteIndex + 27, elem.color.A * 255);
 
-        this.elemInstBufView.setUint16(byteIndex + 28, elem.elem.index, true);
+        this.elemInstBufView.setUint16(byteIndex + 28, elem.instid, true);
         //this.elemInstBufView.setUint16(byteIndex + 30, elem.eff, true);
         this.elemInstDirty = true;
     }
@@ -196,7 +137,7 @@ export class Render_Element_Tbo implements ILayerRender {
         elem.color.B = this.elemInstBufView.getUint8(byteIndex + 26) / 255;
         elem.color.A = this.elemInstBufView.getUint8(byteIndex + 27) / 255;
         let instid = this.elemInstBufView.getUint16(byteIndex + 28, true);
-        elem.elem = this.GetElement(instid);
+        elem.instid = instid;
         //elem.eff = this.elemBufView.getUint16(byteIndex + 30, true);
         return elem;
     }
@@ -250,17 +191,13 @@ export class Render_Element_Tbo implements ILayerRender {
         if (tag == 0) {
             let gl = tt.graphic.GetWebGL();
 
+            this.packelem.ApplyTextureData();
+            
             if (this.elemInstDirty) {
                 this.mesh.UploadVertexBuffer(gl, 1, this.elemInstBufData, true, this.elemInstBufData.byteLength);
                 this.elemInstDirty = false;
             }
-            if (this.elemDirty) {//Upload tbo
-                this.elemTex.UploadTexture(0, 0, this.elemTex.getWidth(), this.elemTex.getHeight(),
-                    this.elemBufData
-                );
 
-                this.elemDirty = false;
-            }
             this.mesh.instancecount = this.elemInstCount;
 
             this.material.UpdateMatProj(target);

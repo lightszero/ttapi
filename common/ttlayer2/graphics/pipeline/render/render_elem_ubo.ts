@@ -129,8 +129,6 @@ export class Render_Element_Ubo implements ILayerRender {
         return index;
     }
     WriteElementInst(elem: ElementInst, index: number): void {
-        if (elem.elem.index < 0)
-            this.AddElement(elem.elem);
 
         if (index * elementInstSize >= this.elemInstBufData.length) {//满了,扩容
             let newarr = new Uint8Array((1024 + index) * elementInstSize);
@@ -152,7 +150,7 @@ export class Render_Element_Ubo implements ILayerRender {
         this.elemInstBufView.setUint8(byteIndex + 26, elem.color.B * 255);
         this.elemInstBufView.setUint8(byteIndex + 27, elem.color.A * 255);
 
-        this.elemInstBufView.setUint16(byteIndex + 28, elem.elem.index, true);
+        this.elemInstBufView.setUint16(byteIndex + 28, elem.instid, true);
         //this.elemInstBufView.setUint16(byteIndex + 30, elem.eff, true);
         this.elemInstDirty = true;
     }
@@ -173,7 +171,7 @@ export class Render_Element_Ubo implements ILayerRender {
         elem.color.B = this.elemInstBufView.getUint8(byteIndex + 26) / 255;
         elem.color.A = this.elemInstBufView.getUint8(byteIndex + 27) / 255;
         let instid = this.elemInstBufView.getUint16(byteIndex + 28, true);
-        elem.elem = this.GetElement(instid);
+        elem.instid = instid;// this.GetElement(instid);
         //elem.eff = this.elemBufView.getUint16(byteIndex + 30, true);
         return elem;
     }
@@ -226,7 +224,7 @@ export class Render_Element_Ubo implements ILayerRender {
     OnRender(target: IRenderTarget, camera: Camera, tag: number) {
         if (tag == 0) {
             let gl = tt.graphic.GetWebGL();
-         
+
             if (this.elemInstDirty) {
                 this.mesh.UploadVertexBuffer(gl, 1, this.elemInstBufData, true, this.elemInstBufData.byteLength);
             }

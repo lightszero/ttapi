@@ -20,8 +20,8 @@ export class ElementInst {
     scale: Vector2;
     color: Color;
 
-    elem: ElementSprite;
-    //instid: number;//忘了一个
+   
+    instid: number;//忘了一个
 }
 
 export class ElementUtil {

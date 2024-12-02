@@ -4,13 +4,9 @@ import { ElementSprite } from "../../graphics/pipeline/render/elem.js";
 import { Border, Sprite, SpriteFormat, Texture, TextureFormat, UVRect, Vector2 } from "../../ttlayer2.js";
 import { PackTextureDuo, SpriteData } from "./packtex.js";
 
-export class NamedElementSprite extends ElementSprite {
-    name: string;
-    owner: NamedElementPacked;
 
-}
 
-export class NamedElementPacked {
+export class PackElement {
     private packTexDuo: PackTextureDuo;
 
     private mapName2Index: { [id: string]: number } = {};
@@ -46,6 +42,9 @@ export class NamedElementPacked {
         this.elemCount = 0;
         this.elemDirty = false;
     }
+    GetElemTex(): Texture {
+        return this.elemTex;
+    }
     GetPackTexDuo(): PackTextureDuo {
         return this.packTexDuo;
     }
@@ -77,6 +76,7 @@ export class NamedElementPacked {
         const ElemFSize = 16;
         let Findex = index * ElemFSize;
         let elem = new ElementSprite();
+        elem.index = index;
         elem.sizeTL = new Vector2(0, 0);
         elem.sizeRB = new Vector2(0, 0);
         elem.uvCenter = new Vector2(0, 0);
@@ -96,20 +96,21 @@ export class NamedElementPacked {
         return elem;
     }
 
-    AddSprite(data: SpriteData, eff: SpriteFormat, name: string): NamedElementSprite {
+    AddSprite(data: SpriteData, eff: SpriteFormat, name: string | null): ElementSprite {
         let s = this.packTexDuo.AddSprite(data, eff, null);
         let e = new ElementSprite();
 
         e.sizeTL = new Vector2(s.pixelwidth / -2, s.pixelheight / -2);
         e.sizeRB = new Vector2(s.pixelwidth / 2, s.pixelheight / 2);
-        e.uvCenter = new Vector2(s.uv.U1 * 0.5 + s.uv.U2 * 0.5, s.uv.V1 * 0.5 + s.uv.V2*0.5);
+        e.uvCenter = new Vector2(s.uv.U1 * 0.5 + s.uv.U2 * 0.5, s.uv.V1 * 0.5 + s.uv.V2 * 0.5);
         e.uvHalfSize = new Vector2((s.uv.U2 - s.uv.U1) * 0.5, (s.uv.V2 - s.uv.V1) * 0.5);
         e.uvLayer = s.uvlayer;
         e.eff = eff;
 
         return this.AddElement(name, e);
     }
-    AddElement(name: string, element: ElementSprite): NamedElementSprite {
+    AddElement(name: string, elementsrc: ElementSprite): ElementSprite {
+
         let index = this.mapName2Index[name];
         if (index == undefined) {//不存在，真插入
             if (this.elemCount == 65536)
@@ -121,23 +122,36 @@ export class NamedElementPacked {
             this.elemCount++;
         }
 
-        this.WriteElement(element, index);//覆盖
-        let e = this.GetElementByIndex(index) as NamedElementSprite;
-        e.name = name;
-        e.owner = this;
+        this.WriteElement(elementsrc, index);//覆盖
+        let e = this.GetElementByIndex(index);
+
         return e;
     }
-    GetElementByName(name: string): NamedElementSprite {
+    AddElementNoname(elementsrc: ElementSprite): ElementSprite {
+        let index = this.elemCount;
+
+        if (this.elemCount == 65536)
+            throw "[NamedElementPacked.AddElement]full element";
+        index = this.elemCount;
+
+        this.elemCount++;
+
+
+        this.WriteElement(elementsrc, index);//覆盖
+        let e = this.GetElementByIndex(index);
+
+        return e;
+    }
+    GetElementByName(name: string): ElementSprite {
         let index = this.mapName2Index[name];
         if (index != undefined) {
-            let e = this.GetElementByIndex(index) as NamedElementSprite;
-            e.name = name;
-            e.owner = this;
+            let e = this.GetElementByIndex(index);
+
             return e;
         }
         return null;
     }
-    Apply(): void {
+    ApplyTextureData(): void {
         this.packTexDuo.packRGBA.Apply();
         this.packTexDuo.packGray.Apply();
         if (this.elemDirty) {//Upload tbo
