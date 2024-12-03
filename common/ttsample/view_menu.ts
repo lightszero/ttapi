@@ -2,6 +2,7 @@ import { tt } from "../ttapi/ttapi.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI } from "../ttlayer2/ttlayer2.js";
 import { Test_Element_TBO } from "./test_element_tbo.js";
 import { Test_Element_UBO } from "./test_element_ubo.js";
+import { Test_FileApi } from "./test_fileapi.js";
 import { Test_Info } from "./test_info.js";
 import { Test_TexArr } from "./test_texarr.js";
 import { GContext } from "./ttstate_all.js";
@@ -35,6 +36,7 @@ export class View_Menu implements IState<Navigator<GContext>> {
         this.AddButton("GUI[欠]");
         this.AddButton("Box2d[欠]");
         this.AddButton("Ani[欠]");
+        this.AddButton("FILE API",new Test_FileApi());
     }
     y: number = 32;
     x: number = 16;
