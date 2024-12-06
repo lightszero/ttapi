@@ -305,10 +305,10 @@ export class Render_Batcher {
         let webgl = this._webgl;
 
 
-        if (this._mat.uniformTexs["tex"] != undefined)
-            this._mat.uniformTexs["tex"].value = this._lastTex;
-        if (this._mat.uniformTexs["tex2"] != undefined)
-            this._mat.uniformTexs["tex2"].value = this._lastTex2;
+        if (this._mat.uniformTexs["texRGBA"] != undefined)
+            this._mat.uniformTexs["texRGBA"].value = this._lastTex;
+        if (this._mat.uniformTexs["texGray"] != undefined)
+            this._mat.uniformTexs["texGray"].value = this._lastTex2;
         this._mesh.UploadVertexBuffer(webgl, 0, this._buffer, true, this._pointseek * 28);
         this._pointseek = 0;
 

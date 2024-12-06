@@ -1,10 +1,8 @@
-/// <reference types="./fileapi/wicg-file-system-access" />
+import { tt } from "../../ttapi/ttapi.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign } from "../../ttlayer2/ttlayer2.js";
+import { GContext } from "../ttstate_all.js";
 
-import { tt } from "../ttapi/ttapi.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign } from "../ttlayer2/ttlayer2.js";
-import { GContext } from "./ttstate_all.js";
-
-export class Test_FileApi implements IState<Navigator<GContext>> {
+export class Test_Info implements IState<Navigator<GContext>> {
     nav: Navigator<GContext>;
     guilayer: DrawLayer_GUI;
 
@@ -20,29 +18,14 @@ export class Test_FileApi implements IState<Navigator<GContext>> {
 
         this.AddBackButton();
 
-        this.AddLabel("Filesystem access Api Test 只有https才可以用 ");
-        this.AddLabel("移动平台通常不支持!");
-
-        this.AddBtn("Open Path", () => {
-            this.OpenPath();
-        });
-
-    }
-    async OpenPath() {
-        try {
-            let dichandle = await showDirectoryPicker({ "mode": "readwrite", "startIn": "documents" });
-
-            for await (let i of dichandle.entries()) {
-                let key: string = i[0];
-                let value: FileSystemHandle = i[1];
-                console.log(key + ":" + value.kind);
-
-            }
-        }
-        catch (e) {
-            this.AddLabel("Err:"+e);
-        }
-
+        let gl = tt.graphic.GetWebGL();
+        this.AddLabel("DevicePixelRadio=" + tt.graphic.getDevicePixelRadio());
+        this.AddLabel("MAX_UNIFORM_BLOCK_SIZE=" + gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE));
+        this.AddLabel("MAX_3D_TEXTURE_SIZE=" + gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
+        this.AddLabel("MAX_ARRAY_TEXTURE_LAYERS=" + gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS));
+        this.AddLabel("MAX_TEXTURE_SIZE=" + gl.getParameter(gl.MAX_TEXTURE_SIZE));
+        this.AddLabel("MAX_VERTEX_UNIFORM_BLOCKS=" + gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS));
+        this.AddLabel("MAX_VERTEX_UNIFORM_COMPONENTS=" + gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS));
     }
     y: number = 64;
     AddLabel(text: string): void {
@@ -53,16 +36,7 @@ export class Test_FileApi implements IState<Navigator<GContext>> {
         label.localRect.setVPosByTopBorder(16, this.y);
         label.fontScale.X *= 0.5;
         label.fontScale.Y *= 0.5;
-        this.y += 20;
-    }
-    AddBtn(text: string, onclick: () => void): void {
-        let btn = Resources.CreateGUI_Button(text, new Color(1, 1, 1, 1));
-        this.guilayer.GetCanvas().addChild(btn);
-
-        btn.localRect.setHPosByLeftBorder(196, 16);
-        btn.localRect.setVPosByTopBorder(16, this.y);
-        btn.OnClick = onclick;
-        this.y += 20;
+        this.y += 16;
     }
     AddBackButton(): void {
         this.guilayer = new DrawLayer_GUI();

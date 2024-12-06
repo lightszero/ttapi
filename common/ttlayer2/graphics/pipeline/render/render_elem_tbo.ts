@@ -55,8 +55,9 @@ export class Render_Element_Tbo implements ILayerRender {
     private packelem: PackElement;
     SetPackElement(tex: PackElement): void {
         this.packelem = tex;
-        this.material.uniformTexs["tex"].value = tex.GetPackTexDuo().packRGBA;
-        this.material.uniformTexs["tex2"].value = tex.GetPackTexDuo().packGray;
+  
+        this.material.uniformTexs["texRGBA"].value = tex.GetPackTexDuo().packRGBA;
+        this.material.uniformTexs["texGray"].value = tex.GetPackTexDuo().packGray;
         let uni = this.material.uniformTexs["texelem"];
         if (uni != undefined)
             uni.value = tex.GetElemTex();

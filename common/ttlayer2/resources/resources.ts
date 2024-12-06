@@ -48,6 +48,8 @@ export class Resources {
                     spdata.data[y * spdata.width + x] = 255;
                 }
             }
+            spdata.pivotX = 4;
+            spdata.pivotY = 4;
             this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "white");
         }
         //border
@@ -69,6 +71,8 @@ export class Resources {
                     255, 255, 255, 255, 255, 255, 255, 255,
                 ]
             );
+            spdata.pivotX = 4;
+            spdata.pivotY = 4;
             this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "border");
         }
         //border2
@@ -90,6 +94,8 @@ export class Resources {
                     255, 255, 255, 255, 255, 255, 255, 255,
                 ]
             );
+            spdata.pivotX = 4;
+            spdata.pivotY = 4;
             this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "border2");
         }
         //round
@@ -112,6 +118,8 @@ export class Resources {
                     0.0, 0.0, 0.0, 255, 255, 0.0, 0.0, 0.0,
                 ]
             );
+            spdata.pivotX = 4;
+            spdata.pivotY = 4;
             this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "round");
         }
         this.packedelem.ApplyTextureData();

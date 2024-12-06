@@ -1,6 +1,6 @@
-import { tt } from "../ttapi/ttapi.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, TextureArray, TextureFormat, QUI_Image, Sprite, ElementFormat, Texture } from "../ttlayer2/ttlayer2.js";
-import { GContext } from "./ttstate_all.js";
+import { tt } from "../../ttapi/ttapi.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, TextureArray, TextureFormat, QUI_Image, Sprite, ElementFormat, Texture } from "../../ttlayer2/ttlayer2.js";
+import { GContext } from "../ttstate_all.js";
 
 export class Test_TexArr implements IState<Navigator<GContext>> {
     nav: Navigator<GContext>;

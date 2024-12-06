@@ -1,10 +1,10 @@
-import { tt } from "../ttapi/ttapi.js";
-import { ElementInst, ElementSprite } from "../ttlayer2/graphics/pipeline/render/elem.js";
-import { Render_Element_Tbo } from "../ttlayer2/graphics/pipeline/render/render_elem_tbo.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign } from "../ttlayer2/ttlayer2.js";
-import { GContext } from "./ttstate_all.js";
+import { tt } from "../../ttapi/ttapi.js";
+import { ElementInst, ElementSprite } from "../../ttlayer2/graphics/pipeline/render/elem.js";
+import { Render_Element_Tbo } from "../../ttlayer2/graphics/pipeline/render/render_elem_tbo.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign } from "../../ttlayer2/ttlayer2.js";
+import { GContext } from "../ttstate_all.js";
 
-export class Test_Element_TBO implements IState<Navigator<GContext>> {
+export class Test_Load implements IState<Navigator<GContext>> {
     nav: Navigator<GContext>;
     guilayer: DrawLayer_GUI;
     canvaslayer: DrawLayer;

@@ -227,12 +227,13 @@ var fs_default: string = /*glsl*/`#version 300 es
         
     layout(location = 0) out vec4 fragColor;
 
-    uniform sampler2DArray tex2;
-    uniform sampler2DArray tex;  //从外部设置的参数
+    
+    uniform sampler2DArray texRGBA;  //从外部设置的参数
+    uniform sampler2DArray texGray;
     void main(void) 
     {
-        vec4 texc = vExt==0? texture(tex,vec3(vUv,vLayer))
-        : texture(tex2,vec3(vUv,vLayer));
+        vec4 texc = vExt==0? texture(texRGBA,vec3(vUv,vLayer))
+        : texture(texGray,vec3(vUv,vLayer));
         vec4 outc = vColor;
         int effect = vExt;//int(vExt.w);
         if(effect==0)//rgba model 

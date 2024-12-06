@@ -65,8 +65,8 @@ export class Render_Element_Ubo implements ILayerRender {
         return index;
     }
     SetTexture(tex: PackTextureDuo): void {
-        this.material.uniformTexs["tex"].value = tex.packRGBA;
-        this.material.uniformTexs["tex2"].value = tex.packGray;
+        this.material.uniformTexs["texRGBA"].value = tex.packRGBA;
+        this.material.uniformTexs["texGray"].value = tex.packGray;
     }
     WriteElement(elem: ElementSprite, index: number): void {
         elem.index = index;
