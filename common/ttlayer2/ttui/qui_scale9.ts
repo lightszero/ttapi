@@ -19,15 +19,15 @@ export class QUI_Scale9 {
         this.t = border.YTop;
         this.b = border.YBottom;
 
-        let acttex = this.sprite.effect == 0 ? this.sprite.texrgba : this.sprite.texgray;
-        this._texwidth = acttex.getWidth();
-        this._texheight = acttex.getHeight();
+        let uvwidthradio = (this.sprite.uv.U2 - this.sprite.uv.U1) / this.sprite.pixelwidth;
+        let uvheightradio = (this.sprite.uv.V2 - this.sprite.uv.V1) / this.sprite.pixelheight;
+
         let uv = this.sprite.uv;
 
         this.u0 = uv.U1;//left
         this.u3 = uv.U2;//right
-        this.u1 = this.u0 + border.XLeft / this._texwidth;
-        this.u2 = this.u3 - border.XRight / this._texwidth;
+        this.u1 = this.u0 + border.XLeft * uvwidthradio;
+        this.u2 = this.u3 - border.XRight * uvwidthradio;
         if (this.u0 <= this.u1 && this.u1 < this.u2 && this.u2 <= this.u3) {
             //check u right
         }
@@ -36,8 +36,8 @@ export class QUI_Scale9 {
         }
         this.v0 = uv.V1;
         this.v3 = uv.V2;
-        this.v1 = this.v0 + border.YTop / this._texheight;
-        this.v2 = this.v3 - border.YBottom / this._texheight;
+        this.v1 = this.v0 + border.YTop * uvheightradio;
+        this.v2 = this.v3 - border.YBottom * uvheightradio;
         if (this.v0 <= this.v1 && this.v1 < this.v2 && this.v2 <= this.v3) {
             //check v right
         }
@@ -61,8 +61,7 @@ export class QUI_Scale9 {
     v0: number; v1: number; v2: number; v3: number;
     private _minwidth: number;
     private _minheight: number;
-    private _texwidth: number;
-    private _texheight: number;
+
     getMinWidth(): number {
         return this._minwidth;
     }
@@ -185,7 +184,7 @@ export class QUI_Scale9 {
         rectbuf[3].palx = this.sprite.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.sprite.effect;
-        batcher.DrawQuads(this.sprite.texrgba, this.sprite.texgray, rectbuf, 1);
+        batcher.DrawQuads(this.sprite.material, rectbuf, 1);
     }
     private _Render1Rect(u1: number, u2: number, v1: number, v2: number, batcher: Render_Batcher, rect: Rectangle, color: Color, palindex: number = -1) {
         if (u1 == u2 || v1 == v2)
@@ -247,7 +246,7 @@ export class QUI_Scale9 {
         rectbuf[3].palx = this.sprite.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.sprite.effect;
-        batcher.DrawQuads(this.sprite.texrgba, this.sprite.texgray, rectbuf, 1);
+        batcher.DrawQuads(this.sprite.material, rectbuf, 1);
     }
     RenderRect(batcher: Render_Batcher, rect: Rectangle, color: Color | null = null, palindex: number = -1, imgscale: number) {
         let l = this.l * imgscale;

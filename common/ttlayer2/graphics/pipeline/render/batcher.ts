@@ -2,7 +2,7 @@ import { Vector2 } from "../../../math/vector.js"
 
 
 
-import { ITexture,IRenderTarget } from "../../texture.js"
+import { ITexture, IRenderTarget } from "../../texture.js"
 
 import { Mesh, Resources } from "../../../ttlayer2.js";
 import { Material } from "../../material.js";
@@ -71,8 +71,8 @@ export class Render_Batcher {
     constructor(webgl: WebGL2RenderingContext) {
         this._webgl = webgl;
         this._target = null;
-        this._lastshader = null;
-        var _vbo = webgl.createBuffer();
+        this._lastmat = null;
+        //var _vbo = webgl.createBuffer();
         this._buffer = new Uint8Array(65536 * 28);
         this._bufferView = new DataView(this._buffer.buffer, 0, this._buffer.length);
         this._pointseek = 0;
@@ -117,8 +117,6 @@ export class Render_Batcher {
         // }
         this.LookAt = new Vector2(0, 0);
         this.Scale = 1.0;
-        this._lastTex = null;
-        this._lastTex2 = null;
 
         // var shader = GetShaderProgram("default");
         // if (shader == null)
@@ -129,8 +127,6 @@ export class Render_Batcher {
         // this._projMatrix = new Float32Array(16);
         this._mesh = new Mesh();
         this._mesh.UpdateVertexFormat(webgl, VertexFormatMgr.GetFormat_Vertex_UV_Color_Ext());
-        this._mat = new Material(Resources.GetShaderProgram("default"));
-
 
         //reset default matrixworld
         let matrix = this.matrixWorld = new Float32Array(16);
@@ -139,37 +135,36 @@ export class Render_Batcher {
         matrix[1] = 0; matrix[5] = 1; matrix[9] = 0; matrix[13] = 0;
         matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
         matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
-        
+
     }
     //_shader: ShaderProgram;
     _webgl: WebGL2RenderingContext
     _target: IRenderTarget | null;
-    _lastshader: ShaderProgram | null;
+
     _lastMode: number;
-    _lastTex: ITexture | null;
-    _lastTex2: ITexture | null;
+
 
     //_vbo: WebGLBuffer;
     //_vao: WebGLVertexArrayObject;
     _mesh: Mesh = null;
-    _mat: Material = null;
+    _lastmat: Material = null;
     _buffer: Uint8Array;
     _bufferView: DataView;
     _pointseek: number;
     // _modelMatrix: Float32Array;
     // _viewMatrix: Float32Array;
     // _projMatrix: Float32Array;
-    DrawQuads(tex: ITexture, tex2: ITexture | null, quads: DrawPoint[], quadCount: number): void {
+    DrawQuads(mat: Material, quads: DrawPoint[], quadCount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
 
-        if (this._lastMode != this._webgl.TRIANGLES || this._lastTex != tex || this._lastTex2 != tex2
+        if (this._lastMode != this._webgl.TRIANGLES || this._lastmat != mat
 
             || this._pointseek + quadCount * 6 >= 65536) {
             this._Render();
 
 
-            this._ApplySingle(tex, tex2);
+            this._ApplySingle(mat);
         }
         this._lastMode = this._webgl.TRIANGLES
 
@@ -183,14 +178,14 @@ export class Render_Batcher {
         }
 
     }
-    DrawTris(tex: ITexture, tex2: ITexture | null, tris: DrawPoint[], tricount: number): void {
+    DrawTris(mat: Material, tris: DrawPoint[], tricount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
-        if (this._lastMode != this._webgl.TRIANGLES || this._lastTex != tex || this._lastTex2 != tex2
+        if (this._lastMode != this._webgl.TRIANGLES || this._lastmat != mat
 
             || this._pointseek + tricount * 3 > 65536) {
             this._Render();
-            this._ApplySingle(tex, tex2);
+            this._ApplySingle(mat);
         }
         this._lastMode = this._webgl.TRIANGLES
 
@@ -200,14 +195,14 @@ export class Render_Batcher {
             this._AddBuf(tris[i * 3 + 2]);
         }
     }
-    DrawLines(tex: ITexture, tex2: ITexture | null, lines: DrawPoint[], linecount: number): void {
+    DrawLines(mat: Material, lines: DrawPoint[], linecount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
-        if (this._lastMode != this._webgl.LINES || this._lastTex != tex || this._lastTex2 != tex2
+        if (this._lastMode != this._webgl.LINES || this._lastmat != mat
 
             || this._pointseek + linecount * 2 > 65536) {
             this._Render();
-            this._ApplySingle(tex, tex2);
+            this._ApplySingle(mat);
         }
         this._lastMode = this._webgl.LINES
 
@@ -216,14 +211,14 @@ export class Render_Batcher {
             this._AddBuf(lines[i * 2 + 1]);
         }
     }
-    DrawPoints(tex: ITexture, tex2: ITexture | null, points: DrawPoint[], pointcount: number): void {
+    DrawPoints(mat: Material, points: DrawPoint[], pointcount: number): void {
         if (this._target == null)
             throw new Error("Render_Batcher Not in Begin-End.");
-        if (this._lastMode != this._webgl.POINTS || this._lastTex != tex || this._lastTex2 != tex2
+        if (this._lastMode != this._webgl.POINTS || this._lastmat != mat
 
             || this._pointseek + pointcount * 1 > 65536) {
             this._Render();
-            this._ApplySingle(tex, tex2);
+            this._ApplySingle(mat);
         }
         this._lastMode = this._webgl.POINTS
 
@@ -258,9 +253,9 @@ export class Render_Batcher {
     }
     ResetMatrix(): void {
         this._Render();
-        this._mat.UpdateMatModel();
-        this._mat.UpdateMatView();
-        this._mat.UpdateMatProj(this._target);
+        this._lastmat.UpdateMatModel();
+        this._lastmat.UpdateMatView();
+        this._lastmat.UpdateMatProj(this._target);
         // this._MatDefault(this._modelMatrix);
         // this._MatView(this._viewMatrix);
         // this._MatProj(this._projMatrix, 0, 0);
@@ -278,9 +273,11 @@ export class Render_Batcher {
         // this._MatView(this._viewMatrix);
         // this._MatProj(this._projMatrix, 0, 0);
         this.UpdateMatView();
-        this._mat.UpdateMatModel(this.matrixWorld);
-        this._mat.UpdateMatView(this.matrixView);
-        this._mat.UpdateMatProj(this._target);
+        if (this._lastmat != null) {
+            this._lastmat.UpdateMatModel(this.matrixWorld);
+            this._lastmat.UpdateMatView(this.matrixView);
+            this._lastmat.UpdateMatProj(this._target);
+        }
         let webgl = this._webgl;
 
         webgl.disable(webgl.CULL_FACE);
@@ -297,7 +294,7 @@ export class Render_Batcher {
     EndDraw(): void {
         this._Render();
         this._target = null;
-        this._ApplySingle(null, null);
+        this._ApplySingle(null);
     }
     _Render(): void {
         if (this._pointseek == 0)
@@ -305,15 +302,12 @@ export class Render_Batcher {
         let webgl = this._webgl;
 
 
-        if (this._mat.uniformTexs["texRGBA"] != undefined)
-            this._mat.uniformTexs["texRGBA"].value = this._lastTex;
-        if (this._mat.uniformTexs["texGray"] != undefined)
-            this._mat.uniformTexs["texGray"].value = this._lastTex2;
+
         this._mesh.UploadVertexBuffer(webgl, 0, this._buffer, true, this._pointseek * 28);
         this._pointseek = 0;
 
-
-        Mesh.DrawMesh(webgl, this._mesh, this._mat);
+        if (this._lastmat != null)
+            Mesh.DrawMesh(webgl, this._mesh, this._lastmat);
 
 
     }
@@ -339,10 +333,13 @@ export class Render_Batcher {
         this._pointseek++;
     }
 
-    _ApplySingle(tex: ITexture, tex2: ITexture | null): void {
-        this._lastTex = tex;
-        this._lastTex2 = tex2;
-
+    _ApplySingle(mat: Material): void {
+        this._lastmat = mat;
+        if (this._lastmat != null) {
+            this._lastmat.UpdateMatModel(this.matrixWorld);
+            this._lastmat.UpdateMatView(this.matrixView);
+            this._lastmat.UpdateMatProj(this._target);
+        }
     }
 
 }

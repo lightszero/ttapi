@@ -1,7 +1,7 @@
 import { tt } from "../../ttapi/ttapi.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Panel_Split, QUI_ImageScale9, QUI_Panel_Scroll_Unlimit, QUI_IElement, QUI_Label } from "../../ttlayer2/ttlayer2.js";
 import { GContext } from "../ttstate_all.js";
-
+/// <reference types="../fileapi/wicg-file-system-access" />
 export class Tool_TexPack implements IState<Navigator<GContext>> {
     nav: Navigator<GContext>;
     guilayer: DrawLayer_GUI;

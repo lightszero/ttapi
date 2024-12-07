@@ -20,21 +20,25 @@ export class Resources {
 
     static Init(op: ResourceOption): void {
         let gl = tt.graphic.GetWebGL();
+      
+        this.InitInnerResource(gl,op);
+
+    }
+    private static InitInnerResource(gl: WebGL2RenderingContext,op: ResourceOption): void {
+        //let gl = tt.graphic.GetWebGL();
+        //准备内置shader
+        InitInnerShader(gl);
+
+
         let packedduo = new PackTextureDuo();
         packedduo.packGray = new PackTexture(gl, op.packedGrayWidth, op.packedGrayHeight,
             TextureFormat.R8, op.packedGrayLayerCount, 0);
         packedduo.packRGBA = new PackTexture(gl, op.packedRGBAWidth, op.packedRGBAHeight,
             TextureFormat.RGBA32, op.packedRGBALayerCount, 0);
         this.packedelem = new PackElement(packedduo);
+
+        this.packedelem.InitMat();
         this.deffont = new Font(gl, op.defFontName, op.defFontSize, this.packedelem);
-
-        this.InitInnerResource(gl);
-
-    }
-    private static InitInnerResource(gl: WebGL2RenderingContext): void {
-        //let gl = tt.graphic.GetWebGL();
-        //准备内置shader
-        InitInnerShader(gl);
 
         //WhiteSprite
         {

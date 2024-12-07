@@ -1,4 +1,4 @@
-/// <reference types="./fileapi/wicg-file-system-access" />
+/// <reference types="../fileapi/wicg-file-system-access" />
 
 import { tt } from "../../ttapi/ttapi.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign } from "../../ttlayer2/ttlayer2.js";

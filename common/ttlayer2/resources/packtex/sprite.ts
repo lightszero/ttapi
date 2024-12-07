@@ -1,34 +1,44 @@
 import { Border, Color, Rectangle, UVRect, Vector2 } from "../../math/vector.js";
-import { ITexture, Render_Batcher, DrawPoint, ElementFormat } from "../../ttlayer2.js";
+import { ITexture, Render_Batcher, DrawPoint, ElementFormat, Material } from "../../ttlayer2.js";
 
 
 export class Sprite {
-    constructor(texrgba: ITexture, texgray: ITexture) {
-        this.texrgba = texrgba;
-        this.texgray = texgray;
+    constructor(material: Material) {
+        this.material = material;
         this.effect = ElementFormat.RGBA;
         this.uv = new UVRect(0, 0, 1, 1);
-        this.border = new Border(0, 0, 0, 0);
-        this.pixelwidth = texrgba.getWidth();
-        this.pixelheight = texrgba.getHeight();
-     
+        // this.border = new Border(0, 0, 0, 0);
+        let tex = material.uniformTexs["tex"];
+        if (tex == null) {
+            tex = material.uniformTexs["texRGBA"];
+        }
+        if (tex == null) {
+            tex = material.uniformTexs["texGray"];
+        }
+        if (tex != null) {
+            this.pixelwidth = tex.value.getWidth();
+            this.pixelheight = tex.value.getHeight();
+        }
+        else {
+            this.pixelwidth = 16;
+            this.pixelheight = 16;
+        }
         this.uvlayer = 0;
     }
-    texrgba: ITexture;
-    texgray: ITexture;
+    material: Material;
     effect: ElementFormat;
 
     uv: UVRect;//xywz
     uvlayer: number = 0;
     //border
-    border: Border;
+    //border: Border;
     //total width
     get totalWidth(): number {
-        return this.pixelwidth + this.border.XLeft + this.border.XRight;
+        return this.pixelwidth;//+ this.border.XLeft + this.border.XRight;
     }
     //total height
     get totalHeight(): number {
-        return this.pixelheight + this.border.YTop + this.border.YBottom;
+        return this.pixelheight;// + this.border.YTop + this.border.YBottom;
     }
     pixelwidth: number;
     pixelheight: number;
@@ -44,14 +54,14 @@ export class Sprite {
         }
         let _color = color == null ? Sprite._colorbuf : color;
 
-   
+
         let sx = rect.Width / this.totalWidth;
         let sy = rect.Height / this.totalHeight;
 
-        let x1 = rect.X + sx * this.border.XLeft;
-        let x2 = rect.X + rect.Width - sx * this.border.XRight;
-        let y1 = rect.Y + sy * this.border.YTop;
-        let y2 = rect.Y + rect.Height - sy * this.border.YBottom
+        let x1 = rect.X //+ sx * this.border.XLeft;
+        let x2 = rect.X + rect.Width// - sx * this.border.XRight;
+        let y1 = rect.Y //+ sy * this.border.YTop;
+        let y2 = rect.Y + rect.Height// - sy * this.border.YBottom
         let u1 = this.uv.U1;
         let v1 = this.uv.V1
         let u2 = this.uv.U2
@@ -154,7 +164,7 @@ export class Sprite {
         rectbuf[3].palx = this.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.texrgba, this.texgray, rectbuf, 1);
+        batcher.DrawQuads(this.material, rectbuf, 1);
     }
     RenderRect(batcher: Render_Batcher, rect: Rectangle, color: Color | null = null, palindex: number = -1) {
         let rectbuf = Sprite._rectbuf
@@ -169,8 +179,8 @@ export class Sprite {
 
         let sx = rect.Width / this.totalWidth;
         let sy = rect.Height / this.totalHeight;
-        rectbuf[0].x = rect.X + sx * this.border.XLeft;
-        rectbuf[0].y = rect.Y + sy * this.border.YTop;
+        rectbuf[0].x = rect.X //+ sx * this.border.XLeft;
+        rectbuf[0].y = rect.Y //+ sy * this.border.YTop;
         rectbuf[0].u = this.uv.U1;
         rectbuf[0].v = this.uv.V1;
         rectbuf[0].r = _color.R;
@@ -181,8 +191,8 @@ export class Sprite {
         rectbuf[0].paly = 0;
         rectbuf[0].eff = this.effect
 
-        rectbuf[1].x = rect.X + rect.Width - sx * this.border.XRight;
-        rectbuf[1].y = rect.Y + sy * this.border.YTop;
+        rectbuf[1].x = rect.X + rect.Width //- sx * this.border.XRight;
+        rectbuf[1].y = rect.Y //+ sy * this.border.YTop;
         rectbuf[1].u = this.uv.U2;
         rectbuf[1].v = this.uv.V1;
         rectbuf[1].r = _color.R
@@ -193,8 +203,8 @@ export class Sprite {
         rectbuf[1].paly = 0;
         rectbuf[1].eff = this.effect;
 
-        rectbuf[2].x = rect.X + sx * this.border.XLeft;
-        rectbuf[2].y = rect.Y + rect.Height - sy * this.border.YBottom;
+        rectbuf[2].x = rect.X// + sx * this.border.XLeft;
+        rectbuf[2].y = rect.Y + rect.Height// - sy * this.border.YBottom;
         rectbuf[2].u = this.uv.U1;
         rectbuf[2].v = this.uv.V2;
         rectbuf[2].r = _color.R
@@ -205,8 +215,8 @@ export class Sprite {
         rectbuf[2].paly = 0;
         rectbuf[2].eff = this.effect;
 
-        rectbuf[3].x = rect.X + rect.Width - sx * this.border.XRight;
-        rectbuf[3].y = rect.Y + rect.Height - sy * this.border.YBottom;
+        rectbuf[3].x = rect.X + rect.Width// - sx * this.border.XRight;
+        rectbuf[3].y = rect.Y + rect.Height// - sy * this.border.YBottom;
         rectbuf[3].u = this.uv.U2;
         rectbuf[3].v = this.uv.V2;
         rectbuf[3].r = _color.R
@@ -216,7 +226,7 @@ export class Sprite {
         rectbuf[3].palx = this.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.texrgba, this.texgray, rectbuf, 1);
+        batcher.DrawQuads(this.material, rectbuf, 1);
     }
     RenderRect2(batcher: Render_Batcher, x1: number, y1: number, x2: number, y2: number, color: Color | null = null, palindex: number = -1) {
         let rectbuf = Sprite._rectbuf
@@ -231,8 +241,8 @@ export class Sprite {
 
         let sx = (x2 - x1) / this.totalWidth;
         let sy = (y2 - y1) / this.totalHeight;
-        rectbuf[0].x = x1 + sx * this.border.XLeft;
-        rectbuf[0].y = y1 + sy * this.border.YTop;
+        rectbuf[0].x = x1// + sx * this.border.XLeft;
+        rectbuf[0].y = y1// + sy * this.border.YTop;
         rectbuf[0].u = this.uv.U1;
         rectbuf[0].v = this.uv.V1;
         rectbuf[0].r = _color.R;
@@ -243,8 +253,8 @@ export class Sprite {
         rectbuf[0].paly = 0;
         rectbuf[0].eff = this.effect
 
-        rectbuf[1].x = x2 - sx * this.border.XRight;
-        rectbuf[1].y = y1 + sy * this.border.YTop;
+        rectbuf[1].x = x2// - sx * this.border.XRight;
+        rectbuf[1].y = y1// + sy * this.border.YTop;
         rectbuf[1].u = this.uv.U2;
         rectbuf[1].v = this.uv.V1;
         rectbuf[1].r = _color.R
@@ -255,8 +265,8 @@ export class Sprite {
         rectbuf[1].paly = 0;
         rectbuf[1].eff = this.effect;
 
-        rectbuf[2].x = x1 + sx * this.border.XLeft;
-        rectbuf[2].y = y2 - sy * this.border.YBottom;
+        rectbuf[2].x = x1// + sx * this.border.XLeft;
+        rectbuf[2].y = y2// - sy * this.border.YBottom;
         rectbuf[2].u = this.uv.U1;
         rectbuf[2].v = this.uv.V2;
         rectbuf[2].r = _color.R
@@ -267,8 +277,8 @@ export class Sprite {
         rectbuf[2].paly = 0;
         rectbuf[2].eff = this.effect;
 
-        rectbuf[3].x = x2 - sx * this.border.XRight;
-        rectbuf[3].y = y2 - sy * this.border.YBottom;
+        rectbuf[3].x = x2// - sx * this.border.XRight;
+        rectbuf[3].y = y2// - sy * this.border.YBottom;
         rectbuf[3].u = this.uv.U2;
         rectbuf[3].v = this.uv.V2;
         rectbuf[3].r = _color.R
@@ -278,7 +288,7 @@ export class Sprite {
         rectbuf[3].palx = this.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.texrgba, this.texgray, rectbuf, 1);
+        batcher.DrawQuads(this.material, rectbuf, 1);
     }
     Render(batcher: Render_Batcher, pos: Vector2, scale: Vector2, color: Color | null = null, palindex: number = -1): void {
         let rectbuf = Sprite._rectbuf
@@ -290,15 +300,15 @@ export class Sprite {
         }
         let _color = color == null ? Sprite._colorbuf : color;
 
-  
+
 
         //  let rect = new Rectangle(x, y, s.totalWidth * scale.X, s.totalHeight * scale.Y);
         //   rectbuf[0].x = rect.X + sx * this.border.XLeft;
         //   rectbuf[0].y = rect.Y + sy * this.border.YTop;
         // rectbuf[1].x = rect.X + rect.Width - sx * this.border.XRight;
         // rectbuf[1].y = rect.Y + sy * this.border.YTop;
-        rectbuf[0].x = pos.X + scale.X * this.border.XLeft;
-        rectbuf[0].y = pos.Y + scale.Y * this.border.YTop;
+        rectbuf[0].x = pos.X// + scale.X * this.border.XLeft;
+        rectbuf[0].y = pos.Y// + scale.Y * this.border.YTop;
         rectbuf[0].u = this.uv.U1;
         rectbuf[0].v = this.uv.V1;
         rectbuf[0].r = _color.R;
@@ -310,8 +320,8 @@ export class Sprite {
         rectbuf[0].eff = this.effect
 
         //(this.totalWidth - this.border.XRight) * scale.X;
-        rectbuf[1].x = pos.X + scale.X * (this.totalWidth - this.border.XRight);
-        rectbuf[1].y = pos.Y + scale.Y * this.border.YTop;
+        rectbuf[1].x = pos.X + scale.X * (this.totalWidth)//- this.border.XRight);
+        rectbuf[1].y = pos.Y// + scale.Y * this.border.YTop;
         rectbuf[1].u = this.uv.U2;
         rectbuf[1].v = this.uv.V1;
         rectbuf[1].r = _color.R
@@ -322,8 +332,8 @@ export class Sprite {
         rectbuf[1].paly = 0;
         rectbuf[1].eff = this.effect;
 
-        rectbuf[2].x = pos.X + scale.X * this.border.XLeft;
-        rectbuf[2].y = pos.Y + scale.Y * (this.totalHeight - this.border.YBottom);
+        rectbuf[2].x = pos.X //+ scale.X * this.border.XLeft;
+        rectbuf[2].y = pos.Y + scale.Y * (this.totalHeight)// - this.border.YBottom);
         rectbuf[2].u = this.uv.U1;
         rectbuf[2].v = this.uv.V2;
         rectbuf[2].r = _color.R
@@ -334,8 +344,8 @@ export class Sprite {
         rectbuf[2].paly = 0;
         rectbuf[2].eff = this.effect;
 
-        rectbuf[3].x = pos.X + scale.X * (this.totalWidth - this.border.XRight);
-        rectbuf[3].y = pos.Y + scale.Y * (this.totalHeight - this.border.YBottom);
+        rectbuf[3].x = pos.X + scale.X * (this.totalWidth)//- this.border.XRight);
+        rectbuf[3].y = pos.Y + scale.Y * (this.totalHeight)// - this.border.YBottom);
         rectbuf[3].u = this.uv.U2;
         rectbuf[3].v = this.uv.V2;
         rectbuf[3].r = _color.R
@@ -345,7 +355,7 @@ export class Sprite {
         rectbuf[3].palx = this.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.texrgba, this.texgray, rectbuf, 1);
+        batcher.DrawQuads(this.material, rectbuf, 1);
     }
     RenderWithRotate(batcher: Render_Batcher, pos: Vector2, scale: Vector2, rotate: number, rotate_povit_x: number, rotate_povit_y: number, color: Color | null = null, palindex: number = -1): void {
         let rectbuf = Sprite._rectbuf
@@ -358,10 +368,10 @@ export class Sprite {
         let _color = color == null ? Sprite._colorbuf : color;
 
 
-        let x1 = pos.X + scale.X * this.border.XLeft;
-        let x2 = pos.X + scale.X * (this.totalWidth - this.border.XRight);
-        let y1 = pos.Y + scale.Y * this.border.YTop;
-        let y2 = pos.Y + scale.Y * (this.totalHeight - this.border.YBottom);
+        let x1 = pos.X //+ scale.X * this.border.XLeft;
+        let x2 = pos.X + scale.X * (this.totalWidth)// - this.border.XRight);
+        let y1 = pos.Y// + scale.Y * this.border.YTop;
+        let y2 = pos.Y + scale.Y * (this.totalHeight)// - this.border.YBottom);
 
         //旋转逻辑
         let cx = pos.X + rotate_povit_x * scale.X;
@@ -431,6 +441,6 @@ export class Sprite {
         rectbuf[3].palx = this.uvlayer;
         rectbuf[3].paly = 0;
         rectbuf[3].eff = this.effect;
-        batcher.DrawQuads(this.texrgba, this.texgray, rectbuf, 1);
+        batcher.DrawQuads(this.material, rectbuf, 1);
     }
 }

@@ -1,7 +1,7 @@
 import { version } from "../../../node_modules/typescript/lib/typescript.js";
 import { tt } from "../../../ttapi/ttapi.js";
 import { ElementSprite } from "../../graphics/pipeline/render/elem.js";
-import { Border, Sprite, ElementFormat, Texture, TextureFormat, UVRect, Vector2 } from "../../ttlayer2.js";
+import { Border, Sprite, ElementFormat, Texture, TextureFormat, UVRect, Vector2, Material, Resources } from "../../ttlayer2.js";
 import { PackTextureDuo, SpriteData } from "./packtex.js";
 
 
@@ -13,16 +13,32 @@ export class PackElement {
     constructor(packtexduo: PackTextureDuo) {
         this.packTexDuo = packtexduo;
         this.ElemInit(512, 512);
+        
+      
     }
+    
+    private material:Material;
+    
+    InitMat():void
+    {
+        this.material= new Material(Resources.GetShaderProgram("default"));
+        this.material.uniformTexs["texRGBA"].value =this.packTexDuo.packRGBA;
+        this.material.uniformTexs["texGray"].value =this.packTexDuo.packGray; 
+    }
+    GetMaterial():Material
+    {
+        return this.material;
+    }
+
     ConvertElemToSprite(elem: ElementSprite): Sprite {
-        let s = new Sprite(this.GetPackTexDuo().packRGBA, this.GetPackTexDuo().packGray);
+        let s = new Sprite(this.material);
         s.effect = elem.eff;
         s.uv = new UVRect(elem.uvCenter.X - elem.uvHalfSize.X, elem.uvCenter.Y - elem.uvHalfSize.Y
             ,
             elem.uvCenter.X + elem.uvHalfSize.X, elem.uvCenter.Y + elem.uvHalfSize.Y
         );
 
-        s.border = new Border(0, 0, 0, 0);
+        //s.border = new Border(0, 0, 0, 0);
         s.pixelwidth = elem.sizeRB.X - elem.sizeTL.X;
         s.pixelheight = elem.sizeRB.Y - elem.sizeTL.Y;
 
