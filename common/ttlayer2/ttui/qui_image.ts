@@ -7,9 +7,9 @@ import { QUI_Canvas } from "./qui_canvas.js";
 
 
 export class QUI_Image extends QUI.QUI_BaseElement {
-    constructor(sprite: ElementSprite = null, packelem: PackElement = null) {
+    constructor(sprite: Sprite = null) {
         super();
-        this.sprite = packelem.ConvertElemToSprite(sprite);
+        this.sprite = sprite;
         if (this.sprite != null) {
             this.localRect.setByRect(new Rectangle(0, 0, this.sprite.pixelwidth, this.sprite.pixelheight));
         }

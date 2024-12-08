@@ -145,8 +145,8 @@ export class QUI_Scale9 {
         rectbuf[0].g = _color.G;
         rectbuf[0].b = _color.B;
         rectbuf[0].a = _color.A;
-        rectbuf[0].palx = this.sprite.uvlayer;
-        rectbuf[0].paly = 0;
+        rectbuf[0].uvlayer = this.sprite.uvlayer;
+        //rectbuf[0].paly = 0;
         rectbuf[0].eff = this.sprite.effect
 
         rectbuf[1].x = x2;
@@ -157,8 +157,8 @@ export class QUI_Scale9 {
         rectbuf[1].g = _color.G
         rectbuf[1].b = _color.B
         rectbuf[1].a = _color.A
-        rectbuf[1].palx = this.sprite.uvlayer;
-        rectbuf[1].paly = 0;
+        rectbuf[1].uvlayer = this.sprite.uvlayer;
+        //rectbuf[1].paly = 0;
         rectbuf[1].eff = this.sprite.effect;
 
         rectbuf[2].x = x1;
@@ -169,8 +169,8 @@ export class QUI_Scale9 {
         rectbuf[2].g = _color.G
         rectbuf[2].b = _color.B
         rectbuf[2].a = _color.A
-        rectbuf[2].palx = this.sprite.uvlayer;
-        rectbuf[2].paly = 0;
+        rectbuf[2].uvlayer = this.sprite.uvlayer;
+        //rectbuf[2].paly = 0;
         rectbuf[2].eff = this.sprite.effect;
 
         rectbuf[3].x = x2;
@@ -181,8 +181,8 @@ export class QUI_Scale9 {
         rectbuf[3].g = _color.G
         rectbuf[3].b = _color.B
         rectbuf[3].a = _color.A
-        rectbuf[3].palx = this.sprite.uvlayer;
-        rectbuf[3].paly = 0;
+        rectbuf[3].uvlayer = this.sprite.uvlayer;
+        //rectbuf[3].paly = 0;
         rectbuf[3].eff = this.sprite.effect;
         batcher.DrawQuads(this.sprite.material, rectbuf, 1);
     }
@@ -207,8 +207,8 @@ export class QUI_Scale9 {
         rectbuf[0].g = _color.G;
         rectbuf[0].b = _color.B;
         rectbuf[0].a = _color.A;
-        rectbuf[0].palx = this.sprite.uvlayer;
-        rectbuf[0].paly = 0;
+        rectbuf[0].uvlayer = this.sprite.uvlayer;
+        //rectbuf[0].paly = 0;
         rectbuf[0].eff = this.sprite.effect
 
         rectbuf[1].x = rect.X + rect.Width;
@@ -219,8 +219,8 @@ export class QUI_Scale9 {
         rectbuf[1].g = _color.G
         rectbuf[1].b = _color.B
         rectbuf[1].a = _color.A
-        rectbuf[1].palx = this.sprite.uvlayer;
-        rectbuf[1].paly = 0;
+        rectbuf[1].uvlayer = this.sprite.uvlayer;
+        //rectbuf[1].paly = 0;
         rectbuf[1].eff = this.sprite.effect;
 
         rectbuf[2].x = rect.X
@@ -231,8 +231,8 @@ export class QUI_Scale9 {
         rectbuf[2].g = _color.G
         rectbuf[2].b = _color.B
         rectbuf[2].a = _color.A
-        rectbuf[2].palx = this.sprite.uvlayer;
-        rectbuf[2].paly = 0;
+        rectbuf[2].uvlayer = this.sprite.uvlayer;
+        //rectbuf[2].paly = 0;
         rectbuf[2].eff = this.sprite.effect;
 
         rectbuf[3].x = rect.X + rect.Width;
@@ -243,8 +243,8 @@ export class QUI_Scale9 {
         rectbuf[3].g = _color.G
         rectbuf[3].b = _color.B
         rectbuf[3].a = _color.A
-        rectbuf[3].palx = this.sprite.uvlayer;
-        rectbuf[3].paly = 0;
+        rectbuf[3].uvlayer = this.sprite.uvlayer;
+        //rectbuf[3].paly = 0;
         rectbuf[3].eff = this.sprite.effect;
         batcher.DrawQuads(this.sprite.material, rectbuf, 1);
     }

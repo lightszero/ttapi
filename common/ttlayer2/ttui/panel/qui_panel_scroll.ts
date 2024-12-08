@@ -158,7 +158,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
             return Math.abs(y - this._pressy);
         }
         let xadd = (x - this._pressx);
-        let yadd = (x - this._pressx);
+        let yadd = (y - this._pressy);
         return Math.sqrt(xadd * xadd + yadd * yadd);
     }
     private _dragPanel(x: number, y: number): void {

@@ -16,7 +16,7 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
             for (var i = 0; i < 10; i++) {
                 this._freeItem.push(this._updateUIFunc(null, null, -1, false));
             }
-            this._itemheight = this._freeItem[0].localRect.offsetY2 - this._freeItem[0].localRect.offsetX1;
+            this._itemheight = this._freeItem[0].localRect.offsetY2 - this._freeItem[0].localRect.offsetY1;
         }
     }
     getElementType(): QUI.QUI_ElementType {
@@ -67,8 +67,19 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
         return this._items.length * this._itemheight;
     }
     Pick(id: number): void {
-        this._pickid = id;
+        if (id < 0 || id >= this._items.length)
+            id = -1;
+
+        if (id != this._pickid && this.OnPick != null) {
+            this._pickid = id;
+            let pickitem: T = null;
+            if (id != -1)
+                pickitem = this._items[id];
+            this.OnPick(id, pickitem);
+        }
+
     }
+    OnPick: (index: number, item: T) => void;
     //更新
     UpdateList(): void {
 

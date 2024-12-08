@@ -39,9 +39,9 @@ export class DrawPoint {
 
 
     //tex&paluv (byte)
-    palx: number = 0;   //offset 24
-    paly: number = 0;   //offset 25
-    anyz: number = 0;  //offset 26 //this can be auto,no need to public
+    uvlayer: number = 0;   //offset 24
+    e2: number = 0;   //offset 25
+    e3: number = 0;  //offset 26 //this can be auto,no need to public
     eff: ElementFormat = 0;    //offset 27
     //pixel length =28
 
@@ -56,9 +56,9 @@ export class DrawPoint {
         p.g = this.g;
         p.b = this.b;
         p.a = this.a;
-        p.palx = this.palx;
-        p.paly = this.paly;
-        p.anyz = this.anyz;
+        p.uvlayer = this.uvlayer;
+        p.e2 = this.e2;
+        p.e3 = this.e3;
         p.eff = this.eff;
         p.x = this.x;
 
@@ -326,9 +326,9 @@ export class Render_Batcher {
 
 
 
-        this._bufferView.setUint8(this._pointseek * 28 + 24, p.palx);
-        this._bufferView.setUint8(this._pointseek * 28 + 25, p.paly);
-        this._bufferView.setUint8(this._pointseek * 28 + 26, 0);//p.texid); will be auto
+        this._bufferView.setUint8(this._pointseek * 28 + 24, p.uvlayer);
+        this._bufferView.setUint8(this._pointseek * 28 + 25, p.e2);
+        this._bufferView.setUint8(this._pointseek * 28 + 26, p.e3);//p.texid); will be auto
         this._bufferView.setUint8(this._pointseek * 28 + 27, p.eff);
         this._pointseek++;
     }

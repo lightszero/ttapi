@@ -28,7 +28,7 @@ export class View_Menu implements IState<Navigator<GContext>> {
 
         this.x = 32;
         this.y = 16;
-        this.AddButton("工具:TexturePackTool",new Tool_TexPack());
+        this.AddButton("工具:本地看图",new Tool_TexPack());
         this.AddButton("Test:Show GL Info", new Test_Info());
         this.AddButton("Test:TextureArray", new Test_TexArr());
         this.AddButton("Test:Element (UBO,废弃)", new Test_Element_UBO());

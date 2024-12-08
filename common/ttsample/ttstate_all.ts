@@ -50,7 +50,8 @@ export class TTState_All implements IUserLogic {
             label.localRect.setHPosFill(32, 32);
             label.localRect.setVPosByTopBorder(16, 8);
 
-            let img = new QUI_Image(Resources.GetRoundBlock(),Resources.GetPackElement());
+            let roundsprite =Resources.GetPackElement().ConvertElemToSprite(Resources.GetRoundBlock());
+            let img = new QUI_Image(roundsprite);
             img.localRect.setHPosByLeftBorder(16, 0);
             img.localRect.setVPosByTopBorder(16, 0);
             context.topuiview.GetCanvas().addChild(img);

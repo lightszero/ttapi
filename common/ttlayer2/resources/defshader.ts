@@ -249,7 +249,7 @@ var fs_default: string = /*glsl*/`#version 300 es
         {
             //outc.a *= texc.r;
             outc = vColor;
-            outc.a =texc.r; 
+            outc.a *=texc.r; 
             //outc = vColor * 0.5;
         }
         fragColor =  outc;
@@ -316,12 +316,11 @@ var fs_simple: string = `#version 300 es
         
     layout(location = 0) out vec4 fragColor;
 
-    uniform sampler2D tex2;
-    uniform sampler2DArray tex;  //从外部设置的参数
+    uniform sampler2D tex;  //从外部设置的参数
     void main(void) 
     {
-        vec4 t1 = texelFetch(tex2,ivec2(0, 0), 0);
-        vec4 texc = texture(tex,vec3(vUv,0));
+     
+        vec4 texc = texture(tex,vUv);
         vec4 outc = vColor;
        
         outc = vColor * texc;
