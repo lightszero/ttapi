@@ -1,18 +1,10 @@
 import { tt } from "../../ttapi/ttapi.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Panel_Split, QUI_ImageScale9, QUI_Panel_Scroll_Unlimit, QUI_IElement, QUI_Label, QUI_Button, QUI_Image, Texture, TextureFormat, Sprite, Material, QUI_Panel_Scroll, Rectangle, QUI_DragDriection } from "../../ttlayer2/ttlayer2.js";
 import { GContext } from "../ttstate_all.js";
+import { FileItem, FolderList } from "./folderlist.js";
 /// <reference types="../fileapi/wicg-file-system-access" />
 
-class FileItem {
-    parent: FileItem;
-    handle: FileSystemHandle;
-    GetName(): string {
-        let pname = "";
-        if (this.parent != null)
-            pname = this.parent.GetName() + "/";
-        return pname + this.handle.name;
-    }
-}
+
 export class Tool_TexPack implements IState<Navigator<GContext>> {
     nav: Navigator<GContext>;
     guilayer: DrawLayer_GUI;
@@ -39,8 +31,13 @@ export class Tool_TexPack implements IState<Navigator<GContext>> {
 
         this.sprite_preview = new Sprite(new Material(Resources.GetShaderProgram("simple")));
 
-        this.panel_File.OnPick = async (id, item) => {
-            let file = await (item.handle as FileSystemFileHandle).getFile();
+        this.panel_File.FileFilter = (name) => {
+            return name.includes(".png")
+                || name.includes(".jpg")
+                || name.includes(".jpeg");
+        }
+        this.panel_File.OnPickFile = async (file: File) => {
+
             let b = new Blob([await file.arrayBuffer()]);
             let url = URL.createObjectURL(b);
             let imagedata = await tt.loader.LoadImageDataAsync(url);
@@ -58,83 +55,16 @@ export class Tool_TexPack implements IState<Navigator<GContext>> {
         };
     }
     async event_open(): Promise<void> {
-        let dichandle = await showDirectoryPicker({ "mode": "readwrite", "startIn": "documents" });
-        let items = this.panel_File.getItems();
-        items.splice(0);
-        let handle = new FileItem();
-        handle.handle = dichandle;
-        await this.fillDir(handle);
+        await this.panel_File.OpenFolder("documents");
+    }
 
-    }
-    async fillDir(item: FileItem) {
-        let dichandle = item.handle as FileSystemDirectoryHandle;
-        let items = this.panel_File.getItems();
-        for await (let i of dichandle.entries()) {
-            let key: string = i[0];
-            let value: FileSystemHandle = i[1];
-            let subitem = new FileItem();
-            subitem.parent = item;
-            subitem.handle = value;
-            if (value.kind == "file") {
-                if (value.name.includes(".png")
-                    || value.name.includes(".jpg")
-                    || value.name.includes(".jpeg"))
-                    items.push(subitem);
-            }
-            else {
-                await this.fillDir(subitem);
-            }
-        }
-    }
-    panel_File: QUI_Panel_Scroll_Unlimit<FileItem>;
+    panel_File: FolderList;
     panel_Image: QUI_Panel_Scroll;
     img_priview: QUI_Image;
     btn_Open: QUI_Button;
     btn_Save: QUI_Button;
 
-    updateFileElem(item: FileItem, elem: QUI_IElement, index: number, pick: boolean): QUI_IElement {
-        if (elem == null) {
-            elem = new QUI_Panel();
-            let btn = new QUI_Button();
-            let writesprite = Resources.GetPackElement().ConvertElemToSprite(Resources.getWhiteBlock());
 
-            btn.ElemNormal = new QUI_Image(writesprite);
-            btn.ElemNormal.localRect.setAsFill();
-
-            elem.addChild(btn);
-            elem.addChild(new QUI_Label(Resources.GetDefFont(), ""));
-            elem.localRect.setVPosByTopBorder(20, 0);
-            elem.localRect.setHPosFill(4, 4);
-            (elem as QUI_Image).getChild(0).localRect.setAsFill();
-            (elem as QUI_Image).getChild(1).localRect.setAsFill();
-        }
-
-        let back = (elem as QUI_Image).getChild(0) as QUI_Button;
-        back.Tag = index.toString();
-        back.OnClick = () => {
-            this.panel_File.Pick(index);
-        }
-        if (pick)
-            back.alpha = 0.5;
-        else
-            back.alpha = 0;
-
-        let label = (elem as QUI_Panel).getChild(1) as QUI_Label;
-        if (item != null) {
-            if (item.handle.kind == "file") {
-                label.text = item.handle.name;// etName();
-            }
-            else {
-                label.text = "[Path]" + item.handle.name;
-            }
-        }
-        let fs = 16 / label.font.GetFontSize();;
-        label.fontScale = new Vector2(fs, fs);
-
-        label.halign = QUI_HAlign.Left;
-
-        return elem;
-    }
     InitUI(): void {
         //let p1 = new QUI_ImageScale9(Resources.GetBorderScale());
         //p1.localRect.setAsFill();
@@ -185,9 +115,7 @@ export class Tool_TexPack implements IState<Navigator<GContext>> {
             label.fontScale = new Vector2(fs, fs);
 
             panel1.addChild(label);
-            this.panel_File = new QUI_Panel_Scroll_Unlimit<FileItem>(
-                this.updateFileElem.bind(this)
-            );
+            this.panel_File = new FolderList();
             this.panel_File.localRect.setAsFill();
             this.panel_File.localRect.offsetY1 = 16;
             panel1.addChild(this.panel_File);
