@@ -257,7 +257,7 @@ var fs_default: string = /*glsl*/`#version 300 es
     }
     `;
 
-var vs_simple: string = `#version 300 es
+var vs_simple: string = /*glsl*/`#version 300 es
     layout(location = 0) in vec3 position;//顶点提供的数据
     layout(location = 1) in vec2 uv; 
     layout(location = 2) in vec4 color; 
@@ -282,30 +282,8 @@ var vs_simple: string = `#version 300 es
     }
     `;
 
-var vs_simple_inst: string = `#version 300 es
-layout(location = 0) in vec3 position;//顶点提供的数据
-layout(location = 1) in vec2 uv; 
-layout(location = 2) in vec4 color; 
-layout(location = 3) in vec3 pos_inst; 
 
-uniform mat4 matModel;
-uniform mat4 matView;
-uniform mat4 matProj;
-
-out vec4 vColor;//输出给fs的参数
-out vec2 vUv;//输出给fs的参数2
-//flat out vec4 vExt;
-
-void main(void) 
-{
-    mat4 matrix = matProj*matView*matModel;
-    gl_Position = matrix * vec4(position+pos_inst,1);// uViewProjMatrix * uModelMatrix * position;
-    vColor = color;
-    vUv = uv;
-    //vExt = ext;
-}
-`;
-var fs_simple: string = `#version 300 es
+var fs_simple: string = /*glsl*/`#version 300 es
     precision mediump float;//指定浮点型精确度
     precision highp sampler2DArray;
 
@@ -350,37 +328,44 @@ var fs_empty: string = `#version 300 es
         fragColor =  vec4(0,0,0,1);
     }
     `;
-var fs_tiledmap: string = `#version 300 es
+var fs_tiledmap: string = /*glsl*/`#version 300 es
     precision mediump float;//指定浮点型精确度
     precision highp sampler2DArray;
 
     in vec2 vUv;//从vs接收的参数
-    in vec4 vColor;//从vs接收的参数
-
-    uniform sampler2D tex; 
-    uniform sampler2D tex2; 
-    uniform vec4     texsize;//xy map size, z=tilesize, w =tile texturesize
+ 
+    uniform sampler2D texIndex; 
+    uniform sampler2D texTile; 
+    uniform float   tilesize;
+    uniform vec4     mapinfo;//xy map size, zw=tile texturesize
     layout(location = 0) out vec4 fragColor;
 
     void main(void) 
     {
         //抽取TiledIndex
-        vec4 texc = texture(tex,vUv);
+        vec4 texc = texture(texIndex,vUv);
         float su =float(int(texc.r*255.0+0.9)); //tileindex x
         float sv =float(int(texc.g*255.0+0.9)); //tileindex y
 
+        float su2 =float(int(texc.b*255.0+0.9)); //tileindex z
+        float sv2 =float(int(texc.a*255.0+0.9)); //tileindex w
+
         //计算tileduv
-        float subu = mod(vUv.x * texsize.x, 1.0);
-        float subv = mod(vUv.y * texsize.y, 1.0);
-        float tilescale =texsize.z/texsize.w;
-        vec2 tuv = vec2((su+subu)*tilescale,(sv+subv)*tilescale);
+        float subu = mod(vUv.x * mapinfo.x, 1.0);
+        float subv = mod(vUv.y * mapinfo.y, 1.0);
+        vec2 tilescale =vec2(tilesize,tilesize)/mapinfo.zw;
+        //float tilescaleY =tiledsize/mapinfo.w;
+        vec2 tuv = vec2((su+subu)*tilescale.x,(sv+subv)*tilescale.y);
+        vec2 tuv2 = vec2((su2+subu)*tilescale.x,(sv2+subv)*tilescale.y);
 
         //合成颜色
-        vec4 ttc = texture(tex2,tuv);
-        vec4 outc = ttc * vColor;
+        vec4 ttc = texture(texTile,tuv);
+        vec4 ttc2 = texture(texTile,tuv);
+ 
 
+        vec4 outcolor = ttc2.a*ttc2 + (1.0-ttc2.a)*ttc;
         
-        fragColor =  outc;
+        fragColor = outcolor;
     }
     `;
 export function InitInnerShader(webgl: WebGL2RenderingContext): void {
@@ -400,9 +385,6 @@ export function InitInnerShader(webgl: WebGL2RenderingContext): void {
     if (vssim != null && fssim != null)
         Resources.AddProgram(webgl, "simple", vssim, fssim);
 
-    var vssim_inst = Resources.CompileShader(webgl, ShaderType.VertexShader, "simple_inst", vs_simple_inst);
-    if (vssim_inst != null && fssim != null)
-        Resources.AddProgram(webgl, "simple_inst", vssim_inst, fssim);
 
 
     var vsfeedback = Resources.CompileShader(webgl, ShaderType.VertexShader, "feedback", vs_feedback);
@@ -413,7 +395,7 @@ export function InitInnerShader(webgl: WebGL2RenderingContext): void {
 
     var fstiledmap = Resources.CompileShader(webgl, ShaderType.FragmentShader, "tiledmap", fs_tiledmap);
     if (vsdef != null && fstiledmap != null)
-        Resources.AddProgram(webgl, "tiledmap", vsdef, fstiledmap);
+        Resources.AddProgram(webgl, "tiledmap", vssim, fstiledmap);
 
 
 

@@ -124,7 +124,33 @@ export class SpriteData {
         return data;
 
     }
+    Cut(x: number, y: number, w: number, h: number): SpriteData {
+        let sp = new SpriteData();
+        sp.format = this.format;
+        sp.toRgba = this.toRgba;
+        sp.toR = this.toR;
+        sp.width = w;
+        sp.height = h;
+        let len = TextureFormat.RGBA32 ? 4 : 1;
+        sp.data = new Uint8Array(w * h * len);
+        for (let j = 0; j < h; j++) {
+            for (let i = 0; i < w; i++) {
+                let targetindex = j * w + i;
+                let srcindex = (j + y) * this.width + (i + x);
+                if (len == 1) {
+                    sp.data[targetindex] = this.data[srcindex];
+                }
+                else {
 
+                    sp.data[targetindex * 4 + 0] = this.data[srcindex * 4 + 0];
+                    sp.data[targetindex * 4 + 1] = this.data[srcindex * 4 + 1];
+                    sp.data[targetindex * 4 + 2] = this.data[srcindex * 4 + 2];
+                    sp.data[targetindex * 4 + 3] = this.data[srcindex * 4 + 3];
+                }
+            }
+        }
+        return sp;
+    }
 }
 export class PackTexture extends TextureArray {
     constructor(webgl: WebGL2RenderingContext, width: number, height: number, format: TextureFormat, layercount: number, border: number = 0) {

@@ -11,6 +11,7 @@ export enum UniformType {
   sampler2D,
   block,
   float,
+  int,
   vec4,
   ivec4
 }
@@ -156,6 +157,12 @@ export class ShaderProgram {
         break;
       let type: UniformType = UniformType.empty;
       switch (info.type) {
+        case webgl.INT:
+          type = UniformType.int;
+          break;
+        case webgl.FLOAT:
+          type = UniformType.float;
+          break;
         case 0x8B52:
           type = UniformType.vec4
           break;

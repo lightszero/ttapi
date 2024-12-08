@@ -53,7 +53,7 @@ export class PackElement {
     private ElemInit(width: number, height: number) {
         this.elemBufData = new Float32Array(width * height * 4);
         let gl = tt.graphic.GetWebGL();
-        this.elemTex = new Texture(gl, width, height, TextureFormat.F_RGBA32, null);
+        this.elemTex = new Texture(gl, width, height, TextureFormat.F_RGBA, null);
         this.maxElemCount = width / 4 * height;
         this.elemCount = 0;
         this.elemDirty = false;

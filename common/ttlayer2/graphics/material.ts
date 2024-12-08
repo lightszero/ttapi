@@ -16,6 +16,10 @@ export class UniformValue_Vector {
     loc: WebGLUniformLocation;
     value: Float32Array
 }
+export class UniformValue_Number {
+    loc: WebGLUniformLocation;
+    value: number;
+}
 export class UniformValue_IVector {
     loc: WebGLUniformLocation;
     value: Int32Array
@@ -73,6 +77,18 @@ export class Material {
                         value: defIvec
                     }
                     break;
+                case UniformType.float:
+                    this.uniformFloats[key] = {
+                        loc: info.loc,
+                        value: 0
+                    }
+                    break;
+                case UniformType.int:
+                    this.uniformInts[key] = {
+                        loc: info.loc,
+                        value: 0
+                    }
+                    break;
                 default:
                     break;
             }
@@ -81,7 +97,8 @@ export class Material {
 
     }
     private shader: ShaderProgram;
-    uniformFloats: { [id: string]: number } = {};
+    uniformFloats: { [id: string]: UniformValue_Number } = {};
+    uniformInts: { [id: string]: UniformValue_Number } = {};
     uniformMats: { [id: string]: UniformValue_Vector } = {};
     uniformTexs: { [id: string]: UniformValue_Tex } = {};
     uniformVecs: { [id: string]: UniformValue_Vector } = {};
@@ -147,6 +164,15 @@ export class Material {
 
 
         webgl.useProgram(this.shader.program);
+
+        for (var key in this.uniformFloats) {
+            let uni = this.uniformFloats[key];
+            webgl.uniform1f(uni.loc, uni.value);
+        }
+        for (var key in this.uniformInts) {
+            let uni = this.uniformInts[key];
+            webgl.uniform1i(uni.loc, uni.value);
+        }
         for (var key in this.uniformMats) {
             let uni = this.uniformMats[key];
 
@@ -187,6 +213,7 @@ export class Material {
             let uni = this.uniformBlocks[key];
             webgl.bindBufferBase(webgl.UNIFORM_BUFFER, blockcount, uni.value.GetGLBuf());
             webgl.uniformBlockBinding(this.shader.program, uni.index, blockcount);
+            blockcount++;
         }
     }
 }

@@ -33,13 +33,7 @@ export class Sprite {
     //border
     //border: Border;
     //total width
-    get totalWidth(): number {
-        return this.pixelwidth;//+ this.border.XLeft + this.border.XRight;
-    }
-    //total height
-    get totalHeight(): number {
-        return this.pixelheight;// + this.border.YTop + this.border.YBottom;
-    }
+
     pixelwidth: number;
     pixelheight: number;
     static _rectbuf: DrawPoint[] = [];
@@ -55,8 +49,8 @@ export class Sprite {
         let _color = color == null ? Sprite._colorbuf : color;
 
 
-        let sx = rect.Width / this.totalWidth;
-        let sy = rect.Height / this.totalHeight;
+        let sx = rect.Width / this.pixelwidth;
+        let sy = rect.Height / this.pixelheight;
 
         let x1 = rect.X //+ sx * this.border.XLeft;
         let x2 = rect.X + rect.Width// - sx * this.border.XRight;
@@ -177,8 +171,8 @@ export class Sprite {
         let _color = color == null ? Sprite._colorbuf : color;
 
 
-        let sx = rect.Width / this.totalWidth;
-        let sy = rect.Height / this.totalHeight;
+        let sx = rect.Width / this.pixelwidth;
+        let sy = rect.Height / this.pixelheight;
         rectbuf[0].x = rect.X //+ sx * this.border.XLeft;
         rectbuf[0].y = rect.Y //+ sy * this.border.YTop;
         rectbuf[0].u = this.uv.U1;
@@ -239,8 +233,8 @@ export class Sprite {
         let _color = color == null ? Sprite._colorbuf : color;
 
 
-        let sx = (x2 - x1) / this.totalWidth;
-        let sy = (y2 - y1) / this.totalHeight;
+        let sx = (x2 - x1) / this.pixelwidth;
+        let sy = (y2 - y1) / this.pixelheight;
         rectbuf[0].x = x1// + sx * this.border.XLeft;
         rectbuf[0].y = y1// + sy * this.border.YTop;
         rectbuf[0].u = this.uv.U1;
@@ -320,7 +314,7 @@ export class Sprite {
         rectbuf[0].eff = this.effect
 
         //(this.totalWidth - this.border.XRight) * scale.X;
-        rectbuf[1].x = pos.X + scale.X * (this.totalWidth)//- this.border.XRight);
+        rectbuf[1].x = pos.X + scale.X * (this.pixelwidth)//- this.border.XRight);
         rectbuf[1].y = pos.Y// + scale.Y * this.border.YTop;
         rectbuf[1].u = this.uv.U2;
         rectbuf[1].v = this.uv.V1;
@@ -333,7 +327,7 @@ export class Sprite {
         rectbuf[1].eff = this.effect;
 
         rectbuf[2].x = pos.X //+ scale.X * this.border.XLeft;
-        rectbuf[2].y = pos.Y + scale.Y * (this.totalHeight)// - this.border.YBottom);
+        rectbuf[2].y = pos.Y + scale.Y * (this.pixelheight)// - this.border.YBottom);
         rectbuf[2].u = this.uv.U1;
         rectbuf[2].v = this.uv.V2;
         rectbuf[2].r = _color.R
@@ -344,8 +338,8 @@ export class Sprite {
         //rectbuf[2].paly = 0;
         rectbuf[2].eff = this.effect;
 
-        rectbuf[3].x = pos.X + scale.X * (this.totalWidth)//- this.border.XRight);
-        rectbuf[3].y = pos.Y + scale.Y * (this.totalHeight)// - this.border.YBottom);
+        rectbuf[3].x = pos.X + scale.X * (this.pixelwidth)//- this.border.XRight);
+        rectbuf[3].y = pos.Y + scale.Y * (this.pixelheight)// - this.border.YBottom);
         rectbuf[3].u = this.uv.U2;
         rectbuf[3].v = this.uv.V2;
         rectbuf[3].r = _color.R
@@ -369,9 +363,9 @@ export class Sprite {
 
 
         let x1 = pos.X //+ scale.X * this.border.XLeft;
-        let x2 = pos.X + scale.X * (this.totalWidth)// - this.border.XRight);
+        let x2 = pos.X + scale.X * (this.pixelwidth)// - this.border.XRight);
         let y1 = pos.Y// + scale.Y * this.border.YTop;
-        let y2 = pos.Y + scale.Y * (this.totalHeight)// - this.border.YBottom);
+        let y2 = pos.Y + scale.Y * (this.pixelheight)// - this.border.YBottom);
 
         //旋转逻辑
         let cx = pos.X + rotate_povit_x * scale.X;

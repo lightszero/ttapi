@@ -48,7 +48,7 @@ export class Test_Load implements IState<Navigator<GContext>> {
         this.guilayer = new DrawLayer_GUI();
         this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
 
-        GameApp.GetViewList().AddDrawLayers(this.guilayer);
+        GameApp.GetViewList().AddDrawLayer(this.guilayer);
         let btn = Resources.CreateGUI_Button("<--", new Color(1, 1, 1, 1));
         btn.localRect.setHPosByLeftBorder(196, 16);
         btn.localRect.setVPosByTopBorder(20, 8);
@@ -67,7 +67,7 @@ export class Test_Load implements IState<Navigator<GContext>> {
         this.canvaslayer.GetCamera().Scale = 2.0;
         this.render = new Render_Element_Tbo();
         this.canvaslayer.AddRender(this.render);
-        GameApp.GetViewList().AddDrawLayers(this.canvaslayer);
+        GameApp.GetViewList().AddDrawLayer(this.canvaslayer);
 
         let s = Resources.GetBorder2Block();
         let s2 = Resources.GetRoundBlock();

@@ -69,7 +69,7 @@ export class Font {
         for (var i = 0; i < text.length; i++) {
             let _s = this._CacheCharSprite(text.charCodeAt(i));
             if (_s != null) {
-                width += _s.totalWidth;
+                width += _s.pixelwidth;
             }
             else {
                 width += this.fontsize / 2;
@@ -105,7 +105,7 @@ export class Font {
                 s.RenderRectWithLimit(bathcer, rect, limitRect, color);
 
                 //s.Render(bathcer, new Vector2(pos.X + xadd, pos.Y), scale, color);
-                xadd += (s.totalWidth * scale.X);
+                xadd += (s.pixelwidth * scale.X);
             }
             else {
                 xadd += this.fontsize / 2 * scale.X;

@@ -3,7 +3,7 @@ import { Material } from "./material.js";
 export enum VertexAttribType {
     UNSIGNED_BYTE = 0x1401,
     UNSIGNED_SHORT = 0x1403,
-    UNSIGNED_INT= 0x1405,
+    UNSIGNED_INT = 0x1405,
     FLOAT = 0x1406,
 }
 export class VertexAttribItem {
@@ -44,8 +44,7 @@ export class VBOInfo {
             else if (a.type == VertexAttribType.UNSIGNED_INT) {
                 this.stride += 4 * a.size;
             }
-            else
-            {
+            else {
                 throw "unknown stride";
             }
             this.hash += a.type + "(" + a.size + ");";
@@ -77,6 +76,7 @@ export class VertexFormatMgr {
     private static vertexFormatsID2Hash: { [id: string]: string } = {}
     private static vertexFormat_Vertex_Normal: VertexFormat = null;
     private static vertexFormat_Vertex_Color: VertexFormat = null;
+    private static vertexFormat_Vertex_UV: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color_Color2: VertexFormat = null;
     private static vertexFormat_Vertex_UV_Color_InstPos: VertexFormat = null;
@@ -117,6 +117,16 @@ export class VertexFormatMgr {
             this.vertexFormat_Vertex_Color = this.RegFormat(vecf);
         }
         return this.vertexFormat_Vertex_Color;
+    }
+    static GetFormat_Vertex_UV(): VertexFormat {
+        if (this.vertexFormat_Vertex_UV == null) {
+            let vecf = new VertexFormat("Vertex_UV_Color");
+            vecf.vbos.push(new VBOInfo());
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));
+            this.vertexFormat_Vertex_UV = this.RegFormat(vecf);
+        }
+        return this.vertexFormat_Vertex_UV;
     }
     static GetFormat_Vertex_UV_Color(): VertexFormat {
         if (this.vertexFormat_Vertex_UV_Color == null) {

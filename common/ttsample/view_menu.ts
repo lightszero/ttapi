@@ -5,6 +5,7 @@ import { Test_Element_UBO } from "./testview/test_element_ubo.js";
 import { Test_FileApi } from "./testview/test_fileapi.js";
 import { Test_Info } from "./testview/test_info.js";
 import { Test_TexArr } from "./testview/test_texarr.js";
+import { Test_Tiledmap } from "./testview/test_tiledmap.js";
 import { Tool_TexPack } from "./toolview/tool_texpack.js";
 import { GContext } from "./ttstate_all.js";
 
@@ -22,7 +23,7 @@ export class View_Menu implements IState<Navigator<GContext>> {
         this.guilayer = new DrawLayer_GUI();
         this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
 
-        GameApp.GetViewList().AddDrawLayers(this.guilayer);
+        GameApp.GetViewList().AddDrawLayer(this.guilayer);
 
         nav.GetContextObj().TopUI2Top();
 
@@ -38,7 +39,7 @@ export class View_Menu implements IState<Navigator<GContext>> {
         this.AddButton("Test:GUI[欠]");
         this.AddButton("Test:Box2d[欠]");
         this.AddButton("Test:Ani[欠]");
-        this.AddButton("Test:FILE API",new Test_FileApi());
+        this.AddButton("Test:Tiledmap", new Test_Tiledmap());
     }
     y: number = 32;
     x: number = 16;

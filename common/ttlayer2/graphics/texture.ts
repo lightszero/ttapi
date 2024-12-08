@@ -5,7 +5,7 @@ export enum TextureFormat {
     R8,
     RGBA32,
     F_R8,
-    F_RGBA32,
+    F_RGBA,
 }
 export interface ITexture {
     getID(): number;
@@ -66,10 +66,10 @@ export class Texture implements ITexture {
 
 
 
-        if (this._format == TextureFormat.F_R8 || this._format == TextureFormat.F_RGBA32) {
+        if (this._format == TextureFormat.F_R8 || this._format == TextureFormat.F_RGBA) {
             this._typeGL = this._webgl.FLOAT;
 
-            if (this._format == TextureFormat.F_RGBA32) {
+            if (this._format == TextureFormat.F_RGBA) {
                 this._formatInnerGL = this._webgl.RGBA32F;
                 this._formatGL = this._webgl.RGBA;
             }
@@ -207,10 +207,10 @@ export class TextureArray implements ITexture {
 
 
 
-        if (this._format == TextureFormat.F_R8 || this._format == TextureFormat.F_RGBA32) {
+        if (this._format == TextureFormat.F_R8 || this._format == TextureFormat.F_RGBA) {
             this._typeGL = this._webgl.FLOAT;
 
-            if (this._format == TextureFormat.F_RGBA32) {
+            if (this._format == TextureFormat.F_RGBA) {
                 this._formatInnerGL = this._webgl.RGBA32F;
                 this._formatGL = this._webgl.RGBA;
             }

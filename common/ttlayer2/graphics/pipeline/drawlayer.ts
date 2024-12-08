@@ -116,7 +116,7 @@ export class DrawLayer {
 export class DrawLayerList {
     //private views: IView[] = []
     private mapviews: { [id: number]: DrawLayer[] } = {};
-    AddDrawLayers(view: DrawLayer): void {
+    AddDrawLayer(view: DrawLayer): void {
         let tag = view.GetTag();
         if (this.mapviews[tag] == undefined) {
             this.mapviews[tag] = [];

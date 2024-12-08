@@ -28,7 +28,7 @@ export class TTState_All implements IUserLogic {
         let ct = this.nav.GetContextObj();
         ct.topuiview = new DrawLayer_GUI();
 
-        GameApp.GetViewList().AddDrawLayers(ct.topuiview);
+        GameApp.GetViewList().AddDrawLayer(ct.topuiview);
 
         this.InitTopUI(ct);
         this.nav.NavigatorTo(new View_Menu());

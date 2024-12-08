@@ -65,7 +65,7 @@ export class Test_TexArr implements IState<Navigator<GContext>> {
         this.guilayer = new DrawLayer_GUI();
         this.guilayer.GetCamera().Scale = 3.0;
       
-        GameApp.GetViewList().AddDrawLayers(this.guilayer);
+        GameApp.GetViewList().AddDrawLayer(this.guilayer);
         let btn = Resources.CreateGUI_Button("<--", new Color(1, 1, 1, 1));
         btn.localRect.setHPosByLeftBorder(196, 16);
         btn.localRect.setVPosByTopBorder(20, 8);
