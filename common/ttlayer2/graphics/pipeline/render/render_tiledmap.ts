@@ -10,7 +10,7 @@ export class Render_Tiledmap implements ILayerRender {
     mat: Material;
 
     SetTiledmap(indexTex: Texture, tiledTex: Texture, tiledSize: number, scale: number = 1.0) {
-
+        this.scale = scale;
 
         let gl = tt.graphic.GetWebGL();
         this.mat = new Material(Resources.GetShaderProgram("tiledmap"));

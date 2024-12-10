@@ -360,7 +360,7 @@ var fs_tiledmap: string = /*glsl*/`#version 300 es
 
         //合成颜色
         vec4 ttc = texture(texTile,tuv);
-        vec4 ttc2 = texture(texTile,tuv);
+        vec4 ttc2 = texture(texTile,tuv2);
  
 
         vec4 outcolor = ttc2.a*ttc2 + (1.0-ttc2.a)*ttc;

@@ -1,5 +1,6 @@
 import { tt } from "../../ttapi/ttapi.js";
 import { Render_Tiledmap } from "../../ttlayer2/graphics/pipeline/render/render_tiledmap.js";
+import { PerlinNoise } from "../../ttlayer2/math/perlin/perlin.js";
 import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
 import { IndexTex as TiledIndexTex, TiledTex } from "../../ttlayer2/resources/tiledmap/tiledmap.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Image, Sprite, Material, Texture, TextureFormat } from "../../ttlayer2/ttlayer2.js";
@@ -28,18 +29,9 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
         this.tiledtex = new TiledTex(tt.graphic.GetWebGL(), { 'width': 1024, "height": 1024, "tileSize": 32 });
         this.tiledtexIndex = new TiledIndexTex(tt.graphic.GetWebGL(), 256, 256);
         this.tiledrender.SetTiledmap(this.tiledtexIndex, this.tiledtex, this.tiledtex.GetTileSize()
-            , 1.0);
+            , 0.25);
 
-        for (let j = 0; j < this.tiledtexIndex.getHeight(); j++) {
-            for (let i = 0; i < this.tiledtexIndex.getWidth(); i++) {
-                let v = (Math.random() * 10) | 0;
-                let v2 = (Math.random() * 10) | 0;
-                this.tiledtexIndex.SetIndexLayer1(i, j, v, 0);// (Math.random() % 10) | 0, 0);
-                this.tiledtexIndex.SetIndexLayer2(i, j, v2, 0);
 
-            }
-        }
-        this.tiledtexIndex.Apply();
         this.AddBackButton();
 
 
@@ -53,10 +45,50 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
 
     private RandomMap(): void {
 
+        let layer0 = this.tiledtex.GetTileLayer(0);
+        let layer1 = this.tiledtex.GetTileLayer(1);
+
+
+        //PerlinNoise.Reset();
+
+        //填充第一层
+        for (let j = 0; j < this.tiledtexIndex.getHeight(); j++) {
+            for (let i = 0; i < this.tiledtexIndex.getWidth(); i++) {
+
+                let v = (Math.random() * 4) | 0;
+
+                let tile1 = layer1.tiled[v];
+
+                //console.log("h=" + h);
+                this.tiledtexIndex.SetIndexLayer1(i, j, tile1.posU, tile1.posV);// (Math.random() % 10) | 0, 0);
+            }
+        }
+
+        //生成一个随机数据，只需要1 or 0
+        let perlinoffset = new Vector2(Math.random(), Math.random());
+        let FillData = new Uint8Array(this.tiledtexIndex.getWidth() * this.tiledtexIndex.getHeight());
+        for (let j = 0; j < this.tiledtexIndex.getHeight(); j++) {
+            for (let i = 0; i < this.tiledtexIndex.getWidth(); i++) {
+
+                let h = PerlinNoise.GenNoise(
+                    i / this.tiledtexIndex.getWidth() / 2 + perlinoffset.X,
+                    j / this.tiledtexIndex.getHeight() / 2 + perlinoffset.Y,
+                    0
+                    , 5, 1
+                );
+                FillData[j * this.tiledtexIndex.getWidth() + i] = h > 0.5 ? 1 : 0;
+            }
+        }
+
+        //用给定的数据自动填充对应的图案
+        this.tiledtexIndex.AutoFillIndexLayer2(layer0, FillData);
+        this.tiledtexIndex.Apply();
     }
     private async initacync() {
         let gl = tt.graphic.GetWebGL();
         let x = 16;
+
+        this.tiledtex.AddEmpty();
         {
             let mat1 = new Material(Resources.GetShaderProgram("simple"));
 
@@ -130,6 +162,8 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
         this.AddLabel("外角八块，外角的最中间是平铺块");
         this.AddLabel("最下边一行是替换的平铺块");
 
+
+        this.RandomMap()
     }
     y: number = 64;
     AddLabel(text: string): void {
@@ -179,8 +213,8 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
         this.timer += delta;
         let x = Math.sin(this.timer) * 65 + 65;
         let y = Math.cos(this.timer) * 32 + 32;
-        this.tiledlayer.GetCamera().LookAt.X = x | 0;
-        this.tiledlayer.GetCamera().LookAt.Y = y | 0;
+        this.tiledlayer.GetCamera().LookAt.X = ((x * 2) | 0) / 2;
+        this.tiledlayer.GetCamera().LookAt.Y = ((y * 2) | 0) / 2;
     }
     OnExit(): void {
         GameApp.GetViewList().RemoveDrawLayers(this.guilayer);

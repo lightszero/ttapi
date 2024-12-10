@@ -15,18 +15,7 @@ export class PerlinNoise {
     );
     private static p: Uint8Array = null;
 
-    static Reset() {
-        for (var i = 0; i < 256; i++) {
-            this.permutation[i] = i;
-        }
-        for (var i = 0; i < 1000; i++) {
-            let k = (Math.random() * 255) | 0;
-            let oldv = this.permutation[0];
-            let newv = this.permutation[k];
-            this.permutation[0] = newv;
-            this.permutation[k] = oldv;
-        }
-    }
+
     // 因为后面会有p[ p[ p[xi] + yi] + zi]的操作来取hash值，p[xi] + yi可能会大于255，所以p重复两遍permutation
     private static Init(): void {
         if (this.p == null) {
