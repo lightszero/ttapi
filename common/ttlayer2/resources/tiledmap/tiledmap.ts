@@ -167,7 +167,21 @@ export class IndexTex extends Texture {
         this.data[(y * this._width + x) * 4 + 3] = posV;
         this.dirty = true;
     }
-    AutoFillIndexLayer2(tiledlayer: TileLayer, FillData: Uint8Array): void {
+    FillIndexLayer1(tiledlayer: TileLayer): void {
+
+        for (var j = 0; j < this._height; j++) {
+            for (var i = 0; i < this._width; i++) {
+
+                let r = (Math.random() * 100 + 0.5) | 0;
+                let k = r - 97;
+                if (k < 0) k = 0;
+                if (k > 3) k = 3;
+                let t = tiledlayer.tiled[k];
+                this.SetIndexLayer1(i, j, t.posU, t.posV);
+            }
+        }
+    }
+    FillIndexLayer2WithData(tiledlayer: TileLayer, FillData: Uint8Array): void {
         //每四格一样，避免奇怪的格子出现
         for (var j = 0; j < this._height; j += 2) {
             for (var i = 0; i < this._width; i += 2) {
@@ -269,8 +283,11 @@ export class IndexTex extends Texture {
 
                         }
                         else {
-                            let r = (Math.random() * 3 + 0.5) | 0;
-                            let t = tiledlayer.tiled[r];
+                            let r = (Math.random() * 100 + 0.5) | 0;
+                            let k = r - 97;
+                            if (k < 0) k = 0;
+                            if (k > 3) k = 3;
+                            let t = tiledlayer.tiled[k];
                             this.SetIndexLayer2(i, j, t.posU, t.posV);
                         }
                     }

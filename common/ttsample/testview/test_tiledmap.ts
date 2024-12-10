@@ -52,17 +52,8 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
         //PerlinNoise.Reset();
 
         //填充第一层
-        for (let j = 0; j < this.tiledtexIndex.getHeight(); j++) {
-            for (let i = 0; i < this.tiledtexIndex.getWidth(); i++) {
+        this.tiledtexIndex.FillIndexLayer1(layer1);
 
-                let v = (Math.random() * 4) | 0;
-
-                let tile1 = layer1.tiled[v];
-
-                //console.log("h=" + h);
-                this.tiledtexIndex.SetIndexLayer1(i, j, tile1.posU, tile1.posV);// (Math.random() % 10) | 0, 0);
-            }
-        }
 
         //生成一个随机数据，只需要1 or 0
         let perlinoffset = new Vector2(Math.random(), Math.random());
@@ -81,7 +72,7 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
         }
 
         //用给定的数据自动填充对应的图案
-        this.tiledtexIndex.AutoFillIndexLayer2(layer0, FillData);
+        this.tiledtexIndex.FillIndexLayer2WithData(layer0, FillData);
         this.tiledtexIndex.Apply();
     }
     private async initacync() {
