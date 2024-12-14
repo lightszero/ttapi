@@ -1,33 +1,34 @@
 
-注意,本仓库使用了符号链接
+# TTAPI是什么
 
-不同平台共享的代码,都在Common中
+TTAPI 是一组typescirpt 接口  
+他抽象了开发小游戏所需的基本接口,并提供多种平台的实现  
+其中包括:Web 微信小游戏等.
 
-各个平台使用 符号链接或者目录链接 引用
+# TTLayer2
 
-在windows 上 仅限NTFS分区使用
+在TTAPI之上,抽象了一些更高级的功能,主要基于 Webgl2 实现
 
-如果非NTFS分区要用,需要手动去Common目录复制对应平台的代码到平台项目目录
+# 工具
+[TiledMap 编辑器](./webtool/tiled/index.html)
+# 示例
+[基本示例](./web/index.html)
+
+
+# 注意
+
+由于 windows 符号链接 仅支持NTFS分区.  
+
+各个路径,不同程度的通过链接方式使用了common目录的代码  
+
+所以对于 ttxxx 这些路径都是忽略的  
+
+你可根据自己的情况,通过执行不同环境的link.bat 或者 link.sh 创建符号链接
+
+或者直接copy对应的代码.
+
+## 测试环境
+
+所有代码都会经过 NTFS 分区+link.bat 的方式测试.
 
 # WEB平台
-
-
-
-
-//可以用下述指令 clone
-
-```
-git clone https://gitee.com/lightsever/thinapi.git thinapi -c core.symlinks=true
-```
-
-```
-git config --global core.symlinks true 有时不会生效
-```
-
-## WEGAME 平台
-
-微信小游戏 的开发环境,对符号链接很不友好,所以使用了目录链接
-
-这些目录被忽略,不会提交
-
-首次使用时,执行wegame/link.bat 建立链接
