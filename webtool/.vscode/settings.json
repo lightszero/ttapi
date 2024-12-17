@@ -1,9 +1,0 @@
-{
-    "files.exclude": {
-        "**/ttapi/**/*.js*": true,
-        "**/ttimpl_web/*.js*": true,
-        "**/ttlayer2/**/*.js*": true,
-        "**/ttsample/**/*.js*": true,
-        "**/ttui/**/*.js*": true,
-    }
-}
