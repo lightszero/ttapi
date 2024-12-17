@@ -1,4 +1,4 @@
-import { version } from "../../../node_modules/typescript/lib/typescript.js";
+
 import { tt } from "../../../ttapi/ttapi.js";
 import { ElementSprite } from "../../graphics/pipeline/render/elem.js";
 import { Border, Sprite, ElementFormat, Texture, TextureFormat, UVRect, Vector2, Material, Resources } from "../../ttlayer2.js";

@@ -83,7 +83,7 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
         {
             let mat1 = new Material(Resources.GetShaderProgram("simple"));
 
-            let teximg = await tt.loader.LoadImageAsync("./ttsample/data/tiledrule.png");
+            let teximg = await tt.loader.LoadImageAsync("./data/tiledrule.png");
             let tex1 = new Texture(gl, teximg.width, teximg.height, TextureFormat.RGBA32, null);
             tex1.UploadImg(teximg);
             mat1.uniformTexs["tex"].value = tex1;
@@ -101,7 +101,7 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
         {
             let mat1 = new Material(Resources.GetShaderProgram("simple"));
 
-            let teximg = await tt.loader.LoadImageDataAsync("./ttsample/data/grass.png");
+            let teximg = await tt.loader.LoadImageDataAsync("./data/grass.png");
             let tex1 = new Texture(gl, teximg.width, teximg.height, TextureFormat.RGBA32, null);
             tex1.UploadImg(teximg);
             mat1.uniformTexs["tex"].value = tex1;
@@ -125,7 +125,7 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
         {
             let mat1 = new Material(Resources.GetShaderProgram("simple"));
 
-            let teximg = await tt.loader.LoadImageDataAsync("./ttsample/data/dirt.png");
+            let teximg = await tt.loader.LoadImageDataAsync("./data/dirt.png");
             let tex1 = new Texture(gl, teximg.width, teximg.height, TextureFormat.RGBA32, null);
             tex1.UploadImg(teximg);
             mat1.uniformTexs["tex"].value = tex1;
@@ -209,7 +209,7 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
     }
     OnExit(): void {
         GameApp.GetViewList().RemoveDrawLayers(this.guilayer);
-
+        GameApp.GetViewList().RemoveDrawLayers(this.tiledlayer);
     }
     OnResize(width: number, height: number): void {
 

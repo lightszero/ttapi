@@ -24,14 +24,12 @@ async function start() {
 
     //加载自定义字体
 
-    let font = await tt.loader.LoadCustomFont("VonwaonBitmap-16px", "./VonwaonBitmap-16px.ttf");
+    let font = await tt.loader.LoadCustomFont("VonwaonBitmap-16px", "./data/VonwaonBitmap-16px.ttf");
 
     console.log("add font:" + font);
     let op = new ResourceOption();
     op.defFontName = "VonwaonBitmap-16px";
     op.defFontSize = 32;
-    op.packedGrayHeight=128;
-    op.packedGrayWidth =128;
     GameApp.Start(op, new TTState_All());
 
 
