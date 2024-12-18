@@ -20,11 +20,11 @@ export class Resources {
 
     static Init(op: ResourceOption): void {
         let gl = tt.graphic.GetWebGL();
-      
-        this.InitInnerResource(gl,op);
+
+        this.InitInnerResource(gl, op);
 
     }
-    private static InitInnerResource(gl: WebGL2RenderingContext,op: ResourceOption): void {
+    private static InitInnerResource(gl: WebGL2RenderingContext, op: ResourceOption): void {
         //let gl = tt.graphic.GetWebGL();
         //准备内置shader
         InitInnerShader(gl);
@@ -163,6 +163,13 @@ export class Resources {
         }
         return this.scale_border;
     }
+    static scale_border2: QUI_Scale9 = null;
+    static GetBorder2Scale(): QUI_Scale9 {
+        if (this.scale_border2 == null) {
+            this.scale_border2 = new QUI_Scale9(this.GetBorder2Block(), this.packedelem, new Border(3, 3, 3, 3));
+        }
+        return this.scale_border2;
+    }
     private static deffont: Font = null;
     static CreateFont(fontname: string, fontsize: number): Font {
         let font = new Font(tt.graphic.GetWebGL(), fontname, fontsize, this.packedelem);
@@ -171,6 +178,11 @@ export class Resources {
 
     static GetDefFont(): Font {
         return this.deffont;
+    }
+    static CreateGUI_Border(): QUI_ImageScale9 {
+        let image = new QUI_ImageScale9(this.GetBorder2Scale());
+        image.localRect.setAsFill();
+        return image;
     }
     static CreateGUI_Label(text: string, color: Color = new Color(1, 1, 1, 1)) {
         let txt = new QUI_Label(this.deffont, text);
@@ -183,7 +195,7 @@ export class Resources {
 
         return txt;
     }
-    static CreateGUI_Button(text: string, color: Color): QUI_Button {
+    static CreateGUI_Button(text: string, color: Color = new Color(1, 1, 1, 1)): QUI_Button {
         let btn = new QUI_Button();
         let normal = new QUI_ImageScale9(this.GetBorderScale());
         let press = new QUI_ImageScale9(this.GetBorderScale());
