@@ -3,7 +3,7 @@
 import { tt } from "../../ttapi/ttapi.js";
 import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, TextureFormat } from "../../ttlayer2/ttlayer2.js";
-import { FileTool } from "../fileapi/fileapid.js";
+import { FileTool } from "../fileapi/filefunchtml.js";
 import { GContext } from "../ttstate_all.js";
 
 export class Test_FileApi implements IState<Navigator<GContext>> {
