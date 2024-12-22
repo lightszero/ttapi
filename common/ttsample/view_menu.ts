@@ -39,9 +39,10 @@ export class View_Menu implements IState<Navigator<GContext>> {
         this.AddButton("Test:GUI[欠]");
         this.AddButton("Test:Box2d[欠]");
         this.AddButton("Test:Ani[欠]");
+        this.AddButton("Test:FileApi",new Test_FileApi());
         this.AddButton("Test:Tiledmap", new Test_Tiledmap());
     }
-    y: number = 32;
+    y: number = 16;
     x: number = 16;
     AddButton(name: string, target: IState<Navigator<GContext>> = null): void {
         let btn = Resources.CreateGUI_Button(name, new Color(1, 1, 1, 1));
@@ -55,7 +56,7 @@ export class View_Menu implements IState<Navigator<GContext>> {
         }
         this.y += 24;
         if (this.y > 256) {
-            this.y = 32;
+            this.y = 16;
             this.x += 200;
         }
     }

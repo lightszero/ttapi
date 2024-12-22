@@ -1,7 +1,9 @@
 /// <reference types="../fileapi/wicg-file-system-access" />
 
 import { tt } from "../../ttapi/ttapi.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign } from "../../ttlayer2/ttlayer2.js";
+import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, TextureFormat } from "../../ttlayer2/ttlayer2.js";
+import { FileTool } from "../fileapi/fileapid.js";
 import { GContext } from "../ttstate_all.js";
 
 export class Test_FileApi implements IState<Navigator<GContext>> {
@@ -15,18 +17,37 @@ export class Test_FileApi implements IState<Navigator<GContext>> {
 
 
 
-
-
-
         this.AddBackButton();
 
         this.AddLabel("Filesystem access Api Test 只有https才可以用 ");
         this.AddLabel("移动平台通常不支持!");
-
+        var support = window["showDirectoryPicker"] != undefined;
+        this.AddLabel("FileAPI支持=" + support);
         this.AddBtn("Open Path", () => {
             this.OpenPath();
         });
+        this.AddLabel("Input 支持好些，但是体验较差!");
 
+        this.AddBtn("Open By Input", async () => {
+            var url = await FileTool.OpenFileAsDataUrl("image/png,image/jpeg");
+            console.log("file=" + url);
+
+
+        });
+        this.AddBtn("Save By FileWriter", async () => {
+            var idata = new SpriteData();
+            idata.width = 32;
+            idata.height = 32;
+            idata.format = TextureFormat.RGBA32;
+            idata.data = new Uint8Array(32 * 32 * 4);
+            for (let i = 0; i < idata.data.length; i++) {
+                idata.data[i] = 255;
+            }
+            var b = FileTool.DataURLToBlob(FileTool.SpriteDataToDataUrl(idata));
+            FileTool.SaveData("abcd.png", URL.createObjectURL(b));
+
+
+        });
     }
     async OpenPath() {
         try {
@@ -44,7 +65,7 @@ export class Test_FileApi implements IState<Navigator<GContext>> {
             await ws.close();
 
             let d1 = await dichandle.getDirectoryHandle("bb", { "create": true });
-            
+
         }
         catch (e) {
             this.AddLabel("Err:" + e);
