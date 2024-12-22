@@ -2,7 +2,7 @@ import { tt_impl } from "./ttimpl_web/ttimpl_web.js";
 import { tt } from "./ttapi/ttapi.js";
 import { GameApp, ResourceOption } from "./ttlayer2/ttlayer2.js";
 //import { TTState_All } from "./ttsample/ttstate_all.js";
-import { EditorApp } from "./tilededitor/editor.js";
+import { EditorApp } from "./tteditor/editor.js";
 
 
 async function start() {

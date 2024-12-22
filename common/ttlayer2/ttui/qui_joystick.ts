@@ -62,7 +62,8 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
     OnRender(_canvas: QUI_Canvas): void {
 
         let sw = this.getWorldRect();
-
+        //this.touchBackSize.X = sw.Width;
+        //this.touchBackSize.Y = sw.Height;
         //this.Render_impl();
         if (this._press) {
             if (this.spriteJoyBack != null) {

@@ -10,8 +10,13 @@ TTAPI 是一组typescirpt 接口
 在TTAPI之上,抽象了一些更高级的功能,主要基于 Webgl2 实现
 
 # 工具
+
+ver 0.02
+
 [像素 编辑器](./webtool/ttpixel/index.html)
+
 [TiledMap 编辑器](./webtool/tiled/index.html)
+
 # 示例
 [基本示例](./web/index.html)
 

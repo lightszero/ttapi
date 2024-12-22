@@ -126,6 +126,30 @@ export class Resources {
             spdata.pivotY = 4;
             this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "round");
         }
+        //round
+        {
+            let spdata = new SpriteData();
+
+            spdata.format = TextureFormat.R8;
+            spdata.width = 8;
+            spdata.height = 8;
+            spdata.toR = ToROption.Alpha;
+            spdata.data = new Uint8Array(
+                [
+                    255, 255, 255, 255, 255, 0.0, 0.0, 0.0,
+                    255, 0.0, 128, 255, 0.0, 0.0, 0.0, 0.0,
+                    255, 128, 0.0, 128, 255, 0.0, 0.0, 0.0,
+                    255, 255, 128, 0.0, 128, 255, 0.0, 0.0,
+                    255, 0.0, 255, 128, 0.0, 128, 255, 0.0,
+                    0.0, 0.0, 0.0, 255, 128, 0.0, 128, 255,
+                    0.0, 0.0, 0.0, 0.0, 255, 128, 255, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 255, 0.0, 0.0,
+                ]
+            );
+            spdata.pivotX = 4;
+            spdata.pivotY = 4;
+            this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "arrow");
+        }
         this.packedelem.ApplyTextureData();
     }
     private static packedelem: PackElement;
@@ -180,6 +204,11 @@ export class Resources {
         return this.deffont;
     }
     static CreateGUI_Border(): QUI_ImageScale9 {
+        let image = new QUI_ImageScale9(this.GetBorderScale());
+        image.localRect.setAsFill();
+        return image;
+    }
+    static CreateGUI_Border2(): QUI_ImageScale9 {
         let image = new QUI_ImageScale9(this.GetBorder2Scale());
         image.localRect.setAsFill();
         return image;
