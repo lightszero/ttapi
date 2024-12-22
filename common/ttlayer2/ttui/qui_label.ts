@@ -1,4 +1,5 @@
 
+import { tt } from "../../ttapi/ttapi.js";
 import { Color, Rectangle, Vector2, Font } from "../ttlayer2.js";
 import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
@@ -39,6 +40,7 @@ export class QUI_Label extends QUI.QUI_BaseElement {
     colorShadow: Color = new Color(0, 0, 0, 0.5);
     //是否裁剪
     fontScale: Vector2 = new Vector2(1.0, 1.0);
+    fontBorder: number = 1;
     cut: boolean = false;
     halign: QUI.QUI_HAlign = QUI.QUI_HAlign.Middle;
     valign: QUI.QUI_VAlign = QUI.QUI_VAlign.Middle;
@@ -72,17 +74,18 @@ export class QUI_Label extends QUI.QUI_BaseElement {
                 this._pos.Y = (sw.Y + (sw.Height - fontheight));
             }
 
+            let fontborder = this.fontBorder * this.fontScale.Y * _canvas.scale;
 
             let _outs = new Vector2(this.fontScale.X * _canvas.scale, this.fontScale.Y * _canvas.scale);
             if (this.cut) {
                 if (this.withShadow) {
-                    this.font.RenderTextWithLimit(_canvas.batcherUI, this.text, new Vector2(this._pos.X + 1 / this.fontScale.X, this._pos.Y + 1 / this.fontScale.Y), _outs, this.colorShadow, sw);
+                    this.font.RenderTextWithLimit(_canvas.batcherUI, this.text, new Vector2(this._pos.X + fontborder, this._pos.Y + fontborder), _outs, this.colorShadow, sw);
                 }
                 this.font.RenderTextWithLimit(_canvas.batcherUI, this.text, this._pos, _outs, this.color, sw);
             }
             else {
                 if (this.withShadow) {
-                    this.font.RenderText(_canvas.batcherUI, this.text, new Vector2(this._pos.X + 1 / this.fontScale.X, this._pos.Y + 1 / this.fontScale.Y), _outs, this.colorShadow);
+                    this.font.RenderText(_canvas.batcherUI, this.text, new Vector2(this._pos.X + fontborder, this._pos.Y + fontborder), _outs, this.colorShadow);
                 }
                 this.font.RenderText(_canvas.batcherUI, this.text, this._pos, _outs, this.color);
             }

@@ -28,12 +28,12 @@ async function start() {
 
     // //加载自定义字体
 
-    let font = await tt.loader.LoadCustomFont("VonwaonBitmap-16px", "./data/VonwaonBitmap-16px.ttf");
+    let font = await tt.loader.LoadCustomFont("VonwaonBitmap-16px", "./data/VonwaonBitmap-16pxLite.ttf");
 
     console.log("add font:" + font);
     let op = new ResourceOption();
-    op.defFontName = "VonwaonBitmap-16px";
-    op.defFontSize = 32;
+    op.defFontName = font;//这个名字可能和实际的不同//"VonwaonBitmap-16px";
+    op.defFontSize = 32;//内部字体尺寸16，但是canvas的缘故，要取大一些，要不然没有颗粒感
     GameApp.Start(op, new EditorApp());
 
 

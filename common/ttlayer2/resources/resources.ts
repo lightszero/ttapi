@@ -217,7 +217,9 @@ export class Resources {
         let txt = new QUI_Label(this.deffont, text);
         txt.color = color;
         txt.localRect.setAsFill();
+        
         let fs = 16 / this.deffont.GetFontSize();;
+        txt.fontBorder = 1 / fs;
         txt.fontScale = new Vector2(fs, fs);
         txt.valign = QUI_VAlign.Middle;
         txt.halign = QUI_HAlign.Middle;
@@ -236,6 +238,7 @@ export class Resources {
             txt.color = color;
             txt.localRect.setAsFill();
             let fs = 16 / this.deffont.GetFontSize();;
+            txt.fontBorder = 1 / fs;
             txt.fontScale = new Vector2(fs, fs);
             normal.addChild(txt)
         }
