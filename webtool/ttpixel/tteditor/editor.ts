@@ -1,6 +1,8 @@
 import { tt } from "../ttapi/ttapi.js";
-import { Color, DrawLayer_GUI, GameApp, IUserLogic, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_VAlign, Rectangle, Resources } from "../ttlayer2/ttlayer2.js";
+import { Color, DrawLayer_GUI, GameApp, IUserLogic, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
 import { HelpDialog } from "./helpdialog.js";
+import { UI_DrawPanel } from "./ui_drawpanel.js";
+import { UI_Grid } from "./ui_grid.js";
 
 export class EditorApp implements IUserLogic {
 
@@ -10,8 +12,8 @@ export class EditorApp implements IUserLogic {
     }
     layergui: DrawLayer_GUI;
     guicanvas: QUI_Canvas;
-    canvas: QUI_Container;//需要一个特殊的实现，能提供Grid的画板
-    cursor: QUI_Image;
+    canvas: UI_DrawPanel;//需要一个特殊的实现，能提供Grid的画板
+   
     async InitAsync() {
         //配置绘制层
         this.layergui = new DrawLayer_GUI();
@@ -28,12 +30,7 @@ export class EditorApp implements IUserLogic {
         this.InitControlBar();
         this.InitTouchArea();
 
-        this.cursor = new QUI_Image();
-        this.cursor.sprite = Resources.GetPackElement().ConvertElemToSprite(Resources.GetPackElement().GetElementByName("arrow"));
-
-        this.cursor.localRect.setByRect(new Rectangle(0, 0, 16, 16))
-        this.guicanvas.addChild(this.cursor);
-    }
+      }
     async InitMenuBar() {
         let panelmenu = new QUI_Panel();
         panelmenu.borderElement = Resources.CreateGUI_Border();
@@ -51,7 +48,7 @@ export class EditorApp implements IUserLogic {
         };
     }
     async InitCanvas() {
-        let panelcanvas = this.canvas = new QUI_Panel();
+        let panelcanvas = this.canvas = new UI_DrawPanel();
         panelcanvas.borderElement = Resources.CreateGUI_Border();
         this.guicanvas.addChild(panelcanvas);
         panelcanvas.localRect.setAsFill();
@@ -60,6 +57,9 @@ export class EditorApp implements IUserLogic {
         panelcanvas.localRect.radioX1 = 0.5;
         panelcanvas.localRect.radioX2 = 0.5;
 
+        //let grid =new UI_Grid();
+        //grid.localRect.setAsFill();
+        //panelcanvas.addChild(grid);
     }
     async InitControlBar() {
         let panelcontrol = new QUI_Panel();
@@ -121,7 +121,14 @@ export class EditorApp implements IUserLogic {
         btnM.localRect.radioX2 = 0.9;
         btnM.localRect.radioY1 = 0.6;
         btnM.localRect.radioY2 = 0.9;
-
+        btnM.OnPressDown=()=>
+        {
+            this.canvas.BeginPencil(new Color(0,0,0,1));
+        }
+        btnM.OnPressUp=()=>
+        {
+            this.canvas.EndPencil();
+        }
 
         let btn1 = Resources.CreateGUI_Button("1");
         panelright.addChild(btn1);
@@ -161,27 +168,10 @@ export class EditorApp implements IUserLogic {
         //throw new Error("Method not implemented.");
         var dir = this.joy.GetTouchDirection();
         if (dir != null) {
-            this.cursor.localRect.radioX1 = 0;
-            this.cursor.localRect.radioX2 = 0;
-            this.cursor.localRect.radioY1 = 0;
-            this.cursor.localRect.radioY2 = 0;
-
             let movespeed = 64 * delta * tt.graphic.getDevicePixelRadio();
-            this.cursor.localRect.offsetX1 += dir.X * movespeed;
-            this.cursor.localRect.offsetY1 += dir.Y * movespeed;
-
-            //限制光标范围
-            var limit = this.canvas.getWorldRect();
-            if (this.cursor.localRect.offsetX1 < limit.X)
-                this.cursor.localRect.offsetX1 = limit.X;
-            if (this.cursor.localRect.offsetX1 > limit.X + limit.Width)
-                this.cursor.localRect.offsetX1 = limit.X + limit.Width;
-            if (this.cursor.localRect.offsetY1 < limit.Y)
-                this.cursor.localRect.offsetY1 = limit.Y;
-            if (this.cursor.localRect.offsetY1 > limit.Y + limit.Height)
-                this.cursor.localRect.offsetY1 = limit.Y + limit.Height;
-            this.cursor.localRect.offsetX2 = this.cursor.localRect.offsetX1 + 16;
-            this.cursor.localRect.offsetY2 = this.cursor.localRect.offsetY1 + 16;
+            dir.X *= movespeed;
+            dir.Y *= movespeed;
+            this.canvas.MoveCursor(dir);
 
         }
     }
