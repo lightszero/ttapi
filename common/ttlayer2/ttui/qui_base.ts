@@ -163,6 +163,7 @@ export enum QUI_ElementType {
     Element_Canvas,
     //基本控件
     Element_Container,
+    Element_Container_AutoSize,
     Element_RenderContainer,
     Element_Image,
     Element_Image_Scale9,
@@ -206,12 +207,12 @@ export interface QUI_IElement {
     //得到最终位置，考虑父组件
     getWorldRect(): Rectangle;
     alpha: number;
-    Clone(): QUI_IElement;
+   
 }
 
 export abstract class QUI_BaseElement implements QUI_IElement {
     abstract getElementType(): QUI_ElementType;
-    abstract Clone(): QUI_IElement
+   
     Tag: string | null = null;
     localRect: QUI_Rect = new QUI_Rect();
     _parent: QUI_IElement | null = null;
@@ -365,10 +366,3 @@ export abstract class QUI_BaseElement implements QUI_IElement {
     }
 }
 
-export function QUI_Clone(elem: QUI_IElement): QUI_IElement {
-    if (elem == null)
-        return elem;
-    elem
-    return elem.Clone();
-
-}

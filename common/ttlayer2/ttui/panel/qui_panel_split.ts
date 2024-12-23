@@ -60,23 +60,7 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel_Split;
     }
-    Clone(): QUI.QUI_IElement {
-        let elem = new QUI_Panel_Split();
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
-
-        elem.backElement = QUI.QUI_Clone(this.backElement);
-        elem.borderElement = QUI.QUI_Clone(this.borderElement);
-
-        elem.splitSize = this.splitSize;
-        elem.splitPos = this.splitPos;
-        elem.splitDir = this.splitDir;
-        return elem;
-    }
+ 
     backElement: QUI.QUI_IElement;
     borderElement: QUI.QUI_IElement;//面板的边界外观
     protected _border: Border;//面板的边距

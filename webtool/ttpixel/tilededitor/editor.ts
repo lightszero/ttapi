@@ -1,8 +1,8 @@
 import { tt } from "../ttapi/ttapi.js";
-import { Color, DrawLayer_GUI, GameApp, IUserLogic, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
+import { Color, DrawLayer_GUI, GameApp, IUserLogic, QUI_Canvas, QUI_Container, QUI_Container_AutoSize, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
 import { HelpDialog } from "./helpdialog.js";
 import { UI_DrawPanel } from "./ui_drawpanel.js";
-import { UI_Grid } from "./ui_grid.js";
+import { UI_GridImg } from "./ui_grid.js";
 
 export class EditorApp implements IUserLogic {
 
@@ -38,9 +38,9 @@ export class EditorApp implements IUserLogic {
         panelmenu.localRect.setAsFill();
         panelmenu.localRect.radioY2 = 0.15;//0~15 menubar
 
-        let btn = Resources.CreateGUI_Button("Help", new Color(1, 1, 1, 1));
+        let btn = Resources.CreateGUI_Button("?", new Color(1, 1, 1, 1));
         btn.localRect.setVPosByTopBorder(20, 8);
-        btn.localRect.setHPosByLeftBorder(100, 100);
+        btn.localRect.setHPosByRightBorder(20, 16);
         panelmenu.addChild(btn);
         btn.OnClick = () => {
             HelpDialog.Show(this.guicanvas);
@@ -48,14 +48,31 @@ export class EditorApp implements IUserLogic {
         };
     }
     async InitCanvas() {
-        let panelcanvas = this.canvas = new UI_DrawPanel();
-        panelcanvas.borderElement = Resources.CreateGUI_Border();
-        this.guicanvas.addChild(panelcanvas);
-        panelcanvas.localRect.setAsFill();
-        panelcanvas.localRect.radioY1 = 0.15;
-        panelcanvas.localRect.radioY2 = 0.65;//15~65 canvas
-        panelcanvas.localRect.radioX1 = 0.5;
-        panelcanvas.localRect.radioX2 = 0.5;
+        let canvasarea =new QUI_Container();
+        canvasarea.localRect.setAsFill();
+        canvasarea.localRect.radioY1 = 0.15;
+        canvasarea.localRect.radioY2 = 0.65;//15~65 canvas
+        canvasarea.localRect.radioX1 = 0;
+        canvasarea.localRect.radioX2 = 1;
+        this.guicanvas.addChild(canvasarea);
+
+        let image =Resources.CreateGUI_ImgWhite(new Color(0,0,1,1));
+        image.localRect.setAsFill();
+        canvasarea.addChild(image);
+        
+        let canvas_autosize =new QUI_Container_AutoSize();
+        canvasarea.addChild(canvas_autosize);
+        let image2 =Resources.CreateGUI_ImgWhite();
+        canvas_autosize.addChild(image2);
+        
+        // let panelcanvas = this.canvas = new UI_DrawPanel();
+        // panelcanvas.borderElement = Resources.CreateGUI_Border();
+        // canvasarea.addChild(panelcanvas);
+        // panelcanvas.localRect.setAsFill();
+        // panelcanvas.localRect.radioY1 = 0.15;
+        // panelcanvas.localRect.radioY2 = 0.65;//15~65 canvas
+        // panelcanvas.localRect.radioX1 = 0.5;
+        // panelcanvas.localRect.radioX2 = 0.5;
 
         //let grid =new UI_Grid();
         //grid.localRect.setAsFill();
@@ -155,15 +172,10 @@ export class EditorApp implements IUserLogic {
         btn3.localRect.radioY2 = 0.45;
     }
     UpdatePanelRightSize() {
-        var limit = this.panelright.getWorldRect();
-        this.panelright.localRect.setHPosByRightBorder(limit.Height, 0);
     }
     OnUpdate(delta: number): void {
         this.UpdatePanelRightSize();
-        var limit = this.canvas.getWorldRect();
-        this.canvas.localRect.offsetX1 = -limit.Height * 0.5;
-        this.canvas.localRect.offsetX2 = limit.Height * 0.5;
-
+     
 
         //throw new Error("Method not implemented.");
         var dir = this.joy.GetTouchDirection();

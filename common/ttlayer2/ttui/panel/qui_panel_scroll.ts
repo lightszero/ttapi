@@ -18,27 +18,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel_Scroll;
     }
-    Clone(): QUI.QUI_IElement {
-
-        let elem = new QUI_Panel_Scroll();
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
-
-        elem.backElement = QUI.QUI_Clone(this.backElement);
-        elem.borderElement = QUI.QUI_Clone(this.borderElement);
-
-        elem.panelOffsetX = this.panelOffsetX;
-        elem.panelOffsetY = this.panelOffsetY;
-        elem.panelWidth = this.panelWidth;
-        elem.panelHeight = this.panelHeight;
-        elem.dragDist = this.dragDist;
-        elem.dragDirection = this.dragDirection;
-        return elem;
-    }
+ 
     protected panelOffsetX: number;
     protected panelOffsetY: number;
     private panelOffsetWantX: number;

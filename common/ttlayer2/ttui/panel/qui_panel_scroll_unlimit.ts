@@ -22,26 +22,7 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel_Scroll_Unlimit;
     }
-    Clone(): QUI.QUI_IElement {
-
-        let elem = new QUI_Panel_Scroll_Unlimit<T>(this._updateUIFunc);
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
-
-        elem.backElement = QUI.QUI_Clone(this.backElement);
-        elem.borderElement = QUI.QUI_Clone(this.borderElement);
-
-        elem.panelValue = this.panelValue;
-        elem.panelWantValue = this.panelWantValue;
-
-        elem.dragDist = this.dragDist;
-
-        return elem;
-    }
+  
     private _freeItem: QUI.QUI_IElement[] = [];
 
     private _itemheight: number = 0;

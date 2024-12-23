@@ -19,21 +19,7 @@ export class QUI_Bar extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Bar;
     }
-    Clone(): QUI.QUI_IElement {
-        let elem = new QUI_Bar();
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
-
-        elem.spriteBackground = QUI.QUI_Clone(this.spriteBackground);
-        elem.spriteValue = QUI.QUI_Clone(this.spriteValue);
-        elem.dir = this.dir;
-        elem.scroll = this.scroll
-        return elem;
-    }
+ 
     spriteBackground: QUI.QUI_IElement; //背景控件
     spriteValue: QUI.QUI_IElement; //前控件，自动改成填充定位，改右值或者底值;
     dir: QUI.QUI_Direction = QUI.QUI_Direction.LeftToRight;//方向，

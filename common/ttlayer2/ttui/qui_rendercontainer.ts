@@ -6,16 +6,7 @@ export class QUI_RenderContainer extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_RenderContainer;
     }
-    Clone(): QUI.QUI_IElement {
-        let elem = new QUI_RenderContainer();
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
-        return elem;
-    }
+   
     OnCustomUpdate: ((delta: number) => void) | null = null;
     OnCustomRender: (() => void) | null = null;
     OnCustomTouch: ((touchid: number, press: boolean, move: boolean, x: number, y: number) => boolean) | null = null;

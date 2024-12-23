@@ -213,11 +213,18 @@ export class Resources {
         image.localRect.setAsFill();
         return image;
     }
+    static CreateGUI_ImgWhite(color: Color = new Color(1, 1, 1, 1)) {
+        let white = this.packedelem.ConvertElemToSprite(this.getWhiteBlock());
+        let i = new QUI_Image(white);
+        i.color = color;
+        i.localRect.setAsFill();
+        return i;
+    }
     static CreateGUI_Label(text: string, color: Color = new Color(1, 1, 1, 1)) {
         let txt = new QUI_Label(this.deffont, text);
         txt.color = color;
         txt.localRect.setAsFill();
-        
+
         let fs = 16 / this.deffont.GetFontSize();;
         txt.fontBorder = 1 / fs;
         txt.fontScale = new Vector2(fs, fs);

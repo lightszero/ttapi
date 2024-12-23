@@ -17,19 +17,7 @@ export class QUI_Image extends QUI.QUI_BaseElement {
             this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
         }
     }
-    Clone(): QUI.QUI_IElement {
-        let elem = new QUI_Image();
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
-
-        elem.sprite = this.sprite;
-        elem.color = this.color.Clone();
-        return elem;
-    }
+   
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Image;
     }

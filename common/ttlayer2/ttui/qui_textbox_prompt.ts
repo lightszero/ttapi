@@ -15,26 +15,7 @@ export class QUI_TextBox_Prompt extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_TextBox_Prompt;
     }
-    Clone(): QUI.QUI_IElement {
-        let elem = new QUI_TextBox_Prompt();
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
 
-        elem.font = this.font;
-        elem.text = this.text;
-        elem.maxlen = this.maxlen;
-        elem.color = this.color.Clone();
-        elem.fontScale = this.fontScale.Clone();
-        elem.cut = this.cut;
-        elem.halign = this.halign;
-        elem.valign = this.valign;
-        elem.border = this.border.Clone();
-        return elem;
-    }
     font: Font | null;
     text: string;
     maxlen: number = 10;

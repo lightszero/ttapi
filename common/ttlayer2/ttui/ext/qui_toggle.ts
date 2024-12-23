@@ -12,22 +12,7 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Toggle;
     }
-    Clone(): QUI.QUI_IElement {
-        let elem = new QUI_Toggle();
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
-
-        elem.ElemTrue = QUI.QUI_Clone(this.ElemTrue);
-        elem.ElemTrueDown = QUI.QUI_Clone(this.ElemTrueDown);
-        elem.ElemFalse = QUI.QUI_Clone(this.ElemFalse);
-        elem.ElemFalseDown = QUI.QUI_Clone(this.ElemFalseDown);
-        elem.value = this.value;
-        return elem;
-    }
+   
     ElemTrue: QUI.QUI_IElement | null = null;
     ElemTrueDown: QUI.QUI_IElement | null = null;
     ElemFalse: QUI.QUI_IElement | null = null;

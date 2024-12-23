@@ -12,20 +12,7 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_DragButton;
     }
-    Clone(): QUI.QUI_IElement {
-        let elem = new QUI_DragButton();
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
-
-        elem.ElemNormal = QUI.QUI_Clone(this.ElemNormal);
-        elem.ElemPress = QUI.QUI_Clone(this.ElemPress);
-
-        return elem;
-    }
+ 
     ElemNormal: QUI.QUI_IElement | null = null;
     ElemPress: QUI.QUI_IElement | null = null;
     private press: boolean = false;

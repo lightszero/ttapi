@@ -12,25 +12,7 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Joystick;
     }
-    Clone(): QUI.QUI_IElement {
-        let elem = new QUI_JoyStick();
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
 
-        elem.spriteJoyBack = this.spriteJoyBack;
-        elem.spriteJoyHot = this.spriteJoyHot;
-        //elem.touchArea = RectangleMath.Clone(this.touchArea);
-        elem.touchBackSize = this.touchBackSize.Clone();
-        elem.touchHotSize = this.touchHotSize.Clone();
-        elem.hotMaxDist = this.hotMaxDist;
-        elem.color = this.color.Clone();
-        elem.keymode = this.keymode;
-        return elem;
-    }
 
 
     spriteJoyBack: Sprite | null;
@@ -122,8 +104,8 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
                 let sw = this.getWorldRect();
 
                 this._touchBackPoint = new Vector2(
-                    this.touchBackSize.X / 2,
-                    sw.Height - this.touchBackSize.Y / 2
+                    sw.Width/2,//this.touchBackSize.X / 2,
+                    sw.Height/2,// - this.touchBackSize.Y / 2
                 );
                 this._touchHotPoint = new Vector2(
                     this._touchBackPoint.X + dir.X * this.hotMaxDist,

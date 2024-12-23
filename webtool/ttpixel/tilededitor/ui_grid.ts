@@ -1,21 +1,41 @@
-import { Color, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_ElementType, QUI_IElement, QUI_Image, QUI_Panel, Rectangle, Resources, Sprite, Vector2 } from "../ttlayer2/ttlayer2.js";
+import { tt } from "../ttapi/ttapi.js";
+import { SpriteData } from "../ttlayer2/resources/packtex/packtex.js";
+import { Color, Material, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_ElementType, QUI_IElement, QUI_Image, QUI_Panel, Rectangle, Resources, Sprite, Texture, TextureFormat, Vector2 } from "../ttlayer2/ttlayer2.js";
 
-export class UI_Grid extends QUI_Container {
+export class UI_GridImg extends QUI_Container {
     private spriteWhite: Sprite;
     private spritePick: Sprite;
+    private spriteImg: Sprite;
+
+    simpleimage: Texture;
+    data: SpriteData;
+
     constructor() {
         super();
         this.spriteWhite = Resources.GetPackElement().ConvertElemToSprite(Resources.getWhiteBlock());
 
         this.spritePick = Resources.GetPackElement().ConvertElemToSprite(Resources.getWhiteBlock());
+
+        this.simpleimage = new Texture(tt.graphic.GetWebGL(), 32, 32, TextureFormat.RGBA32, null);
+        this.data = new SpriteData();
+        this.data.width = 32;
+        this.data.height = 32;
+        this.data.format = TextureFormat.RGBA32;
+        this.data.data = new Uint8Array(32 * 32 * 4);
+        for (let i = 0; i < this.data.data.length; i++) {
+            this.data.data[i] = 255;
+        }
+        this.simpleimage.UploadTexture(0, 0, this.data.width, this.data.height, this.data.data);
+        let mat = new Material(Resources.GetShaderProgram("simple"));
+        mat.uniformTexs["tex"].value = this.simpleimage;
+        this.spriteImg = new Sprite(mat);
     }
     gridHeight: number = 32;
     bigGrid: number = 8;
     pickPos: Vector2 = Vector2.Zero;
-    
+
     private pickValue: number = 1;
-    GetPickFlashValue():number
-    {
+    GetPickFlashValue(): number {
         return this.pickValue;
     }
     private _canvas: QUI_Canvas = null;
@@ -30,8 +50,18 @@ export class UI_Grid extends QUI_Container {
     override OnRender(_canvas: QUI_Canvas): void {
         super.OnRender(_canvas);
         this._canvas = _canvas;
+
+
         let sw = this.getWorldRectScale(_canvas.scale);
         let blocksize = (sw.Height / this.gridHeight) | 0;
+
+        //画底图
+
+        let pixelperfectrect = new Rectangle(sw.X, sw.Y, 0, 0);
+        pixelperfectrect.Width = this.spriteImg.pixelwidth * ((sw.Width / blocksize) | 0);
+        pixelperfectrect.Height = this.spriteImg.pixelheight * blocksize * ((sw.Height / blocksize) | 0);
+        this.spriteImg.RenderRect(_canvas.batcherUI, pixelperfectrect, new Color(1, 1, 11));
+
         //画横线
         let rect = new Rectangle(sw.X, 0, sw.Width, 1);
         let gridy = 0;
@@ -69,6 +99,6 @@ export class UI_Grid extends QUI_Container {
         //do pingpang
         let percent = 2.0 / total * Math.abs(total / 2 - this.timer);
 
-        this.pickValue =percent;
+        this.pickValue = percent;
     }
 }

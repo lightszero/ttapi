@@ -17,19 +17,7 @@ export class QUI_ImageScale9 extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Image_Scale9;
     }
-    Clone(): QUI.QUI_IElement {
-        let elem = new QUI_ImageScale9();
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
 
-        elem.scale9 = this.scale9;
-        elem.color = this.color.Clone();
-        return elem;
-    }
     scale9: QUIS9.QUI_Scale9 | null;
     color: Color = Color.White;
 

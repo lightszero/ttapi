@@ -1,7 +1,7 @@
 import { tt } from "../ttapi/ttapi.js";
 import { SpriteData } from "../ttlayer2/resources/packtex/packtex.js";
 import { Color, Color32, Material, QUI_Image, QUI_Panel, Rectangle, Resources, Sprite, Texture, TextureFormat, Vector2 } from "../ttlayer2/ttlayer2.js";
-import { UI_Grid } from "./ui_grid.js";
+import { UI_GridImg } from "./ui_grid.js";
 
 export interface IDrawAction {
     Apply(pos: Vector2, data: SpriteData): boolean
@@ -29,35 +29,33 @@ export class DrawAction_Pencil implements IDrawAction {
     }
 }
 export class UI_DrawPanel extends QUI_Panel {
-    private simpleimage: Texture;
-    private data: SpriteData;
-    private sprite: Sprite;
-    private img: QUI_Image;//底图
-    private grid: UI_Grid
+ 
+    //private img: QUI_Image;//底图
+    private grid: UI_GridImg
     private cursor: QUI_Image;
 
     private drawAction: IDrawAction;
     constructor() {
         super();
 
-        this.simpleimage = new Texture(tt.graphic.GetWebGL(), 32, 32, TextureFormat.RGBA32, null);
-        this.data = new SpriteData();
-        this.data.width = 32;
-        this.data.height = 32;
-        this.data.format = TextureFormat.RGBA32;
-        this.data.data = new Uint8Array(32 * 32 * 4);
-        for (let i = 0; i < this.data.data.length; i++) {
-            this.data.data[i] = 255;
-        }
-        this.simpleimage.UploadTexture(0, 0, this.data.width, this.data.height, this.data.data);
-        let mat = new Material(Resources.GetShaderProgram("simple"));
-        mat.uniformTexs["tex"].value = this.simpleimage;
-        this.sprite = new Sprite(mat);
+        // this.simpleimage = new Texture(tt.graphic.GetWebGL(), 32, 32, TextureFormat.RGBA32, null);
+        // this.data = new SpriteData();
+        // this.data.width = 32;
+        // this.data.height = 32;
+        // this.data.format = TextureFormat.RGBA32;
+        // this.data.data = new Uint8Array(32 * 32 * 4);
+        // for (let i = 0; i < this.data.data.length; i++) {
+        //     this.data.data[i] = 255;
+        // }
+        // this.simpleimage.UploadTexture(0, 0, this.data.width, this.data.height, this.data.data);
+        // let mat = new Material(Resources.GetShaderProgram("simple"));
+        // mat.uniformTexs["tex"].value = this.simpleimage;
+        // this.sprite = new Sprite(mat);
 
-        this.img = new QUI_Image(this.sprite);
-        this.img.localRect.setAsFill();
-        this.addChild(this.img);
-        this.grid = new UI_Grid();
+        // this.img = new QUI_Image(this.sprite);
+        // this.img.localRect.setAsFill();
+        // this.addChild(this.img);
+        this.grid = new UI_GridImg();
         this.grid.localRect.setAsFill();
         this.addChild(this.grid);
         //this._children.push(this.cursor);
@@ -79,9 +77,9 @@ export class UI_DrawPanel extends QUI_Panel {
         let cursor = this.cursor;
         cursor.color.R = cursor.color.G = cursor.color.B = this.grid.GetPickFlashValue();
         if (this.drawAction != null) {
-            var dirty = this.drawAction.Apply(this.grid.pickPos, this.data);
+            var dirty = this.drawAction.Apply(this.grid.pickPos, this.grid.data);
             if (dirty)
-                this.simpleimage.UploadTexture(0, 0, this.data.width, this.data.height, this.data.data);
+                this.grid.simpleimage.UploadTexture(0, 0, this.grid.data.width, this.grid.data.height, this.grid.data.data);
         }
     }
     MoveCursor(dir: Vector2): void {

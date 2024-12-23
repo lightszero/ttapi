@@ -9,18 +9,6 @@ export class QUI_Button extends QUI.QUI_BaseElement {
         super();
         this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
     }
-    Clone(): QUI.QUI_IElement {
-        let btn = new QUI_Button();
-        btn.localRect = this.localRect.Clone();
-        btn._parent = null;
-        btn.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            btn.addChild(this.getChild(i).Clone());
-        }
-        btn.ElemNormal = QUI.QUI_Clone(this.ElemNormal);
-        btn.ElemPress = QUI.QUI_Clone(this.ElemPress);
-        return btn;
-    }
 
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Button;

@@ -15,24 +15,7 @@ export class QUI_Label extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Label;
     }
-    Clone(): QUI.QUI_IElement {
-        let elem = new QUI_Label();
-        elem.localRect = this.localRect.Clone();
-        elem._parent = null;
-        elem.Enable = this.Enable;
-        for (var i = 0; i < this.getChildCount(); i++) {
-            elem.addChild(this.getChild(i).Clone());
-        }
 
-        elem.font = this.font;
-        elem.text = this.text;
-        elem.color = this.color.Clone();
-        elem.fontScale = this.fontScale.Clone();
-        elem.cut = this.cut;
-        elem.halign = this.halign;
-        elem.valign = this.valign;
-        return elem;
-    }
     font: Font | null;
     text: string;
     color: Color = Color.White;
