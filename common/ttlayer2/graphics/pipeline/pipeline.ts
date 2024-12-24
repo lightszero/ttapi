@@ -16,7 +16,7 @@ export interface IPileLine {
     Render(views: DrawLayerList): void;
 }
 export class PipeLine_Default implements IPileLine {
-    clearcolor: Color = new Color(1, 0.5, 0.5, 1);
+    clearcolor: Color = new Color(0, 0, 0, 1);
     private maintarget: IRenderTarget = null;
     Render(viewlist: DrawLayerList): void {
         if (this.maintarget == null)

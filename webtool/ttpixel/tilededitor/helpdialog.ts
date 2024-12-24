@@ -1,5 +1,5 @@
 import { ElementSprite } from "../ttlayer2/graphics/pipeline/render/elem.js";
-import { Color, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_Image, QUI_Overlay, Resources } from "../ttlayer2/ttlayer2.js";
+import { Color, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Overlay, Resources } from "../ttlayer2/ttlayer2.js";
 
 export class HelpDialog extends QUI_Container {
     constructor() {
@@ -89,7 +89,7 @@ export class HelpDialog extends QUI_Container {
         super.OnRender(canvas);
     }
 
-    static Show(canvas: QUI_Canvas): void {
+    static Show(canvas: QUI_IElement): void {
         canvas.addChild(new HelpDialog());
     }
 }

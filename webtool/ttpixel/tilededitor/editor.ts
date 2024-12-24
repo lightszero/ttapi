@@ -1,5 +1,5 @@
 import { tt } from "../ttapi/ttapi.js";
-import { Color, DrawLayer_GUI, GameApp, IUserLogic, QUI_Canvas, QUI_Container, QUI_Container_AutoSize, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
+import { Color, DrawLayer_GUI, GameApp, IUserLogic, MainScreen, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
 import { HelpDialog } from "./helpdialog.js";
 import { UI_DrawPanel } from "./ui_drawpanel.js";
 import { UI_GridImg } from "./ui_grid.js";
@@ -11,9 +11,10 @@ export class EditorApp implements IUserLogic {
         this.InitAsync();
     }
     layergui: DrawLayer_GUI;
-    guicanvas: QUI_Canvas;
-    canvas: UI_DrawPanel;//需要一个特殊的实现，能提供Grid的画板
    
+
+    canvas: UI_DrawPanel;//需要一个特殊的实现，能提供Grid的画板
+    root: QUI_Container_AutoFill;
     async InitAsync() {
         //配置绘制层
         this.layergui = new DrawLayer_GUI();
@@ -21,20 +22,22 @@ export class EditorApp implements IUserLogic {
         this.layergui.GetCamera().Scale = 2.0 * tt.graphic.getDevicePixelRadio();//增加像素感
         //this.layergui.GetCanvas().scale =2.0;//增加像素感
 
-        this.guicanvas = this.layergui.GetCanvas();
-        //let border = Resources.CreateGUI_Border();
-        //this.guicanvas.addChild(border);
+      
+         //主要区域限制比例
+        this.root =new QUI_Container_AutoFill();
+        this.root.setAsp(9/16,2/3);
 
+        this.layergui.GetCanvas().addChild(this.root);
         this.InitMenuBar();
         this.InitCanvas();
         this.InitControlBar();
         this.InitTouchArea();
 
-      }
+    }
     async InitMenuBar() {
         let panelmenu = new QUI_Panel();
         panelmenu.borderElement = Resources.CreateGUI_Border();
-        this.guicanvas.addChild(panelmenu);
+        this.root.addChild(panelmenu);
         panelmenu.localRect.setAsFill();
         panelmenu.localRect.radioY2 = 0.15;//0~15 menubar
 
@@ -43,28 +46,28 @@ export class EditorApp implements IUserLogic {
         btn.localRect.setHPosByRightBorder(20, 16);
         panelmenu.addChild(btn);
         btn.OnClick = () => {
-            HelpDialog.Show(this.guicanvas);
+            HelpDialog.Show(this.root);
             console.log("show");
         };
     }
     async InitCanvas() {
-        let canvasarea =new QUI_Container();
+        let canvasarea = new QUI_Container();
         canvasarea.localRect.setAsFill();
         canvasarea.localRect.radioY1 = 0.15;
         canvasarea.localRect.radioY2 = 0.65;//15~65 canvas
         canvasarea.localRect.radioX1 = 0;
         canvasarea.localRect.radioX2 = 1;
-        this.guicanvas.addChild(canvasarea);
+        this.root.addChild(canvasarea);
 
-        let image =Resources.CreateGUI_ImgWhite(new Color(0,0,1,1));
+        let image = Resources.CreateGUI_ImgWhite(new Color(0, 0, 1, 1));
         image.localRect.setAsFill();
         canvasarea.addChild(image);
-        
-        let canvas_autosize =new QUI_Container_AutoSize();
+
+        let canvas_autosize = new QUI_Container_AutoFill();
         canvasarea.addChild(canvas_autosize);
-        let image2 =Resources.CreateGUI_ImgWhite();
+        let image2 = Resources.CreateGUI_ImgWhite();
         canvas_autosize.addChild(image2);
-        
+
         // let panelcanvas = this.canvas = new UI_DrawPanel();
         // panelcanvas.borderElement = Resources.CreateGUI_Border();
         // canvasarea.addChild(panelcanvas);
@@ -81,7 +84,7 @@ export class EditorApp implements IUserLogic {
     async InitControlBar() {
         let panelcontrol = new QUI_Panel();
         panelcontrol.borderElement = Resources.CreateGUI_Border();
-        this.guicanvas.addChild(panelcontrol);
+        this.root.addChild(panelcontrol);
         panelcontrol.localRect.setAsFill();
         panelcontrol.localRect.radioY1 = 0.65;
         panelcontrol.localRect.radioY2 = 0.75;//65~75 controlbar
@@ -92,7 +95,7 @@ export class EditorApp implements IUserLogic {
     async InitTouchArea() {
         let paneltouch = new QUI_Container();
         //paneltouch.borderElement = Resources.CreateGUI_Border();
-        this.guicanvas.addChild(paneltouch);
+        this.root.addChild(paneltouch);
         paneltouch.localRect.setAsFill();
         paneltouch.localRect.radioY1 = 0.75;
         paneltouch.localRect.radioY2 = 1.0;//10~60 canvas
@@ -138,12 +141,10 @@ export class EditorApp implements IUserLogic {
         btnM.localRect.radioX2 = 0.9;
         btnM.localRect.radioY1 = 0.6;
         btnM.localRect.radioY2 = 0.9;
-        btnM.OnPressDown=()=>
-        {
-            this.canvas.BeginPencil(new Color(0,0,0,1));
+        btnM.OnPressDown = () => {
+            this.canvas.BeginPencil(new Color(0, 0, 0, 1));
         }
-        btnM.OnPressUp=()=>
-        {
+        btnM.OnPressUp = () => {
             this.canvas.EndPencil();
         }
 
@@ -175,7 +176,7 @@ export class EditorApp implements IUserLogic {
     }
     OnUpdate(delta: number): void {
         this.UpdatePanelRightSize();
-     
+
 
         //throw new Error("Method not implemented.");
         var dir = this.joy.GetTouchDirection();

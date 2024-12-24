@@ -163,7 +163,8 @@ export enum QUI_ElementType {
     Element_Canvas,
     //基本控件
     Element_Container,
-    Element_Container_AutoSize,
+    Element_Container_AutoFill,
+    Element_Container_AutoHeight,
     Element_RenderContainer,
     Element_Image,
     Element_Image_Scale9,
