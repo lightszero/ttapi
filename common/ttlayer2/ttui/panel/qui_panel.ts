@@ -34,11 +34,12 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         let batcher = _canvas.batcherUI;
 
         //根据边距计算限制区域
-        let rectlimit = this.getWorldRectScale(_canvas.scale);
-        rectlimit.X += this._border.XLeft;
-        rectlimit.Y += this._border.YTop;
-        rectlimit.Width -= (this._border.XLeft + this._border.XRight);
-        rectlimit.Height -= (this._border.YTop + this._border.YBottom);
+        let s =_canvas.scale;
+        let rectlimit = this.getWorldRectScale(s);
+        rectlimit.X += this._border.XLeft*s;
+        rectlimit.Y += this._border.YTop*s;
+        rectlimit.Width -= (this._border.XLeft + this._border.XRight)*s;
+        rectlimit.Height -= (this._border.YTop + this._border.YBottom)*s;
 
         let target = batcher.getTarget();
         batcher.EndDraw();

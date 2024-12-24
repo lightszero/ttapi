@@ -19,6 +19,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
     _press: boolean = false;
     _keypress: boolean = false;
     _pressid: number = -1;
+    
     OnClick: (() => void) | null = null;
     OnPressDown: (() => void) | null = null;
     OnPressUp: (() => void) | null = null;
