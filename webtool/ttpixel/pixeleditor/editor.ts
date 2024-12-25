@@ -1,6 +1,6 @@
 import { tt } from "../ttapi/ttapi.js";
 import { Color, DrawLayer_GUI, GameApp, IUserLogic, MainScreen, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
-import { HelpDialog } from "./helpdialog.js";
+import { UI_HelpDialog } from "./ui_helpdialog.js";
 import { UI_Canvas } from "./ui_canvas.js";
 import { UI_PixelEditor } from "./ui_pixeleditor.js";
 

@@ -1,7 +1,7 @@
 import { ElementSprite } from "../ttlayer2/graphics/pipeline/render/elem.js";
 import { Color, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Overlay, Resources } from "../ttlayer2/ttlayer2.js";
 
-export class HelpDialog extends QUI_Container {
+export class UI_HelpDialog extends QUI_Container {
     constructor() {
         super();
         this.localRect.setAsFill();
@@ -29,6 +29,8 @@ export class HelpDialog extends QUI_Container {
         btnClose.localRect.setHPosByCenter(100);
         btnClose.localRect.setVPosByBottomBorder(20, 48);
         btnClose.OnClick = () => {
+            if (this.action == 2)
+                return;
             btnClose.Enable = false;
             this.action = 2;
             this.timer = 0;
@@ -39,7 +41,7 @@ export class HelpDialog extends QUI_Container {
         this.timer = 0;
     }
     y: number = 32;
-    AddLabelCenter(text: string, scale: number=1.0): void {
+    AddLabelCenter(text: string, scale: number = 1.0): void {
         var l = Resources.CreateGUI_Label(text);
         l.fontScale.X *= scale;
         l.fontScale.Y *= scale;
@@ -47,13 +49,13 @@ export class HelpDialog extends QUI_Container {
         this.addChild(l);
         this.y += 24 * scale;
     }
-    AddLabelLeft(text: string, scale: number=1.0): void {
+    AddLabelLeft(text: string, scale: number = 1.0): void {
         var l = Resources.CreateGUI_Label(text);
         l.fontScale.X *= scale;
         l.fontScale.Y *= scale;
         l.localRect.setVPosByTopBorder(20, this.y);
-        l.localRect.setHPosFill(16,16);
-        l.halign= QUI_HAlign.Left;
+        l.localRect.setHPosFill(16, 16);
+        l.halign = QUI_HAlign.Left;
         this.addChild(l);
         this.y += 24 * scale;
     }
@@ -74,22 +76,24 @@ export class HelpDialog extends QUI_Container {
             this.img.alpha = p * 0.75;
         }
         if (this.action == 2) {
-            if (this.timer < this.fadeintime)
+            if (this.timer <= this.fadeouttime)
                 this.timer += delta;
 
             let p = (this.timer / this.fadeouttime);
-            if (p > 1) {
+            if (p >= 1) {
                 p = 1;
                 this.getParent().removeChild(this);
+                UI_HelpDialog._ishow = false;
             }
             this.img.alpha = (1.0 - p) * 0.75;
         }
     }
-    OnRender(canvas: QUI_Canvas): void {
-        super.OnRender(canvas);
-    }
 
+    private static _ishow: boolean = false;
     static Show(canvas: QUI_IElement): void {
-        canvas.addChild(new HelpDialog());
+        if (this._ishow)
+            return;
+        canvas.addChild(new UI_HelpDialog());
+        this._ishow = true;
     }
 }
