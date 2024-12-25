@@ -19,9 +19,14 @@ export class QUI_Button extends QUI.QUI_BaseElement {
     _press: boolean = false;
     _keypress: boolean = false;
     _pressid: number = -1;
-    
+    UsePress(pressid: number) {
+        if (this._pressid == -1) {
+            this._pressid = pressid;
+            this._press = true;
+        }
+    }
     OnClick: (() => void) | null = null;
-    OnPressDown: (() => void) | null = null;
+    OnPressDown: ((id: number) => void) | null = null;
     OnPressUp: (() => void) | null = null;
     CancelTouch() {
         this._press = false;
@@ -44,7 +49,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
                 this._press = true;
                 this._pressid = touchid;
                 if (this.OnPressDown != null)
-                    this.OnPressDown();
+                    this.OnPressDown(touchid);
                 return true;
             }
         }
@@ -73,7 +78,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
     }
     OnRender(_canvas: QUI_Canvas): void {
 
-       
+
         //this.Render_impl();
         if (this._press) {
             if (this.ElemPress != null) {
@@ -106,7 +111,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
                 this._keypress = true;
                 this._press = true;
                 if (this.OnPressDown != null)
-                    this.OnPressDown();
+                    this.OnPressDown(0);
             }
         }
         if (this._press) {

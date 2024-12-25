@@ -81,8 +81,3 @@ export class QUI_Container_AutoFill extends QUI.QUI_BaseElement {
         super.OnUpdate(delta);
     }
 }
-export class QUI_Container_AutoHeight extends QUI.QUI_BaseElement {
-    getElementType(): QUI.QUI_ElementType {
-        return QUI.QUI_ElementType.Element_Container_AutoHeight;
-    }
-}

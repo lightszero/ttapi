@@ -164,13 +164,15 @@ export enum QUI_ElementType {
     //基本控件
     Element_Container,
     Element_Container_AutoFill,
-    Element_Container_AutoHeight,
+
     Element_RenderContainer,
     Element_Image,
     Element_Image_Scale9,
     Element_Label,
     Element_Button,
+    Element_DropButton,//专门接收抬起事件
     Element_Joystick,
+    Element_TouchBar,
     Element_TextBox_Prompt,
     //扩展控件
     Element_DragButton,

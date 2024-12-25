@@ -102,6 +102,29 @@ export class Resources {
             spdata.pivotY = 4;
             this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "border2");
         }
+        //borderround
+        {
+            let spdata = new SpriteData();
+
+            spdata.format = TextureFormat.R8;
+            spdata.width = 8;
+            spdata.height = 8;
+            spdata.data = new Uint8Array(
+                [
+                    0.0, 0.0, 0.0, 255, 255, 0.0, 0.0, 0.0,
+                    0.0, 0.0, 255, 128, 128, 255, 128, 0.0,
+                    0.0, 255, 128, 0.0, 0.0, 128, 255, 0.0,
+                    255, 128, 0.0, 0.0, 0.0, 0.0, 128, 255,
+                    255, 128, 0.0, 0.0, 0.0, 0.0, 128, 255,
+                    0.0, 255, 128, 0.0, 0.0, 128, 255, 0.0,
+                    0.0, 128, 255, 128, 128, 255, 128, 0.0,
+                    0.0, 0.0, 0.0, 255, 255, 0.0, 0.0, 0.0,
+                ]
+            );
+            spdata.pivotX = 4;
+            spdata.pivotY = 4;
+            this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "borderr");
+        }
         //round
         {
             let spdata = new SpriteData();
@@ -126,7 +149,7 @@ export class Resources {
             spdata.pivotY = 4;
             this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "round");
         }
-        //round
+        //arrow
         {
             let spdata = new SpriteData();
 
@@ -194,6 +217,13 @@ export class Resources {
         }
         return this.scale_border2;
     }
+    static scale_borderr: QUI_Scale9 = null;
+    static GetBorderScaleR(): QUI_Scale9 {
+        if (this.scale_borderr == null) {
+            this.scale_borderr = new QUI_Scale9(this.packedelem.GetElementByName("borderr"), this.packedelem, new Border(3, 3, 3, 3));
+        }
+        return this.scale_borderr;
+    }
     private static deffont: Font = null;
     static CreateFont(fontname: string, fontsize: number): Font {
         let font = new Font(tt.graphic.GetWebGL(), fontname, fontsize, this.packedelem);
@@ -235,8 +265,8 @@ export class Resources {
     }
     static CreateGUI_Button(text: string, color: Color = new Color(1, 1, 1, 1)): QUI_Button {
         let btn = new QUI_Button();
-        let normal = new QUI_ImageScale9(this.GetBorderScale());
-        let press = new QUI_ImageScale9(this.GetBorderScale());
+        let normal = new QUI_ImageScale9(this.GetBorderScaleR());
+        let press = new QUI_ImageScale9(this.GetBorderScaleR());
         {
             normal.color = color;
             normal.localRect.setAsFill();
