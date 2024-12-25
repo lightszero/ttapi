@@ -1,5 +1,5 @@
 import { tt } from "../ttapi/ttapi.js";
-import { Color, Color32, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
+import { Color, Color32, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_TouchBar, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
 import { HelpDialog } from "./helpdialog.js";
 import { Pen, UI_Canvas } from "./ui_canvas.js";
 
@@ -88,7 +88,7 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         this.cursor._parent = this;
         this.addChild(this.cursor);
     }
-    joy: QUI_JoyStick;
+    joy: QUI_TouchBar;
 
     panelright: QUI_Container;
     InitTouchArea() {
@@ -116,16 +116,16 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
             label.valign = QUI_VAlign.Middle;
 
             //配置摇杆
-            let joy = this.joy = new QUI_JoyStick();
+            let joy = this.joy = new QUI_TouchBar();
             panelleft.addChild(joy);
             joy.localRect.setAsFill();
             joy.spriteJoyHot = Resources.GetPackElement().ConvertElemToSprite(Resources.GetRoundBlock());
-            joy.spriteJoyBack = Resources.GetPackElement().ConvertElemToSprite(Resources.GetRoundBlock());
-            joy.touchHotSize.X = 32;
-            joy.touchHotSize.Y = 32;
-            joy.touchBackSize.X = 64;
-            joy.touchBackSize.Y = 64;
-            joy.hotMaxDist = 64;
+            //joy.spriteJoyBack = Resources.GetPackElement().ConvertElemToSprite(Resources.GetRoundBlock());
+            joy.touchHotSize.X = 16;
+            joy.touchHotSize.Y = 16;
+            // joy.touchBackSize.X = 64;
+            // joy.touchBackSize.Y = 64;
+            // joy.hotMaxDist = 64;
         }
 
         let panelright = this.panelright = new QUI_Container();
@@ -205,9 +205,9 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         if (this._canvas == null)
             return;
 
-        var dir = this.joy.GetTouchDirection();
+        var dir = this.joy.GetTouchDirection(true);
         if (dir != null) {
-            let movespeed = 32 * delta * this._canvas.scale;
+            let movespeed =1;// 32 * delta * this._canvas.scale;
             dir.X *= movespeed;
             dir.Y *= movespeed;
             this.MoveCursor(dir);
