@@ -3,6 +3,7 @@ import { Color, Color32, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_
 import { UI_HelpDialog } from "./ui_helpdialog.js";
 import { Pen, UI_Canvas } from "./ui_canvas.js";
 import { UI_DropMenuPal } from "./ui_dropmenu.js";
+import { UI_4Color } from "./ui_4color.js";
 
 export class UI_PixelEditor extends QUI_Container_AutoFill {
     constructor() {
@@ -27,14 +28,14 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         panelmenu.localRect.setAsFill();
         panelmenu.localRect.radioY2 = this.poshead;//0~15 menubar
 
-        let btnmenu =Resources.CreateGUI_Button("Menu");
+        let btnmenu = Resources.CreateGUI_Button("Menu");
         panelmenu.addChild(btnmenu);
-        btnmenu.localRect.setHPosByLeftBorder(30,8);
+        btnmenu.localRect.setHPosByLeftBorder(30, 8);
         btnmenu.localRect.setVPosByCenter(20);
 
         let btnhelp = Resources.CreateGUI_Button("?");
         panelmenu.addChild(btnhelp);
-        btnhelp.localRect.setHPosByRightBorder(20,8);
+        btnhelp.localRect.setHPosByRightBorder(20, 8);
         btnhelp.localRect.setVPosByCenter(20);
         btnhelp.OnPressDown = () => {
 
@@ -42,7 +43,9 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         }
     }
     canvas: UI_Canvas;
+    canvasback: UI_4Color;
     pen: Pen;
+    color4: Color[];
     InitCanvas() {
         let canvasarea = new QUI_Container();
         canvasarea.localRect.setAsFill();
@@ -52,9 +55,29 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         canvasarea.localRect.radioX2 = 1;
         this.addChild(canvasarea);
 
-        let image = Resources.CreateGUI_ImgWhite(new Color(0, 0, 1, 1));
-        image.localRect.setAsFill();
-        canvasarea.addChild(image);
+        //let image = Resources.CreateGUI_ImgWhite(new Color(0, 0, 1, 1));
+        let white = Resources.GetPackElement().ConvertElemToSprite(Resources.getWhiteBlock());
+        let image4 = this.canvasback = new UI_4Color(white);
+        this.color4 = [];
+        for (var i = 0; i < 4; i++) {
+            this.color4[i] = Color.White;
+        }
+        this.color4[0].R = 0.5;
+        this.color4[0].G = 0.5;
+        this.color4[0].B = 0.8;
+        this.color4[1].R = 0.5;
+        this.color4[1].G = 0.5;
+        this.color4[1].B = 0.8;
+
+        this.color4[2].R = 0.1;
+        this.color4[2].G = 0.1;
+        this.color4[2].B = 0.8;
+
+        this.color4[3].R = 0.1;
+        this.color4[3].G = 0.1;
+        this.color4[3].B = 0.8;
+        image4.localRect.setAsFill();
+        canvasarea.addChild(image4);
 
         //let canvas_autosize = new QUI_Container_AutoFill();
         //canvasarea.addChild(canvas_autosize);
@@ -62,6 +85,7 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         //canvas_autosize.addChild(image2);
 
         let panelcanvas = new QUI_Panel();
+
         panelcanvas.borderElement = Resources.CreateGUI_Border();
         canvasarea.addChild(panelcanvas);
         panelcanvas.localRect.setAsFill();
@@ -79,7 +103,25 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         //panelcanvas.addChild(grid);
 
     }
+    _canvastimer: number = 0;
+    UpdateCanvasBack(delta: number) {
+        this._canvastimer += delta;
+        if (this._canvastimer > 4.0)
+            this._canvastimer = 0;
+        let add = this._canvastimer | 0;
+        let small = this._canvastimer - add;
 
+        for (var i = 0; i < 4; i++) {
+
+            let col = Color.Lerp(this.color4[(i + add) % 4], this.color4[(i + add + 1) % 4], small);
+            var targeti = i;
+            if (i == 2)
+                targeti = 3;
+            if (i == 3)
+                targeti = 2;
+            this.canvasback.colors[targeti] = col;
+        }
+    }
     InitToolBar() {
         let panelcontrol = new QUI_Panel();
         panelcontrol.borderElement = Resources.CreateGUI_Border();
@@ -109,6 +151,7 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
     }
 
     private cursor: QUI_Image;
+
     InitCursor() {
         this.cursor = new QUI_Image();
         this.cursor.sprite = Resources.GetPackElement().ConvertElemToSprite(Resources.GetPackElement().GetElementByName("arrow"));
@@ -116,6 +159,8 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         this.cursor.localRect.setByRect(new Rectangle(0, 0, 16, 16))
         this.cursor._parent = this;
         this.addChild(this.cursor);
+
+
     }
     joy: QUI_TouchBar;
 
@@ -221,6 +266,8 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         super.OnUpdate(delta);
         if (this._canvas == null)
             return;
+
+        this.UpdateCanvasBack(delta);
 
         var dir = this.joy.GetTouchDirection(true);
         if (dir != null) {

@@ -9,7 +9,10 @@ async function start() {
    
    
 
+    document.title="TTEngine 像素编辑器";
 
+
+    
     var canvas = document.createElement("canvas");
     canvas.style.width = "100%";
     canvas.style.height = "100%";

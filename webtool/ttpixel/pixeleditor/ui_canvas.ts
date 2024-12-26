@@ -58,7 +58,7 @@ export class UI_Canvas extends QUI_Container {
         this.data.format = TextureFormat.RGBA32;
         this.data.data = new Uint8Array(32 * 32 * 4);
         for (let i = 0; i < this.data.data.length; i++) {
-            this.data.data[i] = Math.random() * 255;
+            //this.data.data[i] = Math.random() * 255;
         }
         this.simpleimage.UploadTexture(0, 0, this.data.width, this.data.height, this.data.data);
         let mat = new Material(Resources.GetShaderProgram("simple"));
