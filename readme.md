@@ -11,7 +11,7 @@ TTAPI 是一组typescirpt 接口
 
 # 工具
 
-ver 0.02
+ver 0.03
 
 [像素 编辑器](./webtool/ttpixel/index.html)
 

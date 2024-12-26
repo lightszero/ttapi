@@ -222,6 +222,64 @@ export class Sprite {
         rectbuf[3].eff = this.effect;
         batcher.DrawQuads(this.material, rectbuf, 1);
     }
+    RenderRect4Color(batcher: Render_Batcher, rect: Rectangle, colors: Color[] | null = null) {
+        let rectbuf = Sprite._rectbuf
+        while (rectbuf.length < 4) {
+            rectbuf.push(new DrawPoint());
+        }
+    
+
+        let sx = rect.Width / this.pixelwidth;
+        let sy = rect.Height / this.pixelheight;
+        rectbuf[0].x = rect.X //+ sx * this.border.XLeft;
+        rectbuf[0].y = rect.Y //+ sy * this.border.YTop;
+        rectbuf[0].u = this.uv.U1;
+        rectbuf[0].v = this.uv.V1;
+        rectbuf[0].r = colors[0].R;
+        rectbuf[0].g = colors[0].G;
+        rectbuf[0].b = colors[0].B;
+        rectbuf[0].a = colors[0].A;
+        rectbuf[0].uvlayer = this.uvlayer;
+        //rectbuf[0].paly = 0;
+        rectbuf[0].eff = this.effect
+
+        rectbuf[1].x = rect.X + rect.Width //- sx * this.border.XRight;
+        rectbuf[1].y = rect.Y //+ sy * this.border.YTop;
+        rectbuf[1].u = this.uv.U2;
+        rectbuf[1].v = this.uv.V1;
+        rectbuf[1].r = colors[1].R
+        rectbuf[1].g = colors[1].G
+        rectbuf[1].b = colors[1].B
+        rectbuf[1].a = colors[1].A
+        rectbuf[1].uvlayer = this.uvlayer;
+        //rectbuf[1].paly = 0;
+        rectbuf[1].eff = this.effect;
+
+        rectbuf[2].x = rect.X// + sx * this.border.XLeft;
+        rectbuf[2].y = rect.Y + rect.Height// - sy * this.border.YBottom;
+        rectbuf[2].u = this.uv.U1;
+        rectbuf[2].v = this.uv.V2;
+        rectbuf[2].r = colors[2].R
+        rectbuf[2].g = colors[2].G
+        rectbuf[2].b = colors[2].B
+        rectbuf[2].a = colors[2].A
+        rectbuf[2].uvlayer = this.uvlayer;
+        //rectbuf[2].paly = 0;
+        rectbuf[2].eff = this.effect;
+
+        rectbuf[3].x = rect.X + rect.Width// - sx * this.border.XRight;
+        rectbuf[3].y = rect.Y + rect.Height// - sy * this.border.YBottom;
+        rectbuf[3].u = this.uv.U2;
+        rectbuf[3].v = this.uv.V2;
+        rectbuf[3].r = colors[3].R
+        rectbuf[3].g = colors[3].G
+        rectbuf[3].b = colors[3].B
+        rectbuf[3].a = colors[3].A
+        rectbuf[3].uvlayer = this.uvlayer;
+        //rectbuf[3].paly = 0;
+        rectbuf[3].eff = this.effect;
+        batcher.DrawQuads(this.material, rectbuf, 1);
+    }
     RenderRect2(batcher: Render_Batcher, x1: number, y1: number, x2: number, y2: number, color: Color | null = null, palindex: number = -1) {
         let rectbuf = Sprite._rectbuf
         while (rectbuf.length < 4) {
