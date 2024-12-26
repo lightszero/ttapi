@@ -33,6 +33,61 @@ export class Color {
             c1.A * (1 - value) + c2.A * value,
         );
     }
+    static FromH360(h360: number): Color//输入一个0到360的值
+    {
+        let c = Color.White;
+        //h360 = 60
+        //sin插值
+        let v = (h360 % 120 / 120);
+        if (v < 0) v += 1;
+
+        let f = Math.sin(v * Math.PI) * 0.5;
+        if (v > 0.5)
+            f = 1 - f;
+        //直接插值
+        //let f = h360 % 120 / 120;
+        if (h360 < 120)  //b->r
+        {
+
+            if (f <= 0.5) {
+                c.B = 1;
+                c.R = (f) / (1 - f);
+            }
+            else {
+                c.R = 1;
+                c.B = 1 * (1 - f) / f;
+            }
+            c.G = 0;
+        }
+        else if (h360 < 240) //r->g
+        {
+
+            if (f <= 0.5) {
+                c.R = 1;
+                c.G = 1 * f / (1 - f);
+            }
+            else {
+                c.G = 1
+                c.R = 1 * (1 - f) / f;
+            }
+            c.B = 0;
+
+        }
+        else //g->b
+        {
+
+            c.R = 0;
+            if (f <= 0.5) {
+                c.G = 1;
+                c.B = 1 * f / (1 - f);
+            }
+            else {
+                c.B = 1
+                c.G = 1 * (1 - f) / f;
+            }
+        }
+        return c;
+    }
 }
 //不一定用的到，保证RGBA取值的玩意儿罢了
 export class Color32 {
