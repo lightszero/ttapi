@@ -1,9 +1,10 @@
 import { tt } from "../ttapi/ttapi.js";
-import { Color, Color32, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_TouchBar, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
+import { Color, Color32, QUI_Button, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_HAlign, QUI_IElement, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_TouchBar, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
 import { UI_HelpDialog } from "./ui_helpdialog.js";
 import { Pen, UI_Canvas } from "./ui_canvas.js";
 import { UI_DropMenuPal } from "./ui_dropmenu.js";
 import { UI_4Color } from "./ui_4color.js";
+import { QUI_DropButton } from "../ttlayer2/ttui/qui_dropbutton.js";
 
 export class UI_PixelEditor extends QUI_Container_AutoFill {
     constructor() {
@@ -123,6 +124,42 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         }
     }
     dropColor: UI_DropMenuPal;
+    ui_pickColor: QUI_Button;
+    pickColor: Color32 = new Color32(0, 0, 0, 255);
+    CreateColorBtn(container: QUI_IElement, color: Color): QUI_Button {
+        let white = Resources.GetPackElement().ConvertElemToSprite(Resources.getWhiteBlock());
+
+        let colorUse = new QUI_Image(white);
+        colorUse.color = color;
+        colorUse.localRect.setAsFill();
+        colorUse.localRect.offsetX1 = 2;
+        colorUse.localRect.offsetX2 = -2;
+        colorUse.localRect.offsetY1 = 2;
+        colorUse.localRect.offsetY2 = -2;
+
+        let colorUse2 = new QUI_Image(white);
+        colorUse2.color = color;
+        colorUse2.localRect.setAsFill();
+        colorUse2.localRect.offsetX1 = 2;
+        colorUse2.localRect.offsetX2 = -2;
+        colorUse2.localRect.offsetY1 = 2;
+        colorUse2.localRect.offsetY2 = -2;
+
+        let btn = new QUI_Button();
+        btn.ElemNormal = Resources.CreateGUI_Border();
+        btn.ElemNormal.addChild(colorUse);
+
+        let s9 = Resources.CreateGUI_Border();;
+        btn.ElemPress = s9;
+        btn.ElemPress.addChild(colorUse2);
+        s9.color.R = 0.5;
+        s9.color.G = 0.5;
+        s9.color.B = 0.5;
+        container.addChild(btn);
+
+
+        return btn;
+    }
     InitToolBar() {
         let panelcontrol = new QUI_Panel();
         panelcontrol.borderElement = Resources.CreateGUI_Border();
@@ -131,26 +168,37 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         panelcontrol.localRect.radioY1 = this.poscanvas;
         panelcontrol.localRect.radioY2 = this.postool;//65~75 controlbar
 
-        let btnset1 = Resources.CreateGUI_Button("set1");
-        panelcontrol.addChild(btnset1);
-        btnset1.localRect.setAsFill();
-        btnset1.localRect.radioX1 = 0.1;
-        btnset1.localRect.radioX2 = 0.2;
-        btnset1.localRect.radioY1 = 0.2;
-        btnset1.localRect.radioY2 = 0.8;
-        btnset1.OnPressDown = (id) => {
+        this.ui_pickColor = this.CreateColorBtn(panelcontrol, Color.Black);
+
+
+
+        this.ui_pickColor.localRect.setAsFill();
+        this.ui_pickColor.localRect.radioX1 = 0.05;
+        this.ui_pickColor.localRect.radioX2 = 0.15;
+        this.ui_pickColor.localRect.radioY1 = 0.2;
+        this.ui_pickColor.localRect.radioY2 = 0.8;
+        this.ui_pickColor.OnPressDown = (id) => {
             if (this.dropColor == null) {
                 this.dropColor = new UI_DropMenuPal(this);
                 this.addChild(this.dropColor);
             }
             this.dropColor.Show(id);
-          }
+        }
+        let label = Resources.CreateGUI_Label("选择颜色");
+        label.halign = QUI_HAlign.Left;
+        panelcontrol.addChild(label);
+        label.fontScale.X *= 0.5;
+        label.fontScale.Y *= 0.5;
+        label.localRect.radioX1 = 0.2;
+        label.localRect.radioX2 = 0.4;
+        label.localRect.radioY1 = 0.2;
+        label.localRect.radioY2 = 0.8;
 
-        let btn3 = Resources.CreateGUI_Button("set2");
+        let btn3 = Resources.CreateGUI_Button("btn2");
         panelcontrol.addChild(btn3);
         btn3.localRect.setAsFill();
-        btn3.localRect.radioX1 = 0.3;
-        btn3.localRect.radioX2 = 0.4;
+        btn3.localRect.radioX1 = 0.5;
+        btn3.localRect.radioX2 = 0.6;
         btn3.localRect.radioY1 = 0.2;
         btn3.localRect.radioY2 = 0.8;
     }
@@ -226,10 +274,8 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         btnM.OnPressDown = () => {
             if (this.pen == null)
                 this.pen = new Pen();
-            this.pen.color.A = 255;
-            this.pen.color.R = 0;
-            this.pen.color.G = 0;
-            this.pen.color.B = 0;
+            this.pen.earse = false;
+            console.log("earse=fasle");
             this.canvas.ChangeTool(this.pen);
             this.pen.Begin();
 
@@ -252,10 +298,8 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         btn1.OnPressDown = () => {
             if (this.pen == null)
                 this.pen = new Pen();
-            this.pen.color.A = 0;
-            this.pen.color.R = 0;
-            this.pen.color.G = 0;
-            this.pen.color.B = 0;
+            this.pen.earse = true;
+            console.log("earse=true");
             this.canvas.ChangeTool(this.pen);
             this.pen.Begin();
         }
@@ -271,6 +315,20 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         super.OnUpdate(delta);
         if (this._canvas == null)
             return;
+        //同步拾色器
+        if (this.dropColor != null) {
+            let pcolor = this.dropColor.GetPickColor32();
+            if (!Color32.Equal(this.pickColor, pcolor)) {
+                this.pickColor = pcolor;
+                (this.ui_pickColor.ElemNormal.getChild(0) as QUI_Image).color = this.dropColor.GetPickColor();
+                (this.ui_pickColor.ElemPress.getChild(0) as QUI_Image).color = this.dropColor.GetPickColor();
+
+                if (this.pen != null) {
+                    this.pen.SetColor(this.dropColor.GetPickColor32());
+
+                }
+            }
+        }
 
         this.UpdateCanvasBack(delta);
 

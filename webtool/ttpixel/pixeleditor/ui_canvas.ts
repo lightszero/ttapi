@@ -9,7 +9,14 @@ export interface ITool {
     Update(): void;
 }
 export class Pen implements ITool {
-    color: Color32=new Color32(0,0,0,255);
+    earse: boolean = false;
+    color: Color32 = new Color32(0, 0, 0, 255);
+    SetColor(c: Color32): boolean {
+        if (Color32.Equal(c, this.color))
+            return false;
+        this.color = c.Clone();
+        return true;
+    }
     canvas: UI_Canvas;
     Init(c: UI_Canvas): void {
         this.canvas = c;
@@ -26,10 +33,18 @@ export class Pen implements ITool {
             let x = this.canvas.pickPos.X | 0;
             let y = this.canvas.pickPos.Y | 0;
             let index = (this.canvas.data.width * y + x) * 4;
-            this.canvas.data.data[index + 0] = this.color.R;
-            this.canvas.data.data[index + 1] = this.color.G;
-            this.canvas.data.data[index + 2] = this.color.B;
-            this.canvas.data.data[index + 3] = this.color.A;
+            if (this.earse) {
+                this.canvas.data.data[index + 0] = 0;
+                this.canvas.data.data[index + 1] = 0;
+                this.canvas.data.data[index + 2] = 0;
+                this.canvas.data.data[index + 3] = 0;
+            }
+            else {
+                this.canvas.data.data[index + 0] = this.color.R;
+                this.canvas.data.data[index + 1] = this.color.G;
+                this.canvas.data.data[index + 2] = this.color.B;
+                this.canvas.data.data[index + 3] = this.color.A;
+            }
             this.canvas.simpleimage.UploadTexture(0, 0, this.canvas.data.width, this.canvas.data.height, this.canvas.data.data);
 
         }
@@ -81,6 +96,14 @@ export class UI_Canvas extends QUI_Container {
         let blocksize = (sw.Height / this.gridHeight) | 0;
         this.pickPos.X = (posworld.X * this._canvas.scale - sw.X) / blocksize;
         this.pickPos.Y = (posworld.Y * this._canvas.scale - sw.Y) / blocksize;
+        if (this.pickPos.X < 0)
+            this.pickPos.X = 0;
+        if (this.pickPos.Y < 0)
+            this.pickPos.Y = 0;
+        if (this.pickPos.X > this.gridHeight - 1)
+            this.pickPos.X = this.gridHeight - 1;
+        if (this.pickPos.Y > this.gridHeight - 1)
+            this.pickPos.Y = this.gridHeight - 1;
     }
     override OnRender(_canvas: QUI_Canvas): void {
         super.OnRender(_canvas);
@@ -101,9 +124,12 @@ export class UI_Canvas extends QUI_Container {
         let rect = new Rectangle(sw.X, 0, sw.Width, 1);
         let gridy = 0;
         for (var y = sw.Y; y < sw.Y + sw.Height; y += blocksize) {
-
+            if (y > sw.Y + blocksize * this.gridHeight)
+                break;
             rect.Y = y;
             rect.Height = (gridy % 8 == 0) ? 2 : 1;
+            rect.X = sw.X;
+            rect.Width = blocksize * this.gridHeight;
             this.spriteWhite.RenderRect(_canvas.batcherUI, rect, new Color(0, 0, 0, 0.5));
             gridy++;
         }
@@ -114,8 +140,13 @@ export class UI_Canvas extends QUI_Container {
         rect.Width = 1;
         let gridx = 0;
         for (var x = sw.X; x < sw.X + sw.Width; x += blocksize) {
+            if (x > sw.X + blocksize * this.gridHeight)
+                break;
             rect.X = x;
             rect.Width = (gridx % 8 == 0) ? 2 : 1;
+            rect.Y = sw.Y;
+            rect.Height = blocksize * this.gridHeight;
+
             this.spriteWhite.RenderRect(_canvas.batcherUI, rect, new Color(0, 0, 0, 0.5));
             gridx++;
         }
@@ -143,6 +174,8 @@ export class UI_Canvas extends QUI_Container {
     }
     tool: ITool;
     ChangeTool(tool: ITool) {
+        if (this.tool == tool)
+            return;
         if (this.tool != null)
             this.tool.End();
         this.tool = tool;

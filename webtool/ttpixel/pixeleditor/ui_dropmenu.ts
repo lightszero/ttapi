@@ -33,9 +33,10 @@ export class UI_DropMenuPal extends QUI_Container {
 
     colorpick: Color32 = new Color32(0, 0, 0, 1);//用color32 才方便判断
     colorHistory: Color32[] = [];//历史Color
-    colorSame: Color32[] = [];//近似颜色
+
     ui_colorpick: QUI_Image;
     ui_colorHistory: QUI_DropButton[] = [];
+    ui_colorSame: QUI_DropButton[] = [];
     _editor: UI_PixelEditor;
     GetPickColor(): Color {
         return new Color(this.colorpick.R / 255, this.colorpick.G / 255, this.colorpick.B / 255, this.colorpick.A / 255);
@@ -48,7 +49,7 @@ export class UI_DropMenuPal extends QUI_Container {
         //记录历史颜色
         let havehistory = false;
         for (var i = 0; i < this.colorHistory.length; i++) {
-            var c = this.colorHistory[i];
+            let c = this.colorHistory[i];
             if (Color32.Equal(c, this.colorpick)) {
                 havehistory = true;
                 break;
@@ -59,11 +60,42 @@ export class UI_DropMenuPal extends QUI_Container {
         }
         //同步历史颜色
         for (var i = 0; i < this.ui_colorHistory.length; i++) {
-            var b = this.ui_colorHistory[i];
+            let b = this.ui_colorHistory[i];
             (b.ElemNormal.getChild(0) as QUI_Image).color = this.colorHistory[i].ToColor();
             (b.ElemActive.getChild(0) as QUI_Image).color = this.colorHistory[i].ToColor();
         }
 
+
+        //同步关联颜色
+        for (var i = 0; i < 4; i++) {
+            let b = this.ui_colorSame[i];
+            let b2 = this.ui_colorSame[i + 4];
+            {
+                let c = color.Clone();
+                c.R -= (i + 1) * 0.2;
+                c.G -= (i + 1) * 0.2;
+                c.B -= (i + 1) * 0.2;
+                if (c.R < 0) c.R = 0;
+                if (c.G < 0) c.G = 0;
+                if (c.B < 0) c.B = 0;
+                (b2.ElemNormal.getChild(0) as QUI_Image).color = c.Clone();
+                (b2.ElemActive.getChild(0) as QUI_Image).color = c.Clone();
+            }
+            {
+                let c = color.Clone();
+                c.R += ((4 - i) * 0.2);
+                c.G += ((4 - i) * 0.2);
+                c.B += ((4 - i) * 0.2);
+                if (c.R > 1) c.R = 1;
+                if (c.G > 1) c.G = 1;
+                if (c.B > 1) c.B = 1;
+                (b.ElemNormal.getChild(0) as QUI_Image).color = c.Clone();
+                (b.ElemActive.getChild(0) as QUI_Image).color = c.Clone();
+            }
+        }
+
+
+        //修改选中颜色
         this.colorpick.R = color.R * 255;
         this.colorpick.G = color.G * 255;
         this.colorpick.B = color.B * 255;
@@ -77,7 +109,6 @@ export class UI_DropMenuPal extends QUI_Container {
         this.Enable = false;
         for (var i = 0; i < 8; i++) {
             this.colorHistory[i] = new Color32(0, 0, 0);
-            this.colorSame[i] = new Color32(0, 0, 0);
         }
         this._editor = editor;
 
@@ -156,6 +187,8 @@ export class UI_DropMenuPal extends QUI_Container {
         this.InitCommonColor(allrange);
         this.action = 0;
         this.timer = 0;
+
+        this.PickColor(Color.Black);
     }
     InitPaletteColor(container: QUI_Container) {
         //6个按钮 7 个缝
@@ -222,6 +255,8 @@ export class UI_DropMenuPal extends QUI_Container {
                 btn.localRect.radioY2 = btn.localRect.radioY1 + height;
                 if (y == 1)
                     this.ui_colorHistory[x] = btn;
+                else
+                    this.ui_colorSame[x] = btn;
             }
         }
     }
@@ -257,7 +292,8 @@ export class UI_DropMenuPal extends QUI_Container {
         container.addChild(btn);
 
         btn.OnPressUp = () => {
-            this.PickColor(color);
+            let _c = colorUse.color;
+            this.PickColor(_c);
             console.log("btn1 release.");
             this.Close();
         }
