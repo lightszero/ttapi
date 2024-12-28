@@ -122,6 +122,7 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
             this.canvasback.colors[targeti] = col;
         }
     }
+    dropColor: UI_DropMenuPal;
     InitToolBar() {
         let panelcontrol = new QUI_Panel();
         panelcontrol.borderElement = Resources.CreateGUI_Border();
@@ -138,8 +139,12 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         btnset1.localRect.radioY1 = 0.2;
         btnset1.localRect.radioY2 = 0.8;
         btnset1.OnPressDown = (id) => {
-            UI_DropMenuPal.Show(this, id);
-        }
+            if (this.dropColor == null) {
+                this.dropColor = new UI_DropMenuPal(this);
+                this.addChild(this.dropColor);
+            }
+            this.dropColor.Show(id);
+          }
 
         let btn3 = Resources.CreateGUI_Button("set2");
         panelcontrol.addChild(btn3);

@@ -1,24 +1,86 @@
-import { Color, QUI_Container, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Label, QUI_Overlay, QUI_VAlign, Resources } from "../ttlayer2/ttlayer2.js";
+import { Color, Color32, QUI_BaseElement, QUI_Container, QUI_ElementType, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Label, QUI_Overlay, QUI_VAlign, Resources } from "../ttlayer2/ttlayer2.js";
 import { QUI_DropButton } from "../ttlayer2/ttui/qui_dropbutton.js";
 import { UI_PixelEditor } from "./ui_pixeleditor.js";
 
-export class UI_DropMenuPal extends QUI_Container {
-    private static _ishow: boolean = false;
-    static Show(editor: UI_PixelEditor, touchid: number): void {
-        if (this._ishow)
-            return;
-        editor.addChild(new UI_DropMenuPal(editor, touchid));
-        this._ishow = true;
-        console.log("show drop");
-    }
-    _caretouchid: number;
 
+export class UI_DropMenuPal extends QUI_Container {
+
+
+    Show(touchid: number): void {
+        if (this.Enable)
+            return;
+        this._caretouchid = touchid;
+        UI_DropMenuPal.PassPress(this, touchid);
+
+        this.Enable = true;
+        this.timer = 0;
+        this.action = 1;
+        console.log("...show..." + touchid);
+    }
+    static PassPress(ui: QUI_IElement, touchid: number) {
+        for (let i = 0; i < ui.getChildCount(); i++) {
+            let e = ui.getChild(i);
+            if (e.getElementType() == QUI_ElementType.Element_DropButton) {
+                let btn = e as QUI_DropButton;
+                btn.UsePress(touchid);
+            }
+            else {
+                this.PassPress(e, touchid);
+            }
+        }
+    }
+    _caretouchid: number = -1;
+
+    colorpick: Color32 = new Color32(0, 0, 0, 1);//用color32 才方便判断
+    colorHistory: Color32[] = [];//历史Color
+    colorSame: Color32[] = [];//近似颜色
+    ui_colorpick: QUI_Image;
+    ui_colorHistory: QUI_DropButton[] = [];
     _editor: UI_PixelEditor;
-    constructor(editor: UI_PixelEditor, touchid: number) {
+    GetPickColor(): Color {
+        return new Color(this.colorpick.R / 255, this.colorpick.G / 255, this.colorpick.B / 255, this.colorpick.A / 255);
+    }
+    GetPickColor32(): Color32 {
+        return this.colorpick.Clone();
+    }
+    PickColor(color: Color) {
+
+        //记录历史颜色
+        let havehistory = false;
+        for (var i = 0; i < this.colorHistory.length; i++) {
+            var c = this.colorHistory[i];
+            if (Color32.Equal(c, this.colorpick)) {
+                havehistory = true;
+                break;
+            }
+        }
+        if (!havehistory) {
+            this.colorHistory.splice(0, 0, this.colorpick.Clone());
+        }
+        //同步历史颜色
+        for (var i = 0; i < this.ui_colorHistory.length; i++) {
+            var b = this.ui_colorHistory[i];
+            (b.ElemNormal.getChild(0) as QUI_Image).color = this.colorHistory[i].ToColor();
+            (b.ElemActive.getChild(0) as QUI_Image).color = this.colorHistory[i].ToColor();
+        }
+
+        this.colorpick.R = color.R * 255;
+        this.colorpick.G = color.G * 255;
+        this.colorpick.B = color.B * 255;
+        this.colorpick.A = color.A * 255;
+        this.ui_colorpick.color = color;
+
+    }
+    constructor(editor: UI_PixelEditor) {
 
         super();
+        this.Enable = false;
+        for (var i = 0; i < 8; i++) {
+            this.colorHistory[i] = new Color32(0, 0, 0);
+            this.colorSame[i] = new Color32(0, 0, 0);
+        }
         this._editor = editor;
-        this._caretouchid = touchid;
+
         this.localRect.setAsFill();
         //遮蔽背景
         let img = this.img = new QUI_Image(
@@ -37,7 +99,7 @@ export class UI_DropMenuPal extends QUI_Container {
         this.addChild(block);
 
         this.AddLabelTitle("拖拽菜单");
-        this.AddLabel("按住别动,直接移动到按钮松手", 0.5);
+        this.AddLabel("按住别动,直接移动到按钮松手.最下面两排是关联颜色", 0.5);
 
         //this._editor.poshead;
         //to poscanvas
@@ -70,13 +132,7 @@ export class UI_DropMenuPal extends QUI_Container {
             btn.localRect.radioY2 = btn.localRect.radioY1 + height;
 
 
-            var labeltip = this.AddLabel("下面是最近颜色，上面是固定颜色", 0.5);
 
-            labeltip.localRect.setAsFill();
-            labeltip.localRect.radioX1 = btn.localRect.radioX2 + border;
-            labeltip.localRect.radioX2 = 1.0 - border;
-            labeltip.localRect.radioY1 = btn.localRect.radioY1
-            labeltip.localRect.radioY2 = btn.localRect.radioY2
 
             let label = Resources.CreateGUI_Label("精确选色");
             label.fontScale.X *= 0.75;
@@ -98,7 +154,7 @@ export class UI_DropMenuPal extends QUI_Container {
 
         }
         this.InitCommonColor(allrange);
-        this.action = 1;
+        this.action = 0;
         this.timer = 0;
     }
     InitPaletteColor(container: QUI_Container) {
@@ -106,17 +162,20 @@ export class UI_DropMenuPal extends QUI_Container {
         let border = 0.05;
         let width = (1 - 7 * border) / 6;
         let height = (1 - 8 * border) / 7;
-        for (var y = 0; y < 4; y++) {
+        for (var y = 0; y < 5; y++) {
             for (var x = 0; x < 6; x++) {
 
                 let c = Color.White;
 
 
-                if (y == 3) {
-                    c = Color.Lerp(new Color(1, 1, 1), new Color(0, 0, 0), x / 5);
+                if (y == 4) {
+                    if (x < 2)
+                        continue;
+
+                    c = Color.Lerp(new Color(1, 1, 1), new Color(0, 0, 0), (x - 2) / 3);
                 }
                 else {
-                    let h360 = (y * 120 + x * 20 + 120) % 360;
+                    let h360 = (x * 60 + y * 15 + 120) % 360;
                     c = Color.FromH360(h360);
                 }
                 let btn = this.CreateColorBtn(container, c);
@@ -132,21 +191,37 @@ export class UI_DropMenuPal extends QUI_Container {
 
     //初始化常用颜色
     InitCommonColor(container: QUI_Container) {
-
-        //6个按钮 7 个缝
         let border = 0.05;
-        let width = (1 - 7 * border) / 6;
+        let bordersmall = 0.025;
         let height = (1 - 8 * border) / 7;
+        let width = (1 - 2 * border - 9 * bordersmall) / 10;
+
+        //当前颜色
+        let white = Resources.GetPackElement().ConvertElemToSprite(Resources.getWhiteBlock());
+        let colorUse = new QUI_Image(white);
+        //colorUse.color = color;
+        container.addChild(colorUse);
+        colorUse.localRect.setAsFill();
+        colorUse.localRect.radioX1 = border;
+        colorUse.localRect.radioX2 = colorUse.localRect.radioX1 + width * 2 + bordersmall;
+        colorUse.localRect.radioY1 = border + (5) * (border + height);//留四行
+        colorUse.localRect.radioY2 = colorUse.localRect.radioY1 + height * 2 + border;
+        this.ui_colorpick = colorUse;
+        //6个按钮 7 个缝
+
+
+
         for (var y = 0; y < 2; y++) {
-            for (var x = 0; x < 6; x++) {
+            for (var x = 0; x < 8; x++) {
 
                 let btn = this.CreateColorBtn(container, new Color(1 / (x + 1), 1, 1, 1));
                 btn.localRect.setAsFill();
-                btn.localRect.radioX1 = border + (border + width) * x;
+                btn.localRect.radioX1 = border + (bordersmall + width) * (x + 2);
                 btn.localRect.radioX2 = btn.localRect.radioX1 + width;
                 btn.localRect.radioY1 = border + (y + 5) * (border + height);//留四行
                 btn.localRect.radioY2 = btn.localRect.radioY1 + height;
-
+                if (y == 1)
+                    this.ui_colorHistory[x] = btn;
             }
         }
     }
@@ -182,12 +257,14 @@ export class UI_DropMenuPal extends QUI_Container {
         container.addChild(btn);
 
         btn.OnPressUp = () => {
+            this.PickColor(color);
             console.log("btn1 release.");
             this.Close();
         }
         return btn;
     }
     Close(): void {
+        console.log("...close..." + this._caretouchid);
         this.action = 2;
         this.timer = 0;
     }
@@ -234,9 +311,8 @@ export class UI_DropMenuPal extends QUI_Container {
             let p = (this.timer / this.fadeouttime);
             if (p >= 1) {
                 p = 1;
-                this.getParent().removeChild(this);
-                UI_DropMenuPal._ishow = false;
-                console.log("hide drop");
+                this.Enable = false;
+                console.log("hide drop" + this._caretouchid);
             }
             this.img.alpha = (1.0 - p) * 0.75;
         }
@@ -244,10 +320,13 @@ export class UI_DropMenuPal extends QUI_Container {
     OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
 
         let bkill = super.OnTouch(touchid, press, move, x, y);
-        if (bkill)
-            return true;
-        if (touchid == this._caretouchid && press == false) {
-            this.Close();
+
+        if (press == false) {
+            console.log("release..." + touchid);
+            if (touchid == this._caretouchid) {
+                this.Close();
+            }
         }
+        return bkill;
     }
 }

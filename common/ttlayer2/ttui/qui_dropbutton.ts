@@ -23,7 +23,7 @@ export class QUI_DropButton extends QUI.QUI_BaseElement {
     UsePress(pressid: number) {
         if (this._pressid == -1) {
             this._pressid = pressid;
-            this._active = true;
+            this._active = false;
         }
     }
 

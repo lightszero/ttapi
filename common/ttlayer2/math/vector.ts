@@ -123,6 +123,15 @@ export class Color32 {
     set A(v: number) {
         this.data[3] = v;
     }
+    public Clone(): Color32 {
+        return new Color32(this.data[0], this.data[1], this.data[2], this.data[3]);
+    }
+    public static Equal(c1: Color32, c2: Color32): boolean {
+        return c1.R == c2.R && c1.G == c2.G && c1.B == c2.B && c1.A == c2.A;
+    }
+    public ToColor(): Color {
+        return new Color(this.R / 255, this.G / 255, this.B / 255, this.A / 255);
+    }
 }
 //#endregion
 
