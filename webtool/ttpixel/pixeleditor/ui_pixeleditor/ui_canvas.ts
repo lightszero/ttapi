@@ -1,56 +1,8 @@
 import { tt } from "../../ttapi/ttapi.js";
 import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
 import { Color, Color32, Material, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_ElementType, QUI_IElement, QUI_Image, QUI_Panel, Rectangle, Resources, Sprite, Texture, TextureFormat, Vector2 } from "../../ttlayer2/ttlayer2.js";
+import { ICanvasTool } from "./canvas_tool.js";
 
-export interface ITool {
-    Init(c: UI_Canvas): void
-    Begin(): void;
-    End(): void;
-    Update(): void;
-}
-export class Pen implements ITool {
-    earse: boolean = false;
-    color: Color32 = new Color32(0, 0, 0, 255);
-    SetColor(c: Color32): boolean {
-        if (Color32.Equal(c, this.color))
-            return false;
-        this.color = c.Clone();
-        return true;
-    }
-    canvas: UI_Canvas;
-    Init(c: UI_Canvas): void {
-        this.canvas = c;
-    }
-    private begin: boolean = false;
-    Begin(): void {
-        this.begin = true;
-    }
-    End(): void {
-        this.begin = false;
-    }
-    Update(): void {
-        if (this.begin) {
-            let x = this.canvas.pickPos.X | 0;
-            let y = this.canvas.pickPos.Y | 0;
-            let index = (this.canvas.data.width * y + x) * 4;
-            if (this.earse) {
-                this.canvas.data.data[index + 0] = 0;
-                this.canvas.data.data[index + 1] = 0;
-                this.canvas.data.data[index + 2] = 0;
-                this.canvas.data.data[index + 3] = 0;
-            }
-            else {
-                this.canvas.data.data[index + 0] = this.color.R;
-                this.canvas.data.data[index + 1] = this.color.G;
-                this.canvas.data.data[index + 2] = this.color.B;
-                this.canvas.data.data[index + 3] = this.color.A;
-            }
-            this.canvas.simpleimage.UploadTexture(0, 0, this.canvas.data.width, this.canvas.data.height, this.canvas.data.data);
-
-        }
-    }
-
-}
 //一个画板
 export class UI_Canvas extends QUI_Container {
     private spriteWhite: Sprite;
@@ -66,8 +18,15 @@ export class UI_Canvas extends QUI_Container {
 
         this.spritePick = Resources.GetPackElement().ConvertElemToSprite(Resources.getWhiteBlock());
 
-        //初始化一个32x32 透明图像
         this.simpleimage = new Texture(tt.graphic.GetWebGL(), 32, 32, TextureFormat.RGBA32, null);
+
+        let mat = new Material(Resources.GetShaderProgram("simple"));
+        mat.uniformTexs["tex"].value = this.simpleimage;
+        this.spriteImg = new Sprite(mat);
+
+
+
+        //初始化一个32x32 透明图像
         let data = new SpriteData();
         data.width = 32;
         data.height = 32;
@@ -79,18 +38,17 @@ export class UI_Canvas extends QUI_Container {
         }
         this.UpdateImg(data);
 
-
-        let mat = new Material(Resources.GetShaderProgram("simple"));
-        mat.uniformTexs["tex"].value = this.simpleimage;
-        this.spriteImg = new Sprite(mat);
     }
     UpdateImg(data: SpriteData): void {
         this.data = data;
         if (data.width != this.simpleimage._width || data.height != this.simpleimage._height)
             this.simpleimage.ReSize(data.width, data.height);
         this.simpleimage.UploadTexture(0, 0, this.data.width, this.data.height, this.data.data);
+        this.spriteImg.pixelwidth = this.data.width;
+        this.spriteImg.pixelheight = this.data.height;
     }
-    gridHeight: number = 32;
+    gridHeight: number = 32;//GridHeight 决定Grid大小，只有Zoom 和他相关
+    offset: Vector2 = Vector2.Zero;//绘制左上角，会根据光标位置自动调整
     bigGrid: number = 8;
     pickPos: Vector2 = Vector2.Zero;
 
@@ -102,18 +60,45 @@ export class UI_Canvas extends QUI_Container {
     PickByWorld(posworld: Vector2): void {
         if (this._canvas == null)
             return;
-        let sw = this.getWorldRectScale(this._canvas.scale);
-        let blocksize = (sw.Height / this.gridHeight) | 0;
-        this.pickPos.X = (posworld.X * this._canvas.scale - sw.X) / blocksize;
-        this.pickPos.Y = (posworld.Y * this._canvas.scale - sw.Y) / blocksize;
+        let sw = this.getWorldRect();
+        let blocksize = (sw.Height * this._canvas.scale / this.gridHeight) | 0;
+        this.pickPos.X = (posworld.X - sw.X) * this._canvas.scale / blocksize + this.offset.X;
+        this.pickPos.Y = (posworld.Y - sw.Y) * this._canvas.scale / blocksize + this.offset.Y;
         if (this.pickPos.X < 0)
             this.pickPos.X = 0;
         if (this.pickPos.Y < 0)
             this.pickPos.Y = 0;
-        if (this.pickPos.X > this.gridHeight - 1)
-            this.pickPos.X = this.gridHeight - 1;
-        if (this.pickPos.Y > this.gridHeight - 1)
-            this.pickPos.Y = this.gridHeight - 1;
+        if (this.pickPos.X > this.data.width - 1)
+            this.pickPos.X = this.data.width - 1;
+        if (this.pickPos.Y > this.data.height - 1)
+            this.pickPos.Y = this.data.height - 1;
+
+        let hradio = (posworld.X - sw.X) / sw.Width;
+        let vradio = (posworld.Y - sw.Y) / sw.Height;
+        console.log("radio=" + hradio + "," + vradio);
+
+        let blockwidth = (sw.Width * this._canvas.scale / blocksize) | 0;
+        if (hradio < 0.05) {
+            this.offset.X--;
+            if (this.offset.X < -5)
+                this.offset.X = -5;
+        }
+        if (hradio >= 0.95) {
+            this.offset.X++;
+            if (this.offset.X > this.data.width - blockwidth - 1 + 5)
+                this.offset.X = this.data.width - blockwidth - 1 + 5;
+        }
+        if (vradio < 0.05) {
+            this.offset.Y--;
+            if (this.offset.Y < -5)
+                this.offset.Y = -5;
+        }
+        if (vradio >= 0.95) {
+            this.offset.Y++;
+            if (this.offset.Y > this.data.height - 32 - 1 + 5)
+                this.offset.Y = this.data.height - 32 - 1 + 5;
+        }
+        console.log("offset=" + this.offset.X + "," + this.offset.Y);
     }
     override OnRender(_canvas: QUI_Canvas): void {
         super.OnRender(_canvas);
@@ -125,43 +110,76 @@ export class UI_Canvas extends QUI_Container {
 
         //画底图
 
-        let pixelperfectrect = new Rectangle(sw.X, sw.Y, 0, 0);
+        let pixelperfectrect = new Rectangle(
+            sw.X - this.offset.X * blocksize,
+            sw.Y - this.offset.Y * blocksize,
+            0, 0);
+
         pixelperfectrect.Width = this.spriteImg.pixelwidth * blocksize;
         pixelperfectrect.Height = this.spriteImg.pixelheight * blocksize;
         this.spriteImg.RenderRect(_canvas.batcherUI, pixelperfectrect, new Color(1, 1, 11));
 
         //画横线
         let rect = new Rectangle(sw.X, 0, sw.Width, 1);
-        let gridy = 0;
-        for (var y = sw.Y; y < sw.Y + sw.Height; y += blocksize) {
-            if (y > sw.Y + blocksize * this.gridHeight)
+        let gridy = this.offset.Y;
+
+
+        let X1 = sw.X;
+        let XW = sw.Width;
+        let Y1 = sw.Y;
+        let YH = sw.Height;
+        let blockwidth = (sw.Width / blocksize) | 0;
+        if (this.offset.X < 0) {
+            X1 = sw.X + blocksize * (-this.offset.X);
+        }
+
+        if (this.offset.X >= this.data.width - blockwidth) {
+            XW = blocksize * (this.data.width - this.offset.X);
+        }
+        if (this.offset.Y < 0) {
+            Y1 = sw.Y + blocksize * (-this.offset.Y);
+        }
+        //todo fix
+        if (this.offset.Y >= this.data.height - this.gridHeight) {
+            YH = blocksize * (this.data.height - this.offset.Y)
+        }
+        for (var y = sw.Y; y < sw.Y + sw.Height; y += blocksize, gridy++) {
+            if (gridy < 0)
+                continue;
+            if (gridy > this.data.height)
                 break;
+
             rect.Y = y;
             rect.Height = (gridy % 8 == 0) ? 2 : 1;
-            rect.X = sw.X;
-            rect.Width = blocksize * this.gridHeight;
+            rect.X = X1;
+            rect.Width = XW;
             this.spriteWhite.RenderRect(_canvas.batcherUI, rect, new Color(0, 0, 0, 0.5));
-            gridy++;
+            //gridy++;
         }
         //画竖线
         //blocksize = (sw.Width / this.gridWidth) | 0;
         rect.Y = sw.Y;
         rect.Height = sw.Height;
         rect.Width = 1;
-        let gridx = 0;
-        for (var x = sw.X; x < sw.X + sw.Width; x += blocksize) {
-            if (x > sw.X + blocksize * this.gridHeight)
+        let gridx = this.offset.X;
+        for (var x = sw.X; x < sw.X + sw.Width; x += blocksize, gridx++) {
+            if (gridx < 0)
+                continue;
+            if (gridx > this.data.width)
                 break;
+
             rect.X = x;
             rect.Width = (gridx % 8 == 0) ? 2 : 1;
-            rect.Y = sw.Y;
-            rect.Height = blocksize * this.gridHeight;
+            rect.Y = Y1;
+            rect.Height = YH;
 
             this.spriteWhite.RenderRect(_canvas.batcherUI, rect, new Color(0, 0, 0, 0.5));
-            gridx++;
+            //gridx++;
         }
-        rect.X = (this.pickPos.X | 0) * blocksize + sw.X;
-        rect.Y = (this.pickPos.Y | 0) * blocksize + sw.Y;
+
+        //画选中块
+        rect.X = ((this.pickPos.X - this.offset.X) | 0) * blocksize + sw.X;
+        rect.Y = ((this.pickPos.Y - this.offset.Y) | 0) * blocksize + sw.Y;
         rect.Width = blocksize;
         rect.Height = blocksize;
         this.spritePick.RenderRect(_canvas.batcherUI, rect, new Color(this.pickValue, this.pickValue, this.pickValue, 0.5));
@@ -182,8 +200,8 @@ export class UI_Canvas extends QUI_Container {
             this.tool.Update();
         }
     }
-    tool: ITool;
-    ChangeTool(tool: ITool) {
+    tool: ICanvasTool;
+    ChangeTool(tool: ICanvasTool) {
         if (this.tool == tool)
             return;
         if (this.tool != null)
@@ -192,7 +210,7 @@ export class UI_Canvas extends QUI_Container {
         if (this.tool != null)
             this.tool.Init(this);
     }
-    GetTool(): ITool {
+    GetTool(): ICanvasTool {
         return this.tool;
     }
 }

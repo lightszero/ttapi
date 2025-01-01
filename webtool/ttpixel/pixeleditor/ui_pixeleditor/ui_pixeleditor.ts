@@ -1,11 +1,12 @@
 import { tt } from "../../ttapi/ttapi.js";
 import { Color, Color32, QUI_Button, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_HAlign, QUI_IElement, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_TouchBar, QUI_VAlign, Rectangle, Resources, Vector2 } from "../../ttlayer2/ttlayer2.js";
 import { UI_HelpDialog } from "../ui_dialog/ui_helpdialog.js";
-import { Pen, UI_Canvas } from "./ui_canvas.js";
+import { UI_Canvas } from "./ui_canvas.js";
 import { UI_DropMenuPal } from "./ui_dropmenupal.js";
 import { UI_4Color } from "./ui_4color.js";
 import { QUI_DropButton } from "../../ttlayer2/ttui/qui_dropbutton.js";
 import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
+import { CanvasTool_Pen } from "./canvas_tool.js";
 
 export class UI_PixelEditor extends QUI_Container {
     constructor() {
@@ -23,8 +24,7 @@ export class UI_PixelEditor extends QUI_Container {
     GetPixelData(): SpriteData {
         return this.canvas.data;
     }
-    SetPixelData(data:SpriteData):void
-    {
+    SetPixelData(data: SpriteData): void {
         this.canvas.UpdateImg(data);
     }
     readonly poscanvas: number = 0.65;
@@ -32,7 +32,7 @@ export class UI_PixelEditor extends QUI_Container {
 
     canvas: UI_Canvas;
     canvasback: UI_4Color;
-    pen: Pen;
+    pen: CanvasTool_Pen;
     color4: Color[];
     InitCanvas() {
         let canvasarea = new QUI_Container();
@@ -265,7 +265,7 @@ export class UI_PixelEditor extends QUI_Container {
         btnM.localRect.radioY2 = 0.9;
         btnM.OnPressDown = () => {
             if (this.pen == null)
-                this.pen = new Pen();
+                this.pen = new CanvasTool_Pen();
             this.pen.earse = false;
             console.log("earse=fasle");
             this.canvas.ChangeTool(this.pen);
@@ -289,7 +289,7 @@ export class UI_PixelEditor extends QUI_Container {
         btn1.BindKey = "Comma";
         btn1.OnPressDown = () => {
             if (this.pen == null)
-                this.pen = new Pen();
+                this.pen = new CanvasTool_Pen();
             this.pen.earse = true;
             console.log("earse=true");
             this.canvas.ChangeTool(this.pen);
