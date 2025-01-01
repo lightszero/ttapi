@@ -66,19 +66,29 @@ export class UI_Canvas extends QUI_Container {
 
         this.spritePick = Resources.GetPackElement().ConvertElemToSprite(Resources.getWhiteBlock());
 
+        //初始化一个32x32 透明图像
         this.simpleimage = new Texture(tt.graphic.GetWebGL(), 32, 32, TextureFormat.RGBA32, null);
-        this.data = new SpriteData();
-        this.data.width = 32;
-        this.data.height = 32;
-        this.data.format = TextureFormat.RGBA32;
-        this.data.data = new Uint8Array(32 * 32 * 4);
-        for (let i = 0; i < this.data.data.length; i++) {
+        let data = new SpriteData();
+        data.width = 32;
+        data.height = 32;
+        data.format = TextureFormat.RGBA32;
+        data.data = new Uint8Array(32 * 32 * 4);
+        for (let i = 0; i < data.data.length; i++) {
             //this.data.data[i] = Math.random() * 255;
+
         }
-        this.simpleimage.UploadTexture(0, 0, this.data.width, this.data.height, this.data.data);
+        this.UpdateImg(data);
+
+
         let mat = new Material(Resources.GetShaderProgram("simple"));
         mat.uniformTexs["tex"].value = this.simpleimage;
         this.spriteImg = new Sprite(mat);
+    }
+    UpdateImg(data: SpriteData): void {
+        this.data = data;
+        if (data.width != this.simpleimage._width || data.height != this.simpleimage._height)
+            this.simpleimage.ReSize(data.width, data.height);
+        this.simpleimage.UploadTexture(0, 0, this.data.width, this.data.height, this.data.data);
     }
     gridHeight: number = 32;
     bigGrid: number = 8;

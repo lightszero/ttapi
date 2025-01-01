@@ -12,7 +12,7 @@ export class EditorApp implements IUserLogic {
         this.InitAsync();
     }
     layergui: DrawLayer_GUI;
-
+    ui_editor: UI_PixelEditor;
     async InitAsync() {
         //配置绘制层
         this.layergui = new DrawLayer_GUI();
@@ -33,9 +33,9 @@ export class EditorApp implements IUserLogic {
             // editorContainer.localRect.radioY1 = 0.15;
             // root.addChild(editorContainer);
             {
-                let ui_editor = new UI_PixelEditor();
-                ui_editor.localRect.setAsFill();
-                root.addChild(ui_editor);
+                this.ui_editor = new UI_PixelEditor();
+                this.ui_editor.localRect.setAsFill();
+                root.addChild(this.ui_editor);
             }
         }
 
@@ -53,9 +53,8 @@ export class EditorApp implements IUserLogic {
                 header.addChild(btnmenu);
                 btnmenu.localRect.setHPosByLeftBorder(36, 8);
                 btnmenu.localRect.setVPosByCenter(20);
-                btnmenu.OnClick=()=>
-                {
-                    UI_MainMenu.Show(root);
+                btnmenu.OnClick = () => {
+                    UI_MainMenu.Show(root, this.ui_editor);
                 }
                 let btnhelp = Resources.CreateGUI_Button("?");
                 header.addChild(btnhelp);

@@ -5,6 +5,7 @@ import { Pen, UI_Canvas } from "./ui_canvas.js";
 import { UI_DropMenuPal } from "./ui_dropmenupal.js";
 import { UI_4Color } from "./ui_4color.js";
 import { QUI_DropButton } from "../../ttlayer2/ttui/qui_dropbutton.js";
+import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
 
 export class UI_PixelEditor extends QUI_Container {
     constructor() {
@@ -19,7 +20,13 @@ export class UI_PixelEditor extends QUI_Container {
 
         this.InitCursor();
     }
-
+    GetPixelData(): SpriteData {
+        return this.canvas.data;
+    }
+    SetPixelData(data:SpriteData):void
+    {
+        this.canvas.UpdateImg(data);
+    }
     readonly poscanvas: number = 0.65;
     readonly postool: number = 0.73;
 

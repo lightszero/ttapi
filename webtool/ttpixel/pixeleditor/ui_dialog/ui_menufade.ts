@@ -31,6 +31,11 @@ export abstract class UI_MenuFade extends QUI_Container {
         this.timer = 0;
 
     }
+    Close(): void {
+        this.action = 2;
+        this.timer = 0;
+
+    }
     Show(root: QUI_IElement): void {
         root.addChild(this);
         this.block.Enable = true;

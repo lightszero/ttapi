@@ -1,32 +1,54 @@
+import { tt } from "../../ttapi/ttapi.js";
 import { ElementSprite } from "../../ttlayer2/graphics/pipeline/render/elem.js";
-import { Color, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Overlay, Resources } from "../../ttlayer2/ttlayer2.js";
+import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
+import { Color, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Overlay, Resources, TextureFormat } from "../../ttlayer2/ttlayer2.js";
+import { FileTool } from "../fileapi/filefunchtml.js";
+import { UI_PixelEditor } from "../ui_pixeleditor/ui_pixeleditor.js";
 import { UI_MenuFade } from "./ui_menufade.js";
 
 export class UI_MainMenu extends UI_MenuFade {
-    constructor() {
+    constructor(editor: UI_PixelEditor) {
         super();
         this.localRect.setAsFill();
+        this.InitMenu();
 
 
+        this.editor = editor;
+    }
+
+    InitMenu(): void {
         this.AddLabelCenter("菜单");
 
-        this.AddButton("open", () => {
-
+        this.AddButton("open", async () => {
+            let url = await FileTool.OpenFileAsDataUrl("Image");
+            console.log("getdata=" + url.length);
+            let data = await tt.loader.LoadImageDataAsync(url);
+            console.log("img load:" + data.width + "X" + data.height);
+            let spdata = new SpriteData;
+            spdata.width = data.width;
+            spdata.height = data.height;
+            spdata.format = TextureFormat.RGBA32;
+            spdata.data = data.data;
+            this.editor.SetPixelData(spdata);
+            this.Close();
         });
 
-        this.AddButton("save img", () => {
-
+        this.AddButton("save img", async () => {
+            let data = this.editor.GetPixelData();
+            let dataurl = await FileTool.SpriteDataToPngDataUrl(data);
+            await FileTool.SaveData("1.png", dataurl);
+            this.Close();
         });
 
         this.AddButton("save package", () => {
-
+            this.Close();
         });
         this.AddText("打开文件，从本地选一个图片编辑，不能太大", 0.5);
         this.AddText("保存，如果是浏览器则是下载", 0.5);
         this.AddText("打包保存，这是将来的事情", 0.5);
         this.AddText("点击任意位置，关闭菜单", 0.5);
-
     }
+    editor: UI_PixelEditor;
     y: number = 32;
     AddLabelCenter(text: string, scale: number = 1.0): void {
         var l = Resources.CreateGUI_Label(text);
@@ -50,7 +72,7 @@ export class UI_MainMenu extends UI_MenuFade {
         var b = Resources.CreateGUI_Button(text, Color.White, scale);
         b.localRect.setVPosByTopBorder(24 * scale, this.y);
         b.localRect.setHPosFill(16, 16);
-
+        b.OnClick = onclick;
         this.addChild(b);
         this.y += 28 * scale;
     }
@@ -59,11 +81,11 @@ export class UI_MainMenu extends UI_MenuFade {
     }
 
     private static _ishow: boolean = false;
-    static Show(canvas: QUI_IElement): void {
+    static Show(canvas: QUI_IElement, editor: UI_PixelEditor): void {
 
         if (this._ishow)
             return;//防止多次打开
-        let menu = new UI_MainMenu();
+        let menu = new UI_MainMenu(editor);
         menu.Show(canvas);
 
     }
