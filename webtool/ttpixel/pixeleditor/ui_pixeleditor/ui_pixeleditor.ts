@@ -1,48 +1,28 @@
-import { tt } from "../ttapi/ttapi.js";
-import { Color, Color32, QUI_Button, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_HAlign, QUI_IElement, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_TouchBar, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
-import { UI_HelpDialog } from "./ui_helpdialog.js";
+import { tt } from "../../ttapi/ttapi.js";
+import { Color, Color32, QUI_Button, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_HAlign, QUI_IElement, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_TouchBar, QUI_VAlign, Rectangle, Resources, Vector2 } from "../../ttlayer2/ttlayer2.js";
+import { UI_HelpDialog } from "../ui_dialog/ui_helpdialog.js";
 import { Pen, UI_Canvas } from "./ui_canvas.js";
-import { UI_DropMenuPal } from "./ui_dropmenu.js";
+import { UI_DropMenuPal } from "./ui_dropmenupal.js";
 import { UI_4Color } from "./ui_4color.js";
-import { QUI_DropButton } from "../ttlayer2/ttui/qui_dropbutton.js";
+import { QUI_DropButton } from "../../ttlayer2/ttui/qui_dropbutton.js";
 
-export class UI_PixelEditor extends QUI_Container_AutoFill {
+export class UI_PixelEditor extends QUI_Container {
     constructor() {
         super();
-        this.setAsp(9 / 21, 2 / 3);
+        //this.setAsp(9 / 21, 2 / 3);
 
 
-        this.InitMenuBar();
+
         this.InitCanvas();
         this.InitToolBar();
         this.InitTouchArea();
 
         this.InitCursor();
     }
-    readonly poshead: number = 0.10;
+
     readonly poscanvas: number = 0.65;
     readonly postool: number = 0.73;
-    InitMenuBar() {
-        let panelmenu = new QUI_Panel();
-        panelmenu.borderElement = Resources.CreateGUI_Border();
-        this.addChild(panelmenu);
-        panelmenu.localRect.setAsFill();
-        panelmenu.localRect.radioY2 = this.poshead;//0~15 menubar
 
-        let btnmenu = Resources.CreateGUI_Button("Menu");
-        panelmenu.addChild(btnmenu);
-        btnmenu.localRect.setHPosByLeftBorder(30, 8);
-        btnmenu.localRect.setVPosByCenter(20);
-
-        let btnhelp = Resources.CreateGUI_Button("?");
-        panelmenu.addChild(btnhelp);
-        btnhelp.localRect.setHPosByRightBorder(20, 8);
-        btnhelp.localRect.setVPosByCenter(20);
-        btnhelp.OnPressDown = () => {
-
-            UI_HelpDialog.Show(this);
-        }
-    }
     canvas: UI_Canvas;
     canvasback: UI_4Color;
     pen: Pen;
@@ -50,8 +30,8 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
     InitCanvas() {
         let canvasarea = new QUI_Container();
         canvasarea.localRect.setAsFill();
-        canvasarea.localRect.radioY1 = this.poshead;
-        canvasarea.localRect.radioY2 = this.poscanvas;//15~65 canvas
+        canvasarea.localRect.radioY1 = 0;
+        canvasarea.localRect.radioY2 = this.postool;//15~65 canvas
         canvasarea.localRect.radioX1 = 0;
         canvasarea.localRect.radioX2 = 1;
         this.addChild(canvasarea);
@@ -162,7 +142,7 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
     }
     InitToolBar() {
         let panelcontrol = new QUI_Panel();
-        panelcontrol.borderElement = Resources.CreateGUI_Border();
+        //panelcontrol.borderElement = Resources.CreateGUI_Border();
         this.addChild(panelcontrol);
         panelcontrol.localRect.setAsFill();
         panelcontrol.localRect.radioY1 = this.poscanvas;
@@ -179,8 +159,9 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
         this.ui_pickColor.localRect.radioY2 = 0.8;
         this.ui_pickColor.OnPressDown = (id) => {
             if (this.dropColor == null) {
-                this.dropColor = new UI_DropMenuPal(this);
-                this.addChild(this.dropColor);
+                this.dropColor = new UI_DropMenuPal();
+                //对话框显示到上面去
+                this._parent.addChild(this.dropColor);
             }
             this.dropColor.Show(id);
         }
@@ -217,7 +198,7 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
     }
     joy: QUI_TouchBar;
 
-    panelright: QUI_Container;
+
     InitTouchArea() {
         let paneltouch = new QUI_Container();
         //paneltouch.borderElement = Resources.CreateGUI_Border();
@@ -255,10 +236,14 @@ export class UI_PixelEditor extends QUI_Container_AutoFill {
             // joy.hotMaxDist = 64;
         }
 
-        let panelright = this.panelright = new QUI_Container();
+        let panelright = new QUI_Container_AutoFill();
+        panelright.setAsp(1, 1);
+        panelright.halign = QUI_HAlign.Right;
+        panelright.valign = QUI_VAlign.Bottom;
+
         paneltouch.addChild(panelright);
-        panelright.localRect.setAsFill();
-        panelright.localRect.radioX1 = 0.5;
+        //panelright.localRect.setAsFill();
+        //panelright.localRect.radioX1 = 0.5;
 
 
         let border2 = Resources.CreateGUI_Border();

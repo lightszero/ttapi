@@ -1,8 +1,9 @@
 import { tt } from "../ttapi/ttapi.js";
 import { Color, DrawLayer_GUI, GameApp, IUserLogic, MainScreen, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
-import { UI_HelpDialog } from "./ui_helpdialog.js";
-import { UI_Canvas } from "./ui_canvas.js";
-import { UI_PixelEditor } from "./ui_pixeleditor.js";
+import { UI_HelpDialog } from "./ui_dialog/ui_helpdialog.js";
+import { UI_MainMenu } from "./ui_dialog/ui_mainmenu.js";
+import { UI_Canvas } from "./ui_pixeleditor/ui_canvas.js";
+import { UI_PixelEditor } from "./ui_pixeleditor/ui_pixeleditor.js";
 
 export class EditorApp implements IUserLogic {
 
@@ -11,7 +12,7 @@ export class EditorApp implements IUserLogic {
         this.InitAsync();
     }
     layergui: DrawLayer_GUI;
-   
+
     async InitAsync() {
         //配置绘制层
         this.layergui = new DrawLayer_GUI();
@@ -19,12 +20,53 @@ export class EditorApp implements IUserLogic {
         this.layergui.GetCamera().Scale = 2.0 * tt.graphic.getDevicePixelRadio();//增加像素感
         //this.layergui.GetCanvas().scale =2.0;//增加像素感
 
-        let ui_editor =new UI_PixelEditor();
-        ui_editor.localRect.setAsFill();
-        this.layergui.GetCanvas().addChild(ui_editor);
+
         //主要区域限制比例
-        //this.root = new QUI_Container_AutoFill();
-        //this.root.setAsp(9 / 16, 2 / 3);
+        let root = new QUI_Container_AutoFill();
+        root.setAsp(9 / 16, 2 / 3);
+
+        this.layergui.GetCanvas().addChild(root);
+
+        {//初始化绘制区域,用悬浮式设计
+            // let editorContainer = new QUI_Container();
+            // editorContainer.localRect.setAsFill();
+            // editorContainer.localRect.radioY1 = 0.15;
+            // root.addChild(editorContainer);
+            {
+                let ui_editor = new UI_PixelEditor();
+                ui_editor.localRect.setAsFill();
+                root.addChild(ui_editor);
+            }
+        }
+
+
+        //初始化标题栏，固定
+        {
+            let header = new QUI_Container();
+            header.localRect.setAsFill();
+            header.localRect.radioY2 = 0.08;
+
+            root.addChild(header);
+            {//初始化标题栏按钮
+
+                let btnmenu = Resources.CreateGUI_Button("Menu");
+                header.addChild(btnmenu);
+                btnmenu.localRect.setHPosByLeftBorder(36, 8);
+                btnmenu.localRect.setVPosByCenter(20);
+                btnmenu.OnClick=()=>
+                {
+                    UI_MainMenu.Show(root);
+                }
+                let btnhelp = Resources.CreateGUI_Button("?");
+                header.addChild(btnhelp);
+                btnhelp.localRect.setHPosByRightBorder(20, 8);
+                btnhelp.localRect.setVPosByCenter(20);
+                btnhelp.OnClick = () => {
+
+                    UI_HelpDialog.Show(root);
+                }
+            }
+        }
 
 
 
@@ -32,7 +74,7 @@ export class EditorApp implements IUserLogic {
 
 
     OnUpdate(delta: number): void {
-  
+
         //throw new Error("Method not implemented.");
 
     }

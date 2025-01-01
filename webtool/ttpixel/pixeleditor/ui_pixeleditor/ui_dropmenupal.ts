@@ -1,6 +1,6 @@
-import { Color, Color32, QUI_BaseElement, QUI_Container, QUI_ElementType, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Label, QUI_Overlay, QUI_VAlign, Resources } from "../ttlayer2/ttlayer2.js";
-import { QUI_DropButton } from "../ttlayer2/ttui/qui_dropbutton.js";
-import { UI_PixelEditor } from "./ui_pixeleditor.js";
+import { Color, Color32, QUI_BaseElement, QUI_Container, QUI_ElementType, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Label, QUI_Overlay, QUI_VAlign, Resources } from "../../ttlayer2/ttlayer2.js";
+import { QUI_DropButton } from "../../ttlayer2/ttui/qui_dropbutton.js";
+
 
 
 export class UI_DropMenuPal extends QUI_Container {
@@ -37,7 +37,7 @@ export class UI_DropMenuPal extends QUI_Container {
     ui_colorpick: QUI_Image;
     ui_colorHistory: QUI_DropButton[] = [];
     ui_colorSame: QUI_DropButton[] = [];
-    _editor: UI_PixelEditor;
+
     GetPickColor(): Color {
         return new Color(this.colorpick.R / 255, this.colorpick.G / 255, this.colorpick.B / 255, this.colorpick.A / 255);
     }
@@ -103,14 +103,13 @@ export class UI_DropMenuPal extends QUI_Container {
         this.ui_colorpick.color = color;
 
     }
-    constructor(editor: UI_PixelEditor) {
+    constructor() {
 
         super();
         this.Enable = false;
         for (var i = 0; i < 8; i++) {
             this.colorHistory[i] = new Color32(0, 0, 0);
         }
-        this._editor = editor;
 
         this.localRect.setAsFill();
         //遮蔽背景
@@ -129,16 +128,33 @@ export class UI_DropMenuPal extends QUI_Container {
         block.localRect.setAsFill();
         this.addChild(block);
 
-        this.AddLabelTitle("拖拽菜单");
-        this.AddLabel("按住别动,直接移动到按钮松手.最下面两排是关联颜色", 0.5);
+        {
+            var l = Resources.CreateGUI_Label("拖拽菜单");
+            l.fontScale.X *= 1.0;
+            l.fontScale.Y *= 1.0;
+            l.localRect.setVPosByTopBorder(20, 8);
+            l.localRect.radioY1 = 0.65;
+            l.localRect.radioY2 = 0.65;
+            this.addChild(l);
 
+        }
+        {
+            var l = Resources.CreateGUI_Label("按住别动,直接移动到按钮松手.最下面两排是关联颜色");
+            l.fontScale.X *= 0.5;
+            l.fontScale.Y *= 0.5;
+            l.localRect.setVPosByTopBorder(20, 30);
+            l.localRect.radioY1 = 0.65;
+            l.localRect.radioY2 = 0.65;
+            this.addChild(l);
+        }
+      
         //this._editor.poshead;
         //to poscanvas
         let allrange = new QUI_Container();
         this.addChild(allrange);
         allrange.localRect.setAsFill();
-        allrange.localRect.radioY1 = this._editor.poshead;
-        allrange.localRect.radioY2 = this._editor.poscanvas;
+        allrange.localRect.radioY1 = 0;
+        allrange.localRect.radioY2 = 0.65;
 
         this.InitPaletteColor(allrange);
 
@@ -305,25 +321,7 @@ export class UI_DropMenuPal extends QUI_Container {
         this.timer = 0;
     }
 
-    AddLabelTitle(text: string, scale: number = 1.0): void {
-        var l = Resources.CreateGUI_Label(text);
-        l.fontScale.X *= scale;
-        l.fontScale.Y *= scale;
-        l.localRect.setVPosByTopBorder(20, 8);
-        this.addChild(l);
 
-    }
-    AddLabel(text: string, scale: number = 1.0): QUI_Label {
-        var l = Resources.CreateGUI_Label(text);
-        l.fontScale.X *= scale;
-        l.fontScale.Y *= scale;
-        l.localRect.setVPosByTopBorder(20, 30);
-        l.localRect.setHPosFill(16, 16);
-        l.halign = QUI_HAlign.Left;
-        l.valign = QUI_VAlign.Middle;
-        this.addChild(l);
-        return l;
-    }
     img: QUI_Image;
     action: number = 0;
     timer: number = 0;

@@ -1,4 +1,4 @@
-import { Color, QUI_Canvas, QUI_Container, Rectangle, Sprite } from "../ttlayer2/ttlayer2.js";
+import { Color, QUI_Canvas, QUI_Container, Rectangle, Sprite } from "../../ttlayer2/ttlayer2.js";
 //允许四个角颜色不同的Image控件
 export class UI_4Color extends QUI_Container {
     constructor(sprite: Sprite = null) {

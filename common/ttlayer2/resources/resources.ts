@@ -250,20 +250,20 @@ export class Resources {
         i.localRect.setAsFill();
         return i;
     }
-    static CreateGUI_Label(text: string, color: Color = new Color(1, 1, 1, 1)) {
+    static CreateGUI_Label(text: string, color: Color = new Color(1, 1, 1, 1), scale: number = 1) {
         let txt = new QUI_Label(this.deffont, text);
         txt.color = color;
         txt.localRect.setAsFill();
 
         let fs = 16 / this.deffont.GetFontSize();;
         txt.fontBorder = 1 / fs;
-        txt.fontScale = new Vector2(fs, fs);
+        txt.fontScale = new Vector2(fs * scale, fs * scale);
         txt.valign = QUI_VAlign.Middle;
         txt.halign = QUI_HAlign.Middle;
 
         return txt;
     }
-    static CreateGUI_Button(text: string, color: Color = new Color(1, 1, 1, 1)): QUI_Button {
+    static CreateGUI_Button(text: string, color: Color = new Color(1, 1, 1, 1), scale: number = 1): QUI_Button {
         let btn = new QUI_Button();
         let normal = new QUI_ImageScale9(this.GetBorderScaleR());
         let press = new QUI_ImageScale9(this.GetBorderScaleR());
@@ -276,7 +276,7 @@ export class Resources {
             txt.localRect.setAsFill();
             let fs = 16 / this.deffont.GetFontSize();;
             txt.fontBorder = 1 / fs;
-            txt.fontScale = new Vector2(fs, fs);
+            txt.fontScale = new Vector2(fs * scale, fs * scale);
             normal.addChild(txt)
         }
         {
@@ -291,7 +291,7 @@ export class Resources {
             txt.color = nc;
             txt.localRect.setAsFill();
             let fs = 16 / this.deffont.GetFontSize();;
-            txt.fontScale = new Vector2(fs, fs);
+            txt.fontScale = new Vector2(fs * scale, fs * scale);
             press.addChild(txt)
         }
         btn.ElemNormal = normal;

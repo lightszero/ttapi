@@ -1,6 +1,6 @@
-import { tt } from "../ttapi/ttapi.js";
-import { SpriteData } from "../ttlayer2/resources/packtex/packtex.js";
-import { Color, Color32, Material, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_ElementType, QUI_IElement, QUI_Image, QUI_Panel, Rectangle, Resources, Sprite, Texture, TextureFormat, Vector2 } from "../ttlayer2/ttlayer2.js";
+import { tt } from "../../ttapi/ttapi.js";
+import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
+import { Color, Color32, Material, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_ElementType, QUI_IElement, QUI_Image, QUI_Panel, Rectangle, Resources, Sprite, Texture, TextureFormat, Vector2 } from "../../ttlayer2/ttlayer2.js";
 
 export interface ITool {
     Init(c: UI_Canvas): void
