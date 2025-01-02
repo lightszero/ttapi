@@ -1,4 +1,4 @@
-import { Color, Color32, QUI_BaseElement, QUI_Container, QUI_ElementType, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Label, QUI_Overlay, QUI_VAlign, Resources } from "../../ttlayer2/ttlayer2.js";
+import { Color, Color32, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_ElementType, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Label, QUI_Overlay, QUI_VAlign, Resources } from "../../ttlayer2/ttlayer2.js";
 import { QUI_DropButton } from "../../ttlayer2/ttui/qui_dropbutton.js";
 
 
@@ -327,9 +327,9 @@ export class UI_DropMenuPal extends QUI_Container {
     timer: number = 0;
     fadeintime: number = 0.15;
     fadeouttime: number = 0.15;
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
 
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas,delta);
         if (this.action == 1) {
             if (this.timer < this.fadeintime)
                 this.timer += delta;
@@ -351,9 +351,9 @@ export class UI_DropMenuPal extends QUI_Container {
             this.img.alpha = (1.0 - p) * 0.75;
         }
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+    OnTouch(_canvas:QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
 
-        let bkill = super.OnTouch(touchid, press, move, x, y);
+        let bkill = super.OnTouch(_canvas,touchid, press, move, x, y);
 
         if (press == false) {
             console.log("release..." + touchid);

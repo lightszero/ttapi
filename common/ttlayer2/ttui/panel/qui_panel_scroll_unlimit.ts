@@ -1,6 +1,7 @@
 
 import { tt } from "../../../ttapi/ttapi.js";
 import * as QUI from "../qui_base.js"
+import { QUI_Canvas } from "../qui_canvas.js";
 import { QUI_Container } from "../qui_container.js";
 import { QUI_Panel } from "./qui_panel.js";
 
@@ -146,7 +147,7 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
         this._pressid = -1;
         super.CancelTouch();
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+    OnTouch(_canvas:QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
 
 
 
@@ -196,7 +197,7 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
             return true;
         }
         else {
-            return super.OnTouch(touchid, press, move, x, y);
+            return super.OnTouch(_canvas,touchid, press, move, x, y);
         }
 
     }
@@ -221,11 +222,11 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
     }
 
 
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
         if (this._drag == false) {
             this.panelValue = this.panelValue + (this.panelWantValue - this.panelValue) * 0.1;
         }
         this.UpdateList();
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas,delta);
     }
 }

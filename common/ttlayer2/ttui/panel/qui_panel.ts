@@ -68,22 +68,22 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         this.container.localRect.offsetY1 = this._border.YTop;
         this.container.localRect.offsetY2 = -this._border.YBottom;
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
         if (this.backElement != null) {
             (this.backElement as QUI.QUI_BaseElement)._parent = this;
             this.backElement.localRect.setAsFill();
-            this.backElement.OnUpdate(delta);
+            this.backElement.OnUpdate(_canvas,delta);
         }
         this.updateContainerPos();
-        this.container.OnUpdate(delta);
+        this.container.OnUpdate(_canvas,delta);
         if (this.borderElement != null) {
             (this.borderElement as QUI.QUI_BaseElement)._parent = this;
             this.borderElement.localRect.setAsFill();
-            this.borderElement.OnUpdate(delta);
+            this.borderElement.OnUpdate(_canvas,delta);
         }
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas,delta);
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+    OnTouch(_canvas:QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         if (press == true && move == false) {
             let rectlimit = this.getWorldRect();
             let x1 = rectlimit.X + this._border.XLeft;
@@ -99,7 +99,7 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
             }
         }
 
-        return this.container.OnTouch(touchid, press, move, x, y);
+        return this.container.OnTouch(_canvas,touchid, press, move, x, y);
     }
     protected container: QUI_Container;
     getChildCount(): number {

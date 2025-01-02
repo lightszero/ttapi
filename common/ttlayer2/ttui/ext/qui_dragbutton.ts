@@ -12,7 +12,7 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_DragButton;
     }
- 
+
     ElemNormal: QUI.QUI_IElement | null = null;
     ElemPress: QUI.QUI_IElement | null = null;
     private press: boolean = false;
@@ -24,9 +24,9 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
     OnDragStart: ((x: number, y: number) => void) | null = null;
     OnDrag: ((x: number, y: number, beginx: number, beginy: number) => void) | null = null;
     OnDragEnd: ((x: number, y: number) => void) | null = null;
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+    OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
 
-        let kill = super.OnTouch(touchid, press, move, x, y);
+        let kill = super.OnTouch(_canvas, touchid, press, move, x, y);
         if (kill) return true;
 
         //this.OnTouch_Impl();
@@ -53,8 +53,12 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
                 this.dragY = y;
                 this.dragOX = this.localRect.offsetX1;
                 this.dragOY = this.localRect.offsetY1;
-                if (this.OnDragStart != null)
-                    this.OnDragStart(x, y);
+                if (this.OnDragStart != null) {
+                    _canvas.InvokeEvent(() => {
+                        this.OnDragStart(x, y);
+                    })
+                }
+
                 return true;
             }
         }
@@ -67,16 +71,25 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
             // this.localRect.offsetY1 = this.dragOY + yadd;
             // this.localRect.offsetX2 = this.localRect.offsetX1 + rect.Width;
             // this.localRect.offsetY2 = this.localRect.offsetY1 + rect.Height;
-            if (this.OnDrag != null)
-                this.OnDrag(x, y, this.dragX, this.dragY);
+            if (this.OnDrag != null) {
+                _canvas.InvokeEvent(() => {
+                    this.OnDrag(x, y, this.dragX, this.dragY);
+                });
+
+            }
+
             return true;
         }
         //释放
         if (this.press == true && press == false && this.pressid == touchid) {
             this.press = false;
             this.pressid = -1;
-            if (this.OnDragEnd != null)
-                this.OnDragEnd(x, y);
+            if (this.OnDragEnd != null) {
+                _canvas.InvokeEvent(() => {
+                    this.OnDragEnd(x, y);
+                });
+            }
+
             // if (x >= x1 && x < x2 && y >= y1 && y < y2) {
             //     // if (this.OnClick != null) {
             //     //     // if (x >= rect.X && x < x2 && y >= rect.Y && y < y2) {
@@ -110,7 +123,7 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
 
         super.OnRender(_canvas);
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas: QUI_Canvas, delta: number): void {
         // //自动转换到绝对定位
         // let rect = this.getWorldRect();
         // let prect = this.getParent().getWorldRect();
@@ -121,12 +134,12 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
 
         if (this.press) {
             if (this.ElemPress != null) {
-                this.ElemPress.OnUpdate(delta)
+                this.ElemPress.OnUpdate(_canvas, delta)
             }
         }
         else {
             if (this.ElemNormal != null) {
-                this.ElemNormal.OnUpdate(delta)
+                this.ElemNormal.OnUpdate(_canvas, delta)
             }
         }
 

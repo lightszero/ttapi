@@ -12,7 +12,7 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Toggle;
     }
-   
+
     ElemTrue: QUI.QUI_IElement | null = null;
     ElemTrueDown: QUI.QUI_IElement | null = null;
     ElemFalse: QUI.QUI_IElement | null = null;
@@ -24,8 +24,8 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
     OnChange: ((v: boolean) => void) | null = null;
     private _dbcount = 0;
     OnDbClick: (() => void) | null = null;
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
-        let kill = super.OnTouch(touchid, press, move, x, y);
+    OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        let kill = super.OnTouch(_canvas, touchid, press, move, x, y);
         if (kill) return true;
 
         //this.OnTouch_Impl();
@@ -66,15 +66,21 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
                 this._dbcount = 20;
             else {
                 if (this.OnDbClick != null) {
-                    this.OnDbClick();
+                    _canvas.InvokeEvent(() => {
+                        this.OnDbClick();
+                    });
+
                 }
                 this._dbcount = 0;
             }
             //值取反与触发事件
             this.value = !this.value;
-            if (this.OnChange != null)
-                this.OnChange(this.value);
+            if (this.OnChange != null) {
+                _canvas.InvokeEvent(() => {
 
+                    this.OnChange(this.value);
+                });
+            }
 
             return true;
         }
@@ -114,7 +120,7 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
         }
         super.OnRender(_canvas);
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas: QUI_Canvas, delta: number): void {
         if (this._dbcount > 0) {
             this._dbcount--;
         }
@@ -123,14 +129,14 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
                 if (this.ElemTrueDown != null) {
                     (this.ElemTrueDown as any)._parent = this;
                     this.ElemTrueDown.localRect.setAsFill();
-                    this.ElemTrueDown.OnUpdate(delta);
+                    this.ElemTrueDown.OnUpdate(_canvas, delta);
                 }
             }
             else {
                 if (this.ElemFalseDown != null) {
                     (this.ElemFalseDown as any)._parent = this;
                     this.ElemFalseDown.localRect.setAsFill();
-                    this.ElemFalseDown.OnUpdate(delta);
+                    this.ElemFalseDown.OnUpdate(_canvas, delta);
                 }
             }
         }
@@ -139,17 +145,17 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
                 if (this.ElemTrue != null) {
                     (this.ElemTrue as any)._parent = this;
                     this.ElemTrue.localRect.setAsFill();
-                    this.ElemTrue.OnUpdate(delta);
+                    this.ElemTrue.OnUpdate(_canvas, delta);
                 }
             }
             else {
                 if (this.ElemFalse != null) {
                     (this.ElemFalse as any)._parent = this;
                     this.ElemFalse.localRect.setAsFill();
-                    this.ElemFalse.OnUpdate(delta);
+                    this.ElemFalse.OnUpdate(_canvas, delta);
                 }
             }
         }
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas, delta);
     }
 }

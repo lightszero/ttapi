@@ -18,7 +18,7 @@ export class QUI_Canvas extends QUI.QUI_BaseElement {
         this.batcherUI.LookAt.X = this.target.getWidth() / 2;
         this.batcherUI.LookAt.Y = this.target.getHeight() / 2;
 
-        
+
         let scalewidth = this.target.getWidth() / this.scale;
         let scaleheight = this.target.getHeight() / this.scale;
         this.localRect.setByRect(new Rectangle(0, 0, scalewidth, scaleheight));
@@ -34,7 +34,7 @@ export class QUI_Canvas extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Canvas;
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
 
         //要考虑到屏幕尺寸会变
         if (!this.Enable)
@@ -48,7 +48,13 @@ export class QUI_Canvas extends QUI.QUI_BaseElement {
             let scaleheight = this.target.getHeight() / this.scale;
             this.localRect.setByRect(new Rectangle(0, 0, scalewidth, scaleheight));
         }
-        super.OnUpdate(delta);
+        super.OnUpdate(this,delta);
+        if (this._event.length > 0) {
+            for (let i = 0; i < this._event.length; i++) {
+                this._event[i]();
+            }
+            this._event.splice(0);//clear
+        }
     }
     OnRender(_canvas: QUI_Canvas): void {
         //canvas 自身不绘制
@@ -58,10 +64,14 @@ export class QUI_Canvas extends QUI.QUI_BaseElement {
         super.OnRender(this);
         this.batcherUI.EndDraw();
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+    OnTouch(_canvas:QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         let fs = tt.graphic.getFinalScale() / this.scale;
         let tx = x * fs;
         let ty = y * fs;
-        return super.OnTouch(touchid, press, move, tx, ty);
+        return super.OnTouch(this,touchid, press, move, tx, ty);
+    }
+    _event: (() => void)[] = [];
+    InvokeEvent(evt: () => void) {
+        this._event.push(evt);
     }
 }

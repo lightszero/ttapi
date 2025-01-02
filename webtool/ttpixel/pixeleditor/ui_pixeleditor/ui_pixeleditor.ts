@@ -303,8 +303,8 @@ export class UI_PixelEditor extends QUI_Container {
 
 
     }
-    OnUpdate(delta: number): void {
-        super.OnUpdate(delta);
+    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
+        super.OnUpdate(_canvas,delta);
         if (this._canvas == null)
             return;
         //同步拾色器
@@ -329,7 +329,7 @@ export class UI_PixelEditor extends QUI_Container {
             let movespeed = 1;// 32 * delta * this._canvas.scale;
             dir.X *= movespeed;
             dir.Y *= movespeed;
-            this.MoveCursor(dir);
+            this.MoveCursor(_canvas,dir);
 
 
 
@@ -343,7 +343,7 @@ export class UI_PixelEditor extends QUI_Container {
         // }
 
     }
-    MoveCursor(dir: Vector2) {
+    MoveCursor(_canvas:QUI_Canvas,dir: Vector2) {
 
         let cursor = this.cursor;
         cursor.localRect.radioX1 = 0;
@@ -372,7 +372,7 @@ export class UI_PixelEditor extends QUI_Container {
         cursor.localRect.offsetY2 = cursor.localRect.offsetY1 + 16;
 
         let cursorpos = cursor.getWorldRect();
-        this.canvas.PickByWorld(new Vector2(cursorpos.X, cursorpos.Y));
+        this.canvas.PickByWorld(_canvas,new Vector2(cursorpos.X, cursorpos.Y));
     }
     private _canvas: QUI_Canvas
     OnRender(canvas: QUI_Canvas): void {

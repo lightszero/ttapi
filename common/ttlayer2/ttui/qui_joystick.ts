@@ -70,8 +70,8 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
         super.OnRender(_canvas);
     }
     keymode: boolean = false;//加入键盘控制模式，仅PC版本有效
-    OnUpdate(delta: number): void {
-        super.OnUpdate(delta);
+    OnUpdate(_canvas: QUI_Canvas, delta: number): void {
+        super.OnUpdate(_canvas, delta);
         this._updateKeyBoardToDir();
     }
     private _updateKeyBoardToDir() {
@@ -104,8 +104,8 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
                 let sw = this.getWorldRect();
 
                 this._touchBackPoint = new Vector2(
-                    sw.Width/2,//this.touchBackSize.X / 2,
-                    sw.Height/2,// - this.touchBackSize.Y / 2
+                    sw.Width / 2,//this.touchBackSize.X / 2,
+                    sw.Height / 2,// - this.touchBackSize.Y / 2
                 );
                 this._touchHotPoint = new Vector2(
                     this._touchBackPoint.X + dir.X * this.hotMaxDist,
@@ -122,8 +122,8 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
         this._pressid = -1;
         super.CancelTouch();
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
-        let kill = super.OnTouch(touchid, press, move, x, y);
+    OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        let kill = super.OnTouch(_canvas, touchid, press, move, x, y);
         if (kill) return true;
 
         this.keymode = false;

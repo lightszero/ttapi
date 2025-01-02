@@ -60,7 +60,7 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel_Split;
     }
- 
+
     backElement: QUI.QUI_IElement;
     borderElement: QUI.QUI_IElement;//面板的边界外观
     protected _border: Border;//面板的边距
@@ -181,28 +181,28 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
 
         }
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas: QUI_Canvas, delta: number): void {
         if (this.backElement != null) {
             (this.backElement as QUI.QUI_BaseElement)._parent = this;
             this.backElement.localRect.setAsFill();
-            this.backElement.OnUpdate(delta);
+            this.backElement.OnUpdate(_canvas, delta);
         }
         this.updateContainerPos();
         this.updateSplitBtnPos();
 
-        this._panel1.OnUpdate(delta);
-        this._panel2.OnUpdate(delta);
-        this._splitButton.OnUpdate(delta);
+        this._panel1.OnUpdate(_canvas, delta);
+        this._panel2.OnUpdate(_canvas, delta);
+        this._splitButton.OnUpdate(_canvas, delta);
 
         if (this.borderElement != null) {
             (this.borderElement as QUI.QUI_BaseElement)._parent = this;
             this.borderElement.localRect.setAsFill();
-            this.borderElement.OnUpdate(delta);
+            this.borderElement.OnUpdate(_canvas, delta);
         }
 
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas, delta);
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+    OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         let skippanel1 = false;
         let skippanel2 = false;
         if (press == true && move == false) {
@@ -236,12 +236,12 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
             }
         }
 
-        if (this._splitButton.OnTouch(touchid, press, move, x, y))
+        if (this._splitButton.OnTouch(_canvas, touchid, press, move, x, y))
             return true;
 
-        var b1 = skippanel1 ? false : this._panel1.OnTouch(touchid, press, move, x, y);
+        var b1 = skippanel1 ? false : this._panel1.OnTouch(_canvas, touchid, press, move, x, y);
         if (b1) return true;
-        var b2 = skippanel2 ? false : this._panel2.OnTouch(touchid, press, move, x, y);
+        var b2 = skippanel2 ? false : this._panel2.OnTouch(_canvas, touchid, press, move, x, y);
         return b2;
     }
     protected _panel1: QUI_Container;

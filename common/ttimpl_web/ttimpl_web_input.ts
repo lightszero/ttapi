@@ -23,12 +23,21 @@ export namespace tt_impl {
             canvas.addEventListener("mousedown", (r) => {
                 if (r.button == 0) {
 
+
+                    if (this.lasttouchx == r.x && this.lasttouchy == r.y) {
+                        console.log("cancel sim mouse");
+                        this.lasttouchx = -1;
+                        this.lasttouchy = -1;
+                        return;
+                    }
+                    //console.log("mousedown=" + (r.x | 0) + "," + (r.y | 0));
                     this.UpdateMouse(r, true, false);
                     this._mousepress = true;
                 }
             });
             canvas.addEventListener("mouseup", (r) => {
                 if (r.button == 0) {
+                    //console.log("mouseup");
                     this.UpdateMouse(r, false, false);
                     this._mousepress = false;
                 }
@@ -40,6 +49,7 @@ export namespace tt_impl {
                 }
             });
             canvas.addEventListener("touchstart", (r) => {
+                //console.log("touchstart");
                 for (var i = 0; i < r.changedTouches.length; i++) {
                     this.UpdatePoint(r.changedTouches[i], true, false);
                 }
@@ -50,6 +60,7 @@ export namespace tt_impl {
                 }
             })
             canvas.addEventListener("touchend", (r) => {
+                //console.log("touchend=" + this.lasttouchx + "|" + this.lasttouchy);
                 for (var i = 0; i < r.changedTouches.length; i++) {
                     this.UpdatePoint(r.changedTouches[i], false, false);
                 }
@@ -61,6 +72,8 @@ export namespace tt_impl {
             })
         }
         private UpdateMouse(m: MouseEvent, press: boolean, move: boolean): void {
+
+
             while (this.points.length <= 0) {
                 let p = new tt.InputPoint();
                 p.id = this.points.length;
@@ -76,6 +89,9 @@ export namespace tt_impl {
             if (this.OnPoint != null)
                 this.OnPoint(0, m.x, m.y, press, move);
         }
+        lasttouchx: number = -1;
+        lasttouchy: number = -1;
+
         private UpdatePoint(t: Touch, press: boolean, move: boolean): void {
             let touchid = t.identifier + 1;
             while (this.points.length <= touchid) {
@@ -89,6 +105,12 @@ export namespace tt_impl {
             this.points[touchid].press = press;
             this.points[touchid].x = t.clientX;
             this.points[touchid].y = t.clientY;
+            if (press) {
+
+                this.lasttouchx = t.clientX | 0;
+                this.lasttouchy = t.clientY | 0;
+            }
+
             if (this.OnPoint != null)
                 this.OnPoint(touchid, t.clientX, t.clientY, press, move);
         }

@@ -1,6 +1,7 @@
 
 import { tt } from "../../../ttapi/ttapi.js";
 import * as QUI from "../qui_base.js"
+import { QUI_Canvas } from "../qui_canvas.js";
 import { QUI_Container } from "../qui_container.js";
 import { QUI_Panel } from "./qui_panel.js";
 
@@ -18,7 +19,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel_Scroll;
     }
- 
+
     protected panelOffsetX: number;
     protected panelOffsetY: number;
     private panelOffsetWantX: number;
@@ -70,11 +71,11 @@ export class QUI_Panel_Scroll extends QUI_Panel {
         this._pressid = -1;
         super.CancelTouch();
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+    OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
 
         //无拖拽
         if (this.dragDirection == QUI.QUI_DragDriection.None) {
-            return super.OnTouch(touchid, press, move, x, y);
+            return super.OnTouch(_canvas, touchid, press, move, x, y);
         }
 
 
@@ -123,7 +124,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
             return true;
         }
         else {
-            return super.OnTouch(touchid, press, move, x, y);
+            return super.OnTouch(_canvas, touchid, press, move, x, y);
         }
 
     }
@@ -172,11 +173,11 @@ export class QUI_Panel_Scroll extends QUI_Panel {
             this.panelOffsetY = this.panelOffsetWantY;
         }
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas: QUI_Canvas, delta: number): void {
         if (this._drag == false) {
             this.panelOffsetX = this.panelOffsetX + (this.panelOffsetWantX - this.panelOffsetX) * 0.5;
             this.panelOffsetY = this.panelOffsetY + (this.panelOffsetWantY - this.panelOffsetY) * 0.5;
         }
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas, delta);
     }
 }

@@ -33,8 +33,8 @@ export class QUI_DropButton extends QUI.QUI_BaseElement {
         this._pressid = -1;
         super.CancelTouch();
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
-        let kill = super.OnTouch(touchid, press, move, x, y);
+    OnTouch(_canvas:QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        let kill = super.OnTouch(_canvas,touchid, press, move, x, y);
         if (kill) return true;
 
         //this.OnTouch_Impl();
@@ -90,19 +90,19 @@ export class QUI_DropButton extends QUI.QUI_BaseElement {
 
         super.OnRender(_canvas);
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
 
         if (this._active) {
             if (this.ElemActive != null) {
-                this.ElemActive.OnUpdate(delta)
+                this.ElemActive.OnUpdate(_canvas,delta)
             }
         }
         else {
             if (this.ElemNormal != null) {
-                this.ElemNormal.OnUpdate(delta)
+                this.ElemNormal.OnUpdate(_canvas,delta)
             }
         }
 
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas,delta);
     }
 }

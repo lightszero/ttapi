@@ -41,8 +41,12 @@ export class UI_Canvas extends QUI_Container {
     }
     UpdateImg(data: SpriteData): void {
         this.data = data;
-        if (data.width != this.simpleimage._width || data.height != this.simpleimage._height)
+        if (data.width != this.simpleimage._width || data.height != this.simpleimage._height) {
+            console.log("resize img.");
+
             this.simpleimage.ReSize(data.width, data.height);
+        }
+        console.log("upload img.");
         this.simpleimage.UploadTexture(0, 0, this.data.width, this.data.height, this.data.data);
         this.spriteImg.pixelwidth = this.data.width;
         this.spriteImg.pixelheight = this.data.height;
@@ -56,14 +60,14 @@ export class UI_Canvas extends QUI_Container {
     GetPickFlashValue(): number {
         return this.pickValue;
     }
-    private _canvas: QUI_Canvas = null;
-    PickByWorld(posworld: Vector2): void {
-        if (this._canvas == null)
+    //private _canvas: QUI_Canvas = null;
+    PickByWorld(_canvas: QUI_Canvas, posworld: Vector2): void {
+        if (_canvas == null)
             return;
         let sw = this.getWorldRect();
-        let blocksize = (sw.Height * this._canvas.scale / this.gridHeight) | 0;
-        this.pickPos.X = (posworld.X - sw.X) * this._canvas.scale / blocksize + this.offset.X;
-        this.pickPos.Y = (posworld.Y - sw.Y) * this._canvas.scale / blocksize + this.offset.Y;
+        let blocksize = (sw.Height * _canvas.scale / this.gridHeight) | 0;
+        this.pickPos.X = (posworld.X - sw.X) * _canvas.scale / blocksize + this.offset.X;
+        this.pickPos.Y = (posworld.Y - sw.Y) * _canvas.scale / blocksize + this.offset.Y;
         if (this.pickPos.X < 0)
             this.pickPos.X = 0;
         if (this.pickPos.Y < 0)
@@ -75,9 +79,9 @@ export class UI_Canvas extends QUI_Container {
 
         let hradio = (posworld.X - sw.X) / sw.Width;
         let vradio = (posworld.Y - sw.Y) / sw.Height;
-        console.log("radio=" + hradio + "," + vradio);
+        //console.log("radio=" + hradio + "," + vradio);
 
-        let blockwidth = (sw.Width * this._canvas.scale / blocksize) | 0;
+        let blockwidth = (sw.Width * _canvas.scale / blocksize) | 0;
         if (hradio < 0.05) {
             this.offset.X--;
             if (this.offset.X < -5)
@@ -98,11 +102,11 @@ export class UI_Canvas extends QUI_Container {
             if (this.offset.Y > this.data.height - 32 - 1 + 5)
                 this.offset.Y = this.data.height - 32 - 1 + 5;
         }
-        console.log("offset=" + this.offset.X + "," + this.offset.Y);
+        //console.log("offset=" + this.offset.X + "," + this.offset.Y);
     }
     override OnRender(_canvas: QUI_Canvas): void {
         super.OnRender(_canvas);
-        this._canvas = _canvas;
+        //this._canvas = _canvas;
 
 
         let sw = this.getWorldRectScale(_canvas.scale);
@@ -185,7 +189,7 @@ export class UI_Canvas extends QUI_Container {
         this.spritePick.RenderRect(_canvas.batcherUI, rect, new Color(this.pickValue, this.pickValue, this.pickValue, 0.5));
     }
     private timer: number = 0;
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas: QUI_Canvas, delta: number): void {
         this.timer += delta;
         const total = 1.0;
         if (this.timer > total)

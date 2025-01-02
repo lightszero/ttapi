@@ -19,7 +19,7 @@ export class QUI_Bar extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Bar;
     }
- 
+
     spriteBackground: QUI.QUI_IElement; //背景控件
     spriteValue: QUI.QUI_IElement; //前控件，自动改成填充定位，改右值或者底值;
     dir: QUI.QUI_Direction = QUI.QUI_Direction.LeftToRight;//方向，
@@ -49,13 +49,13 @@ export class QUI_Bar extends QUI.QUI_BaseElement {
 
         super.OnRender(_canvas);
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas: QUI_Canvas, delta: number): void {
 
 
         if (this.spriteBackground != null) {
             (this.spriteBackground as any)._parent = this;
             this.spriteBackground.localRect.setAsFill();
-            this.spriteBackground.OnUpdate(delta)
+            this.spriteBackground.OnUpdate(_canvas, delta)
         }
 
         if (this.spriteValue != null) {
@@ -73,23 +73,23 @@ export class QUI_Bar extends QUI.QUI_BaseElement {
             else if (this.dir == QUI.QUI_Direction.DownToUp) {
                 this.spriteValue.localRect.radioY1 = 1.0 - this._value;
             }
-            this.spriteValue.OnUpdate(delta)
+            this.spriteValue.OnUpdate(_canvas, delta);
         }
 
 
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas, delta);
     }
     private press: boolean = false;
     private pressid: number = -1;
     private dragX: number;
     private dragY: number;
     private dragV: number;
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+    OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         if (this.scroll == QUI_BarScrollMode.DoNotScroll) {
             press = false;
             return false;
         }
-        let kill = super.OnTouch(touchid, press, move, x, y);
+        let kill = super.OnTouch(_canvas, touchid, press, move, x, y);
         if (kill) return true;
 
         //this.OnTouch_Impl();
@@ -148,8 +148,11 @@ export class QUI_Bar extends QUI.QUI_BaseElement {
                 while (this._value > 1)
                     this._value -= 1;
             }
-            if (this.OnChange != null)
-                this.OnChange(this._value);
+            if (this.OnChange != null) {
+                _canvas.InvokeEvent(() => {
+                    this.OnChange(this._value);
+                });
+            }
             return true;
         }
         //释放

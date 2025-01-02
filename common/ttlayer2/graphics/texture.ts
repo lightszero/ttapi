@@ -92,7 +92,7 @@ export class Texture implements ITexture {
         }
         this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
         if (data == null) {
-           
+
             this._webgl.texImage2D(this._webgl.TEXTURE_2D,
                 0,
                 this._formatInnerGL,
@@ -151,6 +151,7 @@ export class Texture implements ITexture {
     }
 
     ReSize(width: number, height: number) {
+        this._webgl.bindTexture(this._webgl.TEXTURE_2D, this._texobj);
         this._webgl.texImage2D(this._webgl.TEXTURE_2D,
             0,
             this._formatInnerGL,
@@ -158,6 +159,8 @@ export class Texture implements ITexture {
             this._formatGL,
             this._typeGL
             , null);
+        this._width = width;
+        this._height = height;
 
     }
     UploadImg(img: TexImageSource): void {

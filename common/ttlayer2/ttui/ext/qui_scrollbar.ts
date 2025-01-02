@@ -38,13 +38,13 @@ export class QUI_ScrollBar extends QUI.QUI_BaseElement {
 
         super.OnRender(_canvas);
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
 
 
         if (this.spriteBackground != null) {
             (this.spriteBackground as any)._parent = this;
             this.spriteBackground.localRect.setAsFill();
-            this.spriteBackground.OnUpdate(delta)
+            this.spriteBackground.OnUpdate(_canvas,delta)
         }
 
         if (this.spriteValue != null) {
@@ -64,9 +64,9 @@ export class QUI_ScrollBar extends QUI.QUI_BaseElement {
                 this.spriteValue.localRect.radioY1 = v1;
                 this.spriteValue.localRect.radioY2 = v2;
             }
-            this.spriteValue.OnUpdate(delta)
+            this.spriteValue.OnUpdate(_canvas,delta)
         }
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas,delta);
     }
 
 }

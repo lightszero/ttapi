@@ -33,8 +33,8 @@ export class QUI_Button extends QUI.QUI_BaseElement {
         this._pressid = -1;
         super.CancelTouch();
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
-        let kill = super.OnTouch(touchid, press, move, x, y);
+    OnTouch(canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        let kill = super.OnTouch(canvas, touchid, press, move, x, y);
         if (kill) return true;
 
         //this.OnTouch_Impl();
@@ -48,8 +48,13 @@ export class QUI_Button extends QUI.QUI_BaseElement {
             if (x >= rect.X && x < x2 && y >= rect.Y && y < y2) {
                 this._press = true;
                 this._pressid = touchid;
-                if (this.OnPressDown != null)
-                    this.OnPressDown(touchid);
+                console.log("btn down." + touchid);
+                if (this.OnPressDown != null) {
+                    canvas.InvokeEvent(() => {
+                        this.OnPressDown(touchid);
+
+                    });
+                }
                 return true;
             }
         }
@@ -61,12 +66,21 @@ export class QUI_Button extends QUI.QUI_BaseElement {
         if (this._press == true && press == false && this._pressid == touchid) {
             this._press = false;
             this._pressid = -1;
-            if (this.OnPressUp != null)
-                this.OnPressUp();
+            console.log("btn up." + touchid);
+            if (this.OnPressUp != null) {
+                canvas.InvokeEvent(() => {
+                    this.OnPressUp();
+
+                });
+            }
             if (x >= rect.X && x < x2 && y >= rect.Y && y < y2) {
+                console.log("btn click.");
                 if (this.OnClick != null) {
                     // if (x >= rect.X && x < x2 && y >= rect.Y && y < y2) {
-                    this.OnClick();
+                    canvas.InvokeEvent(() => {
+                        this.OnClick();
+
+                    });
                     //return true;
                     //}
                 }
@@ -98,7 +112,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
 
         super.OnRender(_canvas);
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas: QUI_Canvas, delta: number): void {
         if (this.BindKey != null) {
             let keydown = tt.input.IsKeyDown(this.BindKey);
             if (this._keypress && !keydown) {
@@ -116,15 +130,15 @@ export class QUI_Button extends QUI.QUI_BaseElement {
         }
         if (this._press) {
             if (this.ElemPress != null) {
-                this.ElemPress.OnUpdate(delta)
+                this.ElemPress.OnUpdate(_canvas, delta)
             }
         }
         else {
             if (this.ElemNormal != null) {
-                this.ElemNormal.OnUpdate(delta)
+                this.ElemNormal.OnUpdate(_canvas, delta)
             }
         }
 
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas, delta);
     }
 }

@@ -63,8 +63,8 @@ export class QUI_TouchBar extends QUI.QUI_BaseElement {
         super.OnRender(_canvas);
     }
     keymode: boolean = false;//加入键盘控制模式，仅PC版本有效
-    OnUpdate(delta: number): void {
-        super.OnUpdate(delta);
+    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
+        super.OnUpdate(_canvas,delta);
         this._updateKeyBoardToDir();
     }
     private _updateKeyBoardToDir() {
@@ -115,8 +115,8 @@ export class QUI_TouchBar extends QUI.QUI_BaseElement {
         this._pressid = -1;
         super.CancelTouch();
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
-        let kill = super.OnTouch(touchid, press, move, x, y);
+    OnTouch(_canvas:QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        let kill = super.OnTouch(_canvas,touchid, press, move, x, y);
         if (kill) return true;
 
         this.keymode = false;

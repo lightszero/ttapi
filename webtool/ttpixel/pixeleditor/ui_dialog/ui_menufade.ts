@@ -49,9 +49,9 @@ export abstract class UI_MenuFade extends QUI_Container {
     timer: number = 0;
     fadeintime: number = 0.15;
     fadeouttime: number = 0.15;
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
 
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas,delta);
         if (this.action == 1) {
             if (this.timer < this.fadeintime)
                 this.timer += delta;

@@ -179,7 +179,7 @@ export class GameApp {
         for (let j = rs.length - 1; j >= 0; j--) {
           let gui = rs[j].GetGUI();
           if (gui != null) {
-            kill = gui.OnTouch(id, press, move, x, y);
+            kill = gui.OnTouch(null, id, press, move, x, y);
             if (kill)
               break;
           }

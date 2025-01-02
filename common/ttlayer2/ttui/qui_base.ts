@@ -193,9 +193,9 @@ export interface QUI_IElement {
     CancelTouch(): void;//取消事件
 
     //return true 表示 消息被吞了
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean
+    OnTouch(canvas: QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean
     OnRender(canvas: QUI_Canvas): void
-    OnUpdate(delta: number): void;
+    OnUpdate(canvas: QUI_Canvas,delta: number): void;
     getChildCount(): number;
     getChild(index: number): QUI_IElement | null;
     addChild(elem: QUI_IElement): void
@@ -235,13 +235,13 @@ export abstract class QUI_BaseElement implements QUI_IElement {
             }
         }
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+    OnTouch(canvas: QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
 
         if (this._children != null) {
             for (var i = this._children.length - 1; i >= 0; i--) {
                 let child = this._children[i];
                 if (child.Enable) {
-                    let kill = child.OnTouch(touchid, press, move, x, y);
+                    let kill = child.OnTouch(canvas,touchid, press, move, x, y);
                     if (kill)
                         return true;
                 }
@@ -262,14 +262,14 @@ export abstract class QUI_BaseElement implements QUI_IElement {
             }
         }
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(canvas: QUI_Canvas,delta: number): void {
 
         if (this._children == null)
             return;
         for (var i = 0; i < this._children.length; i++) {
             let child = this._children[i];
             if (child.Enable) {
-                child.OnUpdate(delta);
+                child.OnUpdate(canvas,delta);
             }
         }
     }

@@ -29,7 +29,7 @@ export class QUI_Container_AutoFill extends QUI.QUI_BaseElement {
         return QUI.QUI_ElementType.Element_Container_AutoFill;
     }
 
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
         let sw = this.getParent().getWorldRect();
         let aspnow = sw.Width / sw.Height;
         let bfixmin = false;
@@ -78,6 +78,6 @@ export class QUI_Container_AutoFill extends QUI.QUI_BaseElement {
             this.localRect.setAsFill();
         }
 
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas,delta);
     }
 }

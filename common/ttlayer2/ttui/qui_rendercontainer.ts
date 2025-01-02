@@ -24,14 +24,14 @@ export class QUI_RenderContainer extends QUI.QUI_BaseElement {
         }
         super.OnRender(_canvas);
     }
-    OnUpdate(delta: number): void {
+    OnUpdate(_canvas: QUI_Canvas,delta: number): void {
         if (this.OnCustomUpdate != null) {
             this.OnCustomUpdate(delta);
         }
-        super.OnUpdate(delta);
+        super.OnUpdate(_canvas,delta);
     }
-    OnTouch(touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
-        let kill = super.OnTouch(touchid, press, move, x, y);
+    OnTouch(_canvas: QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        let kill = super.OnTouch(_canvas,touchid, press, move, x, y);
         if (kill)
             return true;
 
