@@ -6,6 +6,7 @@ import { Resources } from "./resources.js";
 //来为嵌入shader提供高亮显示
 
 var vs_default: string = /*glsl*/`#version 300 es
+    precision highp float;
     layout(location = 0) in vec3 position;//顶点提供的数据
     layout(location = 1) in vec2 uv; 
     layout(location = 2) in vec4 color; 
@@ -218,7 +219,7 @@ var vs_inst_ubo: string = /*glsl*/`#version 300 es
     }
 `;
 var fs_default: string = /*glsl*/`#version 300 es
-    precision mediump float;//指定浮点型精确度
+    precision highp float;//指定浮点型精确度
     precision highp sampler2DArray;
     in vec2 vUv;//从vs接收的参数
     in vec4 vColor;//从vs接收的参数
@@ -284,7 +285,7 @@ var vs_simple: string = /*glsl*/`#version 300 es
 
 
 var fs_simple: string = /*glsl*/`#version 300 es
-    precision mediump float;//指定浮点型精确度
+    precision highp float;//指定浮点型精确度
     precision highp sampler2DArray;
 
     in vec2 vUv;//从vs接收的参数
