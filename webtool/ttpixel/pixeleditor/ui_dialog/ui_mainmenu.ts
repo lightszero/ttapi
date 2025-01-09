@@ -2,11 +2,13 @@ import { tt } from "../../ttapi/ttapi.js";
 import { ElementSprite } from "../../ttlayer2/graphics/pipeline/render/elem.js";
 import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
 import { Color, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Overlay, Resources, TextureFormat } from "../../ttlayer2/ttlayer2.js";
+import { QUI_DropButton } from "../../ttlayer2/ttui/qui_dropbutton.js";
 import { FileTool } from "../fileapi/filefunchtml.js";
 import { UI_PixelEditor } from "../ui_pixeleditor/ui_pixeleditor.js";
+import { UI_DropMenuFade } from "./ui_dropmenufade.js";
 import { UI_MenuFade } from "./ui_menufade.js";
 
-export class UI_MainMenu extends UI_MenuFade {
+export class UI_MainMenu extends UI_DropMenuFade {
     constructor(editor: UI_PixelEditor) {
         super();
         this.localRect.setAsFill();
@@ -46,7 +48,7 @@ export class UI_MainMenu extends UI_MenuFade {
         this.AddText("打开文件，从本地选一个图片编辑，不能太大", 0.5);
         this.AddText("保存，如果是浏览器则是下载", 0.5);
         this.AddText("打包保存，这是将来的事情", 0.5);
-        this.AddText("点击任意位置，关闭菜单", 0.5);
+        this.AddText("按住别动，移动到想要的功能松手。", 0.5);
     }
     editor: UI_PixelEditor;
     y: number = 32;
@@ -70,23 +72,30 @@ export class UI_MainMenu extends UI_MenuFade {
     AddButton(text: string, onclick: () => void, scale: number = 1.0): void {
 
         var b = Resources.CreateGUI_Button(text, Color.White, scale);
-        b.localRect.setVPosByTopBorder(24 * scale, this.y);
-        b.localRect.setHPosFill(16, 16);
-        b.OnClick = onclick;
-        this.addChild(b);
+        let db = new QUI_DropButton(-1);
+        db.ElemNormal = b.ElemPress;
+        db.ElemActive = b.ElemNormal;
+        db.localRect.setVPosByTopBorder(24 * scale, this.y);
+        db.localRect.setHPosFill(16, 16);
+        db.OnPressUp = onclick;
+        this.addChild(db);
         this.y += 28 * scale;
     }
+    OnShow(): void {
+        UI_MainMenu._ishow = true;
+    }
     OnClose(): void {
+        this._parent.removeChild(this);
         UI_MainMenu._ishow = false;
     }
 
     private static _ishow: boolean = false;
-    static Show(canvas: QUI_IElement, editor: UI_PixelEditor): void {
+    static Show(canvas: QUI_IElement, id: number, editor: UI_PixelEditor): void {
 
         if (this._ishow)
             return;//防止多次打开
         let menu = new UI_MainMenu(editor);
-        menu.Show(canvas);
+        menu.Show(canvas, id);
 
     }
 }

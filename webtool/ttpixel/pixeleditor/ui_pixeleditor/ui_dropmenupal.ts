@@ -1,35 +1,12 @@
 import { Color, Color32, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_ElementType, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Label, QUI_Overlay, QUI_VAlign, Resources } from "../../ttlayer2/ttlayer2.js";
 import { QUI_DropButton } from "../../ttlayer2/ttui/qui_dropbutton.js";
+import { UI_DropMenuFade } from "../ui_dialog/ui_dropmenufade.js";
 
 
 
-export class UI_DropMenuPal extends QUI_Container {
+export class UI_DropMenuPal extends UI_DropMenuFade {
 
 
-    Show(touchid: number): void {
-        if (this.Enable)
-            return;
-        this._caretouchid = touchid;
-        UI_DropMenuPal.PassPress(this, touchid);
-
-        this.Enable = true;
-        this.timer = 0;
-        this.action = 1;
-        console.log("...show..." + touchid);
-    }
-    static PassPress(ui: QUI_IElement, touchid: number) {
-        for (let i = 0; i < ui.getChildCount(); i++) {
-            let e = ui.getChild(i);
-            if (e.getElementType() == QUI_ElementType.Element_DropButton) {
-                let btn = e as QUI_DropButton;
-                btn.UsePress(touchid);
-            }
-            else {
-                this.PassPress(e, touchid);
-            }
-        }
-    }
-    _caretouchid: number = -1;
 
     colorpick: Color32 = new Color32(0, 0, 0, 1);//用color32 才方便判断
     colorHistory: Color32[] = [];//历史Color
@@ -37,6 +14,15 @@ export class UI_DropMenuPal extends QUI_Container {
     ui_colorpick: QUI_Image;
     ui_colorHistory: QUI_DropButton[] = [];
     ui_colorSame: QUI_DropButton[] = [];
+
+    //通过close 和 show 的实现决定如何处理
+    OnClose(): void {
+        this.Enable = false;
+    }
+    OnShow(): void {
+        this.Enable = true;
+    }
+
 
     GetPickColor(): Color {
         return new Color(this.colorpick.R / 255, this.colorpick.G / 255, this.colorpick.B / 255, this.colorpick.A / 255);
@@ -111,23 +97,6 @@ export class UI_DropMenuPal extends QUI_Container {
             this.colorHistory[i] = new Color32(0, 0, 0);
         }
 
-        this.localRect.setAsFill();
-        //遮蔽背景
-        let img = this.img = new QUI_Image(
-            Resources.GetPackElement().ConvertElemToSprite(
-                Resources.getWhiteBlock()
-            )
-        );
-        img.color = new Color(0, 0, 0, 0.5);
-        img.alpha = 0.5;
-        img.localRect.setAsFill();
-        this.addChild(img);
-
-        //遮蔽事件
-        let block = new QUI_Overlay();
-        block.localRect.setAsFill();
-        this.addChild(block);
-
         {
             var l = Resources.CreateGUI_Label("拖拽菜单");
             l.fontScale.X *= 1.0;
@@ -147,7 +116,7 @@ export class UI_DropMenuPal extends QUI_Container {
             l.localRect.radioY2 = 0.65;
             this.addChild(l);
         }
-      
+
         //this._editor.poshead;
         //to poscanvas
         let allrange = new QUI_Container();
@@ -315,52 +284,5 @@ export class UI_DropMenuPal extends QUI_Container {
         }
         return btn;
     }
-    Close(): void {
-        console.log("...close..." + this._caretouchid);
-        this.action = 2;
-        this.timer = 0;
-    }
 
-
-    img: QUI_Image;
-    action: number = 0;
-    timer: number = 0;
-    fadeintime: number = 0.15;
-    fadeouttime: number = 0.15;
-    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
-
-        super.OnUpdate(_canvas,delta);
-        if (this.action == 1) {
-            if (this.timer < this.fadeintime)
-                this.timer += delta;
-
-            let p = (this.timer / this.fadeintime);
-            if (p > 1) p = 1;
-            this.img.alpha = p * 0.75;
-        }
-        if (this.action == 2) {
-            if (this.timer <= this.fadeouttime)
-                this.timer += delta;
-
-            let p = (this.timer / this.fadeouttime);
-            if (p >= 1) {
-                p = 1;
-                this.Enable = false;
-                console.log("hide drop" + this._caretouchid);
-            }
-            this.img.alpha = (1.0 - p) * 0.75;
-        }
-    }
-    OnTouch(_canvas:QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
-
-        let bkill = super.OnTouch(_canvas,touchid, press, move, x, y);
-
-        if (press == false) {
-            console.log("release..." + touchid);
-            if (touchid == this._caretouchid) {
-                this.Close();
-            }
-        }
-        return bkill;
-    }
 }

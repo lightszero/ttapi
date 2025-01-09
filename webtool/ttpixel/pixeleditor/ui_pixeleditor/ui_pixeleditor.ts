@@ -168,9 +168,9 @@ export class UI_PixelEditor extends QUI_Container {
             if (this.dropColor == null) {
                 this.dropColor = new UI_DropMenuPal();
                 //对话框显示到上面去
-                this._parent.addChild(this.dropColor);
+                //this._parent.addChild(this.dropColor);
             }
-            this.dropColor.Show(id);
+            this.dropColor.Show(this._parent,id);
         }
         let label = Resources.CreateGUI_Label("选择颜色");
         label.halign = QUI_HAlign.Left;

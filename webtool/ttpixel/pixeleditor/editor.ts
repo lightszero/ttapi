@@ -53,16 +53,16 @@ export class EditorApp implements IUserLogic {
                 header.addChild(btnmenu);
                 btnmenu.localRect.setHPosByLeftBorder(36, 8);
                 btnmenu.localRect.setVPosByCenter(20);
-                btnmenu.OnClick = () => {
-                    UI_MainMenu.Show(root, this.ui_editor);
+                btnmenu.OnPressDown = (id) => {
+                    UI_MainMenu.Show(root, id, this.ui_editor);
                 }
                 let btnhelp = Resources.CreateGUI_Button("?");
                 header.addChild(btnhelp);
                 btnhelp.localRect.setHPosByRightBorder(20, 8);
                 btnhelp.localRect.setVPosByCenter(20);
-                btnhelp.OnClick = () => {
+                btnhelp.OnPressDown = (id) => {
 
-                    UI_HelpDialog.Show(root);
+                    UI_HelpDialog.Show(root, id);
                 }
             }
         }
