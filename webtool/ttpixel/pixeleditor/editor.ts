@@ -2,6 +2,7 @@ import { tt } from "../ttapi/ttapi.js";
 import { Color, DrawLayer_GUI, GameApp, IUserLogic, MainScreen, QUI_Canvas, QUI_Container, QUI_Container_AutoFill, QUI_HAlign, QUI_Image, QUI_JoyStick, QUI_Panel, QUI_VAlign, Rectangle, Resources, Vector2 } from "../ttlayer2/ttlayer2.js";
 import { UI_HelpDialog } from "./ui_dialog/ui_helpdialog.js";
 import { UI_MainMenu } from "./ui_dialog/ui_mainmenu.js";
+import { UI_Main } from "./ui_main/ui_main.js";
 import { UI_Canvas } from "./ui_pixeleditor/ui_canvas.js";
 import { UI_PixelEditor } from "./ui_pixeleditor/ui_pixeleditor.js";
 
@@ -27,6 +28,13 @@ export class EditorApp implements IUserLogic {
 
         this.layergui.GetCanvas().addChild(root);
 
+
+        {//初始化新的入口，像素编辑只是其中一个模块
+            let main = new UI_Main();
+            main.localRect.setAsFill();
+            root.addChild(main);
+            return;
+        }
         {//初始化绘制区域,用悬浮式设计
             // let editorContainer = new QUI_Container();
             // editorContainer.localRect.setAsFill();

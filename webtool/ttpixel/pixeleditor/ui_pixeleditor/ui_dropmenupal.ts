@@ -1,6 +1,6 @@
 import { Color, Color32, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_ElementType, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Label, QUI_Overlay, QUI_VAlign, Resources } from "../../ttlayer2/ttlayer2.js";
 import { QUI_DropButton } from "../../ttlayer2/ttui/qui_dropbutton.js";
-import { UI_DropMenuFade } from "../ui_dialog/ui_dropmenufade.js";
+import { UI_DropMenuFade } from "../common/ui_dropmenufade.js";
 
 
 

@@ -12,6 +12,7 @@ export namespace tt {
     }
 
     export interface IStore {
+        Init():Promise<boolean>;
         GetText(name: string): Promise<string | null>;
         GetBinary(name: string): Promise<Uint8Array | null>;
         SaveText(name: string, data: string): Promise<void>;
@@ -51,7 +52,7 @@ export namespace tt {
         OnKey: null | ((keycode: string, press: boolean) => void);
 
         //弹出输入文本框
-        Prompt(deftxt: string, maxlen: number): Promise<string>
+        Prompt(message: string, deftxt: string, maxlen: number): Promise<string>
     }
     export class ImageBuffer {
         width: number = 0;

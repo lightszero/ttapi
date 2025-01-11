@@ -5,8 +5,8 @@ import { Color, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_IEle
 import { QUI_DropButton } from "../../ttlayer2/ttui/qui_dropbutton.js";
 import { FileTool } from "../fileapi/filefunchtml.js";
 import { UI_PixelEditor } from "../ui_pixeleditor/ui_pixeleditor.js";
-import { UI_DropMenuFade } from "./ui_dropmenufade.js";
-import { UI_MenuFade } from "./ui_menufade.js";
+import { UI_DropMenuFade } from "../common/ui_dropmenufade.js";
+import { UI_MenuFade } from "../common/ui_menufade.js";
 
 export class UI_MainMenu extends UI_DropMenuFade {
     constructor(editor: UI_PixelEditor) {

@@ -15,7 +15,7 @@ export class QUI_TextBox_Prompt extends QUI.QUI_BaseElement {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_TextBox_Prompt;
     }
-
+    message: string = "";
     font: Font | null;
     text: string;
     maxlen: number = 10;
@@ -39,7 +39,7 @@ export class QUI_TextBox_Prompt extends QUI.QUI_BaseElement {
 
 
             let fontheight = this.font.GetFontSize() * this.fontScale.Y * _canvas.scale;
-            let fontwidth = this.font.SureText(this.text)* this.fontScale.X * _canvas.scale;
+            let fontwidth = this.font.SureText(this.text) * this.fontScale.X * _canvas.scale;
             if (this.halign == QUI.QUI_HAlign.Left) {
                 this._pos.X = sw.X;
             }
@@ -80,8 +80,8 @@ export class QUI_TextBox_Prompt extends QUI.QUI_BaseElement {
         this._pressid = -1;
         super.CancelTouch();
     }
-    OnTouch(_canvas: QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
-        let kill = super.OnTouch(_canvas,touchid, press, move, x, y);
+    OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        let kill = super.OnTouch(_canvas, touchid, press, move, x, y);
         if (kill) return true;
 
         //this.OnTouch_Impl();
@@ -107,7 +107,7 @@ export class QUI_TextBox_Prompt extends QUI.QUI_BaseElement {
         return false;
     }
     async Prompt() {
-        let t = await tt.input.Prompt(this.text, this.maxlen);
+        let t = await tt.input.Prompt(this.message, this.text, this.maxlen);
         if (t.length > this.maxlen)
             t = t.substring(0, this.maxlen);
         this.text = t;

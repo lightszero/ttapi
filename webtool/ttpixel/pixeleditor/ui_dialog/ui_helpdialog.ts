@@ -1,7 +1,7 @@
 import { ElementSprite } from "../../ttlayer2/graphics/pipeline/render/elem.js";
 import { Color, QUI_BaseElement, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_IElement, QUI_Image, QUI_Overlay, Resources } from "../../ttlayer2/ttlayer2.js";
-import { UI_DropMenuFade } from "./ui_dropmenufade.js";
-import { UI_MenuFade } from "./ui_menufade.js";
+import { UI_DropMenuFade } from "../common/ui_dropmenufade.js";
+import { UI_MenuFade } from "../common/ui_menufade.js";
 
 export class UI_HelpDialog extends UI_DropMenuFade {
     constructor() {

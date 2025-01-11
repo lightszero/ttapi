@@ -149,12 +149,12 @@ export namespace tt_impl {
 
         onkeycomfirm: (txt: string) => void;
         ishow: boolean = false;
-        async Prompt(deftxt: string = "", maxlen: number = 256): Promise<string> {
+        async Prompt(message: string, deftxt: string = "", maxlen: number = 256): Promise<string> {
             //releaseinput
             for (var i = 0; i < this.points.length; i++) {
                 this.points[i].press = false;
             }
-            return window.prompt("", deftxt);
+            return window.prompt(message, deftxt);
         }
     }
 }

@@ -6,13 +6,24 @@ export class TTStore implements tt.IStore {
         this.InitAsync();
 
     }
-    async InitAsync() {
-        await KeyStore.OpenOrCreateDB("_ttstore_");
-        this._loaded = true;
+    async Init(): Promise<boolean> {
+        if (this._loaded == 0)
+            this._loaded = -1;
+        else if (this._loaded == 1)
+            return true;
+        else if (this._loaded == 2)
+            return false;
+        else
+            return false;
+        this._loaded = await KeyStore.OpenOrCreateDB("_ttstore_");
+        return this.IsReady();
     }
-    private _loaded = false;
+    async InitAsync() {
+
+    }
+    private _loaded: number = 0;
     IsReady(): boolean {
-        return this._loaded;
+        return this._loaded == 1;
     }
     async GetText(key: string): Promise<string | null> {
         return await KeyStore.GetStringValue(key);
@@ -69,7 +80,7 @@ class KeyStore {
         }
     }
 
-    static async OpenOrCreateDB(dbname: string): Promise<void> {
+    static async OpenOrCreateDB(dbname: string): Promise<number> {
         let dbinit = 0;
 
         let dbreq = indexedDB.open(dbname, 1);
@@ -100,6 +111,7 @@ class KeyStore {
         while (dbinit == 0) {
             await tt.sleep(1);
         }
+        return dbinit;
     }
     static async SetStringValue(key: string, data: string): Promise<void> {
         if (this.db == null)
