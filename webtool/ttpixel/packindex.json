@@ -1,0 +1,47 @@
+[
+    {
+        "file": "data\\VonwaonBitmap-16pxLite.ttf",
+        "hash": "0fc24cfa3c134fe3482962be69a57bd419fb9ceec1b6dbb7fd3f7a054087f59a",
+        "size": 1012592
+    },
+    {
+        "file": "data\\uires_pack0.png.json",
+        "hash": "0a1f4cb6337c9704081b507f44cfeda0aa735e2858ea9a1d8a8064a3be779348",
+        "size": 3717
+    },
+    {
+        "file": "data\\uires_pack0.png",
+        "hash": "4d0f30179c3aa8eb3727ddb6ebf3db01df017b79ddae534b63c883047037ae99",
+        "size": 4854
+    },
+    {
+        "file": "data\\tiledrule.png",
+        "hash": "29c8e979efb69a366e1250fd0f5ddd0e124382534234f6369092e51e23a2191b",
+        "size": 2624
+    },
+    {
+        "file": "data\\run_strip4.png",
+        "hash": "b0463b0f3c65dfb21c1bc04300aa926bb15db440045ef9105a5c049620b09e1c",
+        "size": 386
+    },
+    {
+        "file": "data\\grass.png",
+        "hash": "9fad54558dcb0aa91859869c603e76fe362ae320e0c4b1e873266566cb0d73a0",
+        "size": 8500
+    },
+    {
+        "file": "data\\dirt.png",
+        "hash": "115ffc435f5ce95a5462c08708a158bac014ac4f6fd631af44e335b77a0a264b",
+        "size": 8607
+    },
+    {
+        "file": "maindist.js",
+        "hash": "0f30c6dc63949b68d1c738eac64c229ed8b4f48d811222be30af00870c80558d",
+        "size": 114774
+    },
+    {
+        "file": "index.html",
+        "hash": "6893d82ad855bba3b8454e9958120eebcda9b6a9f9cb0e6b9ec303fcc239e738",
+        "size": 2070
+    }
+]
