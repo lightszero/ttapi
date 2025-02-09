@@ -86,12 +86,12 @@ export class UI_Main extends QUI_Container {
         }
         console.log("update groups:" + groups);
         for (let i = 0; i < groups.length; i++) {
-            let txt = Resources.CreateGUI_Button("Group:" + groups[i]);
+            let txt = Resources.CreateGUI_Button("Group:" + groups[i],Color.White,0.75);
             txt.localRect.setHPosFill(16, 64);
             txt.localRect.setVPosByTopBorder(20, y);
             this.scroll.addChild(txt);
 
-            let bdel = Resources.CreateGUI_Button("del");
+            let bdel = Resources.CreateGUI_Button("del",new Color(1,0.3,0.3,1),0.75);
             bdel.localRect.setHPosByRightBorder(48, 16);
             //bdel.localRect.radioX1 = -1;
             //bdel.localRect.offsetX1 = -80;
@@ -104,7 +104,7 @@ export class UI_Main extends QUI_Container {
             y += 24;
         }
 
-        let btnNew = Resources.CreateGUI_Button("Create Group");
+        let btnNew = Resources.CreateGUI_Button("Create Group",new Color(1,1,0.3,1),0.75);
         btnNew.localRect.setHPosFill(16, 16);
         btnNew.localRect.setVPosByTopBorder(24, y);
         y += 24;

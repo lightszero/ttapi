@@ -3,6 +3,7 @@ import * as child_process from "child_process";
 import * as fs from "fs";
 import * as glob from "glob";
 import * as crypto from "crypto";
+import * as shelljs from "shelljs";
 console.log("packtool.");
 //print argv
 for (let i = 2; i < process.argv.length; i++) {
@@ -10,9 +11,10 @@ for (let i = 2; i < process.argv.length; i++) {
 }
 
 //run webpack
-console.log("webpack begin.");
-child_process.exec("npx webpack");
-console.log("webpack done.");
+//console.log("webpack begin.");
+//var result =shelljs.exec("npx webpack");
+//var result = child_process.execSync("npm run webpack");
+//console.log("webpack done."+result);
 
 //coll files
 console.log("collect files by packfile.json");
