@@ -9,7 +9,7 @@ export class UI_Main extends QUI_Container {
     }
     scroll: QUI_Panel_Scroll;
     InitUI(): void {
-        let label = Resources.CreateGUI_Label("主菜单");
+        let label = Resources.CreateGUI_Label("主菜单 02");
         this.addChild(label);
         label.localRect.setHPosByCenter(100);
         label.localRect.setVPosByTopBorder(24, 16);
