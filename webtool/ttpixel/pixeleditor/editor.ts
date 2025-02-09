@@ -24,7 +24,7 @@ export class EditorApp implements IUserLogic {
 
         //主要区域限制比例
         let root = new QUI_Container_AutoFill();
-        root.setAsp(9 / 16, 2 / 3);
+        root.setAsp(9 / 21, 2 / 2);
 
         this.layergui.GetCanvas().addChild(root);
 

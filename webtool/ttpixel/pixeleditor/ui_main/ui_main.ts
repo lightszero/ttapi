@@ -1,5 +1,5 @@
 import { tt } from "../../ttapi/ttapi.js";
-import { Color, QUI_Button, QUI_Container, QUI_HAlign, QUI_Panel_Scroll, Resources } from "../../ttlayer2/ttlayer2.js";
+import { Color, QUI_Button, QUI_Canvas, QUI_Container, QUI_HAlign, QUI_Panel_Scroll, Resources } from "../../ttlayer2/ttlayer2.js";
 
 export class UI_Main extends QUI_Container {
 
@@ -45,6 +45,10 @@ export class UI_Main extends QUI_Container {
         scroll.localRect.offsetY2 = -16;
 
         this.UpdateGroup();
+    }
+    OnUpdate(canvas: QUI_Canvas, delta: number): void {
+        this.scroll.panelWidth = this.scroll.getWorldRect().Width;
+        super.OnUpdate(canvas, delta);
     }
     async GetGroupNames(): Promise<string[]> {
         let gtxt = await tt.store.GetText("groupnames");
