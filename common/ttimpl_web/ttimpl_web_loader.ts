@@ -4,7 +4,9 @@ import { tt } from "../ttapi/ttapi.js";
 export namespace tt_impl {
   export class Loader implements tt.ILoader {
 
-
+    GetPathSplitChar(): string {
+      return "/";
+    }
     async LoadStringAsync(url: string): Promise<string> {
 
       let req = await fetch(url);

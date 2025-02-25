@@ -61,6 +61,7 @@ export namespace tt {
         data: Uint8Array = null;
     }
     export interface ILoader {
+        GetPathSplitChar():string;
         LoadStringAsync(name: string): Promise<string>;
         LoadBinaryAsync(name: string): Promise<ArrayBuffer>;
         LoadImageAsync(name: string): Promise<HTMLImageElement>;
