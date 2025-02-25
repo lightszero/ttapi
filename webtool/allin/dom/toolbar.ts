@@ -1,4 +1,4 @@
-import { IO } from "../../common/io.js";
+//import { IO } from "../../common/io.js";
 import { BaseElement, Picture } from "./dombase.js";
 
 export class Toolbar extends BaseElement {
@@ -59,9 +59,9 @@ export class Toolbar extends BaseElement {
         div.appendChild(img._root);
 
         let url = iconurl;
-        if (url.includes("://") == false) {
-            url = IO.GetPluginUrl(iconurl);
-        }
+        // if (url.includes("://") == false) {
+        //     url = IO.GetPluginUrl(iconurl);
+        // }
         img.setSrc(url);
         img._root.title = tips;
         img._root.onmousedown = () => {

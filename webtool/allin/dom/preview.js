@@ -1,222 +1,233 @@
-import { Color32 } from "../image/color.js";
-import { Canvas } from "./canvas.js";
-import { Panel } from "./dombase.js";
-import { RangeBar } from "./rangebar.js";
-export class Preview extends Panel {
-    getScale() {
-        return this._range.getValue();
-    }
-    constructor() {
-        super();
-        this.rectX = 0;
-        this.rectY = 0;
-        this.rectWidth = 100;
-        this.rectHeight = 100;
-        this.imgradio = 1;
-        this._inref = false;
-        this._bordercolor = new Color32(255, 255, 255, 255);
-        {
-            this.Style_Fill();
-            this.SetBorder(1);
-            this._panel = new Panel();
-            this._panel.SetBorder(1);
-            this._panel._root.style.position = "absolute";
-            this._panel._root.style.left = "0px";
-            this._panel._root.style.top = "0px";
-            this._panel._root.style.right = "0px";
-            this._panel._root.style.bottom = "auto";
-            this._panel._root.style.width = "auto";
-            this._panel._root.style.height = "auto";
-            this._panel._root.style.aspectRatio = "1/1";
-            this._root.appendChild(this._panel.getRoot());
-            let bar = this._range = new RangeBar();
-            bar._root.style.top = "auto";
-            bar._root.style.height = "24px";
-            this._root.appendChild(bar.getRoot());
-            bar.onchange = (v) => {
-                if (this.onChangeScale != null)
-                    this.onChangeScale(v);
-            };
-            // this._img = new Picture("");
-            //  this._canvas._root.style.width = "100%";
-            //  this._canvas._root.style.height = "100%";
-            //  this._canvas._root.style.backgroundColor = "#000";
-            //  this._canvas.Fill();
-            // this._img._root.onload = () => {
-            //     this.Refresh();
-            // }
-            // this._panel.AddChild(this._img);
-            this._canvas = new Canvas();
-            this._canvas.Style_Fill();
-            this._canvas._root.style.width = "100%";
-            this._canvas._root.style.height = "100%";
-            //this._canvas._root.style.backgroundColor = "#000";
-            this._canvas.RePaint = this.RePaint.bind(this);
-            this._panel.AddChild(this._canvas);
-            let mx, my;
-            let press = false;
-            let _elayer = this._canvas.getRoot();
-            _elayer.onmousedown = (e) => {
-                mx = e.clientX;
-                my = e.clientY;
-                press = true;
-            };
-            _elayer.onmousemove = (e) => {
-                if (press) {
-                    //处理点在红框之外
-                    let fh = _elayer.clientHeight;
-                    let scale = fh / this.imgheight;
-                    if (this.rectX < e.offsetX / scale - this.rectWidth)
-                        this.rectX = e.offsetX / scale - this.rectWidth;
-                    if (this.rectY < e.offsetY / scale - this.rectHeight)
-                        this.rectY = e.offsetY / scale - this.rectHeight;
-                    if (this.rectX > e.offsetX / scale)
-                        this.rectX = e.offsetX / scale;
-                    if (this.rectY > e.offsetY / scale)
-                        this.rectY = e.offsetY / scale;
-                    //移动红框
-                    this.rectX += e.movementX / scale;
-                    this.rectY += e.movementY / scale;
-                    //不让红框离开canvas
-                    if (this.rectX > this.imgwidth - this.rectWidth)
-                        this.rectX = this.imgwidth - this.rectWidth;
-                    if (this.rectY > this.imgheight - this.rectHeight)
-                        this.rectY = this.imgheight - this.rectHeight;
-                    if (this.rectX < 0)
-                        this.rectX = 0;
-                    if (this.rectY < 0)
-                        this.rectY = 0;
-                    this.Refresh();
-                }
-            };
-            window.addEventListener("mouseup", (e) => {
-                press = false;
-            });
-        }
-    }
-    SetImg(img) {
-        this.imgheight = img.getHeight();
-        this.imgwidth = img.getWidth();
-        this.imgradio = img.getWidth() / img.getHeight();
-        this._rt = img;
-        this.Refresh();
-        //this._img.setSrc(img.src);
-    }
-    UpdateImgSize() {
-        let img = this._rt;
-        console.log("update img size.");
-        this.imgheight = img.getHeight();
-        this.imgwidth = img.getWidth();
-        this.imgradio = img.getWidth() / img.getHeight();
-        let r = this._panel._root.clientWidth / this._panel._root.clientHeight;
-        let w = this._panel._root.clientWidth;
-        let h = this._panel._root.clientHeight;
-        let rimg = this.imgradio;
-        let fw = 0;
-        let fh = 0;
-        if (rimg < r) {
-            fh = h;
-            fw = h * rimg;
-            this._canvas._root.style.height = h + "px";
-            this._canvas._root.style.width = (h * rimg) + "px";
-            this._canvas._root.style.left = ((w - rimg * h) / 2) + "px";
-            this._canvas._root.style.top = "0px";
-            this._canvas._root.style.right = "auto";
-            this._canvas._root.style.bottom = "auto";
-            let c = this._canvas._root;
-            c.width = h * rimg;
-            c.height = h;
-        }
-        else {
-            fw = w;
-            fh = w / rimg;
-            this._canvas._root.style.width = w + "px";
-            this._canvas._root.style.height = (w / rimg) + "px";
-            this._canvas._root.style.left = "0px"; // ((w - rimg * h) / 2) + "px";
-            this._canvas._root.style.top = ((h - w / rimg) / 2) + "px";
-            this._canvas._root.style.right = "auto";
-            this._canvas._root.style.bottom = "auto";
-            let c = this._canvas._root;
-            c.width = w;
-            c.height = w / rimg;
-        }
-        this.Refresh();
-    }
-    ;
-    Refresh() {
-        this._canvas.Refresh();
-        //处理点在红框之外
-        if (this.rectX > this.imgwidth - this.rectWidth)
-            this.rectX = this.imgwidth - this.rectWidth;
-        if (this.rectY > this.imgheight - this.rectHeight)
-            this.rectY = this.imgheight - this.rectHeight;
-        if (this.rectX < 0)
-            this.rectX = 0;
-        if (this.rectY < 0)
-            this.rectY = 0;
-        //防事件递归
-        if (this._inref == true)
-            return;
-        if (this.onChange != null) {
-            this._inref = true;
-            this.onChange();
-            this._inref = false;
-        }
-    }
-    setBackColor(color) {
-        this._canvas.setBackColor(color);
-        //super.setBackColor(color);
-        let g = color.R / 255 * 0.4 + color.G / 255 * 0.5 + color.B / 255 * 0.1;
-        if (g < 0.6) {
-            this._bordercolor.R = 255;
-            this._bordercolor.G = 255;
-            this._bordercolor.B = 255;
-        }
-        else {
-            this._bordercolor.R = 0;
-            this._bordercolor.G = 0;
-            this._bordercolor.B = 0;
-        }
-        this.Refresh();
-    }
-    RePaint(c2d) {
-        this._canvas._c2d.imageSmoothingEnabled = false;
-        //refix imgsize
-        let r = this._panel._root.clientWidth / this._panel._root.clientHeight;
-        let w = this._panel._root.clientWidth;
-        let h = this._panel._root.clientHeight;
-        let rimg = this.imgradio;
-        let fw = 0;
-        let fh = 0;
-        if (rimg < r) {
-            fh = h;
-            fw = h * rimg;
-            this._canvas._root.style.height = h + "px";
-            this._canvas._root.style.width = (h * rimg) + "px";
-            this._canvas._root.style.left = ((w - rimg * h) / 2) + "px";
-            this._canvas._root.style.top = "0px";
-            this._canvas._root.style.right = "auto";
-            this._canvas._root.style.bottom = "auto";
-        }
-        else {
-            fw = w;
-            fh = w / rimg;
-            this._canvas._root.style.width = w + "px";
-            this._canvas._root.style.height = (w / rimg) + "px";
-            this._canvas._root.style.left = "0px"; // ((w - rimg * h) / 2) + "px";
-            this._canvas._root.style.top = ((h - w / rimg) / 2) + "px";
-            this._canvas._root.style.right = "auto";
-            this._canvas._root.style.bottom = "auto";
-        }
-        if (this._rt != null) {
-            let img = this._rt.getBitmap();
-            //let c = this._canvas._root as HTMLCanvasElement;
-            c2d.drawImage(img, 0, 0, img.width, img.height, 0, 0, fw, fh);
-        }
-        c2d.strokeStyle = this._bordercolor.toString();
-        let scale = fh / this.imgheight;
-        c2d.lineWidth = 4;
-        c2d.strokeRect(this.rectX * scale, this.rectY * scale, this.rectWidth * scale, this.rectHeight * scale);
-    }
-}
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHJldmlldy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInByZXZpZXcudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUFFLE9BQU8sRUFBRSxNQUFNLG1CQUFtQixDQUFDO0FBRzVDLE9BQU8sRUFBRSxNQUFNLEVBQUUsTUFBTSxhQUFhLENBQUM7QUFDckMsT0FBTyxFQUFFLEtBQUssRUFBVyxNQUFNLGNBQWMsQ0FBQztBQUM5QyxPQUFPLEVBQUUsUUFBUSxFQUFFLE1BQU0sZUFBZSxDQUFDO0FBR3pDLE1BQU0sT0FBTyxPQUFRLFNBQVEsS0FBSztJQVE5QixRQUFRO1FBQ0osT0FBTyxJQUFJLENBQUMsTUFBTSxDQUFDLFFBQVEsRUFBRSxDQUFDO0lBQ2xDLENBQUM7SUFHRDtRQUNJLEtBQUssRUFBRSxDQUFBO1FBVlgsVUFBSyxHQUFXLENBQUMsQ0FBQztRQUNsQixVQUFLLEdBQVcsQ0FBQyxDQUFDO1FBQ2xCLGNBQVMsR0FBVyxHQUFHLENBQUM7UUFDeEIsZUFBVSxHQUFXLEdBQUcsQ0FBQztRQW1HekIsYUFBUSxHQUFHLENBQUMsQ0FBQztRQXlETCxXQUFNLEdBQVksS0FBSyxDQUFDO1FBd0J4QixpQkFBWSxHQUFZLElBQUksT0FBTyxDQUFDLEdBQUcsRUFBRSxHQUFHLEVBQUUsR0FBRyxFQUFFLEdBQUcsQ0FBQyxDQUFDO1FBNUs1RCxDQUFDO1lBQ0csSUFBSSxDQUFDLFVBQVUsRUFBRSxDQUFDO1lBQ2xCLElBQUksQ0FBQyxTQUFTLENBQUMsQ0FBQyxDQUFDLENBQUM7WUFDbEIsSUFBSSxDQUFDLE1BQU0sR0FBRyxJQUFJLEtBQUssRUFBRSxDQUFDO1lBQzFCLElBQUksQ0FBQyxNQUFNLENBQUMsU0FBUyxDQUFDLENBQUMsQ0FBQyxDQUFDO1lBQ3pCLElBQUksQ0FBQyxNQUFNLENBQUMsS0FBSyxDQUFDLEtBQUssQ0FBQyxRQUFRLEdBQUcsVUFBVSxDQUFDO1lBQzlDLElBQUksQ0FBQyxNQUFNLENBQUMsS0FBSyxDQUFD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UUFDWCxJQUFJLElBQUksR0FBRyxDQUFDLEVBQUUsQ0FBQztZQUNYLEVBQUUsR0FBRyxDQUFDLENBQUM7WUFDUCxFQUFFLEdBQUcsQ0FBQyxHQUFHLElBQUksQ0FBQztZQUNkLElBQUksQ0FBQyxPQUFPLENBQUMsS0FBSyxDQUFDLEtBQUssQ0FBQyxNQUFNLEdBQUcsQ0FBQyxHQUFHLElBQUksQ0FBQztZQUMzQyxJQUFJLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsS0FBSyxHQUFHLENBQUMsQ0FBQyxHQUFHLElBQUksQ0FBQyxHQUFHLElBQUksQ0FBQztZQUNuRCxJQUFJLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsSUFBSSxHQUFHLENBQUMsQ0FBQyxDQUFDLEdBQUcsSUFBSSxHQUFHLENBQUMsQ0FBQyxHQUFHLENBQUMsQ0FBQyxHQUFHLElBQUksQ0FBQztZQUM1RCxJQUFJLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsR0FBRyxHQUFHLEtBQUssQ0FBQztZQUNyQyxJQUFJLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsS0FBSyxHQUFHLE1BQU0sQ0FBQTtZQUN2QyxJQUFJLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsTUFBTSxHQUFHLE1BQU0sQ0FBQTtRQUM1QyxDQUFDO2FBQ0ksQ0FBQztZQUNGLEVBQUUsR0FBRyxDQUFDLENBQUM7WUFDUCxFQUFFLEdBQUcsQ0FBQyxHQUFHLElBQUksQ0FBQztZQUNkLElBQUksQ0FBQyxPQUFPLENBQUMsS0FBSyxDQUFDLEtBQUssQ0FBQyxLQUFLLEdBQUcsQ0FBQyxHQUFHLElBQUksQ0FBQztZQUMxQyxJQUFJLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsTUFBTSxHQUFHLENBQUMsQ0FBQyxHQUFHLElBQUksQ0FBQyxHQUFHLElBQUksQ0FBQztZQUNwRCxJQUFJLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsSUFBSSxHQUFHLEtBQUssQ0FBQyxDQUFBLCtCQUErQjtZQUNyRSxJQUFJLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsR0FBRyxHQUFHLENBQUMsQ0FBQyxDQUFDLEdBQUcsQ0FBQyxHQUFHLElBQUksQ0FBQyxHQUFHLENBQUMsQ0FBQyxHQUFHLElBQUksQ0FBQztZQUMzRCxJQUFJLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsS0FBSyxHQUFHLE1BQU0sQ0FBQTtZQUN2QyxJQUFJLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsTUFBTSxHQUFHLE1BQU0sQ0FBQTtRQUM1QyxDQUFDO1FBQ0QsSUFBSSxJQUFJLENBQUMsR0FBRyxJQUFJLElBQUksRUFBRSxDQUFDO1lBQ25CLElBQUksR0FBRyxHQUFHLElBQUksQ0FBQyxHQUFHLENBQUMsU0FBUyxFQUFFLENBQUM7WUFDL0Isa0RBQWtEO1lBQ2xELEdBQUcsQ0FBQyxTQUFTLENBQUMsR0FBRyxFQUFFLENBQUMsRUFBRSxDQUFDLEVBQUUsR0FBRyxDQUFDLEtBQUssRUFBRSxHQUFHLENBQUMsTUFBTSxFQUFFLENBQUMsRUFBRSxDQUFDLEVBQUUsRUFBRSxFQUFFLEVBQUUsQ0FBQyxDQUFDO1FBQ2xFLENBQUM7UUFDRCxHQUFHLENBQUMsV0FBVyxHQUFHLElBQUksQ0FBQyxZQUFZLENBQUMsUUFBUSxFQUFFLENBQUM7UUFFL0MsSUFBSSxLQUFLLEdBQUcsRUFBRSxHQUFHLElBQUksQ0FBQyxTQUFTLENBQUM7UUFDaEMsR0FBRyxDQUFDLFNBQVMsR0FBRyxDQUFDLENBQUM7UUFDbEIsR0FBRyxDQUFDLFVBQVUsQ0FBQyxJQUFJLENBQUMsS0FBSyxHQUFHLEtBQUssRUFBRSxJQUFJLENBQUMsS0FBSyxHQUFHLEtBQUssRUFBRSxJQUFJLENBQUMsU0FBUyxHQUFHLEtBQUssRUFBRSxJQUFJLENBQUMsVUFBVSxHQUFHLEtBQUssQ0FBQyxDQUFDO0lBQzVHLENBQUM7Q0FDSiJ9
+"use strict";
+// import { Color32 } from "../image/color.js";
+// import { Target2D } from "../image/image.js";
+// import { RectRange } from "../image/rect.js";
+// import { Canvas } from "./canvas.js";
+// import { Panel, Picture } from "./dombase.js";
+// import { RangeBar } from "./rangebar.js";
+// export class Preview extends Panel {
+//     private _rt: Target2D;
+//     private _panel: Panel;
+//     _range: RangeBar;
+//     rectX: number = 0;
+//     rectY: number = 0;
+//     rectWidth: number = 100;
+//     rectHeight: number = 100;
+//     getScale(): number {
+//         return this._range.getValue();
+//     }
+//     //showrect: RectRange = new RectRange(0, 0, 100, 100);
+//     private _canvas: Canvas;
+//     constructor() {
+//         super()
+//         {
+//             this.Style_Fill();
+//             this.SetBorder(1);
+//             this._panel = new Panel();
+//             this._panel.SetBorder(1);
+//             this._panel._root.style.position = "absolute";
+//             this._panel._root.style.left = "0px";
+//             this._panel._root.style.top = "0px";
+//             this._panel._root.style.right = "0px";
+//             this._panel._root.style.bottom = "auto";
+//             this._panel._root.style.width = "auto";
+//             this._panel._root.style.height = "auto";
+//             this._panel._root.style.aspectRatio = "1/1";
+//             this._root.appendChild(this._panel.getRoot());
+//             let bar = this._range = new RangeBar();
+//             bar._root.style.top = "auto";
+//             bar._root.style.height = "24px";
+//             this._root.appendChild(bar.getRoot());
+//             bar.onchange = (v) => {
+//                 if (this.onChangeScale != null)
+//                     this.onChangeScale(v);
+//             }
+//             // this._img = new Picture("");
+//             //  this._canvas._root.style.width = "100%";
+//             //  this._canvas._root.style.height = "100%";
+//             //  this._canvas._root.style.backgroundColor = "#000";
+//             //  this._canvas.Fill();
+//             // this._img._root.onload = () => {
+//             //     this.Refresh();
+//             // }
+//             // this._panel.AddChild(this._img);
+//             this._canvas = new Canvas();
+//             this._canvas.Style_Fill();
+//             this._canvas._root.style.width = "100%";
+//             this._canvas._root.style.height = "100%";
+//             //this._canvas._root.style.backgroundColor = "#000";
+//             this._canvas.RePaint = this.RePaint.bind(this);
+//             this._panel.AddChild(this._canvas);
+//             let mx, my;
+//             let press = false;
+//             let _elayer = this._canvas.getRoot();
+//             _elayer.onmousedown = (e) => {
+//                 mx = e.clientX;
+//                 my = e.clientY;
+//                 press = true;
+//             }
+//             _elayer.onmousemove = (e) => {
+//                 if (press) {
+//                     //处理点在红框之外
+//                     let fh = _elayer.clientHeight;
+//                     let scale = fh / this.imgheight;
+//                     if (this.rectX < e.offsetX / scale - this.rectWidth)
+//                         this.rectX = e.offsetX / scale - this.rectWidth
+//                     if (this.rectY < e.offsetY / scale - this.rectHeight)
+//                         this.rectY = e.offsetY / scale - this.rectHeight
+//                     if (this.rectX > e.offsetX / scale)
+//                         this.rectX = e.offsetX / scale;
+//                     if (this.rectY > e.offsetY / scale)
+//                         this.rectY = e.offsetY / scale;
+//                     //移动红框
+//                     this.rectX += e.movementX / scale;
+//                     this.rectY += e.movementY / scale;
+//                     //不让红框离开canvas
+//                     if (this.rectX > this.imgwidth - this.rectWidth)
+//                         this.rectX = this.imgwidth - this.rectWidth
+//                     if (this.rectY > this.imgheight - this.rectHeight)
+//                         this.rectY = this.imgheight - this.rectHeight
+//                     if (this.rectX < 0)
+//                         this.rectX = 0;
+//                     if (this.rectY < 0)
+//                         this.rectY = 0;
+//                     this.Refresh();
+//                 }
+//             }
+//             window.addEventListener("mouseup", (e) => {
+//                 press = false;
+//             });
+//         }
+//     }
+//     imgradio = 1;
+//     imgheight: number;
+//     imgwidth: number;
+//     SetImg(img: Target2D): void {
+//         this.imgheight = img.getHeight();
+//         this.imgwidth = img.getWidth();
+//         this.imgradio = img.getWidth() / img.getHeight();
+//         this._rt = img;
+//         this.Refresh();
+//         //this._img.setSrc(img.src);
+//     }
+//     UpdateImgSize(): void {
+//         let img = this._rt;
+//         console.log("update img size.");
+//         this.imgheight = img.getHeight();
+//         this.imgwidth = img.getWidth();
+//         this.imgradio = img.getWidth() / img.getHeight();
+//         let r = this._panel._root.clientWidth / this._panel._root.clientHeight;
+//         let w = this._panel._root.clientWidth;
+//         let h = this._panel._root.clientHeight
+//         let rimg = this.imgradio;
+//         let fw = 0;
+//         let fh = 0;
+//         if (rimg < r) {
+//             fh = h;
+//             fw = h * rimg;
+//             this._canvas._root.style.height = h + "px";
+//             this._canvas._root.style.width = (h * rimg) + "px";
+//             this._canvas._root.style.left = ((w - rimg * h) / 2) + "px";
+//             this._canvas._root.style.top = "0px";
+//             this._canvas._root.style.right = "auto"
+//             this._canvas._root.style.bottom = "auto"
+//             let c = this._canvas._root as HTMLCanvasElement;
+//             c.width = h * rimg;
+//             c.height = h;
+//         }
+//         else {
+//             fw = w;
+//             fh = w / rimg;
+//             this._canvas._root.style.width = w + "px";
+//             this._canvas._root.style.height = (w / rimg) + "px";
+//             this._canvas._root.style.left = "0px";// ((w - rimg * h) / 2) + "px";
+//             this._canvas._root.style.top = ((h - w / rimg) / 2) + "px";
+//             this._canvas._root.style.right = "auto"
+//             this._canvas._root.style.bottom = "auto"
+//             let c = this._canvas._root as HTMLCanvasElement;
+//             c.width = w;
+//             c.height = w / rimg;
+//         }
+//         this.Refresh();
+//     }
+//     onChange: () => void;
+//     onChangeScale: (v: number) => void;
+//     private _inref: boolean = false;;
+//     Refresh() {
+//         this._canvas.Refresh();
+//         //处理点在红框之外
+//         if (this.rectX > this.imgwidth - this.rectWidth)
+//             this.rectX = this.imgwidth - this.rectWidth
+//         if (this.rectY > this.imgheight - this.rectHeight)
+//             this.rectY = this.imgheight - this.rectHeight
+//         if (this.rectX < 0)
+//             this.rectX = 0;
+//         if (this.rectY < 0)
+//             this.rectY = 0;
+//         //防事件递归
+//         if (this._inref == true)
+//             return;
+//         if (this.onChange != null) {
+//             this._inref = true;
+//             this.onChange();
+//             this._inref = false;
+//         }
+//     }
+//     private _bordercolor: Color32 = new Color32(255, 255, 255, 255);
+//     setBackColor(color: Color32): void {
+//         this._canvas.setBackColor(color);
+//         //super.setBackColor(color);
+//         let g = color.R / 255 * 0.4 + color.G / 255 * 0.5 + color.B / 255 * 0.1;
+//         if (g < 0.6) {
+//             this._bordercolor.R = 255
+//             this._bordercolor.G = 255
+//             this._bordercolor.B = 255
+//         }
+//         else {
+//             this._bordercolor.R = 0
+//             this._bordercolor.G = 0
+//             this._bordercolor.B = 0
+//         }
+//         this.Refresh();
+//     }
+//     RePaint(c2d: CanvasRenderingContext2D) {
+//         this._canvas._c2d.imageSmoothingEnabled = false;
+//         //refix imgsize
+//         let r = this._panel._root.clientWidth / this._panel._root.clientHeight;
+//         let w = this._panel._root.clientWidth;
+//         let h = this._panel._root.clientHeight
+//         let rimg = this.imgradio;
+//         let fw = 0;
+//         let fh = 0;
+//         if (rimg < r) {
+//             fh = h;
+//             fw = h * rimg;
+//             this._canvas._root.style.height = h + "px";
+//             this._canvas._root.style.width = (h * rimg) + "px";
+//             this._canvas._root.style.left = ((w - rimg * h) / 2) + "px";
+//             this._canvas._root.style.top = "0px";
+//             this._canvas._root.style.right = "auto"
+//             this._canvas._root.style.bottom = "auto"
+//         }
+//         else {
+//             fw = w;
+//             fh = w / rimg;
+//             this._canvas._root.style.width = w + "px";
+//             this._canvas._root.style.height = (w / rimg) + "px";
+//             this._canvas._root.style.left = "0px";// ((w - rimg * h) / 2) + "px";
+//             this._canvas._root.style.top = ((h - w / rimg) / 2) + "px";
+//             this._canvas._root.style.right = "auto"
+//             this._canvas._root.style.bottom = "auto"
+//         }
+//         if (this._rt != null) {
+//             let img = this._rt.getBitmap();
+//             //let c = this._canvas._root as HTMLCanvasElement;
+//             c2d.drawImage(img, 0, 0, img.width, img.height, 0, 0, fw, fh);
+//         }
+//         c2d.strokeStyle = this._bordercolor.toString();
+//         let scale = fh / this.imgheight;
+//         c2d.lineWidth = 4;
+//         c2d.strokeRect(this.rectX * scale, this.rectY * scale, this.rectWidth * scale, this.rectHeight * scale);
+//     }
+// }
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHJldmlldy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInByZXZpZXcudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBLCtDQUErQztBQUMvQyxnREFBZ0Q7QUFDaEQsZ0RBQWdEO0FBQ2hELHdDQUF3QztBQUN4QyxpREFBaUQ7QUFDakQsNENBQTRDO0FBRzVDLHVDQUF1QztBQUN2Qyw2QkFBNkI7QUFDN0IsNkJBQTZCO0FBQzdCLHdCQUF3QjtBQUN4Qix5QkFBeUI7QUFDekIseUJBQXlCO0FBQ3pCLCtCQUErQjtBQUMvQixnQ0FBZ0M7QUFDaEMsMkJBQTJCO0FBQzNCLHlDQUF5QztBQUN6QyxRQUFRO0FBQ1IsNkRBQTZEO0FBQzdELCtCQUErQjtBQUMvQixzQkFBc0I7QUFDdEIsa0JBQWtCO0FBQ2xCLFlBQVk7QUFDWixpQ0FBaUM7QUFDakMsaUNBQWlDO0FBQ2pDLHlDQUF5QztBQUN6Qyx3Q0FBd0M7QUFDeEMsNkRBQTZEO0FBQzdELG9EQUFvRDtBQUNwRCxtREFBbUQ7QUFDbkQscURBQXFEO0FBQ3JELHVEQUF1RDtBQUN2RCxzREFBc0Q7QUFDdEQsdURBQXVEO0FBQ3ZELDJEQUEyRDtBQUczRCw2REFBNkQ7QUFHN0Qsc0RBQXNEO0FBQ3RELDRDQUE0QztBQUM1QywrQ0FBK0M7QUFDL0MscURBQXFEO0FBQ3JELHNDQUFzQztBQUN0QyxrREFBa0Q7QUFDbEQsNkNBQTZDO0FBQzdDLGdCQUFnQjtBQUVoQiw4Q0FBOEM7QUFDOUMsMkRBQTJEO0FBQzNELDREQUE0RDtBQUM1RCxxRUFBcUU7QUFDckUsdUNBQXVDO0FBQ3ZDLGtEQUFrRDtBQUNsRCxxQ0FBcUM7QUFDckMsbUJBQW1CO0FBQ25CLGtEQUFrRDtBQUVsRCwyQ0FBMkM7QUFFM0MseUNBQXlDO0FBQ3pDLHVEQUF1RDtBQUN2RCx3REFBd0Q7QUFDeEQsbUVBQW1FO0FBQ25FLDhEQUE4RDtBQUM5RCxrREFBa0Q7QUFFbEQsMEJBQTBCO0FBQzFCLGlDQUFpQztBQUNqQyxvREFBb0Q7QUFD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

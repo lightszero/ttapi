@@ -1,6 +1,49 @@
-import { Color32 } from "../image/color.js";
+//import { Color32 } from "../image/color.js";
 
 
+
+export class Color32 {
+    private values: Uint8ClampedArray = new Uint8ClampedArray(4);
+    constructor(r: number, g: number, b: number, a: number = 255) {
+        this.values[0] = r;
+        this.values[1] = g;
+        this.values[2] = b;
+        this.values[3] = a;
+    }
+    get R(): number {
+        return this.values[0];
+    }
+    get G(): number {
+        return this.values[1];
+    }
+    get B(): number {
+        return this.values[2];
+    }
+    get A(): number {
+        return this.values[3];
+    }
+    set R(v: number) {
+        this.values[0] = v;
+    }
+    set G(v: number) {
+        this.values[1] = v;
+    }
+    set B(v: number) {
+        this.values[2] = v;
+    }
+    set A(v: number) {
+        this.values[3] = v;
+    }
+    static Equal(c: Color32, c2: Color32) {
+        return (c.R == c2.R && c.G == c2.G && c.B == c2.B && c.A == c2.A)
+    }
+    toString(): string {
+        return `rgba(${this.R},${this.G},${this.B},${this.A})`;
+    }
+    Clone(): Color32 {
+        return new Color32(this.R, this.G, this.B, this.A);
+    }
+}
 export interface IElement {
     getRoot(): HTMLElement;
     AddChild(elem: IElement): void
@@ -228,7 +271,7 @@ export class Toggle extends BaseElement {
     }
 }
 export class Button extends BaseElement {
-    constructor(title: string, click: (() => void) = null) {
+    constructor(title: string, click: (() => void)|null = null) {
         super()
         let btn = this._root = document.createElement("button");
         btn.innerText = title;
@@ -237,7 +280,7 @@ export class Button extends BaseElement {
     SetText(value: string) {
         this._root.textContent = value;
     }
-    SetClickEvent(click: () => void) {
+    SetClickEvent(click:( () => void)|null) {
         (this._root as HTMLButtonElement).onclick = click;
     }
 }

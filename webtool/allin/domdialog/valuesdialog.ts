@@ -1,7 +1,10 @@
-import { IO } from "../../common/io.js";
+//import { IO } from "../../common/io.js";
 import { Dir2 } from "../dom/dir2.js";
 import { BaseElement, Button, Label, Panel, TextBox, Toggle } from "../dom/dombase.js";
 
+async function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 export abstract class BaseDialog<T> {
 
     constructor() {
@@ -28,12 +31,15 @@ export abstract class BaseDialog<T> {
     protected _panel: Panel;
     protected _done: boolean; //给他赋值就行
     _value: T;
+
+
+
     async Show(): Promise<T> {
         this._done = false;
         document.body.appendChild(this._divBack);
 
         while (this._done == false) {
-            await IO.sleep(1);
+            await sleep(1);
         }
 
         this._divBack.remove();

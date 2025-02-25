@@ -1,73 +1,75 @@
-import { Color32, Palette as Pal } from "../image/color.js";
-import { BaseElement } from "./dombase.js";
-export class PalettePanel extends BaseElement {
-    constructor() {
-        super();
-        this.blocksize = 20;
-        //blockcount: number = 80;
-        this.colors = [];
-        this.pickindex = 1;
-        this.pickindexhide = 3;
-        this._root = document.createElement("div");
-        this._root.style.fontSize = "0";
-        this.Style_Fill();
-        this.InitDefPal();
-        while (this.colors.length < 80) {
-            this.colors.push(new Color32(0, 0, 0, 255));
-        }
-        this.Update();
-    }
-    InitDefPal() {
-        let pal = Pal.getNesPal();
-        for (var i = 0; i < pal.length; i++) {
-            this.colors.push(pal[i].Clone());
-        }
-        // if (this.blockcount < this.colors.length)
-        //     this.blockcount = this.colors.length;
-        this.colors[0].A = 0;
-        this.Update();
-    }
-    Update() {
-        let blockcount = this.colors.length;
-        if (this.pickindex >= blockcount)
-            this.pickindex = 0;
-        //数量准备
-        while (this._root.childElementCount < blockcount) {
-            let div = document.createElement("div");
-            div.style.display = "inline-block";
-            div.style.width = this.blocksize + "px";
-            div.style.height = this.blocksize + "px";
-            div.style.border = "2px solid #ccc";
-            div.style.position = "relative";
-            this._root.appendChild(div);
-        }
-        while (this._root.childElementCount > blockcount) {
-            this._root.children[this._root.childElementCount - 1].remove();
-        }
-        for (var i = 0; i < blockcount; i++) {
-            let div = this._root.children[i];
-            div.title = i == 0 ? "透明色/擦除" : this.colors[i].toString();
-            div.style.backgroundColor = this.colors[i].toString();
-            if (this.pickindex == i) {
-                div.style.border = "2px solid #fff";
-            }
-            else {
-                div.style.border = "2px solid #000";
-            }
-            let index = i;
-            div.onmousedown = (e) => {
-                if (e.ctrlKey) {
-                    this.pickindexhide = index;
-                }
-                else if (e.button == 0) {
-                    this.pickindex = index;
-                    this.Update();
-                }
-                if (this.onPick != null) {
-                    this.onPick(this.pickindex, this.pickindexhide);
-                }
-            };
-        }
-    }
-}
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGFsZXR0ZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInBhbGV0dGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUFFLE9BQU8sRUFBRSxPQUFPLElBQUksR0FBRyxFQUFFLE1BQU0sbUJBQW1CLENBQUM7QUFDNUQsT0FBTyxFQUFFLFdBQVcsRUFBRSxNQUFNLGNBQWMsQ0FBQztBQUUzQyxNQUFNLE9BQU8sWUFBYSxTQUFRLFdBQVc7SUFPekM7UUFDSSxLQUFLLEVBQUUsQ0FBQztRQVBaLGNBQVMsR0FBVyxFQUFFLENBQUM7UUFDdkIsMEJBQTBCO1FBQzFCLFdBQU0sR0FBYyxFQUFFLENBQUM7UUFDdkIsY0FBUyxHQUFXLENBQUMsQ0FBQztRQUN0QixrQkFBYSxHQUFXLENBQUMsQ0FBQztRQUl0QixJQUFJLENBQUMsS0FBSyxHQUFHLFFBQVEsQ0FBQyxhQUFhLENBQUMsS0FBSyxDQUFDLENBQUM7UUFDM0MsSUFBSSxDQUFDLEtBQUssQ0FBQyxLQUFLLENBQUMsUUFBUSxHQUFHLEdBQUcsQ0FBQztRQUNoQyxJQUFJLENBQUMsVUFBVSxFQUFFLENBQUM7UUFDbEIsSUFBSSxDQUFDLFVBQVUsRUFBRSxDQUFDO1FBQ2xCLE9BQU8sSUFBSSxDQUFDLE1BQU0sQ0FBQyxNQUFNLEdBQUcsRUFBRSxFQUFFLENBQUM7WUFDN0IsSUFBSSxDQUFDLE1BQU0sQ0FBQyxJQUFJLENBQUMsSUFBSSxPQUFPLENBQUMsQ0FBQyxFQUFFLENBQUMsRUFBRSxDQUFDLEVBQUUsR0FBRyxDQUFDLENBQUMsQ0FBQztRQUNoRCxDQUFDO1FBQ0QsSUFBSSxDQUFDLE1BQU0sRUFBRSxDQUFDO0lBQ2xCLENBQUM7SUFFRCxVQUFVO1FBQ04sSUFBSSxHQUFHLEdBQUcsR0FBRyxDQUFDLFNBQVMsRUFBRSxDQUFDO1FBSTFCLEtBQUssSUFBSSxDQUFDLEdBQUcsQ0FBQyxFQUFFLENBQUMsR0FBRyxHQUFHLENBQUMsTUFBTSxFQUFFLENBQUMsRUFBRSxFQUFFLENB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
+"use strict";
+// import { Color32, Palette as Pal } from "../image/color.js";
+// import { BaseElement } from "./dombase.js";
+// export class PalettePanel extends BaseElement {
+//     blocksize: number = 20;
+//     //blockcount: number = 80;
+//     colors: Color32[] = [];
+//     pickindex: number = 1;
+//     pickindexhide: number = 3;
+//     onPick: (index: number, indexhide: number) => void;
+//     constructor() {
+//         super();
+//         this._root = document.createElement("div");
+//         this._root.style.fontSize = "0";
+//         this.Style_Fill();
+//         this.InitDefPal();
+//         while (this.colors.length < 80) {
+//             this.colors.push(new Color32(0, 0, 0, 255));
+//         }
+//         this.Update();
+//     }
+//     InitDefPal(): void {
+//         let pal = Pal.getNesPal();
+//         for (var i = 0; i < pal.length; i++) {
+//             this.colors.push(pal[i].Clone());
+//         }
+//         // if (this.blockcount < this.colors.length)
+//         //     this.blockcount = this.colors.length;
+//         this.colors[0].A = 0;
+//         this.Update();
+//     }
+//     Update(): void {
+//         let blockcount = this.colors.length;
+//         if (this.pickindex >= blockcount)
+//             this.pickindex = 0;
+//         //数量准备
+//         while (this._root.childElementCount < blockcount) {
+//             let div = document.createElement("div");
+//             div.style.display = "inline-block";
+//             div.style.width = this.blocksize + "px";
+//             div.style.height = this.blocksize + "px";
+//             div.style.border = "2px solid #ccc";
+//             div.style.position = "relative";
+//             this._root.appendChild(div);
+//         }
+//         while (this._root.childElementCount > blockcount) {
+//             this._root.children[this._root.childElementCount - 1].remove();
+//         }
+//         for (var i = 0; i < blockcount; i++) {
+//             let div = this._root.children[i] as HTMLElement;
+//             div.title = i == 0 ? "透明色/擦除" : this.colors[i].toString();
+//             div.style.backgroundColor = this.colors[i].toString();
+//             if (this.pickindex == i) {
+//                 div.style.border = "2px solid #fff";
+//             }
+//             else {
+//                 div.style.border = "2px solid #000";
+//             }
+//             let index = i;
+//             div.onmousedown = (e) => {
+//                 if (e.ctrlKey) {
+//                     this.pickindexhide = index;
+//                 }
+//                 else if (e.button == 0) {
+//                     this.pickindex = index;
+//                     this.Update();
+//                 }
+//                 if (this.onPick != null) {
+//                     this.onPick(this.pickindex, this.pickindexhide);
+//                 }
+//             }
+//         }
+//     }
+// }
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGFsZXR0ZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInBhbGV0dGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IjtBQUFBLCtEQUErRDtBQUMvRCw4Q0FBOEM7QUFFOUMsa0RBQWtEO0FBQ2xELDhCQUE4QjtBQUM5QixpQ0FBaUM7QUFDakMsOEJBQThCO0FBQzlCLDZCQUE2QjtBQUM3QixpQ0FBaUM7QUFDakMsMERBQTBEO0FBQzFELHNCQUFzQjtBQUN0QixtQkFBbUI7QUFDbkIsc0RBQXNEO0FBQ3RELDJDQUEyQztBQUMzQyw2QkFBNkI7QUFDN0IsNkJBQTZCO0FBQzdCLDRDQUE0QztBQUM1QywyREFBMkQ7QUFDM0QsWUFBWTtBQUNaLHlCQUF5QjtBQUN6QixRQUFRO0FBRVIsMkJBQTJCO0FBQzNCLHFDQUFxQztBQUlyQyxpREFBaUQ7QUFDakQsZ0RBQWdEO0FBQ2hELFlBQVk7QUFDWix1REFBdUQ7QUFDdkQsdURBQXVEO0FBQ3ZELGdDQUFnQztBQUNoQyx5QkFBeUI7QUFDekIsUUFBUTtBQUNSLHVCQUF1QjtBQUN2QiwrQ0FBK0M7QUFDL0MsNENBQTRDO0FBQzVDLGtDQUFrQztBQUVsQyxpQkFBaUI7QUFFakIsOERBQThEO0FBQzlELHVEQUF1RDtBQUN2RCxrREFBa0Q7QUFDbEQsdURBQXVEO0FBQ3ZELHdEQUF3RDtBQUN4RCxtREFBbUQ7QUFDbkQsK0NBQStDO0FBQy9DLDJDQUEyQztBQUMzQyxZQUFZO0FBQ1osOERBQThEO0FBQzlELDhFQUE4RTtBQUM5RSxZQUFZO0FBRVosaURBQWlEO0FBQ2pELCtEQUErRDtBQUMvRCx5RUFBeUU7QUFDekUscUVBQXFFO0FBR3JFLHlDQUF5QztBQUN6Qyx1REFBdUQ7QUFDdkQsZ0JBQWdCO0FBQ2hCLHFCQUFxQjtBQUNyQix1REFBdUQ7QUFDdkQsZ0JBQWdCO0FBQ2hCLDZCQUE2QjtBQUM3Qix5Q0FBeUM7QUFDekMsbUNBQW1DO0FBQ25DLGtEQUFrRDtBQUNsRCxvQkFBb0I7QUFDcEIsNENBQTRDO0FBQzVDLDhDQUE4QztBQUU5QyxxQ0FBcUM7QUFDckMsb0JBQW9CO0FBRXBCLDZDQUE2QztBQUM3Qyx1RUFBdUU7QUFDdkUsb0JBQW9CO0FBQ3BCLGdCQUFnQjtBQUVoQixZQUFZO0FBQ1osUUFBUTtBQUNSLElBQUkifQ==

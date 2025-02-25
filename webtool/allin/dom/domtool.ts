@@ -4,11 +4,11 @@ export * from "./splitter.js";
 export * from "./group.js";
 export * from "./canvas.js";
 export * from "./canvasraw.js";
-export * from "./preview.js";
-export * from "./palette.js"
+//export * from "./preview.js";
+//export * from "./palette.js"
 export * from "./toolbar.js"
 export * from "./menu.js"
-export * from "./palrgb.js"
+//export * from "./palrgb.js"
 
 
 import { Button, Label, Panel, Screen, TextBox, Toggle } from "./dombase.js";
@@ -35,8 +35,8 @@ export class DomTool {
         document.body.style.userSelect = "none";
         window.addEventListener('mousewheel', function (e) {
             e = e || window.event;
-            if (((e as any).wheelDelta && (event as any).ctrlKey) || (e as any).detail) {
-                event.preventDefault();
+            if (((e as any).wheelDelta && (e as any).ctrlKey) || (e as any).detail) {
+                e.preventDefault();
             }
         }, { capture: false, passive: false });
         window.addEventListener('keydown', function (event) {
@@ -86,7 +86,7 @@ export class DomTool {
         this.screen.AddChild(text);
         return text;
     }
-    static AddButton(text: string, onclick: () => void = null): Button {
+    static AddButton(text: string, onclick: (() => void)|null = null): Button {
 
         let btn = new Button(text);
         btn.SetClickEvent(onclick);
