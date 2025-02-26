@@ -87,6 +87,8 @@ export class Test_TTPack implements IState<Navigator<GContext>> {
         this.nav.GetContextObj().TopUI2Top();
     }
 
+    aniid: number[] = [];
+    aniinst = new ElementInst();
     AddSprites(): void {
 
         this.canvaslayer = new DrawLayer(DrawLayerTag.Main);
@@ -97,27 +99,50 @@ export class Test_TTPack implements IState<Navigator<GContext>> {
 
         let s = Resources.GetPackElement().GetElementByName("dot1");
         let s2 = Resources.GetRoundBlock();
+        for (var i = 0; i < 6; i++) {
+            let aas = Resources.GetPackElement().GetElementByName("pw6_" + i);
+
+            this.aniid.push(aas.index);
+        }
+        this.aniinst.pos = new Vector3(0, 0, 0);
+        this.aniinst.rotate = 0;
+        this.aniinst.scale = new Vector2(2, 2);
+        this.aniinst.color = new Color(1, 1, 1, 1.0);
 
         this.render.SetPackElement(Resources.GetPackElement());
 
-        for (var i = 0; i < 1024 * 50; i++) {
+        for (var i = 0; i < 5; i++) {
             let inst = new ElementInst();
-            inst.pos = new Vector3(Math.random() * 400 - 200, Math.random() * 400 - 200, 0);
-            inst.rotate = Math.random() * Math.PI;
-            inst.scale = new Vector2(1, 1);
+            inst.pos = new Vector3(i * 50, 0, 0);
+            inst.rotate = 0;
+            inst.scale = new Vector2(2, 2);
             inst.instid = i % 2 == 0 ? s.index : s2.index;
 
-            inst.color = new Color(Math.random(), Math.random(), Math.random(), Math.random());
-            this.render.AddElementInst(inst);
-            this.inst.push(inst);
-        }
+            inst.color = new Color(1, Math.random(), 1, 1.0);
 
+            this.inst.push(inst);
+            this.render.AddElementInst(this.inst[i]);
+        }
+        console.log("int count =" + this.inst.length);
 
     }
+    anicurid: number = 0;
     OnUpdate(delta: number): void {
-        for (var i = 0; i < this.inst.length; i++) {
-            this.inst[i].rotate += delta * Math.PI;
-            this.render.WriteElementInst(this.inst[i], i);
+        if (this.render != null) {
+            this.render.ClearElementInst();
+
+
+            for (var i = 0; i < this.inst.length; i++) {
+                this.inst[i].rotate += delta * Math.PI;
+                this.render.AddElementInst(this.inst[i]);
+            }
+
+            this.anicurid += delta * 8;
+            if (this.anicurid > 6.0)
+                this.anicurid -= 6.0;
+
+            this.aniinst.instid = this.aniid[(this.anicurid | 0) % 6];
+            this.render.AddElementInst(this.aniinst);
         }
     }
     OnExit(): void {

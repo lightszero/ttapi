@@ -352,11 +352,12 @@ export class Mesh {
         mesh.Apply(gl);
         mat.Apply(gl);
 
+        //这里instancecount 要乘以定点数，就很迷惑
         if (mesh._ebo == null) {
-            gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.vertexcount[0], mesh.instancecount);
+            gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.vertexcount[0], mesh.vertexcount[0] * mesh.instancecount);
         }
         else {
-            gl.drawElementsInstanced(gl.TRIANGLES, mesh.indexcount, gl.UNSIGNED_SHORT, gl.ZERO, mesh.instancecount);
+            gl.drawElementsInstanced(gl.TRIANGLES, mesh.indexcount, gl.UNSIGNED_SHORT, gl.ZERO, mesh.vertexcount[0] * mesh.instancecount);
         }
     }
 
