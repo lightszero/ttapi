@@ -10,5 +10,22 @@
         "pw6_3":"ani/pw6_sp_003_000.png",
         "pw6_4":"ani/pw6_sp_004_000.png",
         "pw6_5":"ani/pw6_sp_005_000.png"
+    },
+    "anis":
+    {
+        "ani1":{
+            "fps":30,
+            "framecount":30,
+            "loop":true,
+            "frames":[
+                {"frameid":0,"pics":["pw6_0,0,0,2,2,0"]},
+                {"frameid":5,"pics":["pw6_1,0,0,2,2,0"]},
+                {"frameid":10,"pics":["pw6_2,0,0,2,2,0"]},
+                {"frameid":15,"pics":["pw6_3,0,0,2,2,0"]},
+                {"frameid":20,"pics":["pw6_4,0,0,2,2,0"]},
+                {"frameid":25,"pics":["pw6_5,0,0,2,2,0"]}
+            ]
+
+        }
     }
 }

@@ -97,6 +97,7 @@ export class TTPicData {
 export class TTAni {
     constructor(ani: TTJsonAni) {
         this.fps = ani.fps;
+        this.loop = ani.loop;
         if (this.fps == undefined)
             this.fps = 30;
 
@@ -116,6 +117,7 @@ export class TTAni {
             }
             else {
                 f.refframe = -1;
+                lastid = i;
                 f.pics = [];
                 //name,x,y[,scalex,scaley,rotate]
                 for (let j = 0; j < finfo.pics.length; j++) {
@@ -130,6 +132,7 @@ export class TTAni {
                         p.scaleY = parseInt(pwords[4]);
                     if (pwords.length > 5)
                         p.rotate = parseInt(pwords[5]);
+                    f.pics.push(p);
                 }
             }
             this.frame.push(f);
@@ -137,6 +140,7 @@ export class TTAni {
     }
     frame: TTAniFrame[] = [];
     fps: number;
+    loop: boolean;
 }
 export class TTAniFrame {
     refframe: number = -1;//是否引用另一个引用
@@ -144,7 +148,7 @@ export class TTAniFrame {
 }
 export class TTAniPicInfo {
     name: string = "";
-    cacheobj: object = null;
+    cacheobj: any = null;
     x: number = 0;
     y: number = 0;
     scaleX: number = 1;
@@ -226,7 +230,7 @@ export class TTPackage {
         return null;
     }
     GetAni(name: string, searched: TTPackage[] = null): TTAni {
-        if (this.pics[name] != undefined)
+        if (this.anis[name] != undefined)
             return this.anis[name];
 
         //避免递归
