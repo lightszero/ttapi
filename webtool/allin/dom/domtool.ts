@@ -68,40 +68,9 @@ export class DomTool {
         this.screen = new Screen();
     }
 
-    static screen: Screen;
-    static AddPanel(): Panel {
-        let div = new Panel();
-        this.screen.AddChild(div);
-        return div;
-    }
-
-    static AddLabel(text: string): Label {
-        let label = new Label(text);
-        this.screen.AddChild(label);
-        return label;
-    }
-    static AddTextBox(title: string, deftext: string): TextBox {
-
-        let text = new TextBox(title, deftext);
-        this.screen.AddChild(text);
-        return text;
-    }
-    static AddButton(text: string, onclick: (() => void)|null = null): Button {
-
-        let btn = new Button(text);
-        btn.SetClickEvent(onclick);
-        this.screen.AddChild(btn);
-        return btn;
-    }
-    static AddToggle(title: string, value: boolean): Toggle {
-        let toggle = new Toggle(title, value);
-        this.screen.AddChild(toggle);
-        return toggle;
-    }
-    static AddSpliter(): Splitter {
-        let s = new Splitter();
-        document.body.appendChild(s.getRoot());
-
-        return s;
+    private static screen: Screen;
+    static get Screen():Screen
+    {
+        return this.screen;
     }
 }

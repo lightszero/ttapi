@@ -107,8 +107,6 @@ export abstract class BaseElement {
         this._root.style.top = "0px";
         this._root.style.right = "0px";
         this._root.style.bottom = "0px";
-        this._root.style.width = "100%";
-        this._root.style.height = "100%";
     }
     Style_Size(width: number, height: number): void {
         this._root.style.width = width + "px";

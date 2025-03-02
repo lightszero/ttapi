@@ -37,6 +37,36 @@ export class Splitter extends Panel {
 
 
     }
+    SetSplitH(percent: number): void {
+        this._panel1.getRoot().style.left = "0px";
+        this._panel1.getRoot().style.right = percent + "%";
+        this._panel1.getRoot().style.top = "0px";
+        this._panel1.getRoot().style.bottom = "0px";
+        this._panel1.getRoot().style.width = "auto";
+        this._panel1.getRoot().style.height = "auto"
+
+        this._panel2.getRoot().style.left = percent + "%";
+        this._panel2.getRoot().style.top = "0px";
+        this._panel2.getRoot().style.bottom = "0px";
+        this._panel2.getRoot().style.right = "0px";
+        this._panel2.getRoot().style.width = "auto";
+        this._panel2.getRoot().style.height = "auto"
+    }
+    SetSplitV(percent: number): void {
+        this._panel1.getRoot().style.left = "0px";
+        this._panel1.getRoot().style.right = "0px";
+        this._panel1.getRoot().style.top = "0px";
+        this._panel1.getRoot().style.bottom = percent + "%";
+        this._panel1.getRoot().style.width = "auto";
+        this._panel1.getRoot().style.height = "auto"
+
+        this._panel2.getRoot().style.left = "0px";
+        this._panel2.getRoot().style.top = percent + "%";
+        this._panel2.getRoot().style.bottom = "0px";
+        this._panel2.getRoot().style.right = "0px";
+        this._panel2.getRoot().style.width = "auto";
+        this._panel2.getRoot().style.height = "auto"
+    }
     SetSplitPosLeft(pos: number) {
         this._panel1.getRoot().style.left = "0px";
         this._panel1.getRoot().style.right = "auto";

@@ -31,6 +31,6 @@ export class Group extends Panel {
         this._label.SetText(title);
     }
     AddChild(elem: IElement): void {
-        throw new Error("use panel");
+        this._panel.AddChild(elem);
     }
 }

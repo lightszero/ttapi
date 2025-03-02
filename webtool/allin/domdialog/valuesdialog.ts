@@ -15,7 +15,7 @@ export abstract class BaseDialog<T> {
         this._divBack.style.top = "0px";
         this._divBack.style.bottom = "0px";
         this._divBack.style.backgroundColor = "rgba(0,0,0,0.75)";
-
+        this._divBack.style.zIndex="99999";
         this._panel = new Panel();
         this._divBack.appendChild(this._panel._root);
 
@@ -25,7 +25,8 @@ export abstract class BaseDialog<T> {
         this._panel._root.style.top = "25%";
         this._panel._root.style.bottom = "25%";
         this._panel._root.style.border = "2px solid #fff";
-        this._panel._root.style.textAlign = "center";
+        //this._panel._root.style.textAlign = "center";
+        
     }
     private _divBack: HTMLDivElement;
     protected _panel: Panel;

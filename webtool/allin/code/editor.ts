@@ -1,99 +1,82 @@
 ///<refrence path ="../jsoneditor/jsoneditor.d.ts"/>
 
 
-import { Button, Color32, DomTool, Label, LabelButton, Menu, Panel, Splitter } from "../dom/domtool.js";
+import { Button, CanvasRaw, Color32, DomTool, Group, Label, LabelButton, Menu, Panel, Splitter } from "../dom/domtool.js";
+import { PackageDialog } from "./packagedialog.js";
 import { ttwin } from "./ttwin.js";
 
 
-let g_filepanel: Panel;
-let g_editarea: Panel;
-let g_logarea: Panel;
-async function InitFilePanel(workingpath: string) {
-    g_filepanel.UseScrollV();
-    g_filepanel.UseScrollH();
-    let file = await ttwin.Path_List(workingpath, true, "*.tt.json");
-    let g_pickBtn: LabelButton = null;
-    for (var i = 0; i < file.files.length; i++) {
-        let _fullfile = file.files[i];
-        let _file = _fullfile.substring(workingpath.length + 1);
-        let btn = new LabelButton(_file);
-        g_filepanel.AddChild(btn);
-        btn.onClick = async () => {
-            if (g_pickBtn != null) {
 
-                g_pickBtn.colorBack = (new Color32(0, 0, 0, 0));
-                g_pickBtn.UpdateColor();
-            }
-            g_pickBtn = btn;
-            g_pickBtn.colorBack = new Color32(128, 128, 0, 128);
-            g_pickBtn.UpdateColor();
-            await Edit(_fullfile);
-            console.log("pick file:" + _fullfile);
-        };
-    }
-
-}
 let g_menu: Panel;
-async function InitMenu() {
-    let btn = new Button("save", () => {
-
+async function InitMenu(workingpath: string) {
+    g_menu._root.style.display = "flex";
+    let label = new Label("TT Pack 编辑器");
+    label._root.style.width = "auto";
+    g_menu.AddChild(label);
+    let btn = new Button("Edit", async () => {
+        let dialog = new PackageDialog(workingpath);
+        await dialog.Show();
     });
     g_menu.AddChild(btn);
+    let save = new Button("保存");
+    g_menu.AddChild(save);
 }
-async function Edit(filename: string) {
-    g_editarea.RemoveAllChild();
-    let div = g_editarea.getRoot() as HTMLDivElement;
-    //let div =document.createElement("div");
-    //document.body.appendChild(div);
-    let file = await ttwin.File_ReadText(filename);
-    let e = new JSONEditor(div, { mode: "code", modes: ["code", "tree"] }, {});
-    e.updateText(file.text);
-}
-async function Log(text: string) {
-    g_logarea.AddChild(new Label(text));
-}
+
 window.onload = async () => {
     let b = await ttwin.Init(true);
     console.log("ttwin has init.");
 
     //初始化初步布局
     DomTool.InitFullScreen();
-    let sp = DomTool.AddSpliter();
-    sp.SetSplitPosLeft(300);
 
-    sp._panel1.AddChild(new Label("Files"));
-    g_filepanel = new Panel();
-    sp._panel1.AddChild(g_filepanel);
-    g_filepanel.Style_Fill();
-    g_filepanel._root.style.top = "32px";
+    //总布局 Menu MainEditor SecEditor
+    var spMain = new Splitter();
+    DomTool.Screen.AddChild(spMain);
+    spMain.SetSplitV(50);
+    let spMenu_MainEdit = new Splitter();
+    spMenu_MainEdit.Style_Fill();
+    spMenu_MainEdit.SetSplitPosTop(30);
+    spMain._panel1.AddChild(spMenu_MainEdit);
 
 
-    let sp2 = new Splitter();
-    sp2.Style_Fill();
-    sp2.SetSplitPosBottom(300);
+    let spMainEdit = new Splitter();
+    spMainEdit.Style_Fill();
+    spMainEdit.SetSplitH(25);
+    spMenu_MainEdit._panel2.AddChild(spMainEdit);
 
-    sp._panel2.AddChild(sp2);
+    let spSecondAttr = new Splitter();
+    spSecondAttr.SetSplitH(25);
+    spSecondAttr.Style_Fill();
+    spMain._panel2.AddChild(spSecondAttr);
+
+
+    //menu
     g_menu = new Panel()
+    spMenu_MainEdit._panel1.AddChild(g_menu);
 
-    sp2._panel1.AddChild(g_menu);
 
-    g_editarea = new Panel();
-    g_editarea.Style_Fill();
-    g_editarea._root.style.top = "32px";
-    sp2._panel1.AddChild(g_editarea);
+    //主编辑区
+    let panel_MainEditTree = new Group();
+    panel_MainEditTree.SetTitle("元素");
+    panel_MainEditTree.Style_Fill();
+    spMainEdit._panel1.AddChild(panel_MainEditTree);
+    let panel_MainEdit = new Group();
+    panel_MainEdit.SetTitle("Editor");
+    spMainEdit._panel2.AddChild(panel_MainEdit);
 
-    sp2._panel2.AddChild(new Label("Logs"));
-    g_logarea = new Panel();
-    sp2._panel2.AddChild(g_logarea);
-    g_logarea.Style_Fill();
-    g_logarea.SetBorder(3);
-    g_logarea.UseScrollH();
-    g_logarea.UseScrollV();
-    g_logarea._root.style.top = "32px";
+    //副编辑区
+    let panel_Attr = new Group();
+    panel_Attr.SetTitle("属性");
+    panel_Attr.Style_Fill();
+    spSecondAttr._panel1.AddChild(panel_Attr);
+    {//jsoneditor
+        let e = new JSONEditor(spSecondAttr._panel2._root as HTMLDivElement, { mode: "code", modes: ["code", "tree"] }, {});
+    }
+
 
 
 
     let root = await ttwin.Path_GetRoots();
-    InitFilePanel(root.special.WorkingPath);
-    InitMenu();
+
+    InitMenu(root.special.WorkingPath);
 }
