@@ -108,7 +108,10 @@ export class TTAni {
         if (mapkey[0] == undefined)
             throw "你至少得指定第一帧吧";
         let lastid = -1;
-        for (let i = 0; i < ani.framecount; i++) {
+        let framecount = ani.framecount;
+        if (framecount == undefined)
+            throw "no ani.framecount value.";
+        for (let i = 0; i < framecount; i++) {
             let finfo = ani.frames[mapkey[i]];
 
             let f = new TTAniFrame();
@@ -176,7 +179,8 @@ export class TTPackage {
 
         if (this.pics != undefined)
             for (var key in this.pics) {
-                list.push(key);
+                if (list.indexOf(key) < 0)
+                    list.push(key);
             }
 
         if (this.refs != undefined) {
@@ -198,7 +202,8 @@ export class TTPackage {
 
         if (this.anis != undefined)
             for (var key in this.anis) {
-                list.push(key);
+                if (list.indexOf(key) < 0)
+                    list.push(key);
             }
 
         if (this.refs != undefined) {
@@ -212,7 +217,7 @@ export class TTPackage {
         return list;
     }
     GetPic(name: string, searched: TTPackage[] = null): TTPicData {
-        if (this.pics[name] != undefined)
+        if (this.pics!=undefined&&this.pics[name] != undefined)
             return this.pics[name];
 
         //避免递归
@@ -230,7 +235,7 @@ export class TTPackage {
         return null;
     }
     GetAni(name: string, searched: TTPackage[] = null): TTAni {
-        if (this.anis[name] != undefined)
+        if (this.anis!=undefined&&this.anis[name] != undefined)
             return this.anis[name];
 
         //避免递归

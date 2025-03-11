@@ -199,7 +199,7 @@ export class VertexFormatMgr {
             vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//basemesh uv only
 
             vecf.vbos.push(new VBOInfo());
-            vecf.vbos[1].vertexAttribDivisor = 4;//instanced data
+            vecf.vbos[1].vertexAttribDivisor = 1;//instanced data
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//Pos xyz + rotate
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//Scale
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));//color
@@ -354,10 +354,11 @@ export class Mesh {
 
         //这里instancecount 要乘以定点数，就很迷惑
         if (mesh._ebo == null) {
-            gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.vertexcount[0], mesh.vertexcount[0] * mesh.instancecount);
+            //为什么乘以4 是正确的，原型是 六个顶点两个三角形啊
+            gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.vertexcount[0], mesh.instancecount);
         }
         else {
-            gl.drawElementsInstanced(gl.TRIANGLES, mesh.indexcount, gl.UNSIGNED_SHORT, gl.ZERO, mesh.vertexcount[0] * mesh.instancecount);
+            gl.drawElementsInstanced(gl.TRIANGLES, mesh.indexcount, gl.UNSIGNED_SHORT, gl.ZERO, mesh.instancecount);
         }
     }
 

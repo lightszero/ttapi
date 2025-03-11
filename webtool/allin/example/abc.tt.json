@@ -1,15 +1,16 @@
 {
-    "refs": "ab.tt.json",
+    "refs": [
+        "aa.tt.json"
+    ],
     "anis": {
         "ani1": {
             "loop": true,
-            "frameconut": 24,
+            "framecount": 24,
             "frames": [
                 {
-                    "vis": [
-                        0,
-                        "abc.png,3,3",
-                        ""
+                    "frameid": 0,
+                    "pics": [
+                        "a1,3,3"
                     ]
                 }
             ]

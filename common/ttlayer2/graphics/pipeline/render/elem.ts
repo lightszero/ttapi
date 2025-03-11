@@ -40,7 +40,7 @@ export class ElementUtil {
             vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//basemesh uv only
 
             vecf.vbos.push(new VBOInfo());
-            vecf.vbos[1].vertexAttribDivisor = 4;//instanced data
+            vecf.vbos[1].vertexAttribDivisor = 1;//instanced data
             //vbo 存在四字节对齐要求
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));//Pos xyz + rotate
             vecf.vbos[1].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));//Scale

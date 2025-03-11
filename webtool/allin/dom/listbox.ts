@@ -4,7 +4,7 @@ export class ListBox extends Panel {
     AddChild(elem: IElement): void {
         throw new Error("use AddItem");
     }
-    AddItem(text: string, tag: string): void {
+    AddItem(text: string, tag: any): void {
         let button = new LabelButton(text);
         button._root.style.right = "0 px";
         button._root.style.left = "0 px";
@@ -19,9 +19,11 @@ export class ListBox extends Panel {
     OnClick(btn: LabelButton): void {
         if (this._picked != null) {
             this._picked.colorBack = (new Color32(0, 0, 0, 0));
+            this._picked.UpdateColor();
         }
         this._picked = btn;
         this._picked.colorBack = new Color32(128, 128, 0, 128);
+        this._picked.UpdateColor();
     }
     Select(index: number): void {
         this.OnClick(this.GetChild(index) as LabelButton);
