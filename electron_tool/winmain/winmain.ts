@@ -1,15 +1,16 @@
+import { ElectronFunc } from "./electronfunc.js";
 
-//declare var msgbox: (title: string, message: string) => void;
-
-window.onload = () => {
+window.onload = async () => {
+    let func = ElectronFunc.Instance;
+    console.log('curpath=' + await func.path_getcurrent())
+    console.log("curenvtype=" + func.type + " tag=" + func.tag)
+    console.log("")
     {
         let btn = document.createElement("button");
         btn.textContent = "send test.";
         document.body.appendChild(btn);
         btn.onclick = async () => {
-
-
-            var r = await msgbox("aabca", "bddb");
+            var r = await func.dialog_msgbox("aabca", "bddb", ["ok", "cancel", "随便"]);
             console.log("return " + r);
         }
     }
@@ -18,10 +19,8 @@ window.onload = () => {
         btn.textContent = "send test.";
         document.body.appendChild(btn);
         btn.onclick = async () => {
-
-
-            var r = await openfile(null);
-            console.log("return " + r);
+            var r = await ElectronFunc.Instance.dialog_openfile(null);
+            console.log("return " + r[0] + " len=" + r.length);
         }
     }
     let canvas = document.createElement("canvas");

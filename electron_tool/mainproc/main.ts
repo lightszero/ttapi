@@ -1,18 +1,20 @@
-import * as electron from "electron";
-import * as evt from "./evt.js"
+import {app,BrowserWindow} from "electron";
+import * as evt from "./event.js"
 import * as path from "path"
 
 async function Main() {
-    await electron.app.whenReady();
+    await app.whenReady();
     console.log("electron start.");
     let curpath = path.resolve("./");
     console.log("dirname:" + curpath);
     evt.RegEvent();
 
-    let win = new electron.BrowserWindow({
+
+    //启动窗口
+    let win = new BrowserWindow({
         width: 800, height: 600, webPreferences:
         {
-            preload: path.join(curpath, "preload/winpreload.js")
+            preload: path.join(curpath, "mainproc/preload.js")
             , nodeIntegration: true
         }
     });

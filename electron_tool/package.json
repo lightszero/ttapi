@@ -1,7 +1,7 @@
 {
   "name": "electron_tool",
   "version": "1.0.0",
-  "main": "main.js",
+  "main": "mainproc/main.js",
   "dependencies": {
     "electron": "^35.0.1"
   },
