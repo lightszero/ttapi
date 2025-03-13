@@ -22,6 +22,7 @@ export class ElectronFunc {
         this.file_appendtext = win.file_appendtext;
         this.file_writebin = win.file_writebin;
         this.file_delete = win.file_delete;
+        this.window_open = win.window_open;
     }
     private static g_inst: ElectronFunc;
     static get Instance() {
@@ -49,6 +50,7 @@ export class ElectronFunc {
     readonly file_writebin: (_path: string, data: ArrayBufferLike) => Promise<boolean>
     readonly file_delete: (_path: string) => Promise<boolean>
 
+    readonly window_open: (_path: string) => Promise<number>
 }
 
 class FileInfo {

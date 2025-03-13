@@ -16,6 +16,7 @@ export class ElectronFunc {
         this.file_appendtext = win.file_appendtext;
         this.file_writebin = win.file_writebin;
         this.file_delete = win.file_delete;
+        this.window_open = win.window_open;
     }
     static get Instance() {
         if (this.g_inst == null)

@@ -83,6 +83,9 @@ async function file_writebin(_path: string, data: ArrayBufferLike) {
 async function file_delete(_path: string) {
     return rpccall("file_delete", _path);
 }
+async function window_open(_path: string) {
+    return rpccall("window_open", _path);
+} 
 
 contextBridge.exposeInMainWorld("MyAPI", { "cool": 1, "type": "electron", "tag": 7788 });
 contextBridge.exposeInMainWorld("dialog_msgbox", dialog_msgbox);
@@ -99,3 +102,5 @@ contextBridge.exposeInMainWorld("file_appendtext", file_appendtext);
 contextBridge.exposeInMainWorld("file_writetext", file_writetext); 
 contextBridge.exposeInMainWorld("file_writebin", file_writebin); 
 contextBridge.exposeInMainWorld("file_delete", file_delete); 
+
+contextBridge.exposeInMainWorld("window_open", window_open); 

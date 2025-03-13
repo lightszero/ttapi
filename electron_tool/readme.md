@@ -20,3 +20,9 @@ mainproc/preload.js
 
 package.json
 中指定 的main.js 是启动入口
+
+
+npx electron-forge import
+安装打包环境
+
+通过 extraResources 配置外部资源

@@ -1,0 +1,9 @@
+{
+    "sync":true,
+    "syncurl":"https://gitee.com/lightsever/thinapi/raw/master/webtool/ttpixel/packindex.json",
+    "openurl":"sync=true的时候这个没用,会自己下载对应的文件",
+    "devtool":true,
+    "fullscreen":false,
+    "width":800,
+    "height":600
+}
