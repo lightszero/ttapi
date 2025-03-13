@@ -29,6 +29,8 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
         this._splitButton.OnDrag = this._ondrag.bind(this);
         // this._splitButton.OnDragEnd = this._ondragend.bind(this);
 
+        this.splitSize = 8;
+        
         this.updateContainerPos();
         this.updateSplitBtnPos();
     }
