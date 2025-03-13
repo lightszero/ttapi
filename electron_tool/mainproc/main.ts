@@ -1,24 +1,24 @@
 import { app, BrowserWindow, globalShortcut } from "electron";
 import * as path from "path"
 import * as fs from "fs";
-import { GetRootPath, RegEvent, StartLocalWin } from "./event.js";
+import { GetRootPath, MainWinConfig, RegEvent, SetMainWinConfig, StartLocalWin } from "./event.js";
 
-class Config {
+class Config extends MainWinConfig {
     sync: boolean;
     syncurl: string;
     openurl: string;
-    devtool: false;
-    fullscreen: false;
-    width: number;
-    height: number;
-
 }
 function ParseConfig(json: string): Config {
     let config = JSON.parse(json) as Config;
     if (config.sync == undefined)
         config.sync = false;
+    //MainWinConfig
+    if (config.devtool == undefined)
+        config.devtool = false;
     if (config.fullscreen == undefined)
         config.fullscreen = false;
+    if (config.noborder == undefined)
+        config.noborder = false;
     if (config.width == undefined)
         config.width = 800;
     if (config.height == undefined)
@@ -37,8 +37,7 @@ async function Main() {
     let curpath = GetRootPath();//资源路径
     let configstr = fs.readFileSync(path.join(curpath, "data/config.json"), { encoding: "utf-8" });
     let config = ParseConfig(configstr);
-
-
+    SetMainWinConfig(config);
 
     if (config.sync == false) {
         console.log("config_sync==false direct open url");
@@ -61,10 +60,12 @@ async function Main() {
             {
                 preload: path.join(curpathm, "preload.js")
                 , nodeIntegration: true
-            }
+            },
+            frame: false,
+            roundedCorners: false,
         });
 
-        win.webContents.openDevTools();
+        //win.webContents.openDevTools();
 
         win.loadFile("winloading/index.html", { query: { "syncurl": config.syncurl } });
         //loading win 下载资源后 通过 StartLocalWin 启动

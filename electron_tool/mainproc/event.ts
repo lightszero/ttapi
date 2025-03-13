@@ -12,19 +12,39 @@ export function GetRootPath(): string {
     }
     return apppath2;
 }
+
+export class MainWinConfig {
+
+    devtool: false;
+    noborder: false;
+    fullscreen: false;
+    width: number;
+    height: number;
+
+}
+let g_mainwincfg: MainWinConfig;
+export function SetMainWinConfig(mainwincfg: MainWinConfig) {
+    g_mainwincfg = mainwincfg;
+}
 export function StartLocalWin(url: string) {
     let curpathm = import.meta.dirname; //模块路径
     //启动窗口
-    let win = new electron.BrowserWindow({
-        width: 800, height: 600, webPreferences:
+
+    let option: electron.BrowserWindowConstructorOptions =
+    {
+        width: g_mainwincfg.width,
+        height: g_mainwincfg.height,
+        webPreferences:
         {
             preload: path.join(curpathm, "preload.js"),
-            //devTools: false,这会禁止开发工具，快捷键也打不开
+            devTools: g_mainwincfg.devtool//这会禁止开发工具，快捷键也打不开
         },
-        autoHideMenuBar: true,
-        titleBarStyle: "customButtonsOnHover",// hidden 会禁用菜单，alt  也没用
-
-    });
+        frame:!g_mainwincfg.noborder,
+        roundedCorners:!g_mainwincfg.noborder,
+        fullscreen:g_mainwincfg.fullscreen
+    };
+   
+    let win = new electron.BrowserWindow(option);
 
     win.webContents.openDevTools();
     win.loadURL(url);

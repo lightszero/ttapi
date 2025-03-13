@@ -1,9 +1,11 @@
 {
-    "sync":true,
+    "sync":false,
+    "desc":"sync=true是从syncurl 下载 并启动，=false 时，从openurl启动",
     "syncurl":"https://gitee.com/lightsever/thinapi/raw/master/webtool/ttpixel/packindex.json",
-    "openurl":"sync=true的时候这个没用,会自己下载对应的文件",
+    "openurl":"data/allin/index.html",
     "devtool":true,
     "fullscreen":false,
     "width":800,
-    "height":600
+    "height":600,
+    "noborder":true
 }
