@@ -3,23 +3,24 @@ import * as QUI from "../qui_base.js"
 import { QUI_Container } from "../qui_container.js";
 import { QUI_DragButton } from "../ext/qui_dragbutton.js";
 import { QUI_Canvas } from "../qui_canvas.js";
-import { Border, Rectangle } from "../../ttlayer2.js";
+import { Border, QUI_Panel, QUI_Resource, Rectangle } from "../../ttlayer2.js";
 
 //切分面板
 export class QUI_Panel_Split extends QUI.QUI_BaseElement {
     constructor() {
         super();
-
-        this.localRect.setByRect(new Rectangle(0, 0, 250, 250));
-        this._panel1 = new QUI_Container();
+        this.splitDir = QUI.QUI_Direction2.Horizontal;
+        this.localRect.setAsFill();
+        this._panel1 = new QUI_Panel();
         this._panel1._parent = this;
         this._panel1.localRect.setAsFill();
-
-        this._panel2 = new QUI_Container();
+        this._panel1.borderElement = QUI_Resource.CreateGUI_Border();
+        this._panel2 = new QUI_Panel();
         this._panel2._parent = this;
         this._panel2.localRect.setAsFill();
-
-        this._border = new Border(16, 16, 16, 16);
+        this._panel2.borderElement = QUI_Resource.CreateGUI_Border();
+        //this.borderElement = QUI_Resource.CreateGUI_Border();
+        this._border = new Border(1, 1, 1, 1);
 
         this._splitButton = new QUI_DragButton();
         this._splitButton._parent = this;
@@ -244,8 +245,8 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
         var b2 = skippanel2 ? false : this._panel2.OnTouch(_canvas, touchid, press, move, x, y);
         return b2;
     }
-    protected _panel1: QUI_Container;
-    protected _panel2: QUI_Container;
+    protected _panel1: QUI_Panel;
+    protected _panel2: QUI_Panel;
     getPanel1(): QUI_Container {
         return this._panel1;
     }

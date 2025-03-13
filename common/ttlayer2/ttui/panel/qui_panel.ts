@@ -11,11 +11,12 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
     constructor() {
         super();
 
-        this.localRect.setByRect(new Rectangle(0, 0, 250, 250));
+        this.localRect.setAsFill();
         this.container = new QUI_Container();
         this.container._parent = this;
         this.container.localRect.setAsFill();
         this._border = new Border(2, 2, 2, 2);
+
     }
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel;

@@ -1,16 +1,21 @@
 
 import { tt } from "../../ttapi/ttapi.js";
-import { Color, Rectangle, Vector2, Font } from "../ttlayer2.js";
+import { Color, Rectangle, Vector2, Font, Resources } from "../ttlayer2.js";
 import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
 
 export class QUI_Label extends QUI.QUI_BaseElement {
 
-    constructor(font: Font | null = null, txt: string = "") {
+    constructor() {
         super();
-        this.font = font;
-        this.text = txt;
-        this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
+        this.font = Resources.GetDefFont();
+        let fs = 16 / this.font.GetFontSize();;
+        this.fontBorder = 1 / fs;
+        this.fontScale = new Vector2(fs, fs);
+        this.valign = QUI.QUI_VAlign.Middle;
+        this.halign = QUI.QUI_HAlign.Middle;
+        this.text = "Label";
+        this.localRect.setByRect(new Rectangle(0, 0, 100, 16));
     }
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Label;

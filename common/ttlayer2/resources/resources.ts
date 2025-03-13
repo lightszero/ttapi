@@ -203,27 +203,7 @@ export class Resources {
         return this.packedelem.GetElementByName("border2");;
 
     }
-    static scale_border: QUI_Scale9 = null;
-    static GetBorderScale(): QUI_Scale9 {
-        if (this.scale_border == null) {
-            this.scale_border = new QUI_Scale9(this.GetBorderBlock(), this.packedelem, new Border(3, 3, 3, 3));
-        }
-        return this.scale_border;
-    }
-    static scale_border2: QUI_Scale9 = null;
-    static GetBorder2Scale(): QUI_Scale9 {
-        if (this.scale_border2 == null) {
-            this.scale_border2 = new QUI_Scale9(this.GetBorder2Block(), this.packedelem, new Border(3, 3, 3, 3));
-        }
-        return this.scale_border2;
-    }
-    static scale_borderr: QUI_Scale9 = null;
-    static GetBorderScaleR(): QUI_Scale9 {
-        if (this.scale_borderr == null) {
-            this.scale_borderr = new QUI_Scale9(this.packedelem.GetElementByName("borderr"), this.packedelem, new Border(3, 3, 3, 3));
-        }
-        return this.scale_borderr;
-    }
+   
     private static deffont: Font = null;
     static CreateFont(fontname: string, fontsize: number): Font {
         let font = new Font(tt.graphic.GetWebGL(), fontname, fontsize, this.packedelem);
