@@ -29,12 +29,12 @@ export class EditorApp implements IUserLogic {
         this.layergui.GetCanvas().addChild(root);
 
 
-        {//初始化新的入口，像素编辑只是其中一个模块
-            let main = new UI_Main();
-            main.localRect.setAsFill();
-            root.addChild(main);
-            return;
-        }
+        // {//初始化新的入口，像素编辑只是其中一个模块
+        //     let main = new UI_Main();
+        //     main.localRect.setAsFill();
+        //     root.addChild(main);
+        //     return;
+        // }
         {//初始化绘制区域,用悬浮式设计
             // let editorContainer = new QUI_Container();
             // editorContainer.localRect.setAsFill();
