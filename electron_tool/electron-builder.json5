@@ -1,9 +1,0 @@
-{
-  "extraFiles": [
-    {
-      "from": "dllFiles",
-      "to": ".",
-      "filter": ["*.dll"]
-    }
-  ]
-}

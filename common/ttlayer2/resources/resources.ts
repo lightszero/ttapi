@@ -213,73 +213,7 @@ export class Resources {
     static GetDefFont(): Font {
         return this.deffont;
     }
-    static CreateGUI_Border(): QUI_ImageScale9 {
-        let image = new QUI_ImageScale9(this.GetBorderScale());
-        image.localRect.setAsFill();
-        return image;
-    }
-    static CreateGUI_Border2(): QUI_ImageScale9 {
-        let image = new QUI_ImageScale9(this.GetBorder2Scale());
-        image.localRect.setAsFill();
-        return image;
-    }
-    static CreateGUI_ImgWhite(color: Color = new Color(1, 1, 1, 1)) {
-        let white = this.packedelem.ConvertElemToSprite(this.getWhiteBlock());
-        let i = new QUI_Image(white);
-        i.color = color;
-        i.localRect.setAsFill();
-        return i;
-    }
-    static CreateGUI_Label(text: string, color: Color = new Color(1, 1, 1, 1), scale: number = 1) {
-        let txt = new QUI_Label(this.deffont, text);
-        txt.color = color;
-        txt.localRect.setAsFill();
 
-        let fs = 16 / this.deffont.GetFontSize();;
-        txt.fontBorder = 1 / fs;
-        txt.fontScale = new Vector2(fs * scale, fs * scale);
-        txt.valign = QUI_VAlign.Middle;
-        txt.halign = QUI_HAlign.Middle;
-
-        return txt;
-    }
-    static CreateGUI_Button(text: string, color: Color = new Color(1, 1, 1, 1), scale: number = 1): QUI_Button {
-        let btn = new QUI_Button();
-        let normal = new QUI_ImageScale9(this.GetBorderScaleR());
-        let press = new QUI_ImageScale9(this.GetBorderScaleR());
-        {
-            normal.color = color;
-            normal.localRect.setAsFill();
-
-            let txt = new QUI_Label(this.deffont, text);
-            txt.color = color;
-            txt.localRect.setAsFill();
-            let fs = 16 / this.deffont.GetFontSize();;
-            txt.fontBorder = 1 / fs;
-            txt.fontScale = new Vector2(fs * scale, fs * scale);
-            normal.addChild(txt)
-        }
-        {
-            let nc = color.Clone();
-            nc.R *= 0.5;
-            nc.G *= 0.5;
-            nc.B *= 0.5;
-            press.color = nc;
-            press.localRect.setAsFill();
-
-            let txt = new QUI_Label(this.deffont, text);
-            txt.color = nc;
-            txt.localRect.setAsFill();
-            let fs = 16 / this.deffont.GetFontSize();;
-            txt.fontScale = new Vector2(fs * scale, fs * scale);
-            press.addChild(txt)
-        }
-        btn.ElemNormal = normal;
-        btn.ElemPress = press;
-        btn.localRect.setHPosByLeftBorder(100, 100);
-        btn.localRect.setVPosByTopBorder(25, 100);
-        return btn;
-    }
 
     private static programs: { [id: string]: ShaderProgram } = {};
     static GetShaderProgram(name: string): ShaderProgram | null {

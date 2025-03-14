@@ -1,2 +1,4 @@
 /web/package-lock.json
 node_modules
+/electron_tool/downhtml
+/electron_tool/out
