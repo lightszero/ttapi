@@ -4,7 +4,8 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 module.exports = {
   packagerConfig: {
     asar: true,
-    extraResource: ["./doc"],
+    extraResource: ["./doc","./data"],
+    ignore:["/downhtml"],
     icon: "res/icon.png",
     name:"tt-loader"
   },

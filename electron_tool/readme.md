@@ -1,28 +1,8 @@
-electron
+这个目录删干净，仅保持 在这里 执行
+electron .
+的能力
 
-1.Main 进程
+需要 
+npm install -g electron
 
-可以完整的nodejs
-
-mainproc/main.js
-
-2.preload 进程
-
-用于在web 和 main 之间通讯
-
-mainproc/preload.js
-
-3.web 进程
-标准的web进程
-
-
-问题，进程在不同的空间
-
-package.json
-中指定 的main.js 是启动入口
-
-
-npx electron-forge import
-安装打包环境
-
-通过 extraResources 配置外部资源
+打包和编译electron所需内容，进入electron_init 项目处理

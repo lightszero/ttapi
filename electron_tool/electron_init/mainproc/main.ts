@@ -33,19 +33,17 @@ async function Main() {
     //注册事件
     RegEvent();
 
-    app.on("window-all-closed", () => {
-        app.exit();
-    })
 
 
     //加载配置
     let curpath = GetRootPath();//资源路径
     let cfgpath = path.join(curpath, "data/config.json");
     let config: Config;
+    let succload = false;
     try {
         let configstr = fs.readFileSync(cfgpath, { encoding: "utf-8" });
-        let config = ParseConfig(configstr);
-
+        config = ParseConfig(configstr);
+        succload = true;
     }
     catch {
         console.log("config wrong.");
@@ -66,40 +64,45 @@ async function Main() {
         win.loadFile("winerror/index.html");
         return;
     }
-    SetMainWinConfig(config);
 
-    //打开业务窗口
-    if (config.sync == false) {
-        console.log("config_sync==false direct open url");
-        if ((config.openurl.indexOf("file://") == 0) ||
-            (config.openurl.indexOf("http://") == 0) ||
-            (config.openurl.indexOf("https://") == 0)) {
+    if (succload) {
+        SetMainWinConfig(config);
 
+        //打开业务窗口
+        if (config.sync == false) {
+            console.log("config_sync==false direct open url");
+            if ((config.openurl.indexOf("file://") == 0) ||
+                (config.openurl.indexOf("http://") == 0) ||
+                (config.openurl.indexOf("https://") == 0)) {
+
+            }
+            else {
+                config.openurl = "file://" + path.join(curpath, config.openurl);
+            }
+            StartLocalWin(config.openurl);
         }
         else {
-            config.openurl = "file://" + path.join(curpath, config.openurl);
+            //先通过loading窗口
+            //启动窗口
+            let curpathm = import.meta.dirname; //模块路径
+            let win = new BrowserWindow({
+                width: 800, height: 600, webPreferences:
+                {
+                    preload: path.join(curpathm, "preload.js")
+                    , nodeIntegration: true
+                },
+                frame: false,
+                roundedCorners: false,
+            });
+
+            //win.webContents.openDevTools();
+
+            win.loadFile("winloading/index.html", { query: { "syncurl": config.syncurl } });
+            //loading win 下载资源后 通过 StartLocalWin 启动
         }
-        StartLocalWin(config.openurl);
-    }
-    else {
-        //先通过loading窗口
-        //启动窗口
-        let curpathm = import.meta.dirname; //模块路径
-        let win = new BrowserWindow({
-            width: 800, height: 600, webPreferences:
-            {
-                preload: path.join(curpathm, "preload.js")
-                , nodeIntegration: true
-            },
-            frame: false,
-            roundedCorners: false,
-        });
 
-        //win.webContents.openDevTools();
-
-        win.loadFile("winloading/index.html", { query: { "syncurl": config.syncurl } });
-        //loading win 下载资源后 通过 StartLocalWin 启动
     }
+
 
     //通过全局快捷键可以屏蔽掉窗口快捷键
     let bindkey: string[] = ["ctrl+r", "ctrl+shift+i"]
@@ -110,6 +113,10 @@ async function Main() {
         });
     }
 
+
+    app.on("window-all-closed", () => {
+        app.exit();
+    })
 
 }
 Main();
