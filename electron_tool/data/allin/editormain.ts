@@ -4,7 +4,18 @@ export class MyLogic implements IUserLogic {
     canvas: QUI_Canvas;
     OnInit(): void {
         let guilayer = new DrawLayer_GUI(DrawLayerTag.GUI);
-        guilayer.GetCamera().Scale = 3;
+      
+        //改动这个会影响canvas size，会造成不点对点
+        tt.graphic.setMainScreenScale(1);
+   
+        let pr = tt.graphic.getDevicePixelRadio();
+
+        let scaleradio = (pr * 2) | 0;
+        console.log("ScaleRadio=" + scaleradio);
+        
+        //改Camera的缩放会直接缩放内容
+        guilayer.GetCamera().Scale = scaleradio;
+
         GameApp.GetViewList().AddDrawLayer(guilayer);
 
         this.canvas = guilayer.GetCanvas();
