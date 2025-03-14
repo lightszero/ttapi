@@ -27,7 +27,8 @@ export function SetMainWinConfig(mainwincfg: MainWinConfig) {
     g_mainwincfg = mainwincfg;
 }
 export function StartLocalWin(url: string) {
-    let curpathm = import.meta.dirname; //模块路径
+    let apppath = electron.app.getAppPath();
+
     //启动窗口
 
     let option: electron.BrowserWindowConstructorOptions =
@@ -36,18 +37,21 @@ export function StartLocalWin(url: string) {
         height: g_mainwincfg.height,
         webPreferences:
         {
-            preload: path.join(curpathm, "preload.js"),
+            preload: path.join(apppath, "mainproc/preload.js"),
             devTools: g_mainwincfg.devtool//这会禁止开发工具，快捷键也打不开
         },
-        frame:!g_mainwincfg.noborder,
-        roundedCorners:!g_mainwincfg.noborder,
-        fullscreen:g_mainwincfg.fullscreen
+        frame: !g_mainwincfg.noborder,
+        roundedCorners: !g_mainwincfg.noborder,
+        fullscreen: g_mainwincfg.fullscreen,
+        autoHideMenuBar: true,
     };
-   
+
     let win = new electron.BrowserWindow(option);
 
     win.webContents.openDevTools();
     win.loadURL(url);
+
+    console.log("openwin:" + url);
 }
 
 
@@ -213,6 +217,7 @@ async function window_open(evt: electron.IpcMainInvokeEvent, _path: string) {
         else {
             _path = "file://" + path.join(curpath, _path);
         }
+
         StartLocalWin(_path);
         return true;
     }

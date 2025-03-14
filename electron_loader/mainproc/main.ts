@@ -26,7 +26,7 @@ function ParseConfig(json: string): Config {
     return config;
 }
 //electron 启动程序
-async function Main() {
+export async function Main() {
     await app.whenReady();
     console.log("electron start.");
 
@@ -37,7 +37,7 @@ async function Main() {
 
     //加载配置
     let curpath = GetRootPath();//资源路径
-    let cfgpath = path.join(curpath, "data/config.json");
+    let cfgpath = path.join(curpath, "config.json");
     let config: Config;
     let succload = false;
     try {
@@ -47,11 +47,12 @@ async function Main() {
     }
     catch {
         console.log("config wrong.");
-        let curpathm = import.meta.dirname; //模块路径
+        let apppath = app.getAppPath();
+
         let win = new BrowserWindow({
             width: 800, height: 600, webPreferences:
             {
-                preload: path.join(curpathm, "preload.js")
+                preload: path.join(apppath, "mainproc/preload.js")
                 , nodeIntegration: true
             },
             frame: true,
@@ -84,11 +85,12 @@ async function Main() {
         else {
             //先通过loading窗口
             //启动窗口
-            let curpathm = import.meta.dirname; //模块路径
+            let apppath = app.getAppPath();
+
             let win = new BrowserWindow({
                 width: 800, height: 600, webPreferences:
                 {
-                    preload: path.join(curpathm, "preload.js")
+                    preload: path.join(apppath, "mainproc/preload.js")
                     , nodeIntegration: true
                 },
                 frame: false,
@@ -119,4 +121,4 @@ async function Main() {
     })
 
 }
-Main();
+
