@@ -27,25 +27,13 @@ async function dialog_msgbox(title: string, message: string, buttons: string[] |
     //dialog.showMessageBox(BrowserWindow.getFocusedWindow(),{title:title,message:message});
 }
 
-interface FileFilter {
 
-    // Docs: https://electronjs.org/docs/api/structures/file-filter
+async function dialog_openfile(option: any) {
 
-    extensions: string[];
-    name: string;
-}
-class fileInfo {
-    isdir: boolean;
-    name: string;
-    size: number;
-    time: number;
-}
-async function dialog_openfile(filter: FileFilter[]) {
-
-    return rpccall("dialog_openfile", filter);
+    return rpccall("dialog_openfile", option);
 
 }
-async function dialog_savefile(filters: FileFilter[]) {
+async function dialog_savefile(filters: any) {
     return rpccall("dialog_savefile", filters);
 }
 async function path_getcurrent() {
@@ -85,7 +73,7 @@ async function file_delete(_path: string) {
 }
 async function window_open(_path: string) {
     return rpccall("window_open", _path);
-} 
+}
 
 contextBridge.exposeInMainWorld("MyAPI", { "cool": 1, "type": "electron", "tag": 7788 });
 contextBridge.exposeInMainWorld("dialog_msgbox", dialog_msgbox);
@@ -97,10 +85,10 @@ contextBridge.exposeInMainWorld("path_stat", path_stat);
 contextBridge.exposeInMainWorld("path_delete", path_delete);
 
 contextBridge.exposeInMainWorld("file_readtext", file_readtext);
-contextBridge.exposeInMainWorld("file_readbin", file_readbin); 
-contextBridge.exposeInMainWorld("file_appendtext", file_appendtext); 
-contextBridge.exposeInMainWorld("file_writetext", file_writetext); 
-contextBridge.exposeInMainWorld("file_writebin", file_writebin); 
-contextBridge.exposeInMainWorld("file_delete", file_delete); 
+contextBridge.exposeInMainWorld("file_readbin", file_readbin);
+contextBridge.exposeInMainWorld("file_appendtext", file_appendtext);
+contextBridge.exposeInMainWorld("file_writetext", file_writetext);
+contextBridge.exposeInMainWorld("file_writebin", file_writebin);
+contextBridge.exposeInMainWorld("file_delete", file_delete);
 
 contextBridge.exposeInMainWorld("window_open", window_open); 

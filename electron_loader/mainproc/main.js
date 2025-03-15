@@ -28,6 +28,8 @@ function ParseConfig(json) {
         config.width = 800;
     if (config.height == undefined)
         config.height = 600;
+    if (config.banhotkey == null)
+        config.banhotkey = [];
     return config;
 }
 //electron 启动程序
@@ -95,12 +97,14 @@ export function Main() {
             }
         }
         //通过全局快捷键可以屏蔽掉窗口快捷键
-        let bindkey = ["ctrl+r", "ctrl+shift+i"];
-        for (var i = 0; i < bindkey.length; i++) {
-            let key = bindkey[i];
-            globalShortcut.register(key, () => {
-                console.log(key);
-            });
+        {
+            let bindkey = config.banhotkey;
+            for (var i = 0; i < bindkey.length; i++) {
+                let key = bindkey[i];
+                globalShortcut.register(key, () => {
+                    console.log(key);
+                });
+            }
         }
         app.on("window-all-closed", () => {
             app.exit();

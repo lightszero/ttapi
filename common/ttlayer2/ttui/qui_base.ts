@@ -179,9 +179,9 @@ export enum QUI_ElementType {
     //扩展控件
     Element_DragButton,//可以拖动的按钮
     Element_Overlay,//占位，屏蔽事件
-    Element_Toggle,
-    Element_Bar,
-    Element_ScrollBar,
+    Element_Toggle,//有两种状态的按钮组件
+    Element_Bar,//表示进度的组件
+    Element_ScrollBar,//滚动条组件
     //面板
     Element_Panel,
     Element_Panel_Scroll,

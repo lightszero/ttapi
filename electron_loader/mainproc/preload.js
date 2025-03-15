@@ -33,11 +33,9 @@ function dialog_msgbox(title, message, buttons) {
         //dialog.showMessageBox(BrowserWindow.getFocusedWindow(),{title:title,message:message});
     });
 }
-class fileInfo {
-}
-function dialog_openfile(filter) {
+function dialog_openfile(option) {
     return __awaiter(this, void 0, void 0, function* () {
-        return rpccall("dialog_openfile", filter);
+        return rpccall("dialog_openfile", option);
     });
 }
 function dialog_savefile(filters) {

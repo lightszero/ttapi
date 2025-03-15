@@ -1,5 +1,5 @@
 import { Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Group, QUI_Image, QUI_Label, QUI_Panel_Split, Rectangle, ResourceOption, Resources, tt } from "./ttlayer2/ttlayer2.js"
-
+import { ElectronFunc } from "./x_editor/electronfunc.js";
 export class MyLogic implements IUserLogic {
     canvas: QUI_Canvas;
     OnInit(): void {
@@ -47,9 +47,14 @@ export class MyLogic implements IUserLogic {
         group.GetContainer().AddChild(img);
 
         let btn = new QUI_Button();
+        let btnlabel = btn.elemNormal.GetContainer().GetChild(1) as QUI_Label
+        btnlabel.text = "Open";
         btn.localRect.offsetY1 += 132;
         btn.localRect.offsetY2 += 132;
-
+        btn.OnClick = async () => {
+            let files = await ElectronFunc.Instance.dialog_openfile(null);
+            console.log(JSON.stringify(files));
+        }
         group.GetContainer().AddChild(btn);
     }
     OnUpdate(delta: number): void {

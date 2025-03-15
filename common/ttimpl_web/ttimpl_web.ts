@@ -18,7 +18,7 @@ export namespace tt_impl {
             //let canvas = wx.createCanvas();
             //wx.createImage();
             this.webgl = canvas.getContext("webgl2", { antialias: false });
-
+            
             if (this.webgl != null) {
                 
                 //普通canvas

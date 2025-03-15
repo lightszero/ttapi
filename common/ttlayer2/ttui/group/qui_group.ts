@@ -1,7 +1,6 @@
 import { Color, Rectangle } from "../../ttlayer2.js";
 import { QUI_ElementType, QUI_HAlign } from "../qui_base.js";
-import { QUI_Canvas } from "../qui_canvas.js";
-import { QUI_DragButton, QUI_Image, QUI_Label, QUI_Panel, QUI_Resource } from "../ttui.js";
+import { QUI_DragButton, QUI_Image, QUI_Label, QUI_Panel } from "../ttui.js";
 
 export class QUI_Group extends QUI_Panel {
     constructor() {
@@ -50,7 +49,7 @@ export class QUI_Group extends QUI_Panel {
         {
 
             let title = this.title = new QUI_Label();
-            title.text = "group";
+            title.text = "Group";
             title.localRect.SetAsFill();
 
             title.halign = QUI_HAlign.Left;

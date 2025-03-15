@@ -7,6 +7,7 @@ class Config extends MainWinConfig {
     sync: boolean;
     syncurl: string;
     openurl: string;
+    banhotkey: string[];
 }
 function ParseConfig(json: string): Config {
     let config = JSON.parse(json) as Config;
@@ -23,6 +24,8 @@ function ParseConfig(json: string): Config {
         config.width = 800;
     if (config.height == undefined)
         config.height = 600;
+    if (config.banhotkey == null)
+        config.banhotkey = [];
     return config;
 }
 //electron 启动程序
@@ -107,12 +110,14 @@ export async function Main() {
 
 
     //通过全局快捷键可以屏蔽掉窗口快捷键
-    let bindkey: string[] = ["ctrl+r", "ctrl+shift+i"]
-    for (var i = 0; i < bindkey.length; i++) {
-        let key = bindkey[i];
-        globalShortcut.register(key, () => {
-            console.log(key);
-        });
+    {
+        let bindkey: string[] = config.banhotkey;
+        for (var i = 0; i < bindkey.length; i++) {
+            let key = bindkey[i];
+            globalShortcut.register(key, () => {
+                console.log(key);
+            });
+        }
     }
 
 

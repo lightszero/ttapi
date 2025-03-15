@@ -53,6 +53,10 @@ function dialog_msgbox(evt, title, message, buttons) {
         return rd.response;
     });
 }
+class FileFilter {
+}
+class OpenFileOption {
+}
 function dialog_savefile(evt, filters) {
     return __awaiter(this, void 0, void 0, function* () {
         let win = electron.BrowserWindow.getFocusedWindow();
@@ -60,10 +64,20 @@ function dialog_savefile(evt, filters) {
         return d.filePath;
     });
 }
-function dialog_openfile(evt, filters) {
+function dialog_openfile(evt, option) {
     return __awaiter(this, void 0, void 0, function* () {
         let win = electron.BrowserWindow.getFocusedWindow();
-        var d = yield electron.dialog.showOpenDialog(win, { "filters": filters, });
+        let op = null;
+        console.warn("dialog_openfile:" + JSON.stringify(option));
+        if (option != null) {
+            op = {
+                "filters": option.filters
+            };
+            if (option.multiSelect) {
+                op.properties = ["multiSelections"];
+            }
+        }
+        var d = yield electron.dialog.showOpenDialog(win, op);
         return d.filePaths;
     });
 }

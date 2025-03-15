@@ -2,6 +2,7 @@
 import * as electron from "electron";
 import * as fs from "fs"
 import * as path from "path"
+import { json } from "stream/consumers";
 
 export function GetRootPath(): string {
     let apppath = electron.app.getAppPath();
@@ -64,6 +65,20 @@ async function dialog_msgbox(evt: electron.IpcMainInvokeEvent, title: string, me
 
     return rd.response;
 }
+
+
+class FileFilter {
+
+    // Docs: https://electronjs.org/docs/api/structures/file-filter
+
+    extensions: string[];
+    name: string;
+}
+class OpenFileOption {
+    multiSelect: boolean;
+    filters: FileFilter[];
+}
+
 async function dialog_savefile(evt: electron.IpcMainInvokeEvent, filters: electron.FileFilter[]) {
 
     let win = electron.BrowserWindow.getFocusedWindow();
@@ -71,13 +86,21 @@ async function dialog_savefile(evt: electron.IpcMainInvokeEvent, filters: electr
     var d = await electron.dialog.showSaveDialog(win, { "filters": filters });
     return d.filePath;
 }
-async function dialog_openfile(evt: electron.IpcMainInvokeEvent, filters: electron.FileFilter[]) {
+async function dialog_openfile(evt: electron.IpcMainInvokeEvent, option: OpenFileOption) {
     let win = electron.BrowserWindow.getFocusedWindow();
-
-    var d = await electron.dialog.showOpenDialog(win, { "filters": filters, });
+    let op: electron.OpenDialogOptions = null;
+    console.warn("dialog_openfile:" + JSON.stringify(option));
+    if (option != null) {
+        op = {
+            "filters": option.filters
+        }
+        if (option.multiSelect) {
+            op.properties = ["multiSelections"];
+        }
+    }
+    var d = await electron.dialog.showOpenDialog(win, op);
     return d.filePaths;
 }
-
 
 async function path_getcurrent(evt: electron.IpcMainInvokeEvent) {
     let curpath = GetRootPath();
