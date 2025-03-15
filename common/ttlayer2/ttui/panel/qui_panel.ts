@@ -18,6 +18,7 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         this._border = new Border(2, 2, 2, 2);
 
     }
+
     get container(): QUI_Container {
         return this._container;
     }
@@ -31,10 +32,32 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
     getBorder(): Border {
         return this._border;
     }
-    OnRender(_canvas: QUI_Canvas): void {
+    protected OnBeforeRender(_canvas: QUI_Canvas) {
         if (this.backElement != null) {
             this.backElement.OnRender(_canvas);
         }
+    }
+    protected OnAfterRender(_canvas: QUI_Canvas) {
+        if (this.borderElement != null)
+            this.borderElement.OnRender(_canvas);
+    }
+    protected OnBeforeUpdate(_canvas: QUI_Canvas, delta: number): void {
+        if (this.backElement != null) {
+            (this.backElement as QUI.QUI_BaseElement)._parent = this;
+            this.backElement.localRect.setAsFill();
+            this.backElement.OnUpdate(_canvas, delta);
+        }
+    }
+    protected OnAfterUpdate(_canvas: QUI_Canvas, delta: number): void {
+        if (this.borderElement != null) {
+            (this.borderElement as QUI.QUI_BaseElement)._parent = this;
+            this.borderElement.localRect.setAsFill();
+            this.borderElement.OnUpdate(_canvas, delta);
+        }
+    }
+    OnRender(_canvas: QUI_Canvas): void {
+
+        this.OnBeforeRender(_canvas);
         let batcher = _canvas.batcherUI;
 
         //根据边距计算限制区域
@@ -57,8 +80,7 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         target.PopLimitRect();
 
         batcher.BeginDraw(target);
-        if (this.borderElement != null)
-            this.borderElement.OnRender(_canvas);
+        this.OnAfterRender(_canvas);
     }
 
     protected updateContainerPos(): void {
@@ -73,18 +95,10 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         this._container.localRect.offsetY2 = -this._border.YBottom;
     }
     OnUpdate(_canvas: QUI_Canvas, delta: number): void {
-        if (this.backElement != null) {
-            (this.backElement as QUI.QUI_BaseElement)._parent = this;
-            this.backElement.localRect.setAsFill();
-            this.backElement.OnUpdate(_canvas, delta);
-        }
+        this.OnBeforeUpdate(_canvas, delta);
         this.updateContainerPos();
         this._container.OnUpdate(_canvas, delta);
-        if (this.borderElement != null) {
-            (this.borderElement as QUI.QUI_BaseElement)._parent = this;
-            this.borderElement.localRect.setAsFill();
-            this.borderElement.OnUpdate(_canvas, delta);
-        }
+        this.OnAfterUpdate(_canvas, delta);
         super.OnUpdate(_canvas, delta);
     }
     OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
@@ -106,6 +120,6 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         return this._container.OnTouch(_canvas, touchid, press, move, x, y);
     }
     protected _container: QUI_Container;
-   
+
 
 }
