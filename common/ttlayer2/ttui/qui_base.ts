@@ -161,22 +161,24 @@ export class QUI_Rect {//相对父结构的位置，百分比，
 }
 export enum QUI_ElementType {
     Element_Canvas,
-    //基本控件
+    //容器控件
     Element_Container,
-    Element_Container_AutoFill,
+    //自动调整显示比例，留白
+    Element_ScreenFixer,
 
-    Element_RenderContainer,
-    Element_Image,
-    Element_Image_Scale9,
-    Element_Label,
-    Element_Button,
+    //基础控件
+    Element_CustomRender,//自定义渲染器
+    Element_Image,//图片
+    Element_Image_Scale9,//图片scale9
+    Element_Label,//文本
+    Element_Button,//按钮
     Element_DropButton,//专门接收抬起事件
-    Element_Joystick,
-    Element_TouchBar,
-    Element_TextBox_Prompt,
+    Element_Joystick,//摇杆组件
+    Element_TouchBar,//触摸板组件
+    Element_TextBox_Prompt,//文本对话框组件
     //扩展控件
-    Element_DragButton,
-    Element_Overlay,
+    Element_DragButton,//可以拖动的按钮
+    Element_Overlay,//占位，屏蔽事件
     Element_Toggle,
     Element_Bar,
     Element_ScrollBar,

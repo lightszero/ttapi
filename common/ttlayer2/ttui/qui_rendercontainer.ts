@@ -2,9 +2,9 @@
 import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
 
-export class QUI_RenderContainer extends QUI.QUI_BaseElement {
+export class QUI_CustomRender extends QUI.QUI_BaseElement {
     GetElementType(): QUI.QUI_ElementType {
-        return QUI.QUI_ElementType.Element_RenderContainer;
+        return QUI.QUI_ElementType.Element_CustomRender;
     }
    
     OnCustomUpdate: ((delta: number) => void) | null = null;

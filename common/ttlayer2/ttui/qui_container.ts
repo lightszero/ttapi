@@ -11,7 +11,7 @@ export enum QUI_FillWay {
 }
 
 
-export class QUI_Container_AutoFill extends QUI.QUI_Container {
+export class QUI_ScreenFixer extends QUI.QUI_Container {
     fillway: QUI_FillWay = QUI_FillWay.Both;
     halign: QUI.QUI_HAlign = QUI.QUI_HAlign.Middle;
     valign: QUI.QUI_VAlign = QUI.QUI_VAlign.Middle;
@@ -22,7 +22,7 @@ export class QUI_Container_AutoFill extends QUI.QUI_Container {
         this.autosizeASPMax = Math.max(asp1, asp2);
     }
     GetElementType(): QUI.QUI_ElementType {
-        return QUI.QUI_ElementType.Element_Container_AutoFill;
+        return QUI.QUI_ElementType.Element_ScreenFixer;
     }
 
     OnUpdate(_canvas: QUI_Canvas, delta: number): void {
