@@ -3,7 +3,7 @@ import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
 
 export class QUI_RenderContainer extends QUI.QUI_BaseElement {
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_RenderContainer;
     }
    

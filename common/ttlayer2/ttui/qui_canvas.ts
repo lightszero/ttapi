@@ -1,9 +1,9 @@
 import { tt } from "../../ttapi/ttapi.js";
-import { Rectangle, IRenderTarget, Render_Batcher } from "../ttlayer2.js";
+import { IRenderTarget, Rectangle, Render_Batcher } from "../ttlayer2.js";
+
 import * as QUI from "./qui_base.js"
 
-
-export class QUI_Canvas extends QUI.QUI_BaseContainer {
+export class QUI_Canvas extends QUI.QUI_Container {
     constructor(target: IRenderTarget) {
         super();
         this.target = target;
@@ -31,7 +31,7 @@ export class QUI_Canvas extends QUI.QUI_BaseContainer {
     scale: number = 1.0;
     batcherUI: Render_Batcher;
     target: IRenderTarget;
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Canvas;
     }
     OnUpdate(_canvas:QUI_Canvas,delta: number): void {

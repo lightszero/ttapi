@@ -1,6 +1,6 @@
 
 import * as QUI from "../qui_base.js"
-import { QUI_Container } from "../qui_container.js";
+
 import { QUI_DragButton } from "../ext/qui_dragbutton.js";
 import { QUI_Canvas } from "../qui_canvas.js";
 import { Border, QUI_Panel, QUI_Resource, Rectangle } from "../../ttlayer2.js";
@@ -10,27 +10,30 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
     constructor() {
         super();
         this.splitDir = QUI.QUI_Direction2.Horizontal;
-        this.localRect.setAsFill();
+        this.localRect.SetAsFill();
         this._panel1 = new QUI_Panel();
         this._panel1._parent = this;
-        this._panel1.localRect.setAsFill();
-        this._panel1.borderElement = QUI_Resource.CreateGUI_Border();
+        this._panel1.localRect.SetAsFill();
+        this._panel1.foreElements = [];
+       
+        this._panel1.foreElements.push(QUI_Resource.CreateGUI_Border());
         this._panel2 = new QUI_Panel();
         this._panel2._parent = this;
-        this._panel2.localRect.setAsFill();
-        this._panel2.borderElement = QUI_Resource.CreateGUI_Border();
+        this._panel2.localRect.SetAsFill();
+        this._panel2.foreElements = [];
+        this._panel2.foreElements.push(QUI_Resource.CreateGUI_Border());
         //this.borderElement = QUI_Resource.CreateGUI_Border();
         this._border = new Border(1, 1, 1, 1);
 
         this._splitButton = new QUI_DragButton();
         this._splitButton._parent = this;
-        this._splitButton.localRect.setAsFill();
+        this._splitButton.localRect.SetAsFill();
         this._splitButton.OnDragStart = this._ondragstart.bind(this);
         this._splitButton.OnDrag = this._ondrag.bind(this);
         // this._splitButton.OnDragEnd = this._ondragend.bind(this);
 
         this.splitSize = 8;
-        
+
         this.updateContainerPos();
         this.updateSplitBtnPos();
     }
@@ -44,11 +47,11 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
     }
     _ondrag(x: number, y: number, bx: number, by: number): void {
         if (this.splitDir == QUI.QUI_Direction2.Horizontal) {
-            let xadd = (x - bx) / this.getWorldRect().Width;
+            let xadd = (x - bx) / this.GetWorldRect().Width;
             this.splitPos = this._dragvalue + xadd;
         }
         else {
-            let yadd = (y - by) / this.getWorldRect().Height;
+            let yadd = (y - by) / this.GetWorldRect().Height;
             this.splitPos = this._dragvalue + yadd;
         }
         if (this.splitPos < 0.1)
@@ -60,7 +63,7 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
     // _ondragend(x: number, y: number): void {
     //     this.updateSplitBtnPos();
     // }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel_Split;
     }
 
@@ -187,7 +190,7 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
     OnUpdate(_canvas: QUI_Canvas, delta: number): void {
         if (this.backElement != null) {
             (this.backElement as QUI.QUI_BaseElement)._parent = this;
-            this.backElement.localRect.setAsFill();
+            this.backElement.localRect.SetAsFill();
             this.backElement.OnUpdate(_canvas, delta);
         }
         this.updateContainerPos();
@@ -199,7 +202,7 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
 
         if (this.borderElement != null) {
             (this.borderElement as QUI.QUI_BaseElement)._parent = this;
-            this.borderElement.localRect.setAsFill();
+            this.borderElement.localRect.SetAsFill();
             this.borderElement.OnUpdate(_canvas, delta);
         }
 
@@ -210,7 +213,7 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
         let skippanel2 = false;
         if (press == true && move == false) {
             {
-                let rectlimit = this._panel1.getWorldRect();
+                let rectlimit = this._panel1.GetWorldRect();
                 let x1 = rectlimit.X;
                 let y1 = rectlimit.Y;
                 let x2 = rectlimit.X + rectlimit.Width;
@@ -224,7 +227,7 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
                 }
             }
             {
-                let rectlimit = this._panel2.getWorldRect();
+                let rectlimit = this._panel2.GetWorldRect();
                 let x1 = rectlimit.X;
                 let y1 = rectlimit.Y;
                 let x2 = rectlimit.X + rectlimit.Width;

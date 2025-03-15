@@ -1,5 +1,5 @@
 import { tt } from "../../ttapi/ttapi.js";
-import { Rectangle } from "../ttlayer2.js";
+import { Color, Rectangle } from "../ttlayer2.js";
 import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
 
@@ -9,13 +9,18 @@ export class QUI_DropButton extends QUI.QUI_BaseElement {
         super();
         this._pressid = touchid;
         this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
+        this.colorNormal = Color.White;
+        this.colorActive = new Color(0.6, 0.6, 0.9, 1);
     }
 
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_DropButton;
     }
     ElemNormal: QUI.QUI_IElement | null = null;
-    ElemActive: QUI.QUI_IElement | null = null;
+
+    colorNormal: Color;
+    colorActive: Color;
+
     BindKey: string = null;
     _active: boolean = false;
 
@@ -33,12 +38,12 @@ export class QUI_DropButton extends QUI.QUI_BaseElement {
         this._pressid = -1;
         super.CancelTouch();
     }
-    OnTouch(_canvas:QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
-        let kill = super.OnTouch(_canvas,touchid, press, move, x, y);
+    OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        let kill = super.OnTouch(_canvas, touchid, press, move, x, y);
         if (kill) return true;
 
         //this.OnTouch_Impl();
-        let rect = this.getWorldRect();
+        let rect = this.GetWorldRect();
         let x2 = rect.X + rect.Width;
         let y2 = rect.Y + rect.Height;
 
@@ -72,37 +77,30 @@ export class QUI_DropButton extends QUI.QUI_BaseElement {
 
 
         //this.Render_impl();
-        if (this._active) {
-            if (this.ElemActive != null) {
-                (this.ElemActive as any)._parent = this;
-                this.ElemActive.alpha = this.alpha;
-                this.ElemActive.OnRender(_canvas);
-            }
-        }
-        else {
-            if (this.ElemNormal != null) {
-                (this.ElemNormal as any)._parent = this;
-                this.ElemNormal.alpha = this.alpha;
-                this.ElemNormal.OnRender(_canvas)
-            }
+
+        if (this.ElemNormal != null) {
+            (this.ElemNormal as any)._parent = this;
+
+            this.ElemNormal.OnRender(_canvas)
         }
 
 
         super.OnRender(_canvas);
     }
-    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
+    OnUpdate(_canvas: QUI_Canvas, delta: number): void {
 
         if (this._active) {
-            if (this.ElemActive != null) {
-                this.ElemActive.OnUpdate(_canvas,delta)
+            if (this.ElemNormal != null) {
+                this.ElemNormal.localColor = this.colorActive;
+                this.ElemNormal.OnUpdate(_canvas, delta)
             }
         }
         else {
             if (this.ElemNormal != null) {
-                this.ElemNormal.OnUpdate(_canvas,delta)
+                this.ElemNormal.localColor = this.colorNormal;
+                this.ElemNormal.OnUpdate(_canvas, delta)
             }
         }
-
-        super.OnUpdate(_canvas,delta);
+        super.OnUpdate(_canvas, delta);
     }
 }

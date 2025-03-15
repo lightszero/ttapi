@@ -9,7 +9,7 @@ export class QUI_Overlay extends QUI.QUI_BaseElement {
         super();
         this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Overlay;
     }
 
@@ -22,7 +22,7 @@ export class QUI_Overlay extends QUI.QUI_BaseElement {
         if (kill) return true;
 
         //this.OnTouch_Impl();
-        let rect = this.getWorldRect();
+        let rect = this.GetWorldRect();
         let x2 = rect.X + rect.Width;
         let y2 = rect.Y + rect.Height;
 

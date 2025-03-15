@@ -7,9 +7,9 @@ import { QUI_Canvas } from "./qui_canvas.js";
 export class QUI_TouchBar extends QUI.QUI_BaseElement {
     constructor() {
         super();
-        this.localRect.setAsFill();
+        this.localRect.SetAsFill();
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_TouchBar;
     }
 
@@ -44,7 +44,7 @@ export class QUI_TouchBar extends QUI.QUI_BaseElement {
     private _pressid: number = 0;
     OnRender(_canvas: QUI_Canvas): void {
 
-        let sw = this.getWorldRect();
+        let sw = this.GetWorldRect();
         //this.touchBackSize.X = sw.Width;
         //this.touchBackSize.Y = sw.Height;
         //this.Render_impl();
@@ -94,7 +94,7 @@ export class QUI_TouchBar extends QUI.QUI_BaseElement {
 
             if (p) {
                 this._press = true;
-                let sw = this.getWorldRect();
+                let sw = this.GetWorldRect();
 
                 this._touchLastPoint = new Vector2(
                     sw.Width / 2,//this.touchBackSize.X / 2,
@@ -121,8 +121,8 @@ export class QUI_TouchBar extends QUI.QUI_BaseElement {
 
         this.keymode = false;
 
-        let rect = this.getWorldRect();
-        let prect = this._parent.getWorldRect();
+        let rect = this.GetWorldRect();
+        let prect = this._parent.GetWorldRect();
         let x2 = rect.X + rect.Width;
         let y2 = rect.Y + rect.Height;
 

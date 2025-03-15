@@ -12,7 +12,7 @@ export class QUI_ScrollBar extends QUI.QUI_BaseElement {
 
         this.localRect.setByRect(new Rectangle(0, 0, 16, 250));
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_ScrollBar;
     }
  
@@ -43,13 +43,13 @@ export class QUI_ScrollBar extends QUI.QUI_BaseElement {
 
         if (this.spriteBackground != null) {
             (this.spriteBackground as any)._parent = this;
-            this.spriteBackground.localRect.setAsFill();
+            this.spriteBackground.localRect.SetAsFill();
             this.spriteBackground.OnUpdate(_canvas,delta)
         }
 
         if (this.spriteValue != null) {
             (this.spriteValue as any)._parent = this;
-            this.spriteValue.localRect.setAsFill();
+            this.spriteValue.localRect.SetAsFill();
             let v1 = this.value / (this.max - this.min + this.size);
             if (v1 < 0) v1 = 0;
             if (v1 > 1) v1 = 1;

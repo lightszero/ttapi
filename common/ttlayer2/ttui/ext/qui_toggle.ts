@@ -9,7 +9,7 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
         super();
         this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Toggle;
     }
 
@@ -29,7 +29,7 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
         if (kill) return true;
 
         //this.OnTouch_Impl();
-        let rect = this.getWorldRect();
+        let rect = this.GetWorldRect();
         let x1 = rect.X;
         let y1 = rect.Y;
         let x2 = rect.X + rect.Width;
@@ -128,14 +128,14 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
             if (this.value) {
                 if (this.ElemTrueDown != null) {
                     (this.ElemTrueDown as any)._parent = this;
-                    this.ElemTrueDown.localRect.setAsFill();
+                    this.ElemTrueDown.localRect.SetAsFill();
                     this.ElemTrueDown.OnUpdate(_canvas, delta);
                 }
             }
             else {
                 if (this.ElemFalseDown != null) {
                     (this.ElemFalseDown as any)._parent = this;
-                    this.ElemFalseDown.localRect.setAsFill();
+                    this.ElemFalseDown.localRect.SetAsFill();
                     this.ElemFalseDown.OnUpdate(_canvas, delta);
                 }
             }
@@ -144,14 +144,14 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
             if (this.value) {
                 if (this.ElemTrue != null) {
                     (this.ElemTrue as any)._parent = this;
-                    this.ElemTrue.localRect.setAsFill();
+                    this.ElemTrue.localRect.SetAsFill();
                     this.ElemTrue.OnUpdate(_canvas, delta);
                 }
             }
             else {
                 if (this.ElemFalse != null) {
                     (this.ElemFalse as any)._parent = this;
-                    this.ElemFalse.localRect.setAsFill();
+                    this.ElemFalse.localRect.SetAsFill();
                     this.ElemFalse.OnUpdate(_canvas, delta);
                 }
             }

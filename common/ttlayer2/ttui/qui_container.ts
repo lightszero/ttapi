@@ -1,22 +1,17 @@
 
 import * as QUI from "./qui_base.js"
-import { QUI_IElement } from "./qui_base.js";
+import { QUI_IElement, QUI_BaseElement, QUI_IContainer, QUI_ElementType } from "./qui_base.js";
 import { QUI_Canvas } from "./qui_canvas.js";
 
-export class QUI_Container extends QUI.QUI_BaseContainer {
-    getElementType(): QUI.QUI_ElementType {
-        return QUI.QUI_ElementType.Element_Container;
-    }
- 
 
-}
 export enum QUI_FillWay {
     Horizontal,
     Vertical,
     Both,
 }
 
-export class QUI_Container_AutoFill extends QUI.QUI_BaseContainer {
+
+export class QUI_Container_AutoFill extends QUI.QUI_Container {
     fillway: QUI_FillWay = QUI_FillWay.Both;
     halign: QUI.QUI_HAlign = QUI.QUI_HAlign.Middle;
     valign: QUI.QUI_VAlign = QUI.QUI_VAlign.Middle;
@@ -26,12 +21,12 @@ export class QUI_Container_AutoFill extends QUI.QUI_BaseContainer {
         this.autosizeASPMin = Math.min(asp1, asp2);
         this.autosizeASPMax = Math.max(asp1, asp2);
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Container_AutoFill;
     }
 
     OnUpdate(_canvas: QUI_Canvas, delta: number): void {
-        let sw = this.getParent().getWorldRect();
+        let sw = this.GetParent().GetWorldRect();
         let aspnow = sw.Width / sw.Height;
         let bfixmin = false;
         let bfixmax = false;
@@ -76,7 +71,7 @@ export class QUI_Container_AutoFill extends QUI.QUI_BaseContainer {
         }
         //是否填充
         if (this.fillway == QUI_FillWay.Both && !bfixmax && !bfixmin) {
-            this.localRect.setAsFill();
+            this.localRect.SetAsFill();
         }
 
         super.OnUpdate(_canvas, delta);

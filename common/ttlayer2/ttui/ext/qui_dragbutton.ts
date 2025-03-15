@@ -1,5 +1,5 @@
 
-import { Rectangle } from "../../ttlayer2.js";
+import { Color, QUI_Container, QUI_ImageScale9, QUI_Label, QUI_Resource, Rectangle } from "../../ttlayer2.js";
 import * as QUI from "../qui_base.js"
 import { QUI_Canvas } from "../qui_canvas.js";
 
@@ -8,13 +8,35 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
     constructor() {
         super();
         this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
+        this.colorNormal = Color.White;
+        this.colorPress = new Color(0.9, 0.9, 0.3, 1);
+
+        let normal = new QUI_Container();
+
+        {
+            normal.localRect.SetAsFill();
+            let normalback = QUI_Resource.CreateGUI_Border();
+            normal.GetContainer().AddChild(normalback);
+            normalback.color = new Color(1, 1, 1, 1);
+            normalback.localRect.SetAsFill();
+
+            let txt = new QUI_Label();
+
+            txt.localRect.SetAsFill();
+            txt.text = "DragBtn";
+            normal.GetContainer().AddChild(txt)
+
+            
+        }
+        this.ElemNormal = normal;
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_DragButton;
     }
 
     ElemNormal: QUI.QUI_IElement | null = null;
-    ElemPress: QUI.QUI_IElement | null = null;
+    colorNormal: Color;
+    colorPress: Color;
     private press: boolean = false;
     private pressid: number = -1;
     private dragX: number;
@@ -30,7 +52,7 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
         if (kill) return true;
 
         //this.OnTouch_Impl();
-        let rect = this.getWorldRect();
+        let rect = this.GetWorldRect();
         let x1 = rect.X;
         let y1 = rect.Y;
         let x2 = rect.X + rect.Width;
@@ -108,18 +130,12 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
 
 
         //this.Render_impl();
-        if (this.press) {
-            if (this.ElemPress != null) {
-                (this.ElemPress as any)._parent = this;
-                this.ElemPress.OnRender(_canvas);
-            }
+
+        if (this.ElemNormal != null) {
+            (this.ElemNormal as any)._parent = this;
+            this.ElemNormal.OnRender(_canvas)
         }
-        else {
-            if (this.ElemNormal != null) {
-                (this.ElemNormal as any)._parent = this;
-                this.ElemNormal.OnRender(_canvas)
-            }
-        }
+
 
         super.OnRender(_canvas);
     }
@@ -131,17 +147,19 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
         // rect.Y -= prect.Y;
         // this.localRect.setByRect(rect);
 
-
         if (this.press) {
-            if (this.ElemPress != null) {
-                this.ElemPress.OnUpdate(_canvas, delta)
+            if (this.ElemNormal != null) {
+                this.ElemNormal.localColor = this.colorPress;
+                this.ElemNormal.OnUpdate(_canvas, delta)
             }
         }
         else {
             if (this.ElemNormal != null) {
+                this.ElemNormal.localColor = this.colorNormal;
                 this.ElemNormal.OnUpdate(_canvas, delta)
             }
         }
+
 
     }
 }

@@ -27,5 +27,5 @@ export * from "./panel/qui_panel.js"//qui 面板 ，有一个边框的容器，�
 export * from "./panel/qui_panel_scroll.js"//滚动面板，对于数量不多的列表控件，可以直接用滚动面板做。
 export * from "./panel/qui_panel_split.js"//qui 分割器控件，左右两边可以放入不同的组件（或上下），中间有一个可拖动改变尺寸的分割器
 export * from "./panel/qui_panel_scroll_unlimit.js"//无限滚动面板，专门用来制作海量内容的滚动。要求每一行高度一致。需要编写更新代码。
-
+export * from "./group/qui_group.js"
 export * from "./qui_resource.js"

@@ -2,7 +2,6 @@
 import { tt } from "../../../ttapi/ttapi.js";
 import * as QUI from "../qui_base.js"
 import { QUI_Canvas } from "../qui_canvas.js";
-import { QUI_Container } from "../qui_container.js";
 import { QUI_Panel } from "./qui_panel.js";
 
 
@@ -20,7 +19,7 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
             this._itemheight = this._freeItem[0].localRect.offsetY2 - this._freeItem[0].localRect.offsetY1;
         }
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel_Scroll_Unlimit;
     }
   
@@ -67,7 +66,7 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
 
         let ystartindx = (this.panelValue / this._itemheight) | 0
 
-        let height = this._container.getWorldRect().Height;
+        let height = this._container.GetWorldRect().Height;
 
         let y = ystartindx * this._itemheight - this.panelValue;
 
@@ -81,21 +80,21 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
             // let index = i - ystartindx;
 
             //保证充足
-            while (this.container.getChildCount() <= visindex) {
+            while (this.GetContainer().GetChildCount() <= visindex) {
                 let reuseitem = null;
                 if (this._freeItem.length > 0) {
                     reuseitem = this._freeItem.pop();
                 }
                 if (reuseitem == null)
-                    this.container.addChild(this._updateUIFunc(null, null, -1, false));
+                    this.GetContainer().AddChild(this._updateUIFunc(null, null, -1, false));
                 else
-                    this.container.addChild(reuseitem);
+                    this.GetContainer().AddChild(reuseitem);
             }
             if (i >= 0) {
                 //改外形，改位置
-                this._updateUIFunc(this._items[i], this.container.getChild(visindex), i, this._pickid == i);
+                this._updateUIFunc(this._items[i], this.GetContainer().GetChild(visindex), i, this._pickid == i);
 
-                let elem = this.container.getChild(visindex);
+                let elem = this.GetContainer().GetChild(visindex);
                 elem.localRect.offsetY1 = y;
                 elem.localRect.offsetY2 = y + this._itemheight;
                 visindex++;
@@ -113,12 +112,12 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
         }
         if (visindex >= 0)  //多余的丢Free
         {
-            for (var j = visindex; j < this.container.getChildCount(); j++) {
-                this._freeItem.push(this.container.getChild(j));
+            for (var j = visindex; j < this.GetContainer().GetChildCount(); j++) {
+                this._freeItem.push(this.GetContainer().GetChild(j));
 
             }
 
-            this.container.removeChildBegin(visindex);
+            this.GetContainer().RemoveChildAt(visindex);
 
         }
 
@@ -154,7 +153,7 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
 
 
         if (this._press == false && press == true && move == false) {
-            let rectlimit = this.getWorldRect();
+            let rectlimit = this.GetWorldRect();
             let x1 = rectlimit.X + this._border.XLeft;
             let y1 = rectlimit.Y + this._border.YTop;
             let x2 = rectlimit.X + rectlimit.Width - this._border.XRight;
@@ -209,7 +208,7 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
         //限制
         if (this.panelWantValue < 0)
             this.panelWantValue = 0;
-        let height = this._container.getWorldRect().Height;
+        let height = this._container.GetWorldRect().Height;
         let totalheight = this.getTotalHeight();
         let bot = totalheight - height;
         if (bot < 0) bot = 0;

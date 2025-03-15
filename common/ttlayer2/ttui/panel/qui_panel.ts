@@ -1,9 +1,9 @@
 
 
-import { Border, Rectangle } from "../../ttlayer2.js";
+import { Border, QUI_Resource, Rectangle } from "../../ttlayer2.js";
 import * as QUI from "../qui_base.js"
 import { QUI_Canvas } from "../qui_canvas.js";
-import { QUI_Container } from "../qui_container.js";
+
 
 
 //Panel 是最简单的组件
@@ -11,53 +11,106 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
     constructor() {
         super();
 
-        this.localRect.setAsFill();
-        this._container = new QUI_Container();
+        this.localRect.SetAsFill();
+        this._container = new QUI.QUI_Container();
         this._container._parent = this;
-        this._container.localRect.setAsFill();
+        this._container.localRect.SetAsFill();
         this._border = new Border(2, 2, 2, 2);
+        this.backElements = [];
+        this.foreElements = [];
 
+        this.foreElements.push(QUI_Resource.CreateGUI_Border());
     }
 
-    get container(): QUI_Container {
-        return this._container;
+    GetContainer(): QUI.QUI_IContainer {
+        return this._container.GetContainer();
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel;
     }
 
-    backElement: QUI.QUI_IElement;
-    borderElement: QUI.QUI_IElement;//面板的边界外观
+    backElements: QUI.QUI_IElement[];
+    foreElements: QUI.QUI_IElement[];//面板的边界外观
     protected _border: Border;//面板的边距
     getBorder(): Border {
         return this._border;
     }
-    protected OnBeforeRender(_canvas: QUI_Canvas) {
-        if (this.backElement != null) {
-            this.backElement.OnRender(_canvas);
+    protected OnRenderBack(_canvas: QUI_Canvas) {
+        if (this.backElements != null) {
+            for (var i = 0; i < this.backElements.length; i++) {
+                this.backElements[i].OnRender(_canvas);
+            }
         }
     }
-    protected OnAfterRender(_canvas: QUI_Canvas) {
-        if (this.borderElement != null)
-            this.borderElement.OnRender(_canvas);
-    }
-    protected OnBeforeUpdate(_canvas: QUI_Canvas, delta: number): void {
-        if (this.backElement != null) {
-            (this.backElement as QUI.QUI_BaseElement)._parent = this;
-            this.backElement.localRect.setAsFill();
-            this.backElement.OnUpdate(_canvas, delta);
+    protected OnRenderFore(_canvas: QUI_Canvas) {
+        if (this.foreElements != null) {
+            for (var i = 0; i < this.foreElements.length; i++) {
+                this.foreElements[i].OnRender(_canvas);
+            }
         }
     }
-    protected OnAfterUpdate(_canvas: QUI_Canvas, delta: number): void {
-        if (this.borderElement != null) {
-            (this.borderElement as QUI.QUI_BaseElement)._parent = this;
-            this.borderElement.localRect.setAsFill();
-            this.borderElement.OnUpdate(_canvas, delta);
+    protected OnUpdateBack(_canvas: QUI_Canvas, delta: number): void {
+        if (this.backElements != null) {
+            for (var i = 0; i < this.backElements.length; i++) {
+                let elem = this.backElements[i] as QUI.QUI_BaseElement;
+                elem._parent = this;
+                //elem.localRect.setAsFill();
+                elem.OnUpdate(_canvas, delta);
+            }
         }
+    }
+    protected OnUpdateFore(_canvas: QUI_Canvas, delta: number): void {
+        if (this.foreElements != null) {
+            for (var i = 0; i < this.foreElements.length; i++) {
+                let elem = this.foreElements[i] as QUI.QUI_BaseElement;
+                elem._parent = this;
+                //elem.localRect.setAsFill();
+                elem.OnUpdate(_canvas, delta);
+            }
+        }
+    }
+    protected CancelTouchFore() {
+        if (this.backElements != null) {
+            for (var i = 0; i < this.backElements.length; i++) {
+                let elem = this.backElements[i] as QUI.QUI_BaseElement;
+                elem.CancelTouch();
+            }
+        }
+    }
+    protected CancelTouchBack() {
+        if (this.foreElements != null) {
+            for (var i = 0; i < this.foreElements.length; i++) {
+                let elem = this.foreElements[i] as QUI.QUI_BaseElement;
+                elem.CancelTouch();
+            }
+        }
+    }
+    protected OnTouchFore(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        if (this.foreElements != null) {
+            for (var i = this.foreElements.length - 1; i > 0; i--) {
+                let elem = this.foreElements[i] as QUI.QUI_BaseElement;
+                let kill = elem.OnTouch(_canvas, touchid, press, move, x, y);
+                if (kill)
+                    return true;
+            }
+        }
+        return false;
+    }
+    protected OnTouchBack(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+
+        if (this.backElements != null) {
+            for (var i = this.backElements.length - 1; i > 0; i--) {
+                let elem = this.backElements[i] as QUI.QUI_BaseElement;
+                let kill = elem.OnTouch(_canvas, touchid, press, move, x, y);
+                if (kill)
+                    return true;
+            }
+        }
+        return false;
     }
     OnRender(_canvas: QUI_Canvas): void {
 
-        this.OnBeforeRender(_canvas);
+        this.OnRenderBack(_canvas);
         let batcher = _canvas.batcherUI;
 
         //根据边距计算限制区域
@@ -80,7 +133,7 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         target.PopLimitRect();
 
         batcher.BeginDraw(target);
-        this.OnAfterRender(_canvas);
+        this.OnRenderFore(_canvas);
     }
 
     protected updateContainerPos(): void {
@@ -95,15 +148,24 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         this._container.localRect.offsetY2 = -this._border.YBottom;
     }
     OnUpdate(_canvas: QUI_Canvas, delta: number): void {
-        this.OnBeforeUpdate(_canvas, delta);
+        this.OnUpdateBack(_canvas, delta);
         this.updateContainerPos();
         this._container.OnUpdate(_canvas, delta);
-        this.OnAfterUpdate(_canvas, delta);
+        this.OnUpdateFore(_canvas, delta);
         super.OnUpdate(_canvas, delta);
     }
+    CancelTouch() {
+        this.CancelTouchFore();
+        this._container.CancelTouch();
+        this.CancelTouchBack();
+    }
     OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        let kill = this.OnTouchFore(_canvas, touchid, press, move, x, y);
+        if (kill)
+            return kill;
+
         if (press == true && move == false) {
-            let rectlimit = this.getWorldRect();
+            let rectlimit = this.GetWorldRect();
             let x1 = rectlimit.X + this._border.XLeft;
             let y1 = rectlimit.Y + this._border.YTop;
             let x2 = rectlimit.X + rectlimit.Width - this._border.XRight;
@@ -117,9 +179,13 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
             }
         }
 
-        return this._container.OnTouch(_canvas, touchid, press, move, x, y);
+        kill = this._container.OnTouch(_canvas, touchid, press, move, x, y);
+        if (kill)
+            return kill;
+        kill = this.OnTouchBack(_canvas, touchid, press, move, x, y);
+        return kill;
     }
-    protected _container: QUI_Container;
+    protected _container: QUI.QUI_Container;
 
 
 }

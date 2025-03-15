@@ -12,7 +12,7 @@ export class QUI_TextBox_Prompt extends QUI.QUI_BaseElement {
         this.text = txt;
         this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_TextBox_Prompt;
     }
     message: string = "";
@@ -30,7 +30,7 @@ export class QUI_TextBox_Prompt extends QUI.QUI_BaseElement {
     OnRender(_canvas: QUI_Canvas): void {
 
         if (this.border != null) {
-            this.border.localRect.setAsFill();
+            this.border.localRect.SetAsFill();
             (this.border as QUI.QUI_BaseElement)._parent = this;
         }
         //this.Render_impl();
@@ -85,7 +85,7 @@ export class QUI_TextBox_Prompt extends QUI.QUI_BaseElement {
         //if (kill) return true;
 
         //this.OnTouch_Impl();
-        let rect = this.getWorldRect();
+        let rect = this.GetWorldRect();
         let x2 = rect.X + rect.Width;
         let y2 = rect.Y + rect.Height;
 

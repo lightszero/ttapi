@@ -10,45 +10,34 @@ export class QUI_Button extends QUI.QUI_BaseElement {
 
         this.localRect.setByRect(new Rectangle(0, 0, 100, 32));
         let normal = new QUI_Container();
-        let press = new QUI_Container();
+
 
         {
-            normal.localRect.setAsFill();
+            normal.localRect.SetAsFill();
             let normalback = new QUI_ImageScale9(QUI_Resource.GetBorderScaleR());
-            normal.addChild(normalback);
+            normal.GetContainer().AddChild(normalback);
             normalback.color = new Color(1, 1, 1, 1);
-            normalback.localRect.setAsFill();
+            normalback.localRect.SetAsFill();
 
             let txt = new QUI_Label();
-            txt.color = Color.White;
-            txt.localRect.setAsFill();
+
+            txt.localRect.SetAsFill();
             txt.text = "Button";
-            normal.addChild(txt)
+            normal.GetContainer().AddChild(txt)
         }
-        {
-            press.localRect.setAsFill();
-            let pressback = new QUI_ImageScale9(QUI_Resource.GetBorderScaleR());
-            pressback.color = new Color(1, 1, 0.5, 1);
-            pressback.localRect.setAsFill();
-            press.addChild(pressback);
 
-            let txt = new QUI_Label();
-            txt.color = new Color(1, 1, 0.5, 1);
-            txt.localRect.setAsFill();
-            txt.text = "Button";
-            press.addChild(txt)
-        }
-        this.ElemNormal = normal;
-        this.ElemPress = press;
-
-
+        this.elemNormal = normal;
+        this.colorNormal = Color.White;
+        this.colorPress = new Color(0.9, 0.9, 0.3, 1);
     }
 
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Button;
     }
-    ElemNormal: QUI.QUI_IElement | null = null;
-    ElemPress: QUI.QUI_IElement | null = null;
+    elemNormal: QUI.QUI_IElement | null = null;
+
+    colorNormal: Color;
+    colorPress: Color;
     BindKey: string = null;
     _press: boolean = false;
     _keypress: boolean = false;
@@ -72,7 +61,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
         if (kill) return true;
 
         //this.OnTouch_Impl();
-        let rect = this.getWorldRect();
+        let rect = this.GetWorldRect();
         let x2 = rect.X + rect.Width;
         let y2 = rect.Y + rect.Height;
 
@@ -128,20 +117,13 @@ export class QUI_Button extends QUI.QUI_BaseElement {
 
 
         //this.Render_impl();
-        if (this._press) {
-            if (this.ElemPress != null) {
-                (this.ElemPress as any)._parent = this;
-                this.ElemPress.alpha = this.alpha;
-                this.ElemPress.OnRender(_canvas);
-            }
+
+        if (this.elemNormal != null) {
+            (this.elemNormal as any)._parent = this;
+
+            this.elemNormal.OnRender(_canvas)
         }
-        else {
-            if (this.ElemNormal != null) {
-                (this.ElemNormal as any)._parent = this;
-                this.ElemNormal.alpha = this.alpha;
-                this.ElemNormal.OnRender(_canvas)
-            }
-        }
+
 
 
         super.OnRender(_canvas);
@@ -163,13 +145,15 @@ export class QUI_Button extends QUI.QUI_BaseElement {
             }
         }
         if (this._press) {
-            if (this.ElemPress != null) {
-                this.ElemPress.OnUpdate(_canvas, delta)
+            if (this.elemNormal != null) {
+                this.elemNormal.localColor = this.colorPress;
+                this.elemNormal.OnUpdate(_canvas, delta)
             }
         }
         else {
-            if (this.ElemNormal != null) {
-                this.ElemNormal.OnUpdate(_canvas, delta)
+            if (this.elemNormal != null) {
+                this.elemNormal.localColor = this.colorNormal;
+                this.elemNormal.OnUpdate(_canvas, delta)
             }
         }
 

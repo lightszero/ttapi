@@ -1,6 +1,6 @@
 
 import { QUI_Canvas } from "./qui_canvas.js";
-import { Rectangle } from "../ttlayer2.js";
+import { Color, Rectangle } from "../ttlayer2.js";
 //开发一个简洁的UI系统
 export enum QUI_DragDriection {
     None,
@@ -75,7 +75,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         return r;
     }
     //按照填充模式设置控件位置
-    setAsFill(): void {
+    SetAsFill(): void {
         // 该函数等价于
         // this.setHPosFill(0,0);
         // this.setVPosFill(0,0);
@@ -185,10 +185,11 @@ export enum QUI_ElementType {
     Element_Panel_Scroll,
     Element_Panel_Split,
     Element_Panel_Scroll_Unlimit,
+    Element_Group,
 }
 export interface QUI_IElement {
     //输入时转换为target空间的坐标 * FinalScale
-    getElementType(): QUI_ElementType
+    GetElementType(): QUI_ElementType
 
     CancelTouch(): void;//取消事件
 
@@ -197,41 +198,41 @@ export interface QUI_IElement {
     OnRender(canvas: QUI_Canvas): void
     OnUpdate(canvas: QUI_Canvas, delta: number): void;
 
-    getParent(): QUI_IElement | null;
-    get container(): QUI_IContainer
+    GetParent(): QUI_IElement | null;
+    GetContainer(): QUI_IContainer
     //当前组件的位置
     localRect: QUI_Rect;
 
     Enable: boolean; //组件是否活动
     Tag: string | null;
     //得到最终位置，考虑父组件
-    getWorldRect(): Rectangle;
-    alpha: number;
-
+    GetWorldRect(): Rectangle;
+    localColor: Color;
+    GetFinalColor(): Color;
 }
 export interface QUI_IContainer {
-    getChildCount(): number;
-    getChild(index: number): QUI_IElement | null;
-    addChild(elem: QUI_IElement): void
-    removeChild(elem: QUI_IElement): void
-    removeChildAll(): void;
-    removeChildBegin(n:number):void;
+    GetChildCount(): number;
+    GetChild(index: number): QUI_IElement | null;
+    AddChild(elem: QUI_IElement): void
+    RemoveChild(elem: QUI_IElement): void
+    RemoveChildAll(): void;
+    RemoveChildAt(n: number): void;
 }
 
 export abstract class QUI_BaseElement implements QUI_IElement {
-    abstract getElementType(): QUI_ElementType;
+    abstract GetElementType(): QUI_ElementType;
 
     Tag: string | null = null;
     localRect: QUI_Rect = new QUI_Rect();
     _parent: QUI_IElement | null = null;
-    getParent(): QUI_IElement | null {
+    GetParent(): QUI_IElement | null {
         return this._parent;
     }
-    get container(): QUI_IContainer {
+    GetContainer(): QUI_IContainer {
         return null;
     }
     Enable: boolean = true;
-    alpha: number = 1.0;
+    _colorFinal: Color = Color.White;
 
     CancelTouch(): void {
 
@@ -243,14 +244,23 @@ export abstract class QUI_BaseElement implements QUI_IElement {
 
     }
     OnUpdate(canvas: QUI_Canvas, delta: number): void {
+        if (this._parent == null) {
+            this._colorFinal = this.localColor;
+        }
+        else {
+            this._colorFinal = Color.Mul(this._parent.GetFinalColor(), this.localColor)
+        }
 
     }
 
     //当前组件的位置
 
-
+    localColor: Color = Color.White;
+    GetFinalColor(): Color {
+        return this._colorFinal;
+    }
     //得到最终位置，考虑父组件
-    getWorldRect(): Rectangle {
+    GetWorldRect(): Rectangle {
         if (this._parent == null) {
             let x1 = this.localRect.offsetX1;
             let y1 = this.localRect.offsetY1;
@@ -259,7 +269,7 @@ export abstract class QUI_BaseElement implements QUI_IElement {
             return new Rectangle(x1, y1, x2 - x1, y2 - y1);
         }
         else {
-            let pw = this._parent.getWorldRect();
+            let pw = this._parent.GetWorldRect();
             return this.localRect.getFinalRect(pw);
         }
     }
@@ -272,30 +282,36 @@ export abstract class QUI_BaseElement implements QUI_IElement {
             return new Rectangle(x1, y1, (x2 - x1), y2 - y1);
         }
         else {
-            let pw = this._parent.getWorldRect();
+            let pw = this._parent.GetWorldRect();
             return this.localRect.getFinalRectScale(pw, scale);
         }
     }
 }
 
 
-export abstract class QUI_BaseContainer extends QUI_BaseElement implements QUI_IContainer {
 
-    get container(): QUI_IContainer {
+export class QUI_Container extends QUI_BaseElement implements QUI_IContainer {
+    constructor() {
+        super();
+    }
+    GetElementType(): QUI_ElementType {
+        return QUI_ElementType.Element_Container;
+    }
+    GetContainer(): QUI_IContainer {
         return this;
     }
 
     protected _children: QUI_IElement[];
 
-    getChildCount(): number {
+    GetChildCount(): number {
         return this._children == null ? 0 : this._children.length;
     }
-    getChild(index: number): QUI_IElement | null {
+    GetChild(index: number): QUI_IElement | null {
         if (this._children == null || index >= this._children.length)
             return null;
         return this._children[index];
     }
-    addChild(elem: QUI_IElement): void {
+    AddChild(elem: QUI_IElement): void {
 
         if (this._children == null)
             this._children = [];
@@ -305,14 +321,14 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement implements QUI_I
         //移除旧爹
         let p = (elem as any)._parent as QUI_IElement;
         if (p != null)
-            p.container.removeChild(p);
+            p.GetContainer().RemoveChild(p);
 
         this._children.push(elem);
 
         //换新爹
         (elem as any)._parent = this;
     }
-    removeChild(elem: QUI_IElement): void {
+    RemoveChild(elem: QUI_IElement): void {
         if (this._children == null)
             return;
         let i = this._children.indexOf(elem);
@@ -327,7 +343,7 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement implements QUI_I
         this._children.splice(index, 1);
     }
 
-    removeChildAll(): void {
+    RemoveChildAll(): void {
         if (this._children == null)
             return;
         for (var i = 0; i < this._children.length; i++) {
@@ -338,7 +354,7 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement implements QUI_I
         this._children.splice(0, this._children.length);
     }
 
-    removeChildBegin(n: number): void {
+    RemoveChildAt(n: number): void {
         if (this._children == null)
             return;
         for (var i = n; i < this._children.length; i++) {
@@ -390,6 +406,7 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement implements QUI_I
     }
     OnUpdate(canvas: QUI_Canvas, delta: number): void {
 
+        super.OnUpdate(canvas, delta);
         if (this._children == null)
             return;
         for (var i = 0; i < this._children.length; i++) {
@@ -399,4 +416,5 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement implements QUI_I
             }
         }
     }
+
 }

@@ -2,7 +2,7 @@
 import { tt } from "../../../ttapi/ttapi.js";
 import * as QUI from "../qui_base.js"
 import { QUI_Canvas } from "../qui_canvas.js";
-import { QUI_Container } from "../qui_container.js";
+
 import { QUI_Panel } from "./qui_panel.js";
 
 
@@ -16,7 +16,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
         this.panelHeight = 250;
 
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel_Scroll;
     }
 
@@ -30,7 +30,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
 
         this.panelOffsetWantX += x;
         this.panelOffsetWantX += y;
-        let rectlimit = this.getWorldRect();
+        let rectlimit = this.GetWorldRect();
         let width = rectlimit.Width - this._border.XLeft - this._border.XRight;
         let height = rectlimit.Height - this._border.YTop - this._border.YBottom;
 
@@ -81,7 +81,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
 
 
         if (this._press == false && press == true && move == false) {
-            let rectlimit = this.getWorldRect();
+            let rectlimit = this.GetWorldRect();
             let x1 = rectlimit.X + this._border.XLeft;
             let y1 = rectlimit.Y + this._border.YTop;
             let x2 = rectlimit.X + rectlimit.Width - this._border.XRight;
@@ -151,7 +151,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
             this.panelOffsetX = this._dragx + (x - this._pressx);
 
 
-        let rectlimit = this.getWorldRect();
+        let rectlimit = this.GetWorldRect();
         let width = rectlimit.Width - this._border.XLeft - this._border.XRight;
         let height = rectlimit.Height - this._border.YTop - this._border.YBottom;
 

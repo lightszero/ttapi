@@ -35,12 +35,12 @@ export class QUI_Resource {
 
     static CreateGUI_Border(): QUI_ImageScale9 {
         let image = new QUI_ImageScale9(this.GetBorderScale());
-        image.localRect.setAsFill();
+        image.localRect.SetAsFill();
         return image;
     }
     static CreateGUI_Border2(): QUI_ImageScale9 {
         let image = new QUI_ImageScale9(this.GetBorder2Scale());
-        image.localRect.setAsFill();
+        image.localRect.SetAsFill();
         return image;
     }
 

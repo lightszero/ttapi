@@ -21,6 +21,9 @@ export class Color {
     static get Tran(): Color {
         return new Color(0, 0, 0, 0);
     }
+    static Mul(a: Color, b: Color): Color {
+        return new Color(a.R * b.R, a.G * b.G, a.B * b.B, a.A * b.A);
+    }
     Clone(): Color {
         return new Color(this.R, this.G, this.B, this.A);
 

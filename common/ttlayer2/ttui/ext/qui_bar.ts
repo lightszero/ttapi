@@ -16,7 +16,7 @@ export class QUI_Bar extends QUI.QUI_BaseElement {
 
         this.localRect.setByRect(new Rectangle(0, 0, 250, 50));
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Bar;
     }
 
@@ -54,13 +54,13 @@ export class QUI_Bar extends QUI.QUI_BaseElement {
 
         if (this.spriteBackground != null) {
             (this.spriteBackground as any)._parent = this;
-            this.spriteBackground.localRect.setAsFill();
+            this.spriteBackground.localRect.SetAsFill();
             this.spriteBackground.OnUpdate(_canvas, delta)
         }
 
         if (this.spriteValue != null) {
             (this.spriteValue as any)._parent = this;
-            this.spriteValue.localRect.setAsFill();
+            this.spriteValue.localRect.SetAsFill();
             if (this.dir == QUI.QUI_Direction.LeftToRight) {
                 this.spriteValue.localRect.radioX2 = this._value;
             }
@@ -93,7 +93,7 @@ export class QUI_Bar extends QUI.QUI_BaseElement {
         if (kill) return true;
 
         //this.OnTouch_Impl();
-        let rect = this.getWorldRect();
+        let rect = this.GetWorldRect();
         let x1 = rect.X;
         let y1 = rect.Y;
         let x2 = rect.X + rect.Width;

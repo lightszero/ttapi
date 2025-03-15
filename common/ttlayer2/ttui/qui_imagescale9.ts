@@ -14,7 +14,7 @@ export class QUI_ImageScale9 extends QUI.QUI_BaseElement {
         else
             this.localRect.setByRect(new Rectangle(0, 0, 128, 128));
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Image_Scale9;
     }
 

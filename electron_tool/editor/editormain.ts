@@ -1,18 +1,18 @@
-import { Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Image, QUI_Label, QUI_Panel_Split, ResourceOption, Resources, tt } from "./ttlayer2/ttlayer2.js"
+import { Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Group, QUI_Image, QUI_Label, QUI_Panel_Split, Rectangle, ResourceOption, Resources, tt } from "./ttlayer2/ttlayer2.js"
 
 export class MyLogic implements IUserLogic {
     canvas: QUI_Canvas;
     OnInit(): void {
         let guilayer = new DrawLayer_GUI(DrawLayerTag.GUI);
-      
+
         //改动这个会影响canvas size，会造成不点对点
         tt.graphic.setMainScreenScale(1);
-   
+
         let pr = tt.graphic.getDevicePixelRadio();
 
         let scaleradio = (pr * 2) | 0;
         console.log("ScaleRadio=" + scaleradio);
-        
+
         //改Camera的缩放会直接缩放内容
         guilayer.GetCamera().Scale = scaleradio;
 
@@ -20,22 +20,37 @@ export class MyLogic implements IUserLogic {
 
         this.canvas = guilayer.GetCanvas();
 
-        let panelsplit1 = new QUI_Panel_Split();
-        this.canvas.container.addChild(panelsplit1);
+        // let panelsplit1 = new QUI_Panel_Split();
+        // this.canvas.container.addChild(panelsplit1);
+
+        // let img = new QUI_Image();
+        // img.color = new Color(0.3, 0.3, 0.3, 1);
+        // panelsplit1.getPanel1().container.addChild(img);
+
+        // let label = new QUI_Label();
+
+        // panelsplit1.getPanel1().container.addChild(label);
+
+        // let btn = new QUI_Button();
+        // btn.localRect.offsetY1 += 32;
+        // btn.localRect.offsetY2 += 32;
+        // panelsplit1.getPanel2().container.addChild(btn);
+
+        let group = new QUI_Group();
+        group.DragEnable = true;//允许拖动
+        group.localRect.setByRect(new Rectangle(0, 0, 200, 200));
+        this.canvas.GetContainer().AddChild(group);
+
 
         let img = new QUI_Image();
-        img.color = new Color(0.3, 0.3, 0.3, 1);
-        panelsplit1.getPanel1().container.addChild(img);
-
-        let label = new QUI_Label();
-
-        panelsplit1.getPanel1().container.addChild(label);
+        img.localColor = new Color(0.8, 0.6, 0.3, 1);
+        group.GetContainer().AddChild(img);
 
         let btn = new QUI_Button();
-        btn.localRect.offsetY1 += 32;
-        btn.localRect.offsetY2 += 32;
-        panelsplit1.getPanel2().container.addChild(btn);
+        btn.localRect.offsetY1 += 132;
+        btn.localRect.offsetY2 += 132;
 
+        group.GetContainer().AddChild(btn);
     }
     OnUpdate(delta: number): void {
 

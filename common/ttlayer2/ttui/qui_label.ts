@@ -17,13 +17,13 @@ export class QUI_Label extends QUI.QUI_BaseElement {
         this.text = "Label";
         this.localRect.setByRect(new Rectangle(0, 0, 100, 16));
     }
-    getElementType(): QUI.QUI_ElementType {
+    GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Label;
     }
 
     font: Font | null;
     text: string;
-    color: Color = Color.White;
+   
     withShadow: boolean = true;
     colorShadow: Color = new Color(0, 0, 0, 0.5);
     //是否裁剪
@@ -35,7 +35,6 @@ export class QUI_Label extends QUI.QUI_BaseElement {
     private _pos: Vector2 = new Vector2(0, 0);
     OnRender(_canvas: QUI_Canvas): void {
 
-        this.color.A = this.alpha;
         //this.Render_impl();
         if (this.font != null) {
             let sw = this.getWorldRectScale(_canvas.scale);
@@ -69,13 +68,13 @@ export class QUI_Label extends QUI.QUI_BaseElement {
                 if (this.withShadow) {
                     this.font.RenderTextWithLimit(_canvas.batcherUI, this.text, new Vector2(this._pos.X + fontborder, this._pos.Y + fontborder), _outs, this.colorShadow, sw);
                 }
-                this.font.RenderTextWithLimit(_canvas.batcherUI, this.text, this._pos, _outs, this.color, sw);
+                this.font.RenderTextWithLimit(_canvas.batcherUI, this.text, this._pos, _outs, this._colorFinal, sw);
             }
             else {
                 if (this.withShadow) {
                     this.font.RenderText(_canvas.batcherUI, this.text, new Vector2(this._pos.X + fontborder, this._pos.Y + fontborder), _outs, this.colorShadow);
                 }
-                this.font.RenderText(_canvas.batcherUI, this.text, this._pos, _outs, this.color);
+                this.font.RenderText(_canvas.batcherUI, this.text, this._pos, _outs, this._colorFinal);
             }
 
         }
