@@ -21,20 +21,20 @@ export class MyLogic implements IUserLogic {
         this.canvas = guilayer.GetCanvas();
 
         let panelsplit1 = new QUI_Panel_Split();
-        this.canvas.addChild(panelsplit1);
+        this.canvas.container.addChild(panelsplit1);
 
         let img = new QUI_Image();
         img.color = new Color(0.3, 0.3, 0.3, 1);
-        panelsplit1.getPanel1().addChild(img);
+        panelsplit1.getPanel1().container.addChild(img);
 
         let label = new QUI_Label();
 
-        panelsplit1.getPanel1().addChild(label);
+        panelsplit1.getPanel1().container.addChild(label);
 
         let btn = new QUI_Button();
         btn.localRect.offsetY1 += 32;
         btn.localRect.offsetY2 += 32;
-        panelsplit1.getPanel2().addChild(btn);
+        panelsplit1.getPanel2().container.addChild(btn);
 
     }
     OnUpdate(delta: number): void {

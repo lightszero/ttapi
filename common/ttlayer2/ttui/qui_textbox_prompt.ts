@@ -71,18 +71,18 @@ export class QUI_TextBox_Prompt extends QUI.QUI_BaseElement {
 
         this.border.OnRender(_canvas);
 
-        super.OnRender(_canvas);
+        //super.OnRender(_canvas);
     }
     _press: boolean = false;
     _pressid: number = -1;
     CancelTouch() {
         this._press = false;
         this._pressid = -1;
-        super.CancelTouch();
+        //super.CancelTouch();
     }
     OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
-        let kill = super.OnTouch(_canvas, touchid, press, move, x, y);
-        if (kill) return true;
+        //let kill = super.OnTouch(_canvas, touchid, press, move, x, y);
+        //if (kill) return true;
 
         //this.OnTouch_Impl();
         let rect = this.getWorldRect();

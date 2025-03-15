@@ -1,1 +1,1 @@
-electron .
+powershell -File "install.ps1"

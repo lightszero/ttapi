@@ -193,15 +193,12 @@ export interface QUI_IElement {
     CancelTouch(): void;//取消事件
 
     //return true 表示 消息被吞了
-    OnTouch(canvas: QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean
+    OnTouch(canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean
     OnRender(canvas: QUI_Canvas): void
-    OnUpdate(canvas: QUI_Canvas,delta: number): void;
-    getChildCount(): number;
-    getChild(index: number): QUI_IElement | null;
-    addChild(elem: QUI_IElement): void
-    removeChild(elem: QUI_IElement): void
-    removeChildAll(): void;
+    OnUpdate(canvas: QUI_Canvas, delta: number): void;
+
     getParent(): QUI_IElement | null;
+    get container(): QUI_IContainer
     //当前组件的位置
     localRect: QUI_Rect;
 
@@ -210,71 +207,86 @@ export interface QUI_IElement {
     //得到最终位置，考虑父组件
     getWorldRect(): Rectangle;
     alpha: number;
-   
+
+}
+export interface QUI_IContainer {
+    getChildCount(): number;
+    getChild(index: number): QUI_IElement | null;
+    addChild(elem: QUI_IElement): void
+    removeChild(elem: QUI_IElement): void
+    removeChildAll(): void;
+    removeChildBegin(n:number):void;
 }
 
 export abstract class QUI_BaseElement implements QUI_IElement {
     abstract getElementType(): QUI_ElementType;
-   
+
     Tag: string | null = null;
     localRect: QUI_Rect = new QUI_Rect();
     _parent: QUI_IElement | null = null;
     getParent(): QUI_IElement | null {
         return this._parent;
     }
+    get container(): QUI_IContainer {
+        return null;
+    }
     Enable: boolean = true;
     alpha: number = 1.0;
 
     CancelTouch(): void {
-        if (this._children != null) {
-            for (var i = this._children.length - 1; i >= 0; i--) {
-                let child = this._children[i];
-                if (child.Enable) {
-                    child.CancelTouch();
-                }
-            }
-        }
-    }
-    OnTouch(canvas: QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
 
-        if (this._children != null) {
-            for (var i = this._children.length - 1; i >= 0; i--) {
-                let child = this._children[i];
-                if (child.Enable) {
-                    let kill = child.OnTouch(canvas,touchid, press, move, x, y);
-                    if (kill)
-                        return true;
-                }
-            }
-        }
+    }
+    OnTouch(canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         return false;
     }
     OnRender(canvas: QUI_Canvas): void {
 
-        if (this._children == null)
-            return;
-        {
-            for (var i = 0; i < this._children.length; i++) {
-                let child = this._children[i];
-                if (child.Enable) {
-                    child.OnRender(canvas);
-                }
-            }
+    }
+    OnUpdate(canvas: QUI_Canvas, delta: number): void {
+
+    }
+
+    //当前组件的位置
+
+
+    //得到最终位置，考虑父组件
+    getWorldRect(): Rectangle {
+        if (this._parent == null) {
+            let x1 = this.localRect.offsetX1;
+            let y1 = this.localRect.offsetY1;
+            let x2 = this.localRect.offsetX2;
+            let y2 = this.localRect.offsetY2;
+            return new Rectangle(x1, y1, x2 - x1, y2 - y1);
+        }
+        else {
+            let pw = this._parent.getWorldRect();
+            return this.localRect.getFinalRect(pw);
         }
     }
-    OnUpdate(canvas: QUI_Canvas,delta: number): void {
-
-        if (this._children == null)
-            return;
-        for (var i = 0; i < this._children.length; i++) {
-            let child = this._children[i];
-            if (child.Enable) {
-                child.OnUpdate(canvas,delta);
-            }
+    getWorldRectScale(scale: number): Rectangle {
+        if (this._parent == null) {
+            let x1 = this.localRect.offsetX1 * scale;
+            let y1 = this.localRect.offsetY1 * scale;
+            let x2 = this.localRect.offsetX2 * scale;
+            let y2 = this.localRect.offsetY2 * scale;
+            return new Rectangle(x1, y1, (x2 - x1), y2 - y1);
         }
+        else {
+            let pw = this._parent.getWorldRect();
+            return this.localRect.getFinalRectScale(pw, scale);
+        }
+    }
+}
+
+
+export abstract class QUI_BaseContainer extends QUI_BaseElement implements QUI_IContainer {
+
+    get container(): QUI_IContainer {
+        return this;
     }
 
     protected _children: QUI_IElement[];
+
     getChildCount(): number {
         return this._children == null ? 0 : this._children.length;
     }
@@ -293,7 +305,7 @@ export abstract class QUI_BaseElement implements QUI_IElement {
         //移除旧爹
         let p = (elem as any)._parent as QUI_IElement;
         if (p != null)
-            p.removeChild(p);
+            p.container.removeChild(p);
 
         this._children.push(elem);
 
@@ -337,35 +349,54 @@ export abstract class QUI_BaseElement implements QUI_IElement {
         this._children.splice(n);
     }
 
-    //当前组件的位置
+    //处理container
 
-
-    //得到最终位置，考虑父组件
-    getWorldRect(): Rectangle {
-        if (this._parent == null) {
-            let x1 = this.localRect.offsetX1;
-            let y1 = this.localRect.offsetY1;
-            let x2 = this.localRect.offsetX2;
-            let y2 = this.localRect.offsetY2;
-            return new Rectangle(x1, y1, x2 - x1, y2 - y1);
-        }
-        else {
-            let pw = this._parent.getWorldRect();
-            return this.localRect.getFinalRect(pw);
+    CancelTouch(): void {
+        if (this._children != null) {
+            for (var i = this._children.length - 1; i >= 0; i--) {
+                let child = this._children[i];
+                if (child.Enable) {
+                    child.CancelTouch();
+                }
+            }
         }
     }
-    getWorldRectScale(scale: number): Rectangle {
-        if (this._parent == null) {
-            let x1 = this.localRect.offsetX1 * scale;
-            let y1 = this.localRect.offsetY1 * scale;
-            let x2 = this.localRect.offsetX2 * scale;
-            let y2 = this.localRect.offsetY2 * scale;
-            return new Rectangle(x1, y1, (x2 - x1), y2 - y1);
+    OnTouch(canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+
+        if (this._children != null) {
+            for (var i = this._children.length - 1; i >= 0; i--) {
+                let child = this._children[i];
+                if (child.Enable) {
+                    let kill = child.OnTouch(canvas, touchid, press, move, x, y);
+                    if (kill)
+                        return true;
+                }
+            }
         }
-        else {
-            let pw = this._parent.getWorldRect();
-            return this.localRect.getFinalRectScale(pw, scale);
+        return false;
+    }
+    OnRender(canvas: QUI_Canvas): void {
+
+        if (this._children == null)
+            return;
+        {
+            for (var i = 0; i < this._children.length; i++) {
+                let child = this._children[i];
+                if (child.Enable) {
+                    child.OnRender(canvas);
+                }
+            }
+        }
+    }
+    OnUpdate(canvas: QUI_Canvas, delta: number): void {
+
+        if (this._children == null)
+            return;
+        for (var i = 0; i < this._children.length; i++) {
+            let child = this._children[i];
+            if (child.Enable) {
+                child.OnUpdate(canvas, delta);
+            }
         }
     }
 }
-

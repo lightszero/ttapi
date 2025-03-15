@@ -1,5 +1,5 @@
 import { tt } from "../../ttapi/ttapi.js";
-import { Color, QUI_ImageScale9, QUI_Label, QUI_Resource, Rectangle } from "../ttlayer2.js";
+import { Color, QUI_Container, QUI_ImageScale9, QUI_Label, QUI_Resource, Rectangle } from "../ttlayer2.js";
 import * as QUI from "./qui_base.js"
 import { QUI_Canvas } from "./qui_canvas.js";
 
@@ -9,27 +9,33 @@ export class QUI_Button extends QUI.QUI_BaseElement {
         super();
 
         this.localRect.setByRect(new Rectangle(0, 0, 100, 32));
-        let normal = new QUI_ImageScale9(QUI_Resource.GetBorderScaleR());
-        let press = new QUI_ImageScale9(QUI_Resource.GetBorderScaleR());
+        let normal = new QUI_Container();
+        let press = new QUI_Container();
+
         {
-            normal.color = new Color(1, 1, 1, 1);
             normal.localRect.setAsFill();
+            let normalback = new QUI_ImageScale9(QUI_Resource.GetBorderScaleR());
+            normal.addChild(normalback);
+            normalback.color = new Color(1, 1, 1, 1);
+            normalback.localRect.setAsFill();
 
             let txt = new QUI_Label();
             txt.color = Color.White;
             txt.localRect.setAsFill();
-            txt.text="Button";
+            txt.text = "Button";
             normal.addChild(txt)
         }
         {
-
-            press.color = new Color(1, 1, 0.5, 1);
             press.localRect.setAsFill();
+            let pressback = new QUI_ImageScale9(QUI_Resource.GetBorderScaleR());
+            pressback.color = new Color(1, 1, 0.5, 1);
+            pressback.localRect.setAsFill();
+            press.addChild(pressback);
 
             let txt = new QUI_Label();
             txt.color = new Color(1, 1, 0.5, 1);
             txt.localRect.setAsFill();
-            txt.text="Button";
+            txt.text = "Button";
             press.addChild(txt)
         }
         this.ElemNormal = normal;

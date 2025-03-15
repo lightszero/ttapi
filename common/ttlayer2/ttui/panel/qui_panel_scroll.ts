@@ -49,14 +49,14 @@ export class QUI_Panel_Scroll extends QUI_Panel {
     protected updateContainerPos(): void {
         //跳过标准的边界设置，
         //scrollPanel的container 没有边界
-        this.container.localRect.radioX1 = 0;
-        this.container.localRect.radioY1 = 0;
-        this.container.localRect.radioX2 = 0;
-        this.container.localRect.radioY2 = 0;
-        this.container.localRect.offsetX1 = this.panelOffsetX;
-        this.container.localRect.offsetY1 = this.panelOffsetY;
-        this.container.localRect.offsetX2 = this.panelOffsetX + this.panelWidth;
-        this.container.localRect.offsetY2 = this.panelOffsetY + this.panelHeight;
+        this._container.localRect.radioX1 = 0;
+        this._container.localRect.radioY1 = 0;
+        this._container.localRect.radioX2 = 0;
+        this._container.localRect.radioY2 = 0;
+        this._container.localRect.offsetX1 = this.panelOffsetX;
+        this._container.localRect.offsetY1 = this.panelOffsetY;
+        this._container.localRect.offsetX2 = this.panelOffsetX + this.panelWidth;
+        this._container.localRect.offsetY2 = this.panelOffsetY + this.panelHeight;
     }
     private _press: boolean = false;
     private _pressid: number = 0;
@@ -120,7 +120,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
         }
         //加入滚动效果
         if (this._drag) {
-            this.container.CancelTouch();
+            this._container.CancelTouch();
             return true;
         }
         else {

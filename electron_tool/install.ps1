@@ -51,8 +51,7 @@ function Run {
         $cmd,
         $showcmd
     )
-    if($showcmd)
-    {
+    if ($showcmd) {
         Write-Host $cmd
     }
     Invoke-Expression -Command $cmd
@@ -68,7 +67,7 @@ function CheckMenu {
         Write-Host ”“
         Write-Host ”检查是否具备启动条件“
         Write-Host "Check Nodejs=$isnode"
-        Write-Host "Check Electrons=$iselectron"
+        Write-Host "Check Electron=$iselectron"
         if ($isnode -and $iselectron) {
             Write-Host "已经安装了环境."
     
@@ -90,10 +89,9 @@ function CheckMenu {
             Run $cmd $true
         }
         if ($answer -eq 3) {
-            $cnpm =CheckCNPM
-            if($cnpm -eq $false)
-            {
-                $cmd_cnpm ="npm install -g cnpm --registry=https://registry.npmmirror.com";
+            $cnpm = CheckCNPM
+            if ($cnpm -eq $false) {
+                $cmd_cnpm = "npm install -g cnpm --registry=https://registry.npmmirror.com";
                 Run $cmd_cnpm $true
             }
             $cmd = "cnpm install -g electron"

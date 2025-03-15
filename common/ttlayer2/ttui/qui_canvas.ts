@@ -3,7 +3,7 @@ import { Rectangle, IRenderTarget, Render_Batcher } from "../ttlayer2.js";
 import * as QUI from "./qui_base.js"
 
 
-export class QUI_Canvas extends QUI.QUI_BaseElement {
+export class QUI_Canvas extends QUI.QUI_BaseContainer {
     constructor(target: IRenderTarget) {
         super();
         this.target = target;

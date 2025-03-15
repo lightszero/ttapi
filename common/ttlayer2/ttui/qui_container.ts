@@ -1,12 +1,13 @@
 
 import * as QUI from "./qui_base.js"
+import { QUI_IElement } from "./qui_base.js";
 import { QUI_Canvas } from "./qui_canvas.js";
 
-export class QUI_Container extends QUI.QUI_BaseElement {
+export class QUI_Container extends QUI.QUI_BaseContainer {
     getElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Container;
     }
-
+ 
 
 }
 export enum QUI_FillWay {
@@ -15,7 +16,7 @@ export enum QUI_FillWay {
     Both,
 }
 
-export class QUI_Container_AutoFill extends QUI.QUI_BaseElement {
+export class QUI_Container_AutoFill extends QUI.QUI_BaseContainer {
     fillway: QUI_FillWay = QUI_FillWay.Both;
     halign: QUI.QUI_HAlign = QUI.QUI_HAlign.Middle;
     valign: QUI.QUI_VAlign = QUI.QUI_VAlign.Middle;
@@ -29,7 +30,7 @@ export class QUI_Container_AutoFill extends QUI.QUI_BaseElement {
         return QUI.QUI_ElementType.Element_Container_AutoFill;
     }
 
-    OnUpdate(_canvas:QUI_Canvas,delta: number): void {
+    OnUpdate(_canvas: QUI_Canvas, delta: number): void {
         let sw = this.getParent().getWorldRect();
         let aspnow = sw.Width / sw.Height;
         let bfixmin = false;
@@ -78,6 +79,6 @@ export class QUI_Container_AutoFill extends QUI.QUI_BaseElement {
             this.localRect.setAsFill();
         }
 
-        super.OnUpdate(_canvas,delta);
+        super.OnUpdate(_canvas, delta);
     }
 }
