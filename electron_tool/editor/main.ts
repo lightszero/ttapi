@@ -1,7 +1,7 @@
 import { MyLogic } from "./editormain.js";
 import { tt_impl } from "./ttimpl_web/ttimpl_web.js";
-import { GameApp, ResourceOption } from "./ttlayer2/ttlayer2.js";
-window.onload = () => {
+import { GameApp, ResourceOption, tt } from "./ttlayer2/ttlayer2.js";
+window.onload = async () => {
     console.log("hello world.");
 
     let canvas = document.createElement("canvas");
@@ -26,7 +26,9 @@ window.onload = () => {
     //初始化ttimpl，这样就可以正常使用ttapi了
     var ttimpl = new tt_impl.ttimpl_browser();
     ttimpl.Init(canvas);
+    var fontname = await tt.loader.LoadCustomFont("VonwaonBitmap", "./data/VonwaonBitmap-16px.ttf");
     let op = new ResourceOption();
+    op.defFontName = fontname;
     GameApp.Start(op, new MyLogic())
 
 }

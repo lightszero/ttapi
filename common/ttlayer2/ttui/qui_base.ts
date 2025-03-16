@@ -62,6 +62,8 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         return this.offsetY2 - this.offsetY1;
     }
     setPos(x: number, y: number): void {
+        if (!this.sizeonly)
+            throw "onlysizeonly can setpos"
         let w = this.getWidth();
         let h = this.getHeight();
         this.offsetX1 = x;
@@ -117,6 +119,17 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         this.offsetX2 = width;
         this.offsetY1 = 0;
         this.offsetY2 = height;
+        this.sizeonly = true;
+    }
+    setByPosAndSize(x: number, y: number, width: number, height: number): void {
+        this.radioX1 = 0;
+        this.radioY1 = 0;
+        this.radioX2 = 0;
+        this.radioY2 = 0;
+        this.offsetX1 = x;
+        this.offsetX2 = x + width;
+        this.offsetY1 = y;
+        this.offsetY2 = y + height;
         this.sizeonly = true;
     }
     //按照左上角定位模式设置控件位置&尺寸

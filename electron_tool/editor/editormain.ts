@@ -1,4 +1,4 @@
-import { Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Group, QUI_Image, QUI_Label, QUI_Panel_Split, Rectangle, ResourceOption, Resources, tt } from "./ttlayer2/ttlayer2.js"
+import { Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Group, QUI_Image, QUI_Label, QUI_Panel_Split, QUI_TextBox_Prompt, Rectangle, ResourceOption, Resources, tt } from "./ttlayer2/ttlayer2.js"
 import { ElectronFunc } from "./x_editor/electronfunc.js";
 export class MyLogic implements IUserLogic {
     canvas: QUI_Canvas;
@@ -39,7 +39,7 @@ export class MyLogic implements IUserLogic {
         let group = new QUI_Group();
         group.DragEnable = true;//允许拖动
         group.localRect.setByRect(new Rectangle(0, 0, 200, 200));
-        this.canvas.AsContainer().AddChild(group);
+        this.canvas.AddChild(group);
 
 
         let img = new QUI_Image();
@@ -56,6 +56,19 @@ export class MyLogic implements IUserLogic {
             console.log(JSON.stringify(files));
         }
         group.GetContainer().AddChild(btn);
+
+        let group2 = new QUI_Group();
+        group2.DragEnable = true;//允许拖动
+        group2.localRect.setByRect(new Rectangle(200, 200, 200, 200));
+        this.canvas.AddChild(group2);
+
+        let label = new QUI_Label();
+        label.localRect.setByPosAndSize(0, 0, 100, 16);
+        group2.GetContainer().AddChild(label);
+        let txtprompt = new QUI_TextBox_Prompt();
+        txtprompt.localRect.setByPosAndSize(0, 20, 100, 20);
+        group2.GetContainer().AddChild(txtprompt);
+
     }
     OnUpdate(delta: number): void {
 

@@ -16,7 +16,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
             normal.localRect.SetAsFill();
             let normalback = new QUI_ImageScale9(QUI_Resource.GetBorderScaleR());
             normal.AsContainer().AddChild(normalback);
-            normalback.color = new Color(1, 1, 1, 1);
+            normalback.localColor = new Color(1, 1, 1, 1);
             normalback.localRect.SetAsFill();
 
             let txt = new QUI_Label();

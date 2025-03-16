@@ -149,12 +149,101 @@ export namespace tt_impl {
 
         onkeycomfirm: (txt: string) => void;
         ishow: boolean = false;
-        async Prompt(message: string, deftxt: string = "", maxlen: number = 256): Promise<string> {
+        async Prompt(message: string, deftxt: string = "", maxlen: number = 256, font: string = ""): Promise<string> {
             //releaseinput
             for (var i = 0; i < this.points.length; i++) {
                 this.points[i].press = false;
             }
-            return window.prompt(message, deftxt);
+
+            //prompt 很多情况会被禁止
+            //return window.prompt(message, deftxt);
+
+
+            let txt = deftxt;
+            let finish = false;
+
+            let div = document.createElement("div");
+
+            let divback = document.createElement("div");
+            {//准备dom界面遮蔽事件
+
+
+
+                div.style.backgroundColor = "#00000070";
+                div.style.position = "absolute";
+                div.style.width = "100%"
+                div.style.height = "100%"
+                div.style.backgroundColor = "#00000070";
+
+                div.onclick = (evt) => {
+                    //evt.preventDefault();
+                }
+                div.onpointerdown = (evt) => {
+                    //evt.preventDefault();
+                }
+                div.ontouchstart = (evt) => {
+                    //evt.preventDefault();
+                }
+                document.body.appendChild(div);
+
+                divback.style.backgroundColor = "#aaaaaa";
+                divback.style.borderWidth = "2px";
+                divback.style.borderColor = "#fff";
+                divback.style.borderStyle = "solid";
+                divback.style.position = "absolute";
+                divback.style.left = "25%";
+                divback.style.top = "35%";
+                divback.style.right = "25%";
+                divback.style.bottom = "35%"
+                div.appendChild(divback);
+            }
+            {//准备事件组件
+                let divmsg = document.createElement("span");
+                divmsg.style.position = "absolute";
+                divmsg.style.left = "25%";
+                divmsg.style.right = "25%";
+                divmsg.style.top = "100px";
+                divmsg.style.fontFamily = font;
+                divmsg.style.fontSize = "32";
+                divmsg.textContent = message;
+                divback.appendChild(divmsg);
+
+                let input = document.createElement("input");
+                input.type = "text";
+                input.style.color = "#000";
+                input.style.position = "absolute";
+                input.style.left = "25%";
+                input.style.right = "25%";
+                input.style.top = "150px";
+                input.value = deftxt;
+                input.maxLength = maxlen;
+                input.style.fontFamily = font;
+                input.style.fontSize = "32";
+                divback.appendChild(input);
+                input.onchange = () => {
+                    txt = input.value;
+                }
+
+                let btn = document.createElement("button");
+                btn.style.left = "25%";
+                btn.style.right = "25%";
+                btn.style.position = "absolute";
+            
+                btn.style.top = "200px";
+                btn.textContent = "OK";
+                btn.style.fontFamily = font;
+                btn.style.fontSize = "32";
+                btn.onclick = () => {
+                    finish = true;
+                }
+                divback.appendChild(btn);
+
+            }
+            while (!finish) {
+                await tt.sleep(1);
+            }
+            document.body.removeChild(div);
+            return txt;
         }
     }
 }

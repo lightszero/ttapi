@@ -19,14 +19,14 @@ export class QUI_ImageScale9 extends QUI.QUI_BaseElement {
     }
 
     scale9: QUIS9.QUI_Scale9 | null;
-    color: Color = Color.White;
+   
 
     OnRender(_canvas: QUI_Canvas): void {
 
 
         //this.Render_impl();
         if (this.scale9 != null) {
-            this.scale9.RenderRect(_canvas.batcherUI, this.getWorldRectScale(_canvas.scale), this.color, -1, _canvas.scale);
+            this.scale9.RenderRect(_canvas.batcherUI, this.getWorldRectScale(_canvas.scale), this._colorFinal, -1, _canvas.scale);
         }
         super.OnRender(_canvas);
     }

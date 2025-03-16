@@ -17,7 +17,7 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
             normal.localRect.SetAsFill();
             let normalback = QUI_Resource.CreateGUI_Border();
             normal.AsContainer().AddChild(normalback);
-            normalback.color = new Color(1, 1, 1, 1);
+            normalback.localColor = new Color(1, 1, 1, 1);
             normalback.localRect.SetAsFill();
 
             let txt = new QUI_Label();
