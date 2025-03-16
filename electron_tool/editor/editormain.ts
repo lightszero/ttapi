@@ -120,8 +120,8 @@ export class MyLogic implements IUserLogic {
                 filter.name = "TT.JSON"
                 filter.extensions = ["tt.json"];
                 let r = await ElectronFunc.Instance.dialog_savefile([filter]);
-                if (r != null && r.length > 0)
-                    this.OnOpenFile(r[0]);
+                if (r != null || r != "")
+                    this.OnSaveFile(r);
             }
         }
         {
@@ -143,7 +143,7 @@ export class MyLogic implements IUserLogic {
     OnOpenFile(file: string) {
         console.log("OnOpenFile:" + file);
     }
-    OnCreateFile(file: string) {
+    OnSaveFile(file: string) {
         console.log("OnCreateFile:" + file);
     }
 

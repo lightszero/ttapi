@@ -101,6 +101,7 @@ function window_open(_path) {
 contextBridge.exposeInMainWorld("MyAPI", { "cool": 1, "type": "electron", "tag": 7788 });
 contextBridge.exposeInMainWorld("dialog_msgbox", dialog_msgbox);
 contextBridge.exposeInMainWorld("dialog_openfile", dialog_openfile);
+contextBridge.exposeInMainWorld("dialog_savefile", dialog_savefile);
 contextBridge.exposeInMainWorld("path_getcurrent", path_getcurrent);
 contextBridge.exposeInMainWorld("path_list", path_list);
 contextBridge.exposeInMainWorld("path_stat", path_stat);
