@@ -12,6 +12,7 @@ export * from "./qui_label.js"  // qui label控件
 export * from "./qui_button.js"  //qui 按钮控件
 export * from "./qui_joystick.js" //qui 虚拟摇杆 控件
 export * from "./qui_touchbar.js" //qui 虚拟触摸板 控件
+export * from "./qui_textbox_dom.js"
 export * from "./qui_textbox_prompt.js" //文本输入框，点击会弹出prompt型
 // export * from "./qui_textbox_keyboard.js" //文本输入框，键盘型
 

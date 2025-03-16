@@ -1,7 +1,10 @@
-import { Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Group, QUI_Image, QUI_Label, QUI_Panel_Split, QUI_TextBox_Prompt, Rectangle, ResourceOption, Resources, tt } from "./ttlayer2/ttlayer2.js"
-import { ElectronFunc } from "./x_editor/electronfunc.js";
+import { Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Container, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Split, QUI_Resource, QUI_TextBox_DOM, QUI_TextBox_Prompt, Rectangle, ResourceOption, Resources, tt } from "./ttlayer2/ttlayer2.js"
+import { QUI_Grow } from "./ttlayer2/ttui/ext/qui_grow.js";
+import { ElectronFunc, FileFilter, OpenFileOption } from "./x_editor/electronfunc.js";
 export class MyLogic implements IUserLogic {
     canvas: QUI_Canvas;
+
+    titlebar_txt: QUI_Label;
     OnInit(): void {
         let guilayer = new DrawLayer_GUI(DrawLayerTag.GUI);
 
@@ -35,10 +38,12 @@ export class MyLogic implements IUserLogic {
         // btn.localRect.offsetY1 += 32;
         // btn.localRect.offsetY2 += 32;
         // panelsplit1.getPanel2().container.addChild(btn);
+        this.InitTitleBar();
+
 
         let group = new QUI_Group();
-        group.DragEnable = true;//允许拖动
-        group.localRect.setByRect(new Rectangle(0, 0, 200, 200));
+        group.dragEnable = true;//允许拖动
+        group.localRect.setByRect(new Rectangle(0, 50, 200, 200));
         this.canvas.AddChild(group);
 
 
@@ -58,18 +63,91 @@ export class MyLogic implements IUserLogic {
         group.GetContainer().AddChild(btn);
 
         let group2 = new QUI_Group();
-        group2.DragEnable = true;//允许拖动
+        group2.dragEnable = true;//允许拖动
         group2.localRect.setByRect(new Rectangle(200, 200, 200, 200));
         this.canvas.AddChild(group2);
+        let grow = new QUI_Grow();
+        grow.direction = QUI_Direction2.Vertical;
+        group2.GetContainer().AddChild(grow);
 
         let label = new QUI_Label();
-        label.localRect.setByPosAndSize(0, 0, 100, 16);
-        group2.GetContainer().AddChild(label);
+        label.localRect.setBySize(100, 16);
+        grow.AddChild(label);
         let txtprompt = new QUI_TextBox_Prompt();
-        txtprompt.localRect.setByPosAndSize(0, 20, 100, 20);
-        group2.GetContainer().AddChild(txtprompt);
-
+        txtprompt.localRect.setBySize(100, 20);
+        grow.AddChild(txtprompt);
+        let txtdom = new QUI_TextBox_DOM();
+        txtdom.localRect.setBySize(100, 20);
+        grow.AddChild(txtdom);
     }
+    InitTitleBar() {
+        let titlebar = new QUI_Panel();
+        titlebar.localRect.setHPosFill();
+        titlebar.localRect.setVPosByTopBorder(22);
+        this.canvas.AddChild(titlebar);
+
+        let titlegrow = new QUI_Grow();
+        titlegrow.direction = QUI_Direction2.Horizontal;
+        titlebar.GetContainer().AddChild(titlegrow);
+
+        {
+            let btn = new QUI_Button();
+            btn.localRect.setBySize(60, 18);
+            let label = btn.elemNormal.AsContainer().GetChild(1) as QUI_Label;
+            label.text = "Open";
+            titlegrow.AddChild(btn);
+            btn.OnClick = async () => {
+                let op = new OpenFileOption();
+                op.multiSelect = false;
+                op.filters = [];
+                op.filters.push(new FileFilter());
+                op.filters[0].name = "TT.JSON"
+                op.filters[0].extensions = ["tt.json"];
+                let r = await ElectronFunc.Instance.dialog_openfile(op);
+                if (r != null && r.length > 0)
+                    this.OnOpenFile(r[0]);
+            }
+        }
+        {
+            let btn = new QUI_Button();
+            btn.localRect.setBySize(60, 18);
+            let label = btn.elemNormal.AsContainer().GetChild(1) as QUI_Label;
+            label.text = "New";
+            titlegrow.AddChild(btn);
+            btn.OnClick = async () => {
+
+                let filter = new FileFilter();
+                filter.name = "TT.JSON"
+                filter.extensions = ["tt.json"];
+                let r = await ElectronFunc.Instance.dialog_savefile([filter]);
+                if (r != null && r.length > 0)
+                    this.OnOpenFile(r[0]);
+            }
+        }
+        {
+            let btn = new QUI_Button();
+            btn.localRect.setBySize(60, 18);
+            let label = btn.elemNormal.AsContainer().GetChild(1) as QUI_Label;
+            label.text = "Save";
+            titlegrow.AddChild(btn);
+        }
+        {
+            let label = this.titlebar_txt = new QUI_Label();
+            label.text = "当前没有打开tt.json"
+            label.localRect.setBySize(200, 18);
+            label.halign = QUI_HAlign.Left;
+            titlegrow.AddChild(label);
+        }
+    }
+
+    OnOpenFile(file: string) {
+        console.log("OnOpenFile:" + file);
+    }
+    OnCreateFile(file: string) {
+        console.log("OnCreateFile:" + file);
+    }
+
+
     OnUpdate(delta: number): void {
 
     }

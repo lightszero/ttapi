@@ -2,7 +2,7 @@ import { Border, Color, QUI_Image, QUI_ImageScale9, QUI_Scale9, Resources, Sprit
 
 export class QUI_Resource {
     static _spriteWhite: Sprite = null;
-    static get WhiteSprite(): Sprite {
+    static GetWhiteSprite(): Sprite {
 
         if (this._spriteWhite == null) {
             let white = Resources.getWhiteBlock();
@@ -32,7 +32,11 @@ export class QUI_Resource {
         }
         return this.scale_borderr;
     }
-
+    static CreateGUI_WhiteSprite(): QUI_Image {
+        let image = new QUI_Image();
+        image.localRect.SetAsFill();
+        return image;
+    }
     static CreateGUI_Border(): QUI_ImageScale9 {
         let image = new QUI_ImageScale9(this.GetBorderScale());
         image.localRect.SetAsFill();

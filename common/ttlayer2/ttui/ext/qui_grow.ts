@@ -7,6 +7,7 @@ export class QUI_Grow extends QUI_Container {
         this.direction = QUI_Direction2.Vertical;
         this.width = 0;
         this.height = 0;
+        this.localRect.SetAsFill();
     }
     direction: QUI_Direction2
     private width: number;
@@ -19,19 +20,21 @@ export class QUI_Grow extends QUI_Container {
         super.OnUpdate(canvas, delta);
         if (this.childState == QUI_ChildChangeState.AddOne) {
             this.Grow(this._children[this._children.length - 1]);
+            this.childState = QUI_ChildChangeState.NoChange;
         }
         else if (this.childState == QUI_ChildChangeState.Dirty) {
             this.UpdateAll();
+            this.childState = QUI_ChildChangeState.NoChange;
         }
     }
     private Grow(elem: QUI_BaseElement) {
         if (this.direction == QUI_Direction2.Horizontal) {
-            elem.localRect.setPos(this.width,0);
+            elem.localRect.setPos(this.width, 0);
             this.height = Math.max(elem.localRect.getHeight(), this.height);
             this.width += elem.localRect.getWidth();
         }
         else {
-            elem.localRect.setPos(0,this.height);
+            elem.localRect.setPos(0, this.height);
             this.width = Math.max(elem.localRect.getWidth(), this.width);
             this.height += elem.localRect.getHeight();
         }

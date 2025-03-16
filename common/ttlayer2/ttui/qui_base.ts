@@ -227,7 +227,7 @@ export enum QUI_ElementType {
     Element_Joystick,//摇杆组件
     Element_TouchBar,//触摸板组件
     Element_TextBox_Prompt,//文本对话框组件
-
+    Element_TextBox_DOM,
     //扩展控件
     Element_DragButton,//可以拖动的按钮
     Element_Overlay,//占位，屏蔽事件
@@ -296,6 +296,7 @@ export abstract class QUI_BaseElement {
     Enable: boolean = true;
     _colorFinal: Color = Color.White;
 
+    //复合控件会调用，需要处理这个，否则在滚动panel 内 会出问题
     CancelTouch(): void {
 
     }
@@ -370,6 +371,10 @@ export class QUI_Container extends QUI_BaseElement {
     GetChildCount(): number {
         return this._children == null ? 0 : this._children.length;
     }
+    ToTop(elem: QUI_BaseElement): void {
+        this.RemoveChild(elem);
+        this.AddChild(elem);
+    }
     GetChild(index: number): QUI_BaseElement | null {
         if (this._children == null || index >= this._children.length)
             return null;
@@ -395,7 +400,7 @@ export class QUI_Container extends QUI_BaseElement {
             this.childState = ChildChangeState.Dirty;
         }
         //换新爹
-        (elem as any)._parent = this;
+        (elem as QUI_BaseElement)._parent = this;
     }
     RemoveChild(elem: QUI_BaseElement): void {
         if (this._children == null)
@@ -406,7 +411,7 @@ export class QUI_Container extends QUI_BaseElement {
 
         this._children.splice(i, 1);
 
-        (elem as any)._parent = null;
+        (elem as QUI_BaseElement)._parent = null;
         this.childState = ChildChangeState.Dirty;
     }
     RemoveChildAt(index: number): void {
@@ -414,7 +419,7 @@ export class QUI_Container extends QUI_BaseElement {
             return;
         let elem = this._children[index];
         this._children.splice(index, 1);
-        (elem as any)._parent = null;
+        (elem as QUI_BaseElement)._parent = null;
         this.childState = ChildChangeState.Dirty;
     }
 
@@ -424,7 +429,7 @@ export class QUI_Container extends QUI_BaseElement {
         for (var i = 0; i < this._children.length; i++) {
             //移除 旧爹
             let elem = this._children[i];
-            (elem as any)._parent = null;
+            (elem as QUI_BaseElement)._parent = null;
         }
         this._children.splice(0, this._children.length);
         this.childState = ChildChangeState.Dirty;
@@ -434,7 +439,6 @@ export class QUI_Container extends QUI_BaseElement {
     protected childState: ChildChangeState = ChildChangeState.NoChange;
 
     //处理container
-
     CancelTouch(): void {
         if (this._children != null) {
             for (var i = this._children.length - 1; i >= 0; i--) {
@@ -445,6 +449,7 @@ export class QUI_Container extends QUI_BaseElement {
             }
         }
     }
+
     OnTouch(canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
 
         if (this._children != null) {

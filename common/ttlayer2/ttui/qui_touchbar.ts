@@ -113,7 +113,7 @@ export class QUI_TouchBar extends QUI.QUI_BaseElement {
     CancelTouch() {
         this._press = false;
         this._pressid = -1;
-        //super.CancelTouch();
+        super.CancelTouch();
     }
     OnTouch(_canvas:QUI_Canvas,touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         //let kill = super.OnTouch(_canvas,touchid, press, move, x, y);

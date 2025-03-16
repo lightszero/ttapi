@@ -51,10 +51,9 @@ export class QUI_Button extends QUI.QUI_BaseElement {
     OnClick: (() => void) | null = null;
     OnPressDown: ((id: number) => void) | null = null;
     OnPressUp: (() => void) | null = null;
-    CancelTouch() {
+    CancelTouch(): void {
         this._press = false;
         this._pressid = -1;
-        super.CancelTouch();
     }
     OnTouch(canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         let kill = super.OnTouch(canvas, touchid, press, move, x, y);

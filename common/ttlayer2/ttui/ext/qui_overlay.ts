@@ -7,7 +7,7 @@ import * as QUI from "../qui_base.js"
 export class QUI_Overlay extends QUI.QUI_BaseElement {
     constructor() {
         super();
-        this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
+        this.localRect.SetAsFill();
     }
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Overlay;

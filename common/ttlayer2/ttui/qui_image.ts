@@ -11,7 +11,7 @@ export class QUI_Image extends QUI.QUI_BaseElement {
         super();
 
 
-        this.sprite = QUI_Resource.WhiteSprite;
+        this.sprite = QUI_Resource.GetWhiteSprite();
         
         this.localRect.setByRect(new Rectangle(0, 0, 100, 100));
 

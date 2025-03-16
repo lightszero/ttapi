@@ -1,6 +1,6 @@
 import { Color, Rectangle } from "../../ttlayer2.js";
-import { QUI_ElementType, QUI_HAlign } from "../qui_base.js";
-import { QUI_DragButton, QUI_Image, QUI_Label, QUI_Panel } from "../ttui.js";
+import { QUI_BaseElement, QUI_ElementType, QUI_HAlign } from "../qui_base.js";
+import { QUI_DragButton, QUI_Image, QUI_Label, QUI_Overlay, QUI_Panel, QUI_Resource } from "../ttui.js";
 
 export class QUI_Group extends QUI_Panel {
     constructor() {
@@ -24,6 +24,13 @@ export class QUI_Group extends QUI_Panel {
         titleback.localRect.setVPosByTopBorder(16);
         this.foreElements.push(titleback);
 
+        let overlay = new QUI_Overlay();
+
+        this.backElements.push(overlay);
+        let back = new QUI_Image();
+        back.localColor = Color.Black;
+        back.localRect.SetAsFill();
+        this.backElements.push(back);
 
 
 
@@ -63,24 +70,38 @@ export class QUI_Group extends QUI_Panel {
 
         dbut.OnDragStart = this.OnBeginDrag.bind(this);
         dbut.OnDrag = this.OnDrag.bind(this);
+
+        this.dragEnable = false;
+        this.autoTop = true;
     }
-    posbeginx = 0;
-    posbeginy = 0;
+
+    dragEnable: boolean
+    autoTop: boolean;
+    title: QUI_Label
+
+    private _posbeginx = 0;
+    private _posbeginy = 0;
 
     private OnBeginDrag(x: number, y: number) {
-        this.posbeginx = this.localRect.offsetX1;
-        this.posbeginy = this.localRect.offsetY1;
+        this._posbeginx = this.localRect.offsetX1;
+        this._posbeginy = this.localRect.offsetY1;
         console.log("begin " + x + "," + y);
+        if (this.dragEnable) {
+            if (this.autoTop) {
+                this._parent.AsContainer().ToTop(this);
+
+            }
+        }
     }
     private OnDrag(x: number, y: number, bx: number, by: number) {
         console.log("drag " + x + "," + y + "," + bx + "," + by);
-        if (this.DragEnable) {
+        if (this.dragEnable) {
             let w = this.localRect.getWidth();
             let h = this.localRect.getHeight();
             let pw = this._parent.GetWorldRect().Width;
             let ph = this._parent.GetWorldRect().Height;
-            let targetx = this.posbeginx + x - bx;
-            let targety = this.posbeginy + y - by;
+            let targetx = this._posbeginx + x - bx;
+            let targety = this._posbeginy + y - by;
 
             //约束
             if (targetx > pw - w)
@@ -95,10 +116,13 @@ export class QUI_Group extends QUI_Panel {
 
             //保持尺寸
             this.localRect.setPos(targetx, targety);
+            if (this.autoTop) {
+                this._parent.AsContainer().ToTop(this);
+
+            }
         }
     }
-    DragEnable: boolean
-    title: QUI_Label
+
     GetElementType(): QUI_ElementType {
         return QUI_ElementType.Element_Group;
     }

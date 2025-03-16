@@ -8,6 +8,7 @@ export class QUI_TextBox_Prompt extends QUI_Label {
     constructor() {
         super();
         this.cut = true;
+        this.text = "input prompt";
         this.border = QUI_Resource.CreateGUI_Border();
         this.border.localColor = new Color(0.3, 0.6, 0.8, 1);
 
@@ -39,10 +40,10 @@ export class QUI_TextBox_Prompt extends QUI_Label {
     }
     _press: boolean = false;
     _pressid: number = -1;
-    CancelTouch() {
+
+    CancelTouch(): void {
         this._press = false;
         this._pressid = -1;
-        //super.CancelTouch();
     }
     OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         //let kill = super.OnTouch(_canvas, touchid, press, move, x, y);

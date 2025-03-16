@@ -70,24 +70,25 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         }
     }
     protected CancelTouchFore() {
-        if (this.backElements != null) {
-            for (var i = 0; i < this.backElements.length; i++) {
-                let elem = this.backElements[i] as QUI.QUI_BaseElement;
+        if (this.foreElements != null) {
+            for (var i = this.foreElements.length - 1; i >= 0; i--) {
+                let elem = this.foreElements[i] as QUI.QUI_BaseElement;
                 elem.CancelTouch();
             }
         }
     }
     protected CancelTouchBack() {
-        if (this.foreElements != null) {
-            for (var i = 0; i < this.foreElements.length; i++) {
-                let elem = this.foreElements[i] as QUI.QUI_BaseElement;
+
+        if (this.backElements != null) {
+            for (var i = this.backElements.length - 1; i >= 0; i--) {
+                let elem = this.backElements[i] as QUI.QUI_BaseElement;
                 elem.CancelTouch();
             }
         }
     }
     protected OnTouchFore(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         if (this.foreElements != null) {
-            for (var i = this.foreElements.length - 1; i > 0; i--) {
+            for (var i = this.foreElements.length - 1; i >= 0; i--) {
                 let elem = this.foreElements[i] as QUI.QUI_BaseElement;
                 let kill = elem.OnTouch(_canvas, touchid, press, move, x, y);
                 if (kill)
@@ -99,7 +100,7 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
     protected OnTouchBack(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
 
         if (this.backElements != null) {
-            for (var i = this.backElements.length - 1; i > 0; i--) {
+            for (var i = this.backElements.length - 1; i >= 0; i--) {
                 let elem = this.backElements[i] as QUI.QUI_BaseElement;
                 let kill = elem.OnTouch(_canvas, touchid, press, move, x, y);
                 if (kill)
@@ -154,9 +155,10 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         this.OnUpdateFore(_canvas, delta);
         super.OnUpdate(_canvas, delta);
     }
-    CancelTouch() {
+
+    CancelTouch(): void {
         this.CancelTouchFore();
-        this._container.CancelTouch();
+        super.CancelTouch();
         this.CancelTouchBack();
     }
     OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
