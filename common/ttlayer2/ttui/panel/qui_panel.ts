@@ -22,15 +22,15 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         this.foreElements.push(QUI_Resource.CreateGUI_Border());
     }
 
-    GetContainer(): QUI.QUI_IContainer {
-        return this._container.GetContainer();
+    GetContainer(): QUI.QUI_Container {
+        return this._container;
     }
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel;
     }
 
-    backElements: QUI.QUI_IElement[];
-    foreElements: QUI.QUI_IElement[];//面板的边界外观
+    backElements: QUI.QUI_BaseElement[];
+    foreElements: QUI.QUI_BaseElement[];//面板的边界外观
     protected _border: Border;//面板的边距
     getBorder(): Border {
         return this._border;

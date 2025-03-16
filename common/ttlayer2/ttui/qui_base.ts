@@ -38,6 +38,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
     offsetY1: number;
     offsetX2: number;
     offsetY2: number;
+    sizeonly: boolean;
     Clone(): QUI_Rect {
         let nr = new QUI_Rect();
         nr.radioX1 = this.radioX1;
@@ -49,6 +50,24 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         nr.offsetY1 = this.offsetY1;
         nr.offsetY2 = this.offsetY2;
         return nr;
+    }
+    getWidth(): number {
+        if (!this.sizeonly)
+            throw "onlysizeonly can getwidth"
+        return this.offsetX2 - this.offsetX1;
+    }
+    getHeight(): number {
+        if (!this.sizeonly)
+            throw "onlysizeonly can getheight"
+        return this.offsetY2 - this.offsetY1;
+    }
+    setPos(x: number, y: number): void {
+        let w = this.getWidth();
+        let h = this.getHeight();
+        this.offsetX1 = x;
+        this.offsetY1 = y;
+        this.offsetX2 = x + w;
+        this.offsetY2 = y + h;
     }
     getFinalRect(parentFinal: Rectangle): Rectangle {
         let px1 = parentFinal.X;
@@ -87,6 +106,18 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         this.offsetX2 = 0;
         this.offsetY1 = 0;
         this.offsetY2 = 0;
+        this.sizeonly = false;
+    }
+    setBySize(width: number, height: number): void {
+        this.radioX1 = 0;
+        this.radioY1 = 0;
+        this.radioX2 = 0;
+        this.radioY2 = 0;
+        this.offsetX1 = 0;
+        this.offsetX2 = width;
+        this.offsetY1 = 0;
+        this.offsetY2 = height;
+        this.sizeonly = true;
     }
     //按照左上角定位模式设置控件位置&尺寸
     setByRect(rect: Rectangle): void {
@@ -101,6 +132,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         this.offsetX2 = rect.X + rect.Width;
         this.offsetY1 = rect.Y;
         this.offsetY2 = rect.Y + rect.Height;
+        this.sizeonly = true;
     }
     //将水平位置设置为左对齐（宽度，边界：左）
     setHPosByLeftBorder(width: number, border: number = 0) {
@@ -115,6 +147,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         this.radioX2 = 0.5;
         this.offsetX1 = width * -0.5
         this.offsetX2 = width * 0.5
+        this.sizeonly = false;
     }
     //将水平位置设置为右对齐（宽度，边界：右）
     setHPosByRightBorder(width: number, border: number = 0) {
@@ -122,6 +155,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         this.radioX2 = 1;
         this.offsetX1 = -border - width;
         this.offsetX2 = -border;
+        this.sizeonly = false;
     }
     //将水平位置设置为填充
     setHPosFill(borderLeft: number = 0, borderRight: number = 0) {
@@ -129,6 +163,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         this.radioX2 = 1;
         this.offsetX1 = borderLeft;
         this.offsetX2 = -borderRight;
+        this.sizeonly = false;
     }
     //将垂直位置设置为顶对齐（高度，边界：顶）
     setVPosByTopBorder(height: number, border: number = 0) {
@@ -143,6 +178,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         this.radioY2 = 0.5;
         this.offsetY1 = height * -0.5
         this.offsetY2 = height * 0.5
+        this.sizeonly = false;
     }
     //将垂直位置设置为底对齐（高度，边界：底）
     setVPosByBottomBorder(height: number, border: number = 0) {
@@ -150,6 +186,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         this.radioY2 = 1;
         this.offsetY1 = -border - height;
         this.offsetY2 = -border;
+        this.sizeonly = false;
     }
     //将垂直位置设置为填充
     setVPosFill(borderTop: number = 0, borderBottom: number = 0) {
@@ -157,6 +194,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
         this.radioY2 = 1;
         this.offsetY1 = borderTop;
         this.offsetY2 = -borderBottom;
+        this.sizeonly = false;
     }
 }
 export enum QUI_ElementType {
@@ -176,12 +214,14 @@ export enum QUI_ElementType {
     Element_Joystick,//摇杆组件
     Element_TouchBar,//触摸板组件
     Element_TextBox_Prompt,//文本对话框组件
+
     //扩展控件
     Element_DragButton,//可以拖动的按钮
     Element_Overlay,//占位，屏蔽事件
     Element_Toggle,//有两种状态的按钮组件
     Element_Bar,//表示进度的组件
     Element_ScrollBar,//滚动条组件
+    Element_Grow,
     //面板
     Element_Panel,
     Element_Panel_Scroll,
@@ -189,49 +229,56 @@ export enum QUI_ElementType {
     Element_Panel_Scroll_Unlimit,
     Element_Group,
 }
-export interface QUI_IElement {
-    //输入时转换为target空间的坐标 * FinalScale
-    GetElementType(): QUI_ElementType
+// export interface QUI_IElement {
+//     //输入时转换为target空间的坐标 * FinalScale
+//     GetElementType(): QUI_ElementType
 
-    CancelTouch(): void;//取消事件
+//     CancelTouch(): void;//取消事件
 
-    //return true 表示 消息被吞了
-    OnTouch(canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean
-    OnRender(canvas: QUI_Canvas): void
-    OnUpdate(canvas: QUI_Canvas, delta: number): void;
+//     //return true 表示 消息被吞了
+//     OnTouch(canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean
+//     OnRender(canvas: QUI_Canvas): void
+//     OnUpdate(canvas: QUI_Canvas, delta: number): void;
 
-    GetParent(): QUI_IElement | null;
-    GetContainer(): QUI_IContainer
-    //当前组件的位置
-    localRect: QUI_Rect;
+//     GetParent(): QUI_BaseElement | null;
+//     IsContainer(): boolean
+//     AsContainer(): QUI_Container
+//     //当前组件的位置
+//     localRect: QUI_Rect;
 
-    Enable: boolean; //组件是否活动
-    Tag: string | null;
-    //得到最终位置，考虑父组件
-    GetWorldRect(): Rectangle;
-    localColor: Color;
-    GetFinalColor(): Color;
-}
-export interface QUI_IContainer {
-    GetChildCount(): number;
-    GetChild(index: number): QUI_IElement | null;
-    AddChild(elem: QUI_IElement): void
-    RemoveChild(elem: QUI_IElement): void
-    RemoveChildAll(): void;
-    RemoveChildAt(n: number): void;
-}
+//     Enable: boolean; //组件是否活动
+//     Tag: string | null;
+//     //得到最终位置，考虑父组件
+//     GetWorldRect(): Rectangle;
+//     localColor: Color;
+//     GetFinalColor(): Color;
+// }
+// export interface QUI_IContainer extends QUI_IElement {
+//     GetChildCount(): number;
+//     GetChild(index: number): QUI_IElement | null;
+//     AddChild(elem: QUI_IElement): void
+//     RemoveChild(elem: QUI_IElement): void
+//     RemoveChildAll(): void;
+//     RemoveChildAt(n: number): void;
+// }
 
-export abstract class QUI_BaseElement implements QUI_IElement {
+export abstract class QUI_BaseElement {
     abstract GetElementType(): QUI_ElementType;
 
     Tag: string | null = null;
     localRect: QUI_Rect = new QUI_Rect();
-    _parent: QUI_IElement | null = null;
-    GetParent(): QUI_IElement | null {
+    _parent: QUI_BaseElement | null = null;
+    GetParent(): QUI_BaseElement | null {
         return this._parent;
     }
-    GetContainer(): QUI_IContainer {
-        return null;
+    IsContainer(): boolean {
+        return true;
+    }
+    AsContainer(): QUI_Container {
+        if (this.IsContainer())
+            return this as any as QUI_Container;
+        else
+            return null;
     }
     Enable: boolean = true;
     _colorFinal: Color = Color.White;
@@ -291,29 +338,31 @@ export abstract class QUI_BaseElement implements QUI_IElement {
 }
 
 
-
-export class QUI_Container extends QUI_BaseElement implements QUI_IContainer {
+export enum ChildChangeState {
+    NoChange,//无改变
+    AddOne,//增加了一个
+    Dirty,//改变太多，整体重刷吧
+}
+export class QUI_Container extends QUI_BaseElement {
     constructor() {
         super();
     }
     GetElementType(): QUI_ElementType {
         return QUI_ElementType.Element_Container;
     }
-    GetContainer(): QUI_IContainer {
-        return this;
-    }
 
-    protected _children: QUI_IElement[];
+
+    protected _children: QUI_BaseElement[];
 
     GetChildCount(): number {
         return this._children == null ? 0 : this._children.length;
     }
-    GetChild(index: number): QUI_IElement | null {
+    GetChild(index: number): QUI_BaseElement | null {
         if (this._children == null || index >= this._children.length)
             return null;
         return this._children[index];
     }
-    AddChild(elem: QUI_IElement): void {
+    AddChild(elem: QUI_BaseElement): void {
 
         if (this._children == null)
             this._children = [];
@@ -321,28 +370,39 @@ export class QUI_Container extends QUI_BaseElement implements QUI_IContainer {
             return;
 
         //移除旧爹
-        let p = (elem as any)._parent as QUI_IElement;
+        let p = (elem as QUI_BaseElement)._parent;
         if (p != null)
-            p.GetContainer().RemoveChild(p);
+            (p as QUI_Container).RemoveChild(p);
 
         this._children.push(elem);
-
+        if (this.childState == ChildChangeState.NoChange) {
+            this.childState = ChildChangeState.AddOne;
+        }
+        else {
+            this.childState = ChildChangeState.Dirty;
+        }
         //换新爹
         (elem as any)._parent = this;
     }
-    RemoveChild(elem: QUI_IElement): void {
+    RemoveChild(elem: QUI_BaseElement): void {
         if (this._children == null)
             return;
         let i = this._children.indexOf(elem);
         if (i < 0)
             return;
+
         this._children.splice(i, 1);
+
         (elem as any)._parent = null;
+        this.childState = ChildChangeState.Dirty;
     }
-    removeChildAt(index: number): void {
+    RemoveChildAt(index: number): void {
         if (this._children == null)
             return;
+        let elem = this._children[index];
         this._children.splice(index, 1);
+        (elem as any)._parent = null;
+        this.childState = ChildChangeState.Dirty;
     }
 
     RemoveChildAll(): void {
@@ -354,18 +414,11 @@ export class QUI_Container extends QUI_BaseElement implements QUI_IContainer {
             (elem as any)._parent = null;
         }
         this._children.splice(0, this._children.length);
+        this.childState = ChildChangeState.Dirty;
     }
 
-    RemoveChildAt(n: number): void {
-        if (this._children == null)
-            return;
-        for (var i = n; i < this._children.length; i++) {
-            //移除 旧爹
-            let elem = this._children[i];
-            (elem as any)._parent = null;
-        }
-        this._children.splice(n);
-    }
+
+    protected childState: ChildChangeState = ChildChangeState.NoChange;
 
     //处理container
 

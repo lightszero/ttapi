@@ -39,7 +39,7 @@ export class MyLogic implements IUserLogic {
         let group = new QUI_Group();
         group.DragEnable = true;//允许拖动
         group.localRect.setByRect(new Rectangle(0, 0, 200, 200));
-        this.canvas.GetContainer().AddChild(group);
+        this.canvas.AsContainer().AddChild(group);
 
 
         let img = new QUI_Image();
@@ -47,7 +47,7 @@ export class MyLogic implements IUserLogic {
         group.GetContainer().AddChild(img);
 
         let btn = new QUI_Button();
-        let btnlabel = btn.elemNormal.GetContainer().GetChild(1) as QUI_Label
+        let btnlabel = btn.elemNormal.AsContainer().GetChild(1) as QUI_Label
         btnlabel.text = "Open";
         btn.localRect.offsetY1 += 132;
         btn.localRect.offsetY2 += 132;

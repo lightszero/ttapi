@@ -6,11 +6,11 @@ import { QUI_Panel } from "./qui_panel.js";
 
 
 export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
-    constructor(updateUIFunc: (itemData: T, elem: QUI.QUI_IElement, id: number, pick: boolean) => QUI.QUI_IElement) {
+    constructor(updateUIFunc: (itemData: T, elem: QUI.QUI_BaseElement, id: number, pick: boolean) => QUI.QUI_BaseElement) {
         super();
         this.ResetItemFunc(updateUIFunc);
     }
-    ResetItemFunc(updateUIFunc: (itemData: T, elem: QUI.QUI_IElement, id: number, pick: boolean) => QUI.QUI_IElement) {
+    ResetItemFunc(updateUIFunc: (itemData: T, elem: QUI.QUI_BaseElement, id: number, pick: boolean) => QUI.QUI_BaseElement) {
         this._updateUIFunc = updateUIFunc;
         if (this._updateUIFunc != null) {
             for (var i = 0; i < 10; i++) {
@@ -23,10 +23,10 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
         return QUI.QUI_ElementType.Element_Panel_Scroll_Unlimit;
     }
   
-    private _freeItem: QUI.QUI_IElement[] = [];
+    private _freeItem: QUI.QUI_BaseElement[] = [];
 
     private _itemheight: number = 0;
-    _updateUIFunc: (itemData: T, elem: QUI.QUI_IElement, id: number, pick: boolean) => QUI.QUI_IElement
+    _updateUIFunc: (itemData: T, elem: QUI.QUI_BaseElement, id: number, pick: boolean) => QUI.QUI_BaseElement
     panelValue: number = 0;
     panelWantValue: number = 0;
     ScrollZero() {

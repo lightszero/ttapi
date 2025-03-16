@@ -17,8 +17,8 @@ export class QUI_ScrollBar extends QUI.QUI_BaseElement {
     }
  
     dir: QUI.QUI_Direction2 = QUI.QUI_Direction2.Vertical;
-    spriteBackground: QUI.QUI_IElement; //背景控件
-    spriteValue: QUI.QUI_IElement; //前控件
+    spriteBackground: QUI.QUI_BaseElement; //背景控件
+    spriteValue: QUI.QUI_BaseElement; //前控件
     size: number = 10;
     min: number = 1;
     max: number = 100;

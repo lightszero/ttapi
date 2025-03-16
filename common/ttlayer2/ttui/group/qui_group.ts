@@ -37,14 +37,14 @@ export class QUI_Group extends QUI_Panel {
         dbut.localRect.SetAsFill();
         titleback.GetContainer().AddChild(dbut);
 
-        dbut.ElemNormal.GetContainer().RemoveChildAll();
+        dbut.ElemNormal.AsContainer().RemoveChildAll();
 
 
         {
             let img = new QUI_Image();
             img.localColor = new Color(0.5, 0.5, 0.5, 1);
             img.localRect.SetAsFill();
-            dbut.ElemNormal.GetContainer().AddChild(img);
+            dbut.ElemNormal.AsContainer().AddChild(img);
         }
         {
 
@@ -57,7 +57,7 @@ export class QUI_Group extends QUI_Panel {
             title.fontScale.Y *= 0.5;
 
 
-            dbut.ElemNormal.GetContainer().AddChild(title);
+            dbut.ElemNormal.AsContainer().AddChild(title);
         }
 
 
@@ -75,27 +75,26 @@ export class QUI_Group extends QUI_Panel {
     private OnDrag(x: number, y: number, bx: number, by: number) {
         console.log("drag " + x + "," + y + "," + bx + "," + by);
         if (this.DragEnable) {
-            let w = this.localRect.offsetX2 - this.localRect.offsetX1;
-            let h = this.localRect.offsetY2 - this.localRect.offsetY1;
+            let w = this.localRect.getWidth();
+            let h = this.localRect.getHeight();
             let pw = this._parent.GetWorldRect().Width;
             let ph = this._parent.GetWorldRect().Height;
-            this.localRect.offsetX1 = this.posbeginx + x - bx;
-            this.localRect.offsetY1 = this.posbeginy + y - by;
+            let targetx = this.posbeginx + x - bx;
+            let targety = this.posbeginy + y - by;
 
             //约束
-            if (this.localRect.offsetX1 > pw - w)
-                this.localRect.offsetX1 = pw - w;
-            if (this.localRect.offsetX1 < 0)
-                this.localRect.offsetX1 = 0;
+            if (targetx > pw - w)
+                targetx = pw - w;
+            if (targetx < 0)
+                targetx = 0;
 
-            if (this.localRect.offsetY1 > ph - h)
-                this.localRect.offsetY1 = ph - h;
-            if (this.localRect.offsetY1 < 0)
-                this.localRect.offsetY1 = 0;
+            if (targety > ph - h)
+                targety = ph - h;
+            if (targety < 0)
+                targety = 0;
 
             //保持尺寸
-            this.localRect.offsetX2 = this.localRect.offsetX1 + w;
-            this.localRect.offsetY2 = this.localRect.offsetY1 + h;
+            this.localRect.setPos(targetx, targety);
         }
     }
     DragEnable: boolean

@@ -1,7 +1,7 @@
 
-import * as QUI from "./qui_base.js"
-import { QUI_IElement, QUI_BaseElement, QUI_IContainer, QUI_ElementType } from "./qui_base.js";
-import { QUI_Canvas } from "./qui_canvas.js";
+import * as QUI from "../qui_base.js"
+import { QUI_BaseElement, QUI_Container, QUI_ElementType } from "../qui_base.js";
+import { QUI_Canvas } from "../qui_canvas.js";
 
 
 export enum QUI_FillWay {

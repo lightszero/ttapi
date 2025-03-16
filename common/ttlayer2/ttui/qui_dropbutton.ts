@@ -16,7 +16,7 @@ export class QUI_DropButton extends QUI.QUI_BaseElement {
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_DropButton;
     }
-    ElemNormal: QUI.QUI_IElement | null = null;
+    ElemNormal: QUI.QUI_BaseElement | null = null;
 
     colorNormal: Color;
     colorActive: Color;

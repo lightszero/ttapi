@@ -2,3 +2,4 @@
 node_modules
 /electron_tool/downhtml
 /electron_tool/out
+/electron_tool/editor/package-lock.json

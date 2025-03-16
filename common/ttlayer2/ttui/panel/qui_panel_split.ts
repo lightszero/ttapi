@@ -67,8 +67,8 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
         return QUI.QUI_ElementType.Element_Panel_Split;
     }
 
-    backElement: QUI.QUI_IElement;
-    borderElement: QUI.QUI_IElement;//面板的边界外观
+    backElement: QUI.QUI_BaseElement;
+    borderElement: QUI.QUI_BaseElement;//面板的边界外观
     protected _border: Border;//面板的边距
     getBorder(): Border {
         return this._border;
@@ -258,21 +258,7 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
     getPanel2(): QUI_Panel {
         return this._panel2;
     }
-    getChildCount(): number {
-        throw new Error("QUI_Panel_Split,use panel1 or panel2");
-    }
-    getChild(index: number): QUI.QUI_IElement | null {
-        throw new Error("QUI_Panel_Split,use panel1 or panel2");
-    }
-    addChild(elem: QUI.QUI_IElement): void {
-        throw new Error("QUI_Panel_Split,use panel1 or panel2");
-    }
-    removeChild(elem: QUI.QUI_IElement): void {
-        throw new Error("QUI_Panel_Split,use panel1 or panel2");
-    }
-    removeChildAll(): void {
-        throw new Error("QUI_Panel_Split,use panel1 or panel2");
-    }
+  
 
 
 }

@@ -25,7 +25,7 @@ export class QUI_TextBox_Prompt extends QUI.QUI_BaseElement {
     cut: boolean = false;
     halign: QUI.QUI_HAlign = QUI.QUI_HAlign.Middle;
     valign: QUI.QUI_VAlign = QUI.QUI_VAlign.Middle;
-    border: QUI.QUI_IElement;
+    border: QUI.QUI_BaseElement;
     private _pos: Vector2 = new Vector2(0, 0);
     OnRender(_canvas: QUI_Canvas): void {
 

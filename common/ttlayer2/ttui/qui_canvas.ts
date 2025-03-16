@@ -23,9 +23,7 @@ export class QUI_Canvas extends QUI.QUI_Container {
         let scaleheight = this.target.getHeight() / this.scale;
         this.localRect.setByRect(new Rectangle(0, 0, scalewidth, scaleheight));
     }
-    Clone(): QUI.QUI_IElement {
-        throw new Error("can not clone canvas.");
-    }
+   
     //Canvas Scale 不改变输出分辨率，而是直接缩放
     //而tt.graphic.setMainScreenScale 会直接改变输出分辨率
     scale: number = 1.0;

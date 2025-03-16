@@ -13,10 +13,10 @@ export class QUI_Toggle extends QUI.QUI_BaseElement {
         return QUI.QUI_ElementType.Element_Toggle;
     }
 
-    ElemTrue: QUI.QUI_IElement | null = null;
-    ElemTrueDown: QUI.QUI_IElement | null = null;
-    ElemFalse: QUI.QUI_IElement | null = null;
-    ElemFalseDown: QUI.QUI_IElement | null = null;
+    ElemTrue: QUI.QUI_BaseElement | null = null;
+    ElemTrueDown: QUI.QUI_BaseElement | null = null;
+    ElemFalse: QUI.QUI_BaseElement | null = null;
+    ElemFalseDown: QUI.QUI_BaseElement | null = null;
     value: boolean = false;
     private press: boolean = false;
     private pressid: number = -1;

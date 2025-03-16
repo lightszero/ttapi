@@ -5,7 +5,7 @@ export * from "./qui_scale9.js"// qui scale9 图形组件
 //canvas
 export * from "./qui_canvas.js" // qui canvas 控件（UI的基本）
 // 基本控件
-export * from "./qui_container.js"
+export * from "./ext/qui_screenfixer.js"
 export * from "./qui_image.js"// qui image控件
 export * from "./qui_imagescale9.js"// qui imagescale9控件
 export * from "./qui_label.js"  // qui label控件

@@ -20,8 +20,8 @@ export class QUI_Bar extends QUI.QUI_BaseElement {
         return QUI.QUI_ElementType.Element_Bar;
     }
 
-    spriteBackground: QUI.QUI_IElement; //背景控件
-    spriteValue: QUI.QUI_IElement; //前控件，自动改成填充定位，改右值或者底值;
+    spriteBackground: QUI.QUI_BaseElement; //背景控件
+    spriteValue: QUI.QUI_BaseElement; //前控件，自动改成填充定位，改右值或者底值;
     dir: QUI.QUI_Direction = QUI.QUI_Direction.LeftToRight;//方向，
     scroll: QUI_BarScrollMode = QUI_BarScrollMode.DoNotScroll;
     private _value: number = 0.5;
