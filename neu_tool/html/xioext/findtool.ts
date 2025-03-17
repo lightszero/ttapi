@@ -1,12 +1,21 @@
 import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "./ioext.js";
 
 export class FindTool {
-    static async FindAllFile(dir: IOExt_DirectoryHandle, ext: string, deeplimit: number) {
-        if (ext.charAt(0) != ".") {
-            ext = "." + ext;
+    static async FindAllFile(dir: IOExt_DirectoryHandle, exts: string[], deeplimit: number) {
+        let regstr = ""
+        for (var i = 0; i < exts.length; i++) {
+            let ext = exts[i];
+            if (ext.charAt(0) != ".") {
+                ext = "." + ext;
+            }
+
+            if (i > 0)
+                regstr += "|";
+
+            regstr = regstr + "((" + ext + ")$)";
         }
 
-        let regex = new RegExp("(" + ext + ")$");
+        let regex = new RegExp(regstr);
         regex.ignoreCase;
         let result: IOExt_FileHandle[] = []
         await this.FindAllFile_Deep(dir, regex, result, 2);

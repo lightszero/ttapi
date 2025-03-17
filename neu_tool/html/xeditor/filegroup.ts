@@ -1,4 +1,5 @@
-import { QUI_Grow, Color, QUI_Button, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Scroll } from "../ttlayer2/ttlayer2.js";
+import { QUI_Grow, Color, QUI_Button, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Scroll, QUI_Container, tt, Texture, TextureFormat } from "../ttlayer2/ttlayer2.js";
+import { TTPathTool } from "../ttlayer2/utils/path/pathtool.js";
 import { FindTool } from "../xioext/findtool.js";
 
 import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "../xioext/ioext.js";
@@ -67,18 +68,39 @@ export class FileGroup extends QUI_Group {
         // }
     }
 
+    async LoadFileToTexture(file: IOExt_FileHandle) {
+        let idata = await IOExt.File_ReadBinary(file);
+        let b = new Blob([idata]);
+        let imagedata = await tt.loader.LoadImageDataAsync(URL.createObjectURL(b));
+        let tex = new Texture(tt.graphic.GetWebGL(), imagedata.width, imagedata.height, TextureFormat.RGBA32,
+            imagedata.data);
+        return tex;
+    }
     dir: IOExt_DirectoryHandle;
     async OnOpenFolder(file: IOExt_DirectoryHandle) {
         this.dir = file;
-        let result = await FindTool.FindAllFile(file, "*.json", 3);
+        this.contextPanel.GetContainer().RemoveChildAll();
+        let result = await FindTool.FindAllFile(file, [".json", ".jpg", ".png"], 3);
 
         for (var i = 0; i < result.length; i++) {
+            let con = new QUI_Container();
+            con.localRect.setBySize(200, 24);
+            this.contextPanel.GetContainer().AddChild(con);
+            let ext = TTPathTool.GetExt(result[i].name).toLowerCase();
+            if (ext == ".jpg" || ext == ".png") {
+                let img = new QUI_Image();
+                let tex = await this.LoadFileToTexture(result[i]);
+                img.SetByTexture(tex);
+                img.localRect.setByPosAndSize(0, 0, 24, 24);
+                con.AddChild(img);
+            }
             let label = new QUI_Label();
-            label.localRect.setBySize(200, 20);
+            label.localRect.setByPosAndSize(24, 0, 200 - 24, 20);
             label.text = (result[i].isfile ? "[File]" : "[Path]")
                 + result[i].name;
             label.halign = QUI_HAlign.Left;
-            this.contextPanel.GetContainer().AddChild(label);
+            //this.contextPanel.GetContainer().AddChild(con);
+            con.AddChild(label);
         }
     }
     OnSaveFile(file: IOExt_FileHandle) {

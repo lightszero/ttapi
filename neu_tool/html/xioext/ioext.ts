@@ -190,34 +190,40 @@ export class IOExt {
     //目录操作
     static async Directory_List(path: IOExt_DirectoryHandle): Promise<IOExt_HandleUnion[]> {
         let out: (IOExt_DirectoryHandle | IOExt_FileHandle)[] = [];
-        if (this._envWeb) {
+        try {
+            if (this._envWeb) {
 
 
-            var all = (path.state as FileSystemDirectoryHandle).entries();
-            for await (const [name, handle] of all) {
+                var all = (path.state as FileSystemDirectoryHandle).entries();
+                for await (const [name, handle] of all) {
 
-                let u: FileSystemHandleUnion = handle;
-                if (u.kind == "file") {
-                    out.push(new IOExt_FileHandle(u))
-                }
-                else {
-                    out.push(new IOExt_DirectoryHandle(u));
+                    let u: FileSystemHandleUnion = handle;
+                    if (u.kind == "file") {
+                        out.push(new IOExt_FileHandle(u))
+                    }
+                    else {
+                        out.push(new IOExt_DirectoryHandle(u));
+                    }
                 }
             }
-            return out;
-        }
-        else {
-            let all = await Neutralino.filesystem.readDirectory(path.state as string);
-            for (var i = 0; i < all.length; i++) {
-                if (all[i].type == "file") {
-                    out.push(new IOExt_FileHandle(all[i].path));
+            else {
+
+                let all = await Neutralino.filesystem.readDirectory(path.state as string);
+                for (var i = 0; i < all.length; i++) {
+                    if (all[i].type == "FILE") {
+                        out.push(new IOExt_FileHandle(all[i].path));
+                    }
+                    else {
+                        out.push(new IOExt_DirectoryHandle(all[i].path));
+                    }
                 }
-                else {
-                    out.push(new IOExt_DirectoryHandle(all[i].path));
-                }
+
             }
-            return out;
         }
+        catch (e) {
+            this.Log("Directory_List Error(" + JSON.stringify(path) + " msg:" + e, IOExt_LoggerType.ERROR);
+        }
+        return out;
     }
     static async Directory_Create(path: IOExt_DirectoryHandle, name: string): Promise<IOExt_DirectoryHandle> {
         if (this._envWeb) {

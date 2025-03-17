@@ -1,14 +1,68 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>NeutralinoJs sample app</title>
-    <link rel="stylesheet" href="/styles.css">
-  </head>
-  <body style="width: 100%;height: 100%;margin: 0px;">
 
-    <script src="./js/neutralino.js"></script>
-    <!-- Your app's source files -->
-    <script src="./xeditor/main.js" type="module"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>NeutralinoJs sample app</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+  
+
+  <style>
+    body {
+      overflow: hidden;
+      zoom: reset;
+      /* 还原缩放 */
+      zoom: 100%;
+      /* 禁止缩放 */
+      -webkit-user-drag: none;
+      /* 禁止拖拽 */
+      -webkit-touch-callout: none;
+      /* 禁止长按弹出菜单 */
+      -webkit-tap-highlight-color: transparent;
+      /* 禁止点击时的高亮效果 */
+      border: 0px;
+      margin: 0px;
+      -webkit-user-select: none;
+      /* Safari */
+      -moz-user-select: none;
+      /* Firefox */
+      -ms-user-select: none;
+      /* IE 10+ */
+      user-select: none;
+      /* 标准语法 */
+    }
+  </style>
+  <script>
+    document.addEventListener('mousewheel', function (e) {
+      e = e || window.event;
+      if ((e.wheelDelta && event.ctrlKey) || e.detail) {
+        event.preventDefault();
+      }
+    }, { capture: false, passive: false });
+    document.addEventListener('keydown', function (event) {
+      if ((event.ctrlKey === true || event.metaKey === true)
+        && (event.keyCode === 61 || event.keyCode === 107
+          || event.keyCode === 173 || event.keyCode === 109
+          || event.keyCode === 187 || event.keyCode === 189)) {
+        event.preventDefault();
+      }
+    }, false);
+    document.addEventListener('touchmove', function (event) {
+      event.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('dragstart', function (event) {
+      event.preventDefault();
+    }, false);
+  </script>
+
+</head>
+
+<body style="width: 100%;height: 100%;margin: 0px;">
+
+  <script src="./js/neutralino.js"></script>
+  <!-- Your app's source files -->
+  <script src="./xeditor/main.js" type="module"></script>
+</body>
+
 </html>
