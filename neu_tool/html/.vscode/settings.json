@@ -1,0 +1,8 @@
+{
+    "files.exclude": {
+        "ttlayer2/**.js": true,
+        "ttapi/**.js": true,
+        "ttimpl_web/**.js": true,
+        "xeditor/**.js": true
+    }
+}

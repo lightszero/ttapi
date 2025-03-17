@@ -1,6 +1,6 @@
 import { Color, Rectangle } from "../../ttlayer2.js";
-import { QUI_BaseElement, QUI_ElementType, QUI_HAlign } from "../qui_base.js";
-import { QUI_DragButton, QUI_Image, QUI_Label, QUI_Overlay, QUI_Panel, QUI_Resource } from "../ttui.js";
+import { QUI_BaseElement, QUI_Container, QUI_ElementType, QUI_HAlign } from "../qui_base.js";
+import { QUI_Canvas, QUI_DragButton, QUI_Image, QUI_Label, QUI_Overlay, QUI_Panel, QUI_Resource } from "../ttui.js";
 
 export class QUI_Group extends QUI_Panel {
     constructor() {
@@ -25,7 +25,14 @@ export class QUI_Group extends QUI_Panel {
         this.foreElements.push(titleback);
 
         let overlay = new QUI_Overlay();
+        // overlay.OnPress = () => {
 
+        //     if (this.autoTop) {
+        //         this._parent.ToTop(this);
+
+        //     }
+
+        // }
         this.backElements.push(overlay);
         let back = new QUI_Image();
         back.localColor = Color.Black;
@@ -44,14 +51,14 @@ export class QUI_Group extends QUI_Panel {
         dbut.localRect.SetAsFill();
         titleback.GetContainer().AddChild(dbut);
 
-        dbut.ElemNormal.AsContainer().RemoveChildAll();
+        (dbut.ElemNormal as QUI_Container).RemoveChildAll();
 
 
         {
             let img = new QUI_Image();
             img.localColor = new Color(0.5, 0.5, 0.5, 1);
             img.localRect.SetAsFill();
-            dbut.ElemNormal.AsContainer().AddChild(img);
+            (dbut.ElemNormal as QUI_Container).AddChild(img);
         }
         {
 
@@ -64,7 +71,7 @@ export class QUI_Group extends QUI_Panel {
             title.fontScale.Y *= 0.5;
 
 
-            dbut.ElemNormal.AsContainer().AddChild(title);
+            (dbut.ElemNormal as QUI_Container).AddChild(title);
         }
 
 
@@ -88,10 +95,44 @@ export class QUI_Group extends QUI_Panel {
         console.log("begin " + x + "," + y);
         if (this.dragEnable) {
             if (this.autoTop) {
-                this._parent.AsContainer().ToTop(this);
+                (this._parent as QUI_Container).ToTop(this);
 
             }
         }
+    }
+    OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        let kill = this.OnTouchFore(_canvas, touchid, press, move, x, y);
+
+        if (!kill) {
+            if (press == true && move == false) {
+                let rectlimit = this.GetWorldRect();
+                let x1 = rectlimit.X + this._border.XLeft;
+                let y1 = rectlimit.Y + this._border.YTop;
+                let x2 = rectlimit.X + rectlimit.Width - this._border.XRight;
+                let y2 = rectlimit.Y + rectlimit.Height - this._border.YBottom;
+                if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
+
+                }
+                else {
+                    //按下事件在panel限制只外，不往下传了
+                    return false;
+                }
+            }
+        }
+        if (!kill) {
+            kill = this._container.OnTouch(_canvas, touchid, press, move, x, y);
+        }
+
+        if (!kill) {
+            kill = this.OnTouchBack(_canvas, touchid, press, move, x, y);
+        }
+        if (kill) {//group 拦截一下事件
+            if (this.autoTop) {
+                (this._parent as QUI_Container).ToTop(this);
+            }
+
+        }
+        return kill;
     }
     private OnDrag(x: number, y: number, bx: number, by: number) {
         console.log("drag " + x + "," + y + "," + bx + "," + by);
@@ -117,7 +158,7 @@ export class QUI_Group extends QUI_Panel {
             //保持尺寸
             this.localRect.setPos(targetx, targety);
             if (this.autoTop) {
-                this._parent.AsContainer().ToTop(this);
+                (this._parent as QUI_Container).ToTop(this);
 
             }
         }

@@ -67,7 +67,11 @@ export class QUI_TextBox_Prompt extends QUI_Label {
         if (this._press == true && press == false && this._pressid == touchid) {
             this._press = false;
             this._pressid = -1;
-            this.Prompt();
+            if (x >= rect.X && x < x2 && y >= rect.Y && y < y2) {
+
+
+                this.Prompt();
+            }
             return true;
         }
         return false;
