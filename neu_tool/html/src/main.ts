@@ -9,7 +9,7 @@ window.onload = () => {
     IOExt.Init();
     AddLabel("退出只在window 模式有效");
 
-    AddLabel("Neu init.");
+    AddLabel("Neu init.IsWebEnv=" + IOExt.IsWebEnv());
 
     AddLabel("Neu 的 Messagebox 有问题，不是模式对话框")
     AddBtn("messagebox", async () => {

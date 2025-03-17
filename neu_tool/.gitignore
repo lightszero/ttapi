@@ -11,3 +11,4 @@
 # Neutralinojs related files
 .storage
 *.log
+/.github

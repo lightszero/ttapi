@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "defaultMode": "browser",
   "port": 0,
-  "documentRoot": "/resources/",
+  "documentRoot": "/html/",
   "url": "/",
   "enableServer": true,
   "enableNativeAPI": true,
@@ -42,7 +42,7 @@
       "center": true,
       "fullScreen": false,
       "alwaysOnTop": false,
-      "icon": "/resources/icons/appIcon.png",
+      "icon": "/html/icons/appIcon.png",
       "enableInspector": true,
       "borderless": false,
       "maximize": false,
@@ -57,7 +57,7 @@
       "nativeBlockList": []
     },
     "cloud": {
-      "url": "/resources/#cloud",
+      "url": "/html/#cloud",
       "nativeAllowList": [
         "app.*"
       ]
@@ -71,9 +71,9 @@
   },
   "cli": {
     "binaryName": "neu2",
-    "resourcesPath": "/resources/",
+    "resourcesPath": "/html/",
     "extensionsPath": "/extensions/",
-    "clientLibrary": "/resources/js/neutralino.js",
+    "clientLibrary": "/html/js/neutralino.js",
     "binaryVersion": "5.6.0",
     "clientVersion": "5.6.0"
   }

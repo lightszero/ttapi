@@ -1,8 +1,9 @@
-///<reference  path="./filesystem.d.ts" />
-
+///<reference  path="../js/filesystem.d.ts" />
+///<reference  path="../js/neutralino.d.ts" />
 //封装来自web的 filesystem api
 //和来自 Neutralino 的 本地 api
 //这样就可以用一套系统
+//web filesystem 需要放弃一些能力，比如stat，比如打开一个文件，然后往上得到目录
 export class IOExt {
     private static _envWeb: boolean = false;
 
@@ -11,16 +12,17 @@ export class IOExt {
         try {
             Neutralino.init();
             this._envWeb = false;
-            this.Log("Neutralino env found.")
+            this.Log("Neutralino env Init.")
 
             Neutralino.events.on("windowClose", () => {
                 Neutralino.app.exit();
             })
 
         }
-        catch {
+        catch (e) {
+            this.Log("error:" + e);
             this._envWeb = true;
-            this.Log("web env.");
+            this.Log("Web env Init.");
         }
     }
 
@@ -31,20 +33,20 @@ export class IOExt {
     static Log(text: string, type: IOExt_LoggerType = IOExt_LoggerType.INFO): void {
         if (!this._envWeb) {
             if (type == IOExt_LoggerType.INFO)
-                Neutralino.debug.log("[IOExt]==>" + text, Neutralino.debug.LoggerType.INFO);
+                Neutralino.debug.log("[IOExt]==>" + text, "INFO" as Neutralino.debug.LoggerType);
             else if (type == IOExt_LoggerType.WARNING)
-                Neutralino.debug.log("[IOExt]==>" + text, Neutralino.debug.LoggerType.WARNING);
+                Neutralino.debug.log("[IOExt]==>" + text, "WARNING" as Neutralino.debug.LoggerType);
             else
-                Neutralino.debug.log("[IOExt]==>" + text, Neutralino.debug.LoggerType.ERROR);
+                Neutralino.debug.log("[IOExt]==>" + text, "ERROR" as Neutralino.debug.LoggerType);
         }
-        else {
-            if (type == IOExt_LoggerType.INFO)
-                console.log("[IOExt]==>" + text)
-            else if (type == IOExt_LoggerType.WARNING)
-                console.warn("[IOExt]==>" + text)
-            else
-                console.error("[IOExt]==>" + text)
-        }
+
+        if (type == IOExt_LoggerType.INFO)
+            console.log("[IOExt]==>" + text)
+        else if (type == IOExt_LoggerType.WARNING)
+            console.warn("[IOExt]==>" + text)
+        else
+            console.error("[IOExt]==>" + text)
+
     }
     //三个对话框，首推pickFolder
     static async Picker_OpenFile(): Promise<IOExt_FileHandle | null> {
@@ -107,6 +109,7 @@ export class IOExt {
         }
     }
 
+    //文件操作
     static async File_ReadText(file: IOExt_FileHandle) {
         if (this._envWeb) {
 
@@ -182,15 +185,17 @@ export class IOExt {
         }
         return await this.File_WriteBinary(file, data);
     }
+
+    //目录操作
     static async Directory_List(path: IOExt_DirectoryHandle): Promise<IOExt_HandleUnion[]> {
         let out: (IOExt_DirectoryHandle | IOExt_FileHandle)[] = [];
         if (this._envWeb) {
 
 
             var all = (path.state as FileSystemDirectoryHandle).entries();
-            for await (const x of all) {
+            for await (const [name, handle] of all) {
 
-                let u: FileSystemHandleUnion = x;
+                let u: FileSystemHandleUnion = handle;
                 if (u.kind == "file") {
                     out.push(new IOExt_FileHandle(u))
                 }
@@ -224,7 +229,19 @@ export class IOExt {
             return new IOExt_DirectoryHandle(newname);
         }
     }
-    //noweb 模式才能用的高级方法，也就没有了控制力
+    //noweb 模式才能用的方法，也就没有了控制力
+    // static async File_Stat(path: IOExt_FileHandle): Promise<{ size: number, time: number }> {
+       
+    //     if (this._envWeb) {
+
+    //         throw "no this func";
+    //     }
+    //     else {
+    //         let stats = await Neutralino.filesystem.getStats(path.state as string);
+    //         return { size: stats.size, time: stats.modifiedAt };
+    //     }
+
+    // }
     // static async Directory_FromFile(file: IOExt_FileHandle): Promise<IOExt_DirectoryHandle> {
     //     if (!this._envWeb) {
 
@@ -241,22 +258,40 @@ enum IOExt_LoggerType {
     WARNING,
     ERROR,
 }
+export interface IOExt_Handle {
+    isfile: boolean;
+    name: string;
+}
 type IOExt_HandleUnion = IOExt_FileHandle | IOExt_DirectoryHandle;
-export class IOExt_FileHandle {
+export class IOExt_FileHandle implements IOExt_Handle {
     constructor(_state: FileSystemFileHandle | string) {
         this.state = _state;
+        this.isfile = true;
+        if (IOExt.IsWebEnv()) {
+            this.name = (_state as FileSystemFileHandle).name
+        }
+        else {
+            let i = (_state as string).lastIndexOf("/");
+            this.name = (_state as string).substring(i + 1);
+        }
     }
     state: FileSystemFileHandle | string;
-    IsFile() {
-        return true;
-    }
+    name: string
+    isfile: boolean;
 }
 export class IOExt_DirectoryHandle {
     constructor(_state: FileSystemDirectoryHandle | string) {
         this.state = _state;
+        this.isfile = false;
+        if (IOExt.IsWebEnv()) {
+            this.name = (_state as FileSystemDirectoryHandle).name
+        }
+        else {
+            let i = (_state as string).lastIndexOf("/");
+            this.name = (_state as string).substring(i + 1);
+        }
     }
     state: FileSystemDirectoryHandle | string;
-    IsFile() {
-        return false;
-    }
+    name: string
+    isfile: boolean;
 }
