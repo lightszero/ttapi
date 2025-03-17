@@ -1,9 +1,0 @@
-{
-    "liveServer.settings.https": {
-        "cert": "D:\\key\\example.com+5.pem",
-        "key": "D:\\key\\example.com+5-key.pem",
-        "passphrase": "",
-        "enable": false
-    },
-    "liveServer.settings.useLocalIp": false,
-}

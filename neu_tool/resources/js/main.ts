@@ -17,17 +17,17 @@ window.onload = () => {
         IOExt.Log("showMessageBox=" + JSON.stringify(r));
     })
     AddBtn("open file", async () => {
-        let r = await IOExt.pickOpenFile();
+        let r = await IOExt.Picker_OpenFile();
         IOExt.Log("showOpenDialog=" + JSON.stringify(r));
     })
     AddBtn("save file", async () => {
-        let r = await IOExt.pickSaveFile();
+        let r = await IOExt.Picker_SaveFile();
         IOExt.Log("showSaveDialog=" + JSON.stringify(r));
     })
     AddBtn("show dir", async () => {
-        let r = await Neutralino.os.showFolderDialog("选文件");
-        IOExt.Log("showFolderDialog=" + JSON.stringify(r));
-        let infos = await Neutralino.filesystem.readDirectory(r);
+        let folder = await IOExt.Picker_Folder();
+        IOExt.Log("showFolderDialog=" + JSON.stringify(folder));
+        let infos = await IOExt.Directory_List(folder);
         for (var i = 0; i < infos.length; i++) {
             console.log(JSON.stringify(infos[i]));
         }
