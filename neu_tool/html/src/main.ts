@@ -1,5 +1,6 @@
-import { IOExt } from "./twoenv.js";
+import { IOExt, IOExt_DirectoryHandle } from "./twoenv.js";
 
+let lastfolder: IOExt_DirectoryHandle;
 
 window.onload = () => {
 
@@ -25,13 +26,25 @@ window.onload = () => {
         IOExt.Log("showSaveDialog=" + JSON.stringify(r));
     })
     AddBtn("show dir", async () => {
-        let folder = await IOExt.Picker_Folder();
+        let folder = lastfolder = await IOExt.Picker_Folder();
         IOExt.Log("showFolderDialog=" + JSON.stringify(folder));
         let infos = await IOExt.Directory_List(folder);
         for (var i = 0; i < infos.length; i++) {
             console.log(JSON.stringify(infos[i]));
         }
     })
+    AddBtn("create aa path in lastfolder", async () => {
+        await IOExt.Directory_Create(lastfolder, "aa");
+    });
+    AddBtn("remove aa path in lastfolder", async () => {
+        await IOExt.Directory_Remove(lastfolder, "aa");
+    });
+    AddBtn("create abc.json in lastfolder", async () => {
+        await IOExt.File_CreateText(lastfolder, "abc.json","hello");
+    });
+    AddBtn("remove abc.json in lastfolder", async () => {
+        await IOExt.Directory_Remove(lastfolder, "abc.json");
+    });
 }
 function AddBtn(text: string, action: () => void) {
     let btn = document.createElement('button');

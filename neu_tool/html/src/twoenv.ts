@@ -133,7 +133,8 @@ export class IOExt {
     }
     static async File_WriteBinary(file: IOExt_FileHandle, data: ArrayBuffer): Promise<boolean> {
         if (this._envWeb) {
-            let stream = await (file.state as FileSystemFileHandle).createWritable({ "keepExistingData": false })
+            let filehandle = (file.state as FileSystemFileHandle);
+            let stream = await filehandle.createWritable({ "keepExistingData": false })
             stream.write(data);
             stream.close();
             return true;
@@ -220,8 +221,13 @@ export class IOExt {
     }
     static async Directory_Create(path: IOExt_DirectoryHandle, name: string): Promise<IOExt_DirectoryHandle> {
         if (this._envWeb) {
-            let file = await (path.state as FileSystemDirectoryHandle).getDirectoryHandle(name, { "create": true });
-            return new IOExt_DirectoryHandle(file);
+            try {
+                let file = await (path.state as FileSystemDirectoryHandle).getDirectoryHandle(name, { "create": true });
+                return new IOExt_DirectoryHandle(file);
+            }
+            catch (e) {
+                this.Log("Directory_Create error:" + e);
+            }
         }
         else {
             let newname = path.state as string + "/" + name;
@@ -229,9 +235,26 @@ export class IOExt {
             return new IOExt_DirectoryHandle(newname);
         }
     }
+    static async Directory_Remove(path: IOExt_DirectoryHandle, name: string): Promise<boolean> {
+        if (this._envWeb) {
+            try {
+                let file = await (path.state as FileSystemDirectoryHandle).removeEntry(name, { "recursive": true });
+                return true;
+            }
+            catch (e) {
+                this.Log("Directory_Create error:" + e);
+                return false;
+            }
+        }
+        else {
+            let newname = path.state as string + "/" + name;
+            await Neutralino.filesystem.remove(newname);
+            return true;
+        }
+    }
     //noweb 模式才能用的方法，也就没有了控制力
     // static async File_Stat(path: IOExt_FileHandle): Promise<{ size: number, time: number }> {
-       
+
     //     if (this._envWeb) {
 
     //         throw "no this func";
