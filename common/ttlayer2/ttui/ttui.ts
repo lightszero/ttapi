@@ -22,6 +22,7 @@ export * from "./ext/qui_toggle.js"  //qui 两种状态切换的按钮控件
 export * from "./ext/qui_overlay.js" //qui 遮蔽控件，屏蔽事件用
 export * from "./ext/qui_bar.js"// qui 进度条
 export * from "./ext/qui_scrollbar.js"// qui 进度条
+export * from "./ext/qui_grow.js"// qui image控件
 // //面板类控件（容器），容器的特点是超出边框的部分不渲染，也不接受事件
 
 export * from "./panel/qui_panel.js"//qui 面板 ，有一个边框的容器，内部组件填满时不遮盖边框

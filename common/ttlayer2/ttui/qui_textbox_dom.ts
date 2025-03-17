@@ -71,7 +71,10 @@ export class QUI_TextBox_DOM extends QUI_Label {
         if (this._press == true && press == false && this._pressid == touchid) {
             this._press = false;
             this._pressid = -1;
-            this.Prompt(_canvas.scale);
+            if (x >= rect.X && x < x2 && y >= rect.Y && y < y2) {
+
+                this.Prompt(_canvas.scale);
+            }
             return true;
         }
         return false;
@@ -85,10 +88,10 @@ export class QUI_TextBox_DOM extends QUI_Label {
         let divback = this._divback = document.createElement("div");
         divback.style.backgroundColor = "#aaaaaa";
         divback.style.position = "absolute";
-        divback.style.left = (r.X - border).toString();
-        divback.style.top = (r.Y - border).toString();
-        divback.style.width = (r.Width + border * 2).toString();
-        divback.style.height = (r.Height + border * 2).toString();
+        divback.style.left = (r.X - border).toString() + "px";
+        divback.style.top = (r.Y - border).toString() + "px";
+        divback.style.width = (r.Width + border * 2).toString() + "px";
+        divback.style.height = (r.Height + border * 2).toString() + "px";
         document.body.appendChild(divback);
 
         this._finishdom = false;
@@ -97,14 +100,14 @@ export class QUI_TextBox_DOM extends QUI_Label {
             input.type = "text";
             input.style.color = "#000";
             input.style.position = "absolute";
-            input.style.left = border.toString();
-            input.style.right = border.toString();
-            input.style.right = border.toString();
-            input.style.bottom = border.toString();
+            input.style.left = border.toString() + "px";
+            input.style.right = border.toString() + "px";
+            input.style.right = border.toString() + "px";
+            input.style.bottom = border.toString() + "px";
             input.value = this.text;
             input.maxLength = this.maxlen;
             input.style.fontFamily = this.font.GetFont();
-            input.style.fontSize = "32";
+            input.style.fontSize = "32px";
             divback.appendChild(input);
             input.onchange = () => {
                 //修改文本
@@ -121,7 +124,7 @@ export class QUI_TextBox_DOM extends QUI_Label {
             input.onblur = () => {
                 //失去焦点
                 this._finishdom = true;
-                
+
                 console.log("onblur.");
             }
 
