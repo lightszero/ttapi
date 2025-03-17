@@ -1,34 +1,43 @@
-import { Border, Color, QUI_Image, QUI_ImageScale9, QUI_Scale9, Resources, Sprite } from "../ttlayer2.js";
+import { Border, Color, InneerElemName, QUI_Image, QUI_ImageScale9, QUI_Scale9, Resources, Sprite } from "../ttlayer2.js";
 
 export class QUI_Resource {
     static _spriteWhite: Sprite = null;
+    static _spriteBuName: { [id: string]: Sprite } = {}
     static GetWhiteSprite(): Sprite {
 
         if (this._spriteWhite == null) {
-            let white = Resources.getWhiteBlock();
+            let white = Resources.GetWhiteBlock();
             this._spriteWhite = Resources.GetPackElement().ConvertElemToSprite(white);
         }
         return this._spriteWhite;
     }
+    static GetSprite(name: InneerElemName): Sprite {
+        if (this._spriteBuName[name] != undefined)
+            return this._spriteBuName[name];
 
+        let white = Resources.GetBlock(name);
+        let _sprite = Resources.GetPackElement().ConvertElemToSprite(white);
+        this._spriteBuName[name] = _sprite;
+        return _sprite;
+    }
     static scale_border: QUI_Scale9 = null;
     static GetBorderScale(): QUI_Scale9 {
         if (this.scale_border == null) {
-            this.scale_border = new QUI_Scale9(Resources.GetBorderBlock(), Resources.GetPackElement(), new Border(3, 3, 3, 3));
+            this.scale_border = new QUI_Scale9(Resources.GetBlock("border"), Resources.GetPackElement(), new Border(3, 3, 3, 3));
         }
         return this.scale_border;
     }
     static scale_border2: QUI_Scale9 = null;
     static GetBorder2Scale(): QUI_Scale9 {
         if (this.scale_border2 == null) {
-            this.scale_border2 = new QUI_Scale9(Resources.GetBorder2Block(), Resources.GetPackElement(), new Border(3, 3, 3, 3));
+            this.scale_border2 = new QUI_Scale9(Resources.GetBlock("border2"), Resources.GetPackElement(), new Border(3, 3, 3, 3));
         }
         return this.scale_border2;
     }
     static scale_borderr: QUI_Scale9 = null;
     static GetBorderScaleR(): QUI_Scale9 {
         if (this.scale_borderr == null) {
-            this.scale_borderr = new QUI_Scale9(Resources.GetPackElement().GetElementByName("borderr"), Resources.GetPackElement(), new Border(3, 3, 3, 3));
+            this.scale_borderr = new QUI_Scale9(Resources.GetBlock("borderr"), Resources.GetPackElement(), new Border(3, 3, 3, 3));
         }
         return this.scale_borderr;
     }

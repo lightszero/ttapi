@@ -16,6 +16,7 @@ export class ResourceOption {
     packedRGBAHeight: number = 1024;
     packedRGBALayerCount: number = 4;
 }
+export type InneerElemName = "white" | "border" | "border2" | "borderr" | "round" | "arrow" | "corner";
 export class Resources {
 
     static Init(op: ResourceOption): void {
@@ -173,6 +174,30 @@ export class Resources {
             spdata.pivotY = 4;
             this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "arrow");
         }
+        //corner
+        {
+            let spdata = new SpriteData();
+
+            spdata.format = TextureFormat.R8;
+            spdata.width = 8;
+            spdata.height = 8;
+            spdata.toR = ToROption.Alpha;
+            spdata.data = new Uint8Array(
+                [
+                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 255,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 255, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 0.0, 255, 0.0, 0.0,
+                    0.0, 0.0, 0.0, 0.0, 255, 0.0, 0.0, 255,
+                    0.0, 0.0, 0.0, 255, 0.0, 0.0, 255, 255,
+                    0.0, 0.0, 255, 0.0, 0.0, 255, 0.0, 255,
+                    0.0, 255, 0.0, 0.0, 255, 0.0, 0.0, 255,
+                    255, 0.0, 0.0, 255, 255, 255, 255, 255,
+                ]
+            );
+            spdata.pivotX = 4;
+            spdata.pivotY = 4;
+            this.packedelem.AddSprite(spdata, ElementFormat.GrayAsAlpha, "corner");
+        }
         this.packedelem.ApplyTextureData();
     }
     private static packedelem: PackElement;
@@ -186,24 +211,17 @@ export class Resources {
         return this.packedelem;
     }
 
-    static getWhiteBlock(): ElementSprite {
+    static GetWhiteBlock(): ElementSprite {
         return this.packedelem.GetElementByName("white");;
 
     }
-    static GetRoundBlock(): ElementSprite {
 
-        return this.packedelem.GetElementByName("round");;
-    }
-    static GetBorderBlock(): ElementSprite {
-
-        return this.packedelem.GetElementByName("border");;
+    static GetBlock(name: InneerElemName): ElementSprite {
+        return this.packedelem.GetElementByName(name);;
 
     }
-    static GetBorder2Block(): ElementSprite {
-        return this.packedelem.GetElementByName("border2");;
 
-    }
-   
+
     private static deffont: Font = null;
     static CreateFont(fontname: string, fontsize: number): Font {
         let font = new Font(tt.graphic.GetWebGL(), fontname, fontsize, this.packedelem);
