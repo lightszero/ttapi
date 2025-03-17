@@ -12,6 +12,13 @@ export class QUI_Grow extends QUI_Container {
     direction: QUI_Direction2
     private width: number;
     private height: number;
+    GetContextWidth() {
+        return this.width;
+    }
+    GetContextHeight()
+    {
+        return this.height;
+    }
     GetElementType(): QUI_ElementType {
         return QUI_ElementType.Element_Container;
     }

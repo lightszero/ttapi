@@ -1,8 +1,8 @@
 
 import { tt } from "../../../ttapi/ttapi.js";
+import { QUI_Grow } from "../ext/qui_grow.js";
 import * as QUI from "../qui_base.js"
 import { QUI_Canvas } from "../qui_canvas.js";
-
 import { QUI_Panel } from "./qui_panel.js";
 
 
@@ -14,7 +14,9 @@ export class QUI_Panel_Scroll extends QUI_Panel {
         this.panelOffsetY = this.panelOffsetWantY = 0;
         this.panelWidth = 250;
         this.panelHeight = 250;
-
+        this._container = new QUI_Grow();
+        this._container._parent = this;
+        this._container.localRect.SetAsFill();
     }
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel_Scroll;
@@ -69,7 +71,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
     CancelTouch() {
         this._press = false;
         this._pressid = -1;
-       
+
     }
     OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
 
@@ -179,5 +181,8 @@ export class QUI_Panel_Scroll extends QUI_Panel {
             this.panelOffsetY = this.panelOffsetY + (this.panelOffsetWantY - this.panelOffsetY) * 0.5;
         }
         super.OnUpdate(_canvas, delta);
+
+        this.panelWidth = (this._container as QUI_Grow).GetContextWidth();
+        this.panelHeight = (this._container as QUI_Grow).GetContextHeight();
     }
 }

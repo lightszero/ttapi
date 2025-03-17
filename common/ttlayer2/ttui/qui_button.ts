@@ -15,7 +15,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
         {
             normal.localRect.SetAsFill();
             let normalback = new QUI_ImageScale9(QUI_Resource.GetBorderScaleR());
-            normal.AsContainer().AddChild(normalback);
+            normal.AddChild(normalback);
             normalback.localColor = new Color(1, 1, 1, 1);
             normalback.localRect.SetAsFill();
 
@@ -23,7 +23,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
 
             txt.localRect.SetAsFill();
             txt.text = "Button";
-            normal.AsContainer().AddChild(txt)
+            normal.AddChild(txt)
         }
 
         this.elemNormal = normal;
@@ -34,7 +34,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Button;
     }
-    elemNormal: QUI.QUI_BaseElement | null = null;
+    elemNormal: QUI.QUI_Container | null = null;
 
     colorNormal: Color;
     colorPress: Color;
