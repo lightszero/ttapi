@@ -1,9 +1,54 @@
-import { QUI_Grow, Color, QUI_Button, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Scroll, QUI_Container, tt, Texture, TextureFormat } from "../ttlayer2/ttlayer2.js";
+import { QUI_Grow, Color, QUI_Button, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Scroll, QUI_Container, tt, Texture, TextureFormat, QUI_Overlay } from "../ttlayer2/ttlayer2.js";
 import { TTPathTool } from "../ttlayer2/utils/path/pathtool.js";
 import { FindTool } from "../xioext/findtool.js";
 
 import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "../xioext/ioext.js";
 
+export class PickAble_FileItem extends QUI_Container {
+    constructor() {
+        super();
+        let ol = new QUI_Overlay();
+        this.AddChild(ol);
+        ol.OnPress = () => {
+            (this._parent as QUI_Container).Pick(this);
+        }
+
+        // let ext = TTPathTool.GetExt(result[i].name).toLowerCase();
+        // if (ext == ".jpg" || ext == ".png") {this
+        let imgback = this.imageback = new QUI_Image();
+        imgback.localRect.SetAsFill();
+        this.AddChild(imgback);
+        imgback.localColor.A = 0;
+
+        let img = this.image = new QUI_Image();
+        //let tex = await this.LoadFileToTexture(result[i]);
+        //img.SetByTexture(tex);
+        img.localRect.setByPosAndSize(0, 0, 24, 24);
+        img.sprite = null;
+        this.AddChild(img);
+        //}
+        let label = this.label = new QUI_Label();
+        label.localRect.SetAsFill();
+
+        label.localRect.offsetX1 = 25;
+        label.text = "pickable"
+        label.halign = QUI_HAlign.Left;
+        //this.contextPanel.GetContainer().AddChild(con);
+        this.AddChild(label);
+    }
+    image: QUI_Image;
+    imageback: QUI_Image;
+    label: QUI_Label;
+
+    OnFocus(): void {
+        this.imageback.localColor = new Color(0.3, 0.4, 0.9, 1);
+        this.label.localColor = new Color(0.9, 0.9, 0.3, 1);
+    }
+    OnUnFocus(): void {
+        this.imageback.localColor.A = 0;
+        this.label.localColor = Color.White
+    }
+}
 export class FileGroup extends QUI_Group {
     constructor() {
         super();
@@ -29,9 +74,9 @@ export class FileGroup extends QUI_Group {
 
         {
             let btn = new QUI_Button();
-            btn.localRect.setBySize(60, 18);
+            btn.localRect.setBySize(90, 18);
             let label = btn.elemNormal.GetChild(1) as QUI_Label;
-            label.text = "Open";
+            label.text = "打开目录";
             titlegrow.AddChild(btn);
             btn.OnClick = async () => {
                 let r = await IOExt.Picker_Folder();
@@ -39,33 +84,16 @@ export class FileGroup extends QUI_Group {
                     this.OnOpenFolder(r);
             }
         }
-        // {
-        //     let btn = new QUI_Button();
-        //     btn.localRect.setBySize(60, 18);
-        //     let label = btn.elemNormal.GetChild(1) as QUI_Label;
-        //     label.text = "New";
-        //     titlegrow.AddChild(btn);
-        //     btn.OnClick = async () => {
-        //         let r = await IOExt.Picker_SaveFile();
-
-        //         if (r != null)
-        //             this.OnSaveFile(r);
-        //     }
-        // }
-        // {
-        //     let btn = new QUI_Button();
-        //     btn.localRect.setBySize(60, 18);
-        //     let label = btn.elemNormal.GetChild(1) as QUI_Label;
-        //     label.text = "Save";
-        //     titlegrow.AddChild(btn);
-        // }
-        // {
-        //     let label = this.titlebar_txt = new QUI_Label();
-        //     label.text = "当前没有打开文件编辑"
-        //     label.localRect.setBySize(200, 18);
-        //     label.halign = QUI_HAlign.Left;
-        //     titlegrow.AddChild(label);
-        // }
+        {
+            let btn = new QUI_Button();
+            btn.localRect.setBySize(90, 18);
+            let label = btn.elemNormal.GetChild(1) as QUI_Label;
+            label.text = "编辑选中";
+            titlegrow.AddChild(btn);
+            btn.OnClick = async () => {
+                console.log("编辑选中")
+            }
+        }
     }
 
     async LoadFileToTexture(file: IOExt_FileHandle) {
@@ -83,24 +111,20 @@ export class FileGroup extends QUI_Group {
         let result = await FindTool.FindAllFile(file, [".json", ".jpg", ".png"], 3);
 
         for (var i = 0; i < result.length; i++) {
-            let con = new QUI_Container();
-            con.localRect.setBySize(200, 24);
+            let con = new PickAble_FileItem();
+            con.localRect.setBySize(500, 25);
             this.contextPanel.GetContainer().AddChild(con);
             let ext = TTPathTool.GetExt(result[i].name).toLowerCase();
             if (ext == ".jpg" || ext == ".png") {
                 let img = new QUI_Image();
                 let tex = await this.LoadFileToTexture(result[i]);
-                img.SetByTexture(tex);
-                img.localRect.setByPosAndSize(0, 0, 24, 24);
-                con.AddChild(img);
+                con.image.SetByTexture(tex);
             }
-            let label = new QUI_Label();
-            label.localRect.setByPosAndSize(24, 0, 200 - 24, 20);
-            label.text = (result[i].isfile ? "[File]" : "[Path]")
+
+
+            con.label.text = (result[i].isfile ? "[File]" : "[Path]")
                 + result[i].name;
-            label.halign = QUI_HAlign.Left;
-            //this.contextPanel.GetContainer().AddChild(con);
-            con.AddChild(label);
+
         }
     }
     OnSaveFile(file: IOExt_FileHandle) {

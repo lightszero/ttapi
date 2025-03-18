@@ -315,12 +315,10 @@ export abstract class QUI_BaseElement {
         }
 
     }
-    OnFocus()
-    {
+    OnFocus() {
 
     }
-    OnUnFocus()
-    {
+    OnUnFocus() {
 
     }
     //当前组件的位置
@@ -367,29 +365,12 @@ export enum ChildChangeState {
 export class QUI_Container extends QUI_BaseElement {
     constructor() {
         super();
+        this.localRect.SetAsFill();
     }
+
     GetElementType(): QUI_ElementType {
         return QUI_ElementType.Element_Container;
     }
-
-    protected _picked: QUI_BaseElement;
-    GetPicked(): QUI_BaseElement {
-        return this._picked;
-    }
-    UnPick(): void {
-        this._picked?.OnUnFocus();
-        this._picked = null;
-    }
-    Pick(pick:QUI_BaseElement)
-    {
-        if(this._picked==pick)
-            return;
-        this._picked?.OnUnFocus();
-        this._picked =pick;
-        this._picked?.OnFocus();
-    }
-    
-
 
     protected _children: QUI_BaseElement[];
 
@@ -404,6 +385,11 @@ export class QUI_Container extends QUI_BaseElement {
         if (this._children == null || index >= this._children.length)
             return null;
         return this._children[index];
+    }
+    GetChildAt(elem: QUI_BaseElement): number {
+        if (elem == null)
+            return -1;
+        return this._children.indexOf(elem);
     }
     AddChild(elem: QUI_BaseElement): void {
 
@@ -516,4 +502,27 @@ export class QUI_Container extends QUI_BaseElement {
         }
     }
 
+    protected _picked: QUI_BaseElement;
+    GetPicked(): QUI_BaseElement {
+        return this._picked;
+    }
+
+    Pick(pick: QUI_BaseElement) {
+        if (this._picked == pick)
+            return;
+        this._picked?.OnUnFocus();
+        this._picked = pick;
+        this._picked?.OnFocus();
+    }
+    UnPick(): void {
+        this._picked?.OnUnFocus();
+        this._picked = null;
+    }
 }
+
+// //具备单选能力的组件，应该实现这些
+// export interface QUI_IPicker {
+//     GetPicked(): QUI_BaseElement;
+//     Pick(elem: QUI_BaseElement): void
+//     UnPick(): void
+// }

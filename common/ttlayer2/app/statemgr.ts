@@ -11,18 +11,14 @@ export interface IState<T> {
 
 //状态机
 
-export class StateMgr<T> {
+export class StateMgr {
 
-    private contextObj: T = null;
-    private _state: IState<StateMgr<T>> = null;
-    constructor(t: T) {
-        this.contextObj = t;
-    }
-    GetContextObj(): T {
-        return this.contextObj;
-    }
 
-    ChangeState(state: IState<StateMgr<T>>): void {
+
+    protected _state: IState<StateMgr> = null;
+
+
+    ChangeState(state: IState<StateMgr>): void {
         if (this._state != null) {
             this._state.OnExit();
         }
@@ -31,23 +27,20 @@ export class StateMgr<T> {
             this._state.OnInit(this);
         }
     }
-    GetState(): IState<StateMgr<T>> {
+    GetState(): IState<StateMgr> {
         return this._state;
     }
 }
 
 
 //导航器
-export class Navigator<T> {
-    private contextObj: T = null;
-    private _stateStack: IState<Navigator<T>>[] = [];
-    constructor(t: T) {
-        this.contextObj = t;
-    }
-    GetContextObj(): T {
-        return this.contextObj;
-    }
-    GetLast(): IState<Navigator<T>> {
+export class Navigator {
+
+
+    protected _stateStack: IState<Navigator>[] = [];
+
+
+    GetLast(): IState<Navigator> {
         if (this._stateStack.length == 0)
             return null;
         return this._stateStack[this._stateStack.length - 1];
@@ -55,7 +48,7 @@ export class Navigator<T> {
     Count(): number {
         return this._stateStack.length;
     }
-    NavigatorTo(state: IState<Navigator<T>>): void {
+    NavigatorTo(state: IState<Navigator>): void {
         if (state == null)
             throw "不可以导航到空状态"
         let index = this._stateStack.indexOf(state);
@@ -81,7 +74,7 @@ export class Navigator<T> {
 
         }
     }
-    BackTo(state: IState<Navigator<T>>): void {
+    BackTo(state: IState<Navigator>): void {
         if (state == null)
             throw "不可以导航到空状态"
         let index = this._stateStack.indexOf(state);
@@ -104,7 +97,7 @@ export class Navigator<T> {
             }
         }
     }
-    Push(state: IState<Navigator<T>>): void {
+    Push(state: IState<Navigator>): void {
         if (this._stateStack.length > 0) {
             this._stateStack[this._stateStack.length - 1].OnExit();
         }

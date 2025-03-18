@@ -17,6 +17,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
         this._container = new QUI_Grow();
         this._container._parent = this;
         this._container.localRect.SetAsFill();
+       // this._container.picker = this;
     }
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel_Scroll;
@@ -185,4 +186,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
         this.panelWidth = (this._container as QUI_Grow).GetContextWidth();
         this.panelHeight = (this._container as QUI_Grow).GetContextHeight();
     }
+
+
+
 }
