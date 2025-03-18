@@ -47,20 +47,20 @@ export class QUI_Panel_Scroll_Unlimit<T> extends QUI_Panel {
     getTotalHeight(): number {
         return this._items.length * this._itemheight;
     }
-    Pick(id: number): void {
+    PickAt(id: number): void {
         if (id < 0 || id >= this._items.length)
             id = -1;
 
-        if (id != this._pickid && this.OnPick != null) {
+        if (id != this._pickid && this.OnItemPick != null) {
             this._pickid = id;
             let pickitem: T = null;
             if (id != -1)
                 pickitem = this._items[id];
-            this.OnPick(id, pickitem);
+            this.OnItemPick(id, pickitem);
         }
 
     }
-    OnPick: (index: number, item: T) => void;
+    OnItemPick: (index: number, item: T) => void;
     //更新
     UpdateList(): void {
 

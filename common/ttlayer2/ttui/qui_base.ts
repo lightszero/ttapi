@@ -315,7 +315,14 @@ export abstract class QUI_BaseElement {
         }
 
     }
+    OnFocus()
+    {
 
+    }
+    OnUnFocus()
+    {
+
+    }
     //当前组件的位置
 
     localColor: Color = Color.White;
@@ -364,6 +371,24 @@ export class QUI_Container extends QUI_BaseElement {
     GetElementType(): QUI_ElementType {
         return QUI_ElementType.Element_Container;
     }
+
+    protected _picked: QUI_BaseElement;
+    GetPicked(): QUI_BaseElement {
+        return this._picked;
+    }
+    UnPick(): void {
+        this._picked?.OnUnFocus();
+        this._picked = null;
+    }
+    Pick(pick:QUI_BaseElement)
+    {
+        if(this._picked==pick)
+            return;
+        this._picked?.OnUnFocus();
+        this._picked =pick;
+        this._picked?.OnFocus();
+    }
+    
 
 
     protected _children: QUI_BaseElement[];
@@ -440,6 +465,7 @@ export class QUI_Container extends QUI_BaseElement {
 
     //处理container
     CancelTouch(): void {
+
         if (this._children != null) {
             for (var i = this._children.length - 1; i >= 0; i--) {
                 let child = this._children[i];

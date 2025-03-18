@@ -34,6 +34,7 @@ export class MyLogic implements IUserLogic {
 
 
         let group = this.fileGroup = new FileGroup();
+        group.resizeEnable = true;
         group.dragEnable = true;//允许拖动
         group.localRect.setByRect(new Rectangle(0, 50, 200, 200));
         this.canvas.AddChild(group);

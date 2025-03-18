@@ -38,14 +38,16 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
     protected OnRenderBack(_canvas: QUI_Canvas) {
         if (this.backElements != null) {
             for (var i = 0; i < this.backElements.length; i++) {
-                this.backElements[i].OnRender(_canvas);
+                if (this.backElements[i].Enable)
+                    this.backElements[i].OnRender(_canvas);
             }
         }
     }
     protected OnRenderFore(_canvas: QUI_Canvas) {
         if (this.foreElements != null) {
             for (var i = 0; i < this.foreElements.length; i++) {
-                this.foreElements[i].OnRender(_canvas);
+                if (this.foreElements[i].Enable)
+                    this.foreElements[i].OnRender(_canvas);
             }
         }
     }
@@ -53,9 +55,11 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         if (this.backElements != null) {
             for (var i = 0; i < this.backElements.length; i++) {
                 let elem = this.backElements[i] as QUI.QUI_BaseElement;
-                elem._parent = this;
-                //elem.localRect.setAsFill();
-                elem.OnUpdate(_canvas, delta);
+                if (elem.Enable) {
+                    elem._parent = this;
+                    //elem.localRect.setAsFill();
+                    elem.OnUpdate(_canvas, delta);
+                }
             }
         }
     }
@@ -63,9 +67,11 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         if (this.foreElements != null) {
             for (var i = 0; i < this.foreElements.length; i++) {
                 let elem = this.foreElements[i] as QUI.QUI_BaseElement;
-                elem._parent = this;
-                //elem.localRect.setAsFill();
-                elem.OnUpdate(_canvas, delta);
+                if (elem.Enable) {
+                    elem._parent = this;
+                    //elem.localRect.setAsFill();
+                    elem.OnUpdate(_canvas, delta);
+                }
             }
         }
     }
@@ -73,7 +79,8 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         if (this.foreElements != null) {
             for (var i = this.foreElements.length - 1; i >= 0; i--) {
                 let elem = this.foreElements[i] as QUI.QUI_BaseElement;
-                elem.CancelTouch();
+                if (elem.Enable)
+                    elem.CancelTouch();
             }
         }
     }
@@ -82,7 +89,8 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         if (this.backElements != null) {
             for (var i = this.backElements.length - 1; i >= 0; i--) {
                 let elem = this.backElements[i] as QUI.QUI_BaseElement;
-                elem.CancelTouch();
+                if (elem.Enable)
+                    elem.CancelTouch();
             }
         }
     }
@@ -90,9 +98,11 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         if (this.foreElements != null) {
             for (var i = this.foreElements.length - 1; i >= 0; i--) {
                 let elem = this.foreElements[i] as QUI.QUI_BaseElement;
-                let kill = elem.OnTouch(_canvas, touchid, press, move, x, y);
-                if (kill)
-                    return true;
+                if (elem.Enable) {
+                    let kill = elem.OnTouch(_canvas, touchid, press, move, x, y);
+                    if (kill)
+                        return true;
+                }
             }
         }
         return false;
@@ -102,9 +112,11 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         if (this.backElements != null) {
             for (var i = this.backElements.length - 1; i >= 0; i--) {
                 let elem = this.backElements[i] as QUI.QUI_BaseElement;
-                let kill = elem.OnTouch(_canvas, touchid, press, move, x, y);
-                if (kill)
-                    return true;
+                if (elem.Enable) {
+                    let kill = elem.OnTouch(_canvas, touchid, press, move, x, y);
+                    if (kill)
+                        return true;
+                }
             }
         }
         return false;

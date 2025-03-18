@@ -6,7 +6,7 @@ import { QUI_Canvas } from "../qui_canvas.js";
 import { QUI_Panel } from "./qui_panel.js";
 
 
-//Panel 是最简单的组件
+//滚动面板
 export class QUI_Panel_Scroll extends QUI_Panel {
     constructor() {
         super();

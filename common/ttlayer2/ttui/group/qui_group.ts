@@ -46,49 +46,62 @@ export class QUI_Group extends QUI_Panel {
         // img.localRect.SetAsFill();
         //titleback.GetContainer().AddChild(img);
 
+        {//title
+            let dbut = new QUI_DragButton();
+            dbut.localRect.SetAsFill();
+            titleback.GetContainer().AddChild(dbut);
 
-        let dbut = new QUI_DragButton();
-        dbut.localRect.SetAsFill();
-        titleback.GetContainer().AddChild(dbut);
-
-        (dbut.ElemNormal as QUI_Container).RemoveChildAll();
+            (dbut.ElemNormal as QUI_Container).RemoveChildAll();
 
 
-        {
-            let img = new QUI_Image();
-            img.localColor = new Color(0.5, 0.5, 0.5, 1);
-            img.localRect.SetAsFill();
-            (dbut.ElemNormal as QUI_Container).AddChild(img);
+            {
+                let img = new QUI_Image();
+                img.localColor = new Color(0.5, 0.5, 0.5, 1);
+                img.localRect.SetAsFill();
+                (dbut.ElemNormal as QUI_Container).AddChild(img);
+            }
+            {
+
+                let title = this.title = new QUI_Label();
+                title.text = "Group";
+                title.localRect.SetAsFill();
+
+                title.halign = QUI_HAlign.Left;
+                title.fontScale.X *= 0.5;
+                title.fontScale.Y *= 0.5;
+
+
+                (dbut.ElemNormal as QUI_Container).AddChild(title);
+            }
+
+
+            dbut.OnDragStart = this.OnBeginDrag.bind(this);
+            dbut.OnDrag = this.OnDrag.bind(this);
         }
-        {
-
-            let title = this.title = new QUI_Label();
-            title.text = "Group";
-            title.localRect.SetAsFill();
-
-            title.halign = QUI_HAlign.Left;
-            title.fontScale.X *= 0.5;
-            title.fontScale.Y *= 0.5;
-
-
-            (dbut.ElemNormal as QUI_Container).AddChild(title);
+        {//resizer
+            let dbut = this._resizer = new QUI_DragButton();
+            let image = new QUI_Image();
+            image.localRect.SetAsFill();
+            image.SetBySprite(QUI_Resource.GetSprite("corner"));
+            dbut.ElemNormal = image;
+            dbut.localRect.setHPosByRightBorder(16, 2);
+            dbut.localRect.setVPosByBottomBorder(16, 2);
+            this.foreElements.push(dbut)
+            dbut.OnDragStart = this.OnBeginResizeDrag.bind(this);
+            dbut.OnDrag = this.OnResizeDrag.bind(this);
         }
-
-
-        dbut.OnDragStart = this.OnBeginDrag.bind(this);
-        dbut.OnDrag = this.OnDrag.bind(this);
-
+        this.resizeEnable = false;
         this.dragEnable = false;
         this.autoTop = true;
     }
-
+    resizeEnable: boolean;
     dragEnable: boolean
     autoTop: boolean;
     title: QUI_Label
 
     private _posbeginx = 0;
     private _posbeginy = 0;
-
+    private _resizer: QUI_DragButton;
     private OnBeginDrag(x: number, y: number) {
         this._posbeginx = this.localRect.offsetX1;
         this._posbeginy = this.localRect.offsetY1;
@@ -163,9 +176,27 @@ export class QUI_Group extends QUI_Panel {
             }
         }
     }
+    private _sizebeginw = 0;
+    private _sizebeginh = 0;
+    private OnBeginResizeDrag(x: number, y: number) {
+        this._sizebeginw = this.localRect.getWidth();
+        this._sizebeginh = this.localRect.getHeight();
+    }
+    private OnResizeDrag(x: number, y: number, bx: number, by: number) {
+        if (this.resizeEnable) {
+            let newsizew = this._sizebeginw + (x - bx);
+            let newsizeh = this._sizebeginh + (y - by);
+            this.localRect.offsetX2 = this.localRect.offsetX1 + newsizew;
+            this.localRect.offsetY2 = this.localRect.offsetY1 + newsizeh;
 
+        }
+    }
     GetElementType(): QUI_ElementType {
         return QUI_ElementType.Element_Group;
+    }
+    OnUpdate(_canvas: QUI_Canvas, delta: number): void {
+        super.OnUpdate(_canvas, delta);
+        this._resizer.Enable = this.resizeEnable;
     }
 
 }
