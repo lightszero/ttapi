@@ -12,6 +12,7 @@ export namespace tt_impl {
             // });
         }
         _mousepress: boolean = false;
+
         Start(canvas: HTMLCanvasElement): void {
 
             window.addEventListener("keydown", (r) => {
@@ -43,9 +44,10 @@ export namespace tt_impl {
                 }
             });
             canvas.addEventListener("mousemove", (r) => {
-                if (r.button == 0 && this._mousepress) {
 
-                    this.UpdateMouse(r, true, true);
+                if (r.button == 0) {
+
+                    this.UpdateMouse(r, this._mousepress, true);
                 }
             });
             canvas.addEventListener("touchstart", (r) => {
@@ -127,7 +129,8 @@ export namespace tt_impl {
                     this._pressKeys.splice(i, 1);
                 }
             }
-            console.log("Input Key:" + keycode + "=" + press);
+            //console.log("Input Key:" + keycode + "=" + press);
+          
             if (this.OnKey != null)
                 this.OnKey(keycode, press);
         }
@@ -228,7 +231,7 @@ export namespace tt_impl {
                 btn.style.left = "25%";
                 btn.style.right = "25%";
                 btn.style.position = "absolute";
-            
+
                 btn.style.top = "200px";
                 btn.textContent = "OK";
                 btn.style.fontFamily = font;

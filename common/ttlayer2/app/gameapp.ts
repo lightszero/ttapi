@@ -169,6 +169,9 @@ export class GameApp {
   private static OnPoint(id: number, x: number, y: number, press: boolean, move: boolean): void {
     if (this._pause)
       return;
+    // if (id == 0) {
+    //   console.log("mouse at:" + x + "," + y);
+    // }
     let guiview = this._viewlist.GetDrawLayers(DrawLayerTag.GUI);
     if (guiview != null) {
       for (let i = guiview.length - 1; i >= 0; i--) {

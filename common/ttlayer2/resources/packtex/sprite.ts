@@ -132,7 +132,7 @@ export class Sprite {
         rectbuf[1].b = _color.B
         rectbuf[1].a = _color.A
         rectbuf[1].uvlayer = this.uvlayer;
-      
+
         rectbuf[1].eff = this.effect;
 
         rectbuf[2].x = x1;
@@ -187,7 +187,7 @@ export class Sprite {
 
         rectbuf[1].x = rect.X + rect.Width //- sx * this.border.XRight;
         rectbuf[1].y = rect.Y //+ sy * this.border.YTop;
-        rectbuf[1].u = this.uv.U2;
+        rectbuf[1].u = this.uv.U2 ;
         rectbuf[1].v = this.uv.V1;
         rectbuf[1].r = _color.R
         rectbuf[1].g = _color.G
@@ -200,7 +200,7 @@ export class Sprite {
         rectbuf[2].x = rect.X// + sx * this.border.XLeft;
         rectbuf[2].y = rect.Y + rect.Height// - sy * this.border.YBottom;
         rectbuf[2].u = this.uv.U1;
-        rectbuf[2].v = this.uv.V2;
+        rectbuf[2].v = this.uv.V2 ;
         rectbuf[2].r = _color.R
         rectbuf[2].g = _color.G
         rectbuf[2].b = _color.B
@@ -211,8 +211,8 @@ export class Sprite {
 
         rectbuf[3].x = rect.X + rect.Width// - sx * this.border.XRight;
         rectbuf[3].y = rect.Y + rect.Height// - sy * this.border.YBottom;
-        rectbuf[3].u = this.uv.U2;
-        rectbuf[3].v = this.uv.V2;
+        rectbuf[3].u = this.uv.U2 ;
+        rectbuf[3].v = this.uv.V2 ;
         rectbuf[3].r = _color.R
         rectbuf[3].g = _color.G
         rectbuf[3].b = _color.B
@@ -227,7 +227,7 @@ export class Sprite {
         while (rectbuf.length < 4) {
             rectbuf.push(new DrawPoint());
         }
-    
+
 
         let sx = rect.Width / this.pixelwidth;
         let sy = rect.Height / this.pixelheight;
@@ -374,7 +374,7 @@ export class Sprite {
         //(this.totalWidth - this.border.XRight) * scale.X;
         rectbuf[1].x = pos.X + scale.X * (this.pixelwidth)//- this.border.XRight);
         rectbuf[1].y = pos.Y// + scale.Y * this.border.YTop;
-        rectbuf[1].u = this.uv.U2;
+        rectbuf[1].u = this.uv.U2 ;
         rectbuf[1].v = this.uv.V1;
         rectbuf[1].r = _color.R
         rectbuf[1].g = _color.G
@@ -387,7 +387,7 @@ export class Sprite {
         rectbuf[2].x = pos.X //+ scale.X * this.border.XLeft;
         rectbuf[2].y = pos.Y + scale.Y * (this.pixelheight)// - this.border.YBottom);
         rectbuf[2].u = this.uv.U1;
-        rectbuf[2].v = this.uv.V2;
+        rectbuf[2].v = this.uv.V2 ;
         rectbuf[2].r = _color.R
         rectbuf[2].g = _color.G
         rectbuf[2].b = _color.B
@@ -398,8 +398,8 @@ export class Sprite {
 
         rectbuf[3].x = pos.X + scale.X * (this.pixelwidth)//- this.border.XRight);
         rectbuf[3].y = pos.Y + scale.Y * (this.pixelheight)// - this.border.YBottom);
-        rectbuf[3].u = this.uv.U2;
-        rectbuf[3].v = this.uv.V2;
+        rectbuf[3].u = this.uv.U2 ;
+        rectbuf[3].v = this.uv.V2 ;
         rectbuf[3].r = _color.R
         rectbuf[3].g = _color.G
         rectbuf[3].b = _color.B

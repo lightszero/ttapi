@@ -61,7 +61,7 @@ export class MyLogic extends Navigator implements IUserLogic {
 
         let pr = tt.graphic.getDevicePixelRadio();
 
-        let scaleradio = (pr * 2) | 0;
+        let scaleradio =3;// (pr * ) | 0;
         console.log("ScaleRadio=" + scaleradio);
 
         //改Camera的缩放会直接缩放内容

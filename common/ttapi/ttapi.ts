@@ -43,6 +43,8 @@ export namespace tt {
     }
     export interface IInput {
         //触摸点或者鼠标
+        //对鼠标的有限支持,id=0，inputpoint[0]是鼠标，触摸从1开始
+
         GetInputPoints(): InputPoint[];
         OnPoint: null | ((id: number, x: number, y: number, press: boolean, move: boolean) => void);
 
@@ -50,6 +52,8 @@ export namespace tt {
         IsKeyDown(keycode: string): boolean
         GetPressKeys(): string[];
         OnKey: null | ((keycode: string, press: boolean) => void);
+
+
 
         //弹出输入文本框
         Prompt(message: string, deftxt: string, maxlen: number, font: string): Promise<string>
