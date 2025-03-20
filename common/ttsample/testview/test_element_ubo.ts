@@ -1,17 +1,17 @@
 import { tt } from "../../ttapi/ttapi.js";
 import { ElementInst, ElementSprite } from "../../ttlayer2/graphics/pipeline/render/elem.js";
 import { Render_Element_Ubo } from "../../ttlayer2/graphics/pipeline/render/render_elem_ubo.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign } from "../../ttlayer2/ttlayer2.js";
-import { GContext } from "../ttstate_all.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Label, QUI_Button } from "../../ttlayer2/ttlayer2.js";
+import { GContext, TTState_All } from "../ttstate_all.js";
 
-export class Test_Element_UBO implements IState<Navigator<GContext>> {
-    nav: Navigator<GContext>;
+export class Test_Element_UBO implements IState<TTState_All> {
+    nav: TTState_All;
     guilayer: DrawLayer_GUI;
     canvaslayer: DrawLayer;
     render: Render_Element_Ubo;
 
     inst: ElementInst[] = []
-    OnInit(nav: Navigator<GContext>): void {
+    OnInit(nav: TTState_All): void {
         if (this.nav == null) {
             this.nav = nav;
         }
@@ -32,27 +32,28 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
         this.AddLabel("这个模式不如TBO模式");
 
     }
-
     AddBackButton(): void {
         this.guilayer = new DrawLayer_GUI();
         this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
-
         GameApp.GetViewList().AddDrawLayer(this.guilayer);
-        let btn = Resources.CreateGUI_Button("<--", new Color(1, 1, 1, 1));
+        let btn = new QUI_Button();
+        (btn.elemNormal.GetChild(0) as QUI_Label).text = "<--"
         btn.localRect.setHPosByLeftBorder(196, 16);
         btn.localRect.setVPosByTopBorder(20, 8);
-        this.guilayer.GetCanvas().addChild(btn);
+        this.guilayer.GetCanvas().AddChild(btn);
 
         btn.OnClick = () => {
             this.nav.Back();
         }
 
-        this.nav.GetContextObj().TopUI2Top();
+        this.nav.context.TopUI2Top();
     }
+
     y: number = 64;
     AddLabel(text: string): void {
-        let label = Resources.CreateGUI_Label(text);
-        this.guilayer.GetCanvas().addChild(label);
+        let label = new QUI_Label();
+        label.text = text;
+        this.guilayer.GetCanvas().AddChild(label);
         label.halign = QUI_HAlign.Left;
         label.localRect.setHPosByLeftBorder(196, 16);
         label.localRect.setVPosByTopBorder(16, this.y);
@@ -68,8 +69,8 @@ export class Test_Element_UBO implements IState<Navigator<GContext>> {
         this.canvaslayer.AddRender(this.render);
         GameApp.GetViewList().AddDrawLayer(this.canvaslayer);
 
-        let s = Resources.GetBorder2Block();
-        let s2 = Resources.GetRoundBlock();
+        let s = Resources.GetBlock("border2")
+        let s2 = Resources.GetBlock("round");
 
         this.render.SetTexture(Resources.GetPackElement().GetPackTexDuo());
 

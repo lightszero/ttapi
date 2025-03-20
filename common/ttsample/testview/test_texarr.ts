@@ -1,12 +1,12 @@
 import { tt } from "../../ttapi/ttapi.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, TextureArray, TextureFormat, QUI_Image, Sprite, ElementFormat, Texture } from "../../ttlayer2/ttlayer2.js";
-import { GContext } from "../ttstate_all.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, TextureArray, TextureFormat, QUI_Image, Sprite, ElementFormat, Texture, QUI_Button, QUI_Label } from "../../ttlayer2/ttlayer2.js";
+import { GContext, TTState_All } from "../ttstate_all.js";
 
-export class Test_TexArr implements IState<Navigator<GContext>> {
-    nav: Navigator<GContext>;
+export class Test_TexArr implements IState<TTState_All> {
+    nav: TTState_All;
     guilayer: DrawLayer_GUI;
 
-    OnInit(nav: Navigator<GContext>): void {
+    OnInit(nav: TTState_All): void {
         if (this.nav == null) {
             this.nav = nav;
         }
@@ -43,39 +43,56 @@ export class Test_TexArr implements IState<Navigator<GContext>> {
         //     let img = new QUI_Image(s);
         //     img.localRect.setHPosByLeftBorder(256, 32);
         //     img.localRect.setVPosByTopBorder(256, 32);
-        //     this.guilayer.GetCanvas().addChild(img);
+        //     this.guilayer.GetCanvas().AddChild(img);
         // }
         // {
         //     let img = new QUI_Image(s2);
         //     img.localRect.setHPosByLeftBorder(256, 300);
         //     img.localRect.setVPosByTopBorder(256, 32);
-        //     this.guilayer.GetCanvas().addChild(img);
+        //     this.guilayer.GetCanvas().AddChild(img);
         // }
     }
     y: number = 64;
     AddLabel(text: string): void {
-        let label = Resources.CreateGUI_Label(text);
-        this.guilayer.GetCanvas().addChild(label);
+        let label = new QUI_Label();
+        label.text = text;
+        this.guilayer.GetCanvas().AddChild(label);
         label.halign = QUI_HAlign.Left;
         label.localRect.setHPosByLeftBorder(196, 16);
         label.localRect.setVPosByTopBorder(16, this.y);
+        label.fontScale.X *= 0.5;
+        label.fontScale.Y *= 0.5;
         this.y += 16;
+    }
+    AddButton(name: string, click: () => void): void {
+        let btn = new QUI_Button();
+        (btn.elemNormal.GetChild(0) as QUI_Label).text = name
+        btn.localRect.setHPosByLeftBorder(196, 16);
+        btn.localRect.setVPosByTopBorder(20, this.y);
+        this.guilayer.GetCanvas().AddChild(btn);
+
+        btn.OnClick = () => {
+            click();
+        }
+
+        this.y += 24;
+
     }
     AddBackButton(): void {
         this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = 3.0;
-      
+        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
         GameApp.GetViewList().AddDrawLayer(this.guilayer);
-        let btn = Resources.CreateGUI_Button("<--", new Color(1, 1, 1, 1));
+        let btn = new QUI_Button();
+        (btn.elemNormal.GetChild(0) as QUI_Label).text = "<--"
         btn.localRect.setHPosByLeftBorder(196, 16);
         btn.localRect.setVPosByTopBorder(20, 8);
-        this.guilayer.GetCanvas().addChild(btn);
+        this.guilayer.GetCanvas().AddChild(btn);
 
         btn.OnClick = () => {
             this.nav.Back();
         }
 
-        this.nav.GetContextObj().TopUI2Top();
+        this.nav.context.TopUI2Top();
     }
 
 

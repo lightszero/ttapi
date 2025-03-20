@@ -84,7 +84,7 @@ export class QUI_Resource {
     //         let fs = 16 / this.deffont.GetFontSize();;
     //         txt.fontBorder = 1 / fs;
     //         txt.fontScale = new Vector2(fs * scale, fs * scale);
-    //         normal.addChild(txt)
+    //         normal.AddChild(txt)
     //     }
     //     {
     //         let nc = color.Clone();
@@ -99,7 +99,7 @@ export class QUI_Resource {
     //         txt.localRect.setAsFill();
     //         let fs = 16 / this.deffont.GetFontSize();;
     //         txt.fontScale = new Vector2(fs * scale, fs * scale);
-    //         press.addChild(txt)
+    //         press.AddChild(txt)
     //     }
     //     btn.ElemNormal = normal;
     //     btn.ElemPress = press;

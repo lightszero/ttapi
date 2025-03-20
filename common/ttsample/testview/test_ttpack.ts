@@ -3,8 +3,8 @@ import { TTAni, TTAniPicInfo, TTPackageMgr } from "../../ttlayer2/package/ttpack
 import { ElementInst, ElementSprite } from "../../ttlayer2/graphics/pipeline/render/elem.js";
 import { Render_Element_Tbo } from "../../ttlayer2/graphics/pipeline/render/render_elem_tbo.js";
 import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, ElementFormat, TextureFormat } from "../../ttlayer2/ttlayer2.js";
-import { GContext } from "../ttstate_all.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, ElementFormat, TextureFormat, QUI_Label, QUI_Button } from "../../ttlayer2/ttlayer2.js";
+import { GContext, TTState_All } from "../ttstate_all.js";
 import { AniPlayer, IAniPlayerAdapter } from "../../ttlayer2/package/aniplayer.js";
 
 class AniTboAdadpher implements IAniPlayerAdapter {
@@ -38,14 +38,14 @@ class AniTboAdadpher implements IAniPlayerAdapter {
 
 
 }
-export class Test_TTPack implements IState<Navigator<GContext>> {
-    nav: Navigator<GContext>;
+export class Test_TTPack implements IState<TTState_All> {
+    nav: TTState_All;
     guilayer: DrawLayer_GUI;
     canvaslayer: DrawLayer;
     render: Render_Element_Tbo;
 
     inst: ElementInst[] = []
-    OnInit(nav: Navigator<GContext>): void {
+    OnInit(nav: TTState_All): void {
         if (this.nav == null) {
             this.nav = nav;
         }
@@ -101,8 +101,9 @@ export class Test_TTPack implements IState<Navigator<GContext>> {
     }
     y: number = 64;
     AddLabel(text: string): void {
-        let label = Resources.CreateGUI_Label(text);
-        this.guilayer.GetCanvas().addChild(label);
+        let label = new QUI_Label();
+        label.text = text;
+        this.guilayer.GetCanvas().AddChild(label);
         label.halign = QUI_HAlign.Left;
         label.localRect.setHPosByLeftBorder(196, 16);
         label.localRect.setVPosByTopBorder(16, this.y);
@@ -115,16 +116,18 @@ export class Test_TTPack implements IState<Navigator<GContext>> {
         this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
 
         GameApp.GetViewList().AddDrawLayer(this.guilayer);
-        let btn = Resources.CreateGUI_Button("<--", new Color(1, 1, 1, 1));
+        let btn = new QUI_Button();
+        (btn.elemNormal.GetChild(0) as QUI_Label).text = "<--";
+
         btn.localRect.setHPosByLeftBorder(196, 16);
         btn.localRect.setVPosByTopBorder(20, 8);
-        this.guilayer.GetCanvas().addChild(btn);
+        this.guilayer.GetCanvas().AddChild(btn);
 
         btn.OnClick = () => {
             this.nav.Back();
         }
 
-        this.nav.GetContextObj().TopUI2Top();
+        this.nav.context.TopUI2Top();
     }
 
 
@@ -142,7 +145,7 @@ export class Test_TTPack implements IState<Navigator<GContext>> {
         GameApp.GetViewList().AddDrawLayer(this.canvaslayer);
 
         let s = Resources.GetPackElement().GetElementByName("dot1");
-        let s2 = Resources.GetRoundBlock();
+        let s2 = Resources.GetBlock("round");
 
 
 

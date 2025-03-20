@@ -1,6 +1,6 @@
 
 import { tt } from "../ttapi/ttapi.js";
-import { DrawLayer_GUI, Resources, Border, Font, GameApp, IState, StateMgr, Vector2, QUI_ImageScale9, QUI_Label, QUI_Scale9, Color, IUserLogic, Navigator, DrawLayerTag, QUI_Image, QUI_HAlign, TextureArray, TextureFormat, Texture, ElementFormat } from "../ttlayer2/ttlayer2.js";
+import { DrawLayer_GUI, Resources, Border, Font, GameApp, IState, StateMgr, Vector2, QUI_ImageScale9, QUI_Label, QUI_Scale9, Color, IUserLogic, Navigator, DrawLayerTag, QUI_Image, QUI_HAlign, TextureArray, TextureFormat, Texture, ElementFormat, QUI_Resource } from "../ttlayer2/ttlayer2.js";
 import { View_Menu } from "./view_menu.js";
 
 
@@ -16,22 +16,23 @@ export class GContext {
         }
     }
 }
-export class TTState_All implements IUserLogic {
+export class TTState_All extends Navigator implements IUserLogic {
 
-    nav: Navigator<GContext>
+  
     label_fps: QUI_Label;
+    context: GContext = new GContext();
     OnInit(): void {
         //创建一个导航器框架
-        this.nav = new Navigator<GContext>(new GContext());
+      
 
 
-        let ct = this.nav.GetContextObj();
-        ct.topuiview = new DrawLayer_GUI();
 
-        GameApp.GetViewList().AddDrawLayer(ct.topuiview);
+        this.context.topuiview = new DrawLayer_GUI();
 
-        this.InitTopUI(ct);
-        this.nav.NavigatorTo(new View_Menu());
+        GameApp.GetViewList().AddDrawLayer(this.context.topuiview);
+
+        this.InitTopUI(this.context);
+        this.NavigatorTo(new View_Menu());
 
     }
     InitTopUI(context: GContext) {
@@ -39,26 +40,31 @@ export class TTState_All implements IUserLogic {
             context.topuiview.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
             //title
             {
-                let labels = Resources.CreateGUI_Label("新TTAPI", new Color(0, 0, 0, 0.5));
-                context.topuiview.GetCanvas().addChild(labels);
+                let labels = new QUI_Label();
+                labels.text = "新TTAPI";
+                labels.localColor = new Color(0, 0, 0, 0.5);
+                context.topuiview.GetCanvas().AddChild(labels);
                 labels.localRect.setHPosFill(33, 31);
                 labels.localRect.setVPosByTopBorder(16, 9);
 
             }
-            let label = Resources.CreateGUI_Label("新TTAPI", new Color(0.8, 1.0, 0, 1));
-            context.topuiview.GetCanvas().addChild(label);
+            let label = new QUI_Label();
+            label.text = "新TTAPI";
+            label.localColor = new Color(0.8, 1.0, 0, 1);
+            context.topuiview.GetCanvas().AddChild(label);
             label.localRect.setHPosFill(32, 32);
             label.localRect.setVPosByTopBorder(16, 8);
 
-            let roundsprite =Resources.GetPackElement().ConvertElemToSprite(Resources.GetRoundBlock());
-            let img = new QUI_Image(roundsprite);
+            let img = new QUI_Image();
+            img.sprite = QUI_Resource.GetSprite("round");
             img.localRect.setHPosByLeftBorder(16, 0);
             img.localRect.setVPosByTopBorder(16, 0);
-            context.topuiview.GetCanvas().addChild(img);
+            context.topuiview.GetCanvas().AddChild(img);
 
             //fps
-            let label_fps = this.label_fps = Resources.CreateGUI_Label("FPS:");
-            context.topuiview.GetCanvas().addChild(label_fps);
+            let label_fps = this.label_fps = new QUI_Label();
+            label.text = "FPS:";
+            context.topuiview.GetCanvas().AddChild(label_fps);
             label_fps.halign = QUI_HAlign.Left;
             label_fps.localRect.setHPosByLeftBorder(100, 16);
             label_fps.localRect.setVPosByTopBorder(16, 0);
@@ -69,7 +75,7 @@ export class TTState_All implements IUserLogic {
     timer: number = 0;
 
     OnUpdate(delta: number): void {
-        this.nav.GetLast()?.OnUpdate(delta);
+        this.GetLast()?.OnUpdate(delta);
 
         this.frameCount++;
         this.timer += delta;
@@ -85,16 +91,16 @@ export class TTState_All implements IUserLogic {
         }
     }
     OnExit(): void {
-        this.nav.GetLast()?.OnExit();
+        this.GetLast()?.OnExit();
     }
     OnResize(width: number, height: number): void {
-        this.nav.GetLast()?.OnResize(width, height);
+        this.GetLast()?.OnResize(width, height);
     }
 
     OnKey(keycode: string, press: boolean): void {
-        this.nav.GetLast()?.OnKey(keycode, press);
+        this.GetLast()?.OnKey(keycode, press);
     }
     OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
-        this.nav.GetLast()?.OnPointAfterGUI(id, x, y, press, move);
+        this.GetLast()?.OnPointAfterGUI(id, x, y, press, move);
     }
 }

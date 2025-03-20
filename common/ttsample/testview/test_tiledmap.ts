@@ -3,17 +3,17 @@ import { Render_Tiledmap } from "../../ttlayer2/graphics/pipeline/render/render_
 import { PerlinNoise } from "../../ttlayer2/math/perlin/perlin.js";
 import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
 import { IndexTex as TiledIndexTex, TiledTex } from "../../ttlayer2/resources/tiledmap/tiledmap.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Image, Sprite, Material, Texture, TextureFormat } from "../../ttlayer2/ttlayer2.js";
-import { GContext } from "../ttstate_all.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Image, Sprite, Material, Texture, TextureFormat, QUI_Label, QUI_Button } from "../../ttlayer2/ttlayer2.js";
+import { GContext, TTState_All } from "../ttstate_all.js";
 
-export class Test_Tiledmap implements IState<Navigator<GContext>> {
-    nav: Navigator<GContext>;
+export class Test_Tiledmap implements IState<TTState_All> {
+    nav: TTState_All;
     guilayer: DrawLayer_GUI;
     tiledlayer: DrawLayer;
     tiledrender: Render_Tiledmap;
     tiledtexIndex: TiledIndexTex;
     tiledtex: TiledTex;
-    OnInit(nav: Navigator<GContext>): void {
+    OnInit(nav: TTState_All): void {
         if (this.nav == null) {
             this.nav = nav;
         }
@@ -90,12 +90,12 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
 
             let s1 = new Sprite(mat1);
 
-            let img = new QUI_Image(s1);
-
+            let img = new QUI_Image();
+            img.sprite = s1;
             img.localRect.setHPosByLeftBorder(96, x);
             x += 100;
             img.localRect.setVPosByTopBorder(192, this.y);
-            this.guilayer.GetCanvas().addChild(img);
+            this.guilayer.GetCanvas().AddChild(img);
 
         }
         {
@@ -108,12 +108,12 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
 
             let s1 = new Sprite(mat1);
 
-            let img = new QUI_Image(s1);
-
+            let img = new QUI_Image();
+            img.sprite = s1;
             img.localRect.setHPosByLeftBorder(96, x);
             x += 100;
             img.localRect.setVPosByTopBorder(192, this.y);
-            this.guilayer.GetCanvas().addChild(img);
+            this.guilayer.GetCanvas().AddChild(img);
 
             let imgdata = new SpriteData();
             imgdata.format = TextureFormat.RGBA32;
@@ -132,12 +132,12 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
 
             let s1 = new Sprite(mat1);
 
-            let img = new QUI_Image(s1);
-
+            let img = new QUI_Image();
+            img.sprite = s1;
             img.localRect.setHPosByLeftBorder(96, x);
             x += 100;
             img.localRect.setVPosByTopBorder(192, this.y);
-            this.guilayer.GetCanvas().addChild(img);
+            this.guilayer.GetCanvas().AddChild(img);
 
             let imgdata = new SpriteData();
             imgdata.format = TextureFormat.RGBA32;
@@ -158,8 +158,9 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
     }
     y: number = 64;
     AddLabel(text: string): void {
-        let label = Resources.CreateGUI_Label(text);
-        this.guilayer.GetCanvas().addChild(label);
+        let label = new QUI_Label();
+        label.text = text;
+        this.guilayer.GetCanvas().AddChild(label);
         label.halign = QUI_HAlign.Left;
         label.localRect.setHPosByLeftBorder(196, 16);
         label.localRect.setVPosByTopBorder(16, this.y);
@@ -168,10 +169,11 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
         this.y += 16;
     }
     AddButton(name: string, click: () => void): void {
-        let btn = Resources.CreateGUI_Button(name, new Color(1, 1, 1, 1));
+        let btn = new QUI_Button();
+        (btn.elemNormal.GetChild(0) as QUI_Label).text = name
         btn.localRect.setHPosByLeftBorder(196, 16);
         btn.localRect.setVPosByTopBorder(20, this.y);
-        this.guilayer.GetCanvas().addChild(btn);
+        this.guilayer.GetCanvas().AddChild(btn);
 
         btn.OnClick = () => {
             click();
@@ -184,16 +186,17 @@ export class Test_Tiledmap implements IState<Navigator<GContext>> {
         this.guilayer = new DrawLayer_GUI();
         this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
         GameApp.GetViewList().AddDrawLayer(this.guilayer);
-        let btn = Resources.CreateGUI_Button("<--", new Color(1, 1, 1, 1));
+        let btn = new QUI_Button();
+        (btn.elemNormal.GetChild(0) as QUI_Label).text = "<--"
         btn.localRect.setHPosByLeftBorder(196, 16);
         btn.localRect.setVPosByTopBorder(20, 8);
-        this.guilayer.GetCanvas().addChild(btn);
+        this.guilayer.GetCanvas().AddChild(btn);
 
         btn.OnClick = () => {
             this.nav.Back();
         }
 
-        this.nav.GetContextObj().TopUI2Top();
+        this.nav.context.TopUI2Top();
     }
 
 
