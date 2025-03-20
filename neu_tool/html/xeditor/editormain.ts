@@ -6,14 +6,33 @@ import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "../xioext/ioext.
 
 export class NavState_Begin implements IState<MyLogic> {
     fileGroup: FileGroup;
-    container: QUI_Container;
+    //container: QUI_Container;
     app: MyLogic;
     init: boolean = false;
+    root: QUI_Container;
     OnInit(mgr: MyLogic): void {
 
         this.app = mgr;
-        this.container = new QUI_Container();
-        mgr.canvas.AddChild(this.container);
+        //this.container = new QUI_Container();
+        //mgr.canvas.AddChild(this.container);
+
+        let container = this.root = new QUI_Container();
+        mgr.canvas.AddChild(container);
+
+
+        let titlebar = new QUI_Panel();
+        container.AddChild(titlebar);
+        titlebar.localRect.setVPosByTopBorder(22);
+
+        titlebar.container = new QUI_Grow();
+        let btnFile = new QUI_Button();
+        btnFile.SetText("File");
+        btnFile.localRect.setBySize(100, 18);
+        titlebar.container.AddChild(btnFile);
+
+        let desktop = new QUI_Container();
+        desktop.localRect.offsetY1 = 22;
+        container.AddChild(desktop);
 
         let group = this.fileGroup = new FileGroup();
         group.resizeEnable = true;
@@ -21,8 +40,8 @@ export class NavState_Begin implements IState<MyLogic> {
         let r = mgr.canvas.GetWorldRect();
 
 
-        group.localRect.setByRect(new Rectangle(100, 100, 400, 300));
-        this.container.AddChild(group);
+        group.localRect.setByRect(new Rectangle(100, 100, r.Width - 200, r.Height - 200));
+        desktop.AddChild(group);
 
         //加到一个canvas 上是一个办法
     }
@@ -34,7 +53,7 @@ export class NavState_Begin implements IState<MyLogic> {
         }
     }
     OnExit(): void {
-        this.app.canvas.RemoveChild(this.container);
+        this.app.canvas.RemoveChild(this.root);
     }
     OnResize(width: number, height: number): void {
 
@@ -61,7 +80,7 @@ export class MyLogic extends Navigator implements IUserLogic {
 
         let pr = tt.graphic.getDevicePixelRadio();
 
-        let scaleradio =3;// (pr * ) | 0;
+        let scaleradio = 3;// (pr * ) | 0;
         console.log("ScaleRadio=" + scaleradio);
 
         //改Camera的缩放会直接缩放内容
@@ -92,7 +111,7 @@ export class MyLogic extends Navigator implements IUserLogic {
         // this.canvas.AddChild(group2);
         // let grow = new QUI_Grow();
         // grow.direction = QUI_Direction2.Vertical;
-        // group2.GetContainer().AddChild(grow);
+        // group2.container().AddChild(grow);
 
         // let label = new QUI_Label();
         // label.localRect.setBySize(100, 16);

@@ -44,12 +44,12 @@ export class QUI_Group extends QUI_Panel {
         // let img = new QUI_Image();
         // img.localColor = new Color(0.5, 0.5, 0.5, 1);
         // img.localRect.SetAsFill();
-        //titleback.GetContainer().AddChild(img);
+        //titleback.container().AddChild(img);
 
         {//title
             let dbut = new QUI_DragButton();
             dbut.localRect.SetAsFill();
-            titleback.GetContainer().AddChild(dbut);
+            titleback.container.AddChild(dbut);
 
             (dbut.ElemNormal as QUI_Container).RemoveChildAll();
 
@@ -133,7 +133,7 @@ export class QUI_Group extends QUI_Panel {
             }
         }
         if (!kill) {
-            kill = this._container.OnTouch(_canvas, touchid, press, move, x, y);
+            kill = this.container.OnTouch(_canvas, touchid, press, move, x, y);
         }
 
         if (!kill) {

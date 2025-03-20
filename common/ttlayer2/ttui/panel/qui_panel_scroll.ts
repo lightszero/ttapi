@@ -14,9 +14,9 @@ export class QUI_Panel_Scroll extends QUI_Panel {
         this.panelOffsetY = this.panelOffsetWantY = 0;
         this.panelWidth = 250;
         this.panelHeight = 250;
-        this._container = new QUI_Grow();
-        this._container._parent = this;
-        this._container.localRect.SetAsFill();
+        this.container = new QUI_Grow();
+        this.container._parent = this;
+        this.container.localRect.SetAsFill();
        // this._container.picker = this;
     }
     GetElementType(): QUI.QUI_ElementType {
@@ -52,14 +52,14 @@ export class QUI_Panel_Scroll extends QUI_Panel {
     protected updateContainerPos(): void {
         //跳过标准的边界设置，
         //scrollPanel的container 没有边界
-        this._container.localRect.radioX1 = 0;
-        this._container.localRect.radioY1 = 0;
-        this._container.localRect.radioX2 = 0;
-        this._container.localRect.radioY2 = 0;
-        this._container.localRect.offsetX1 = this.panelOffsetX;
-        this._container.localRect.offsetY1 = this.panelOffsetY;
-        this._container.localRect.offsetX2 = this.panelOffsetX + this.panelWidth;
-        this._container.localRect.offsetY2 = this.panelOffsetY + this.panelHeight;
+        this.container.localRect.radioX1 = 0;
+        this.container.localRect.radioY1 = 0;
+        this.container.localRect.radioX2 = 0;
+        this.container.localRect.radioY2 = 0;
+        this.container.localRect.offsetX1 = this.panelOffsetX;
+        this.container.localRect.offsetY1 = this.panelOffsetY;
+        this.container.localRect.offsetX2 = this.panelOffsetX + this.panelWidth;
+        this.container.localRect.offsetY2 = this.panelOffsetY + this.panelHeight;
     }
     private _press: boolean = false;
     private _pressid: number = 0;
@@ -183,8 +183,8 @@ export class QUI_Panel_Scroll extends QUI_Panel {
         }
         super.OnUpdate(_canvas, delta);
 
-        this.panelWidth = (this._container as QUI_Grow).GetContextWidth();
-        this.panelHeight = (this._container as QUI_Grow).GetContextHeight();
+        this.panelWidth = (this.container as QUI_Grow).GetContextWidth();
+        this.panelHeight = (this.container as QUI_Grow).GetContextHeight();
     }
 
 

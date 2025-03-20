@@ -33,7 +33,7 @@ export class PickAble_FileItem extends QUI_Container {
         label.localRect.offsetX1 = 25;
         label.text = "pickable"
         label.halign = QUI_HAlign.Left;
-        //this.contextPanel.GetContainer().AddChild(con);
+        //this.contextPanel.container().AddChild(con);
         this.AddChild(label);
     }
     image: QUI_Image;
@@ -58,7 +58,7 @@ export class FileGroup extends QUI_Group {
         let panelScroll = this.contextPanel = new QUI_Panel_Scroll();
         panelScroll.localRect.SetAsFill();
         panelScroll.localRect.offsetY1 = 22;
-        this.GetContainer().AddChild(panelScroll);
+        this.container.AddChild(panelScroll);
     }
     contextPanel: QUI_Panel_Scroll;
 
@@ -66,11 +66,11 @@ export class FileGroup extends QUI_Group {
         let titlebar = new QUI_Panel();
         titlebar.localRect.setHPosFill();
         titlebar.localRect.setVPosByTopBorder(22);
-        this.GetContainer().AddChild(titlebar);
+        this.container.AddChild(titlebar);
 
         let titlegrow = new QUI_Grow();
         titlegrow.direction = QUI_Direction2.Horizontal;
-        titlebar.GetContainer().AddChild(titlegrow);
+        titlebar.container.AddChild(titlegrow);
 
         {
             let btn = new QUI_Button();
@@ -107,13 +107,13 @@ export class FileGroup extends QUI_Group {
     dir: IOExt_DirectoryHandle;
     async OnOpenFolder(file: IOExt_DirectoryHandle) {
         this.dir = file;
-        this.contextPanel.GetContainer().RemoveChildAll();
+        this.contextPanel.container.RemoveChildAll();
         let result = await FindTool.FindAllFile(file, [".json", ".jpg", ".png"], 3);
 
         for (var i = 0; i < result.length; i++) {
             let con = new PickAble_FileItem();
             con.localRect.setBySize(500, 25);
-            this.contextPanel.GetContainer().AddChild(con);
+            this.contextPanel.container.AddChild(con);
             let ext = TTPathTool.GetExt(result[i].name).toLowerCase();
             if (ext == ".jpg" || ext == ".png") {
                 let img = new QUI_Image();

@@ -30,7 +30,15 @@ export class QUI_Button extends QUI.QUI_BaseElement {
         this.colorNormal = Color.White;
         this.colorPress = new Color(0.9, 0.9, 0.3, 1);
     }
-
+    SetText(text: string): void {
+        if (this.elemNormal == null || this.elemNormal.GetChildCount() < 2)
+            return;
+        let e = this.elemNormal.GetChild(1);
+        if (e == null || e.GetElementType() != QUI.QUI_ElementType.Element_Label) {
+            return;
+        }
+        (e as QUI_Label).text = text;
+    }
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Button;
     }

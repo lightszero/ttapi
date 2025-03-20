@@ -12,9 +12,9 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         super();
 
         this.localRect.SetAsFill();
-        this._container = new QUI.QUI_Container();
-        this._container._parent = this;
-        this._container.localRect.SetAsFill();
+        this.container = new QUI.QUI_Container();
+        this.container._parent = this;
+        this.container.localRect.SetAsFill();
         this._border = new Border(2, 2, 2, 2);
         this.backElements = [];
         this.foreElements = [];
@@ -22,9 +22,8 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         this.foreElements.push(QUI_Resource.CreateGUI_Border());
     }
 
-    GetContainer(): QUI.QUI_Container {
-        return this._container;
-    }
+
+    
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel;
     }
@@ -140,7 +139,7 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         target.PushLimitRect(rectlimit);
 
         batcher.BeginDraw(target);
-        this._container.OnRender(_canvas);
+        this.container.OnRender(_canvas);
         batcher.EndDraw();
 
         target.PopLimitRect();
@@ -151,19 +150,19 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
 
     protected updateContainerPos(): void {
 
-        this._container.localRect.radioX1 = 0;
-        this._container.localRect.radioY1 = 0;
-        this._container.localRect.radioX2 = 1;
-        this._container.localRect.radioY2 = 1;
-        this._container.localRect.offsetX1 = this._border.XLeft;
-        this._container.localRect.offsetX2 = -this._border.XRight;
-        this._container.localRect.offsetY1 = this._border.YTop;
-        this._container.localRect.offsetY2 = -this._border.YBottom;
+        this.container.localRect.radioX1 = 0;
+        this.container.localRect.radioY1 = 0;
+        this.container.localRect.radioX2 = 1;
+        this.container.localRect.radioY2 = 1;
+        this.container.localRect.offsetX1 = this._border.XLeft;
+        this.container.localRect.offsetX2 = -this._border.XRight;
+        this.container.localRect.offsetY1 = this._border.YTop;
+        this.container.localRect.offsetY2 = -this._border.YBottom;
     }
     OnUpdate(_canvas: QUI_Canvas, delta: number): void {
         this.OnUpdateBack(_canvas, delta);
         this.updateContainerPos();
-        this._container.OnUpdate(_canvas, delta);
+        this.container.OnUpdate(_canvas, delta);
         this.OnUpdateFore(_canvas, delta);
         super.OnUpdate(_canvas, delta);
     }
@@ -193,13 +192,13 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
             }
         }
 
-        kill = this._container.OnTouch(_canvas, touchid, press, move, x, y);
+        kill = this.container.OnTouch(_canvas, touchid, press, move, x, y);
         if (kill)
             return kill;
         kill = this.OnTouchBack(_canvas, touchid, press, move, x, y);
         return kill;
     }
-    protected _container: QUI.QUI_Container;
+    container: QUI.QUI_Container;
 
 
 }
