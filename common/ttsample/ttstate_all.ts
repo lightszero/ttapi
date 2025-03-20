@@ -37,7 +37,8 @@ export class TTState_All extends Navigator implements IUserLogic {
     }
     InitTopUI(context: GContext) {
         {
-            context.topuiview.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
+            tt.graphic.setMainScreenScale(1);
+            context.topuiview.GetCamera().Scale =3;// tt.graphic.getDevicePixelRadio() * 1.5;
             //title
             {
                 let labels = new QUI_Label();

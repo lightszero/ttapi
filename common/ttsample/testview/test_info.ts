@@ -19,25 +19,25 @@ export class Test_Info implements IState<TTState_All> {
         this.AddBackButton();
 
         let gl = tt.graphic.GetWebGL();
-        this.AddLabel("DevicePixelRadio=" + tt.graphic.getDevicePixelRadio());
-        this.AddLabel("MAX_UNIFORM_BLOCK_SIZE=" + gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE));
-        this.AddLabel("MAX_3D_TEXTURE_SIZE=" + gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
-        this.AddLabel("MAX_ARRAY_TEXTURE_LAYERS=" + gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS));
-        this.AddLabel("MAX_TEXTURE_SIZE=" + gl.getParameter(gl.MAX_TEXTURE_SIZE));
+        this.AddLabel("好奇怪，DevicePixelRadio=" + tt.graphic.getDevicePixelRadio());
+        this.AddLabel("为啥有时font MAX_UNIFORM_BLOCK_SIZE=" + gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE));
+        this.AddLabel("会溢出一些点MAX_3D_TEXTURE_SIZE=" + gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
+        this.AddLabel("这也不符合MAX_ARRAY_TEXTURE_LAYERS=" + gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS));
+        this.AddLabel("逻辑MAX_TEXTURE_SIZE=" + gl.getParameter(gl.MAX_TEXTURE_SIZE));
         this.AddLabel("MAX_VERTEX_UNIFORM_BLOCKS=" + gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS));
         this.AddLabel("MAX_VERTEX_UNIFORM_COMPONENTS=" + gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS));
     }
     y: number = 64;
-    AddLabel(text: string): void {
+    AddLabel(text: string, s: number = 1): void {
         let label = new QUI_Label();
         label.text = text;
         this.guilayer.GetCanvas().AddChild(label);
         label.halign = QUI_HAlign.Left;
         label.localRect.setHPosByLeftBorder(196, 16);
         label.localRect.setVPosByTopBorder(16, this.y);
-        label.fontScale.X *= 0.5;
-        label.fontScale.Y *= 0.5;
-        this.y += 16;
+        label.fontScale.X *= s;
+        label.fontScale.Y *= s;
+        this.y += 18 * s;
     }
     AddButton(name: string, click: () => void): void {
         let btn = new QUI_Button();
@@ -55,7 +55,7 @@ export class Test_Info implements IState<TTState_All> {
     }
     AddBackButton(): void {
         this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
+        this.guilayer.GetCamera().Scale = 3;// tt.graphic.getDevicePixelRadio() * 2.0;
         GameApp.GetViewList().AddDrawLayer(this.guilayer);
         let btn = new QUI_Button();
         (btn.elemNormal.GetChild(0) as QUI_Label).text = "<--"
@@ -70,7 +70,7 @@ export class Test_Info implements IState<TTState_All> {
         this.nav.context.TopUI2Top();
     }
 
- 
+
     OnUpdate(delta: number): void {
 
     }

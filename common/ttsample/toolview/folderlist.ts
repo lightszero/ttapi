@@ -131,8 +131,8 @@ export class FolderList extends QUI_Panel {
                 label.text = "[Path]" + item.handle.name;
             }
         }
-        let fs = 16 / label.font.GetFontSize();;
-        label.fontScale = new Vector2(fs, fs);
+        //let fs = 16 / label.font.GetFontSize();;
+        //label.fontScale = new Vector2(fs, fs);
 
         label.halign = QUI_HAlign.Left;
 

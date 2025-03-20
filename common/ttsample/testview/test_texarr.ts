@@ -1,5 +1,5 @@
 import { tt } from "../../ttapi/ttapi.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, TextureArray, TextureFormat, QUI_Image, Sprite, ElementFormat, Texture, QUI_Button, QUI_Label } from "../../ttlayer2/ttlayer2.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, TextureArray, TextureFormat, QUI_Image, Sprite, ElementFormat, Texture, QUI_Button, QUI_Label, Font } from "../../ttlayer2/ttlayer2.js";
 import { GContext, TTState_All } from "../ttstate_all.js";
 
 export class Test_TexArr implements IState<TTState_All> {
@@ -33,24 +33,28 @@ export class Test_TexArr implements IState<TTState_All> {
         this.AddLabel("tex1=" + t.getWidth() + "," + t.getHeight() + "," + t.GetLayer());
         t.UploadSubTexture(0, 0, 0, 16, 16, data1);
         t2.UploadTexture(0, 0, 16, 16, data2);
-        this.AddLabel("tex2=" + t2.getWidth() + "," + t2.getHeight() );
-        this.AddLabel("普通贴图传给texturearray不能正常渲染" );
+        this.AddLabel("tex2=" + t2.getWidth() + "," + t2.getHeight());
+        this.AddLabel("普通贴图传给texturearray不能正常渲染");
 
-        // let s = Resources.GetPackElement().
-        // let s2 = new Sprite(Resources.GetPackElement().GetPackTexDuo().packRGBA, t2);
-        // s.effect = s2.effect = ElementFormat.GrayAsAlpha;
-        // {
-        //     let img = new QUI_Image(s);
-        //     img.localRect.setHPosByLeftBorder(256, 32);
-        //     img.localRect.setVPosByTopBorder(256, 32);
-        //     this.guilayer.GetCanvas().AddChild(img);
-        // }
-        // {
-        //     let img = new QUI_Image(s2);
-        //     img.localRect.setHPosByLeftBorder(256, 300);
-        //     img.localRect.setVPosByTopBorder(256, 32);
-        //     this.guilayer.GetCanvas().AddChild(img);
-        // }
+        let s = Resources.GetPackElement();
+      
+
+        {
+            let s2 = Resources.GetDefFont().GetCharSprite("你".charCodeAt(0));
+            let img = new QUI_Image();
+            img.SetBySprite(s2);
+            img.localRect.setHPosByLeftBorder(256, 32);
+            img.localRect.setVPosByTopBorder(256, 32);
+            this.guilayer.GetCanvas().AddChild(img);
+        }
+        {
+            let s2 = Resources.GetDefFont().GetCharSprite("好".charCodeAt(0));
+            let img = new QUI_Image();
+            img.SetBySprite(s2);
+            img.localRect.setHPosByLeftBorder(256, 300);
+            img.localRect.setVPosByTopBorder(256, 32);
+            this.guilayer.GetCanvas().AddChild(img);
+        }
     }
     y: number = 64;
     AddLabel(text: string): void {
