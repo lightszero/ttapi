@@ -7,7 +7,7 @@ import { Test_Info } from "./testview/test_info.js";
 import { Test_TexArr } from "./testview/test_texarr.js";
 import { Test_Tiledmap } from "./testview/test_tiledmap.js";
 import { Test_TTPack } from "./testview/test_ttpack.js";
-import { Tool_TexPack } from "./toolview/tool_texpack.js";
+
 import { GContext, TTState_All } from "./ttstate_all.js";
 
 export class View_Menu implements IState<TTState_All> {
@@ -30,7 +30,7 @@ export class View_Menu implements IState<TTState_All> {
 
         this.x = 32;
         this.y = 16;
-        this.AddButton("工具:本地看图", new Tool_TexPack());
+      
         this.AddButton("Test:Show GL Info", new Test_Info());
         this.AddButton("Test:TextureArray", new Test_TexArr());
         this.AddButton("Test:Element (UBO,废弃)", new Test_Element_UBO());

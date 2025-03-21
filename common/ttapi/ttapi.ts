@@ -6,7 +6,7 @@ export namespace tt {
     export var input: IInput;
     export var audio: IAudio;
     export var loader: ILoader;
-
+    export var loaderex: ILoaderEx;
     export async function sleep(ms: number): Promise<void> {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -64,13 +64,15 @@ export namespace tt {
         gray: boolean = false;
         data: Uint8Array = null;
     }
-    export interface ILoader {
-        GetPathSplitChar(): string;
-        LoadStringAsync(name: string): Promise<string>;
-        LoadBinaryAsync(name: string): Promise<ArrayBuffer>;
-        LoadImageAsync(name: string): Promise<HTMLImageElement>;
-        LoadImageDataAsync(name: string): Promise<ImageData>;
+    export interface ILoaderEx {
+        LoadImageAsync(url: string): Promise<HTMLImageElement>;
+        LoadImageDataAsync(url: string): Promise<ImageData>;
+        LoadImageDataResizeAsync(url: string, width: number, height: number): Promise<ImageData>;
         LoadCustomFont(name: string, url: string): Promise<string>
+    }
+    export interface ILoader {
+        LoadStringAsync(url: string): Promise<string>;
+        LoadBinaryAsync(url: string): Promise<ArrayBuffer>;
     }
 
     export interface IGraphic {

@@ -5,18 +5,16 @@ import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
 import { IndexTex as TiledIndexTex, TiledTex } from "../../ttlayer2/resources/tiledmap/tiledmap.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Image, Sprite, Material, Texture, TextureFormat, QUI_Label, QUI_Button } from "../../ttlayer2/ttlayer2.js";
 import { GContext, TTState_All } from "../ttstate_all.js";
+import { Test_Base } from "./test_base.js";
 
-export class Test_Tiledmap implements IState<TTState_All> {
-    nav: TTState_All;
-    guilayer: DrawLayer_GUI;
+export class Test_Tiledmap extends Test_Base {
+
     tiledlayer: DrawLayer;
     tiledrender: Render_Tiledmap;
     tiledtexIndex: TiledIndexTex;
     tiledtex: TiledTex;
     OnInit(nav: TTState_All): void {
-        if (this.nav == null) {
-            this.nav = nav;
-        }
+        super.OnInit(nav);
 
 
 
@@ -32,7 +30,6 @@ export class Test_Tiledmap implements IState<TTState_All> {
             , 0.25);
 
 
-        this.AddBackButton();
 
 
         this.AddLabel("LPC有个很好的Tiledmap 规则");
@@ -83,7 +80,7 @@ export class Test_Tiledmap implements IState<TTState_All> {
         {
             let mat1 = new Material(Resources.GetShaderProgram("simple"));
 
-            let teximg = await tt.loader.LoadImageAsync("./data/tiledrule.png");
+            let teximg = await tt.loaderex.LoadImageAsync("./data/tiledrule.png");
             let tex1 = new Texture(gl, teximg.width, teximg.height, TextureFormat.RGBA32, null);
             tex1.UploadImg(teximg);
             mat1.uniformTexs["tex"].value = tex1;
@@ -101,7 +98,7 @@ export class Test_Tiledmap implements IState<TTState_All> {
         {
             let mat1 = new Material(Resources.GetShaderProgram("simple"));
 
-            let teximg = await tt.loader.LoadImageDataAsync("./data/grass.png");
+            let teximg = await tt.loaderex.LoadImageDataAsync("./data/grass.png");
             let tex1 = new Texture(gl, teximg.width, teximg.height, TextureFormat.RGBA32, null);
             tex1.UploadImg(teximg);
             mat1.uniformTexs["tex"].value = tex1;
@@ -125,7 +122,7 @@ export class Test_Tiledmap implements IState<TTState_All> {
         {
             let mat1 = new Material(Resources.GetShaderProgram("simple"));
 
-            let teximg = await tt.loader.LoadImageDataAsync("./data/dirt.png");
+            let teximg = await tt.loaderex.LoadImageDataAsync("./data/dirt.png");
             let tex1 = new Texture(gl, teximg.width, teximg.height, TextureFormat.RGBA32, null);
             tex1.UploadImg(teximg);
             mat1.uniformTexs["tex"].value = tex1;
@@ -156,48 +153,6 @@ export class Test_Tiledmap implements IState<TTState_All> {
 
         this.RandomMap()
     }
-    y: number = 64;
-    AddLabel(text: string): void {
-        let label = new QUI_Label();
-        label.text = text;
-        this.guilayer.GetCanvas().AddChild(label);
-        label.halign = QUI_HAlign.Left;
-        label.localRect.setHPosByLeftBorder(196, 16);
-        label.localRect.setVPosByTopBorder(16, this.y);
-        label.fontScale.X *= 0.5;
-        label.fontScale.Y *= 0.5;
-        this.y += 16;
-    }
-    AddButton(name: string, click: () => void): void {
-        let btn = new QUI_Button();
-        (btn.elemNormal.GetChild(0) as QUI_Label).text = name
-        btn.localRect.setHPosByLeftBorder(196, 16);
-        btn.localRect.setVPosByTopBorder(20, this.y);
-        this.guilayer.GetCanvas().AddChild(btn);
-
-        btn.OnClick = () => {
-            click();
-        }
-
-        this.y += 24;
-
-    }
-    AddBackButton(): void {
-        this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
-        GameApp.GetViewList().AddDrawLayer(this.guilayer);
-        let btn = new QUI_Button();
-        (btn.elemNormal.GetChild(0) as QUI_Label).text = "<--"
-        btn.localRect.setHPosByLeftBorder(196, 16);
-        btn.localRect.setVPosByTopBorder(20, 8);
-        this.guilayer.GetCanvas().AddChild(btn);
-
-        btn.OnClick = () => {
-            this.nav.Back();
-        }
-
-        this.nav.context.TopUI2Top();
-    }
 
 
     timer: number = 0;
@@ -211,17 +166,8 @@ export class Test_Tiledmap implements IState<TTState_All> {
         this.tiledlayer.GetCamera().LookAt.Y = ((y * 2) | 0) / 2;
     }
     OnExit(): void {
-        GameApp.GetViewList().RemoveDrawLayers(this.guilayer);
+        super.OnExit();
         GameApp.GetViewList().RemoveDrawLayers(this.tiledlayer);
     }
-    OnResize(width: number, height: number): void {
 
-    }
-
-    OnKey(keycode: string, press: boolean): void {
-
-    }
-    OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
-
-    }
 }

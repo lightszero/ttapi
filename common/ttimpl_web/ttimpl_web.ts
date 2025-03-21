@@ -36,6 +36,7 @@ export namespace tt_impl {
                 console.error("init webgl error.");
             }
             tt.loader = new impl_l.tt_impl.Loader();
+            tt.loaderex =new impl_l.tt_impl.LoaderEx();
             tt.audio = new impl_a.tt_impl.AudioImpl();
 
             tt.input = new impl_i.tt_impl.Input(canvas);

@@ -4,9 +4,7 @@ import { tt } from "../ttapi/ttapi.js";
 export namespace tt_impl {
   export class Loader implements tt.ILoader {
 
-    GetPathSplitChar(): string {
-      return "/";
-    }
+
     async LoadStringAsync(url: string): Promise<string> {
 
       let req = await fetch(url);
@@ -20,6 +18,11 @@ export namespace tt_impl {
       let bin = await req.arrayBuffer();
       return bin;
     }
+  }
+
+  export class LoaderEx implements tt.ILoaderEx {
+
+
     LoadImageAsync(url: string): Promise<HTMLImageElement> {
 
       // while (!comp) {
@@ -44,8 +47,8 @@ export namespace tt_impl {
 
     }
 
-    async LoadImageDataAsync(name: string): Promise<ImageData> {
-      let img = await this.LoadImageAsync(name);
+    async LoadImageDataAsync(url: string): Promise<ImageData> {
+      let img = await this.LoadImageAsync(url);
 
       let c2d = tt.graphic.GetBackGroundC2D();
 
@@ -55,6 +58,21 @@ export namespace tt_impl {
       c2d.drawImage(img, 0, 0);
 
       let data = c2d.getImageData(0, 0, img.width, img.height);
+
+      return data;
+    }
+
+    async LoadImageDataResizeAsync(url: string, width: number, height: number): Promise<ImageData> {
+      let img = await this.LoadImageAsync(url);
+
+      let c2d = tt.graphic.GetBackGroundC2D();
+
+      c2d.canvas.width = img.width;
+      c2d.canvas.height = img.height;
+      c2d.clearRect(0, 0, img.width, img.height);
+      c2d.drawImage(img, 0, 0, width, height);
+
+      let data = c2d.getImageData(0, 0, width, height);
 
       return data;
     }

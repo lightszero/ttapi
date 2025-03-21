@@ -28,7 +28,7 @@ window.onload = async () => {
     //初始化ttimpl，这样就可以正常使用ttapi了
     var ttimpl = new tt_impl.ttimpl_browser();
     ttimpl.Init(canvas);
-    var fontname = await tt.loader.LoadCustomFont("VonwaonBitmap", "./resource/VonwaonBitmap-16px.ttf");
+    var fontname = await tt.loaderex.LoadCustomFont("VonwaonBitmap", "./resource/VonwaonBitmap-16px.ttf");
     let op = new ResourceOption();
     op.defFontName = fontname;
     GameApp.Start(op, new MyLogic())

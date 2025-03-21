@@ -64,7 +64,7 @@ export class TTState_All extends Navigator implements IUserLogic {
 
             //fps
             let label_fps = this.label_fps = new QUI_Label();
-            label.text = "FPS:";
+            label_fps.text = "FPS:";
             context.topuiview.GetCanvas().AddChild(label_fps);
             label_fps.halign = QUI_HAlign.Left;
             label_fps.localRect.setHPosByLeftBorder(100, 16);

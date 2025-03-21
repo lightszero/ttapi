@@ -3,19 +3,16 @@ import { ElementInst, ElementSprite } from "../../ttlayer2/graphics/pipeline/ren
 import { Render_Element_Tbo } from "../../ttlayer2/graphics/pipeline/render/render_elem_tbo.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Button, QUI_Label } from "../../ttlayer2/ttlayer2.js";
 import { GContext, TTState_All } from "../ttstate_all.js";
+import { Test_Base } from "./test_base.js";
 
-export class Test_Load implements IState<TTState_All> {
-    nav: TTState_All;
-    guilayer: DrawLayer_GUI;
+export class Test_Load extends Test_Base {
+
     canvaslayer: DrawLayer;
     render: Render_Element_Tbo;
 
     inst: ElementInst[] = []
     OnInit(nav: TTState_All): void {
-        if (this.nav == null) {
-            this.nav = nav;
-        }
-
+        super.OnInit(nav)
 
 
 
@@ -33,48 +30,7 @@ export class Test_Load implements IState<TTState_All> {
 
 
     }
-    y: number = 64;
-    AddLabel(text: string): void {
-        let label = new QUI_Label();
-        label.text = text;
-        this.guilayer.GetCanvas().AddChild(label);
-        label.halign = QUI_HAlign.Left;
-        label.localRect.setHPosByLeftBorder(196, 16);
-        label.localRect.setVPosByTopBorder(16, this.y);
-        label.fontScale.X *= 0.5;
-        label.fontScale.Y *= 0.5;
-        this.y += 16;
-    }
-    AddButton(name: string, click: () => void): void {
-        let btn = new QUI_Button();
-        (btn.elemNormal.GetChild(0) as QUI_Label).text = name
-        btn.localRect.setHPosByLeftBorder(196, 16);
-        btn.localRect.setVPosByTopBorder(20, this.y);
-        this.guilayer.GetCanvas().AddChild(btn);
 
-        btn.OnClick = () => {
-            click();
-        }
-
-        this.y += 24;
-
-    }
-    AddBackButton(): void {
-        this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
-        GameApp.GetViewList().AddDrawLayer(this.guilayer);
-        let btn = new QUI_Button();
-        (btn.elemNormal.GetChild(0) as QUI_Label).text = "<--"
-        btn.localRect.setHPosByLeftBorder(196, 16);
-        btn.localRect.setVPosByTopBorder(20, 8);
-        this.guilayer.GetCanvas().AddChild(btn);
-
-        btn.OnClick = () => {
-            this.nav.Back();
-        }
-
-        this.nav.context.TopUI2Top();
-    }
 
     AddSprites(): void {
 
@@ -110,17 +66,8 @@ export class Test_Load implements IState<TTState_All> {
         }
     }
     OnExit(): void {
-        GameApp.GetViewList().RemoveDrawLayers(this.guilayer);
+        super.OnExit();
         GameApp.GetViewList().RemoveDrawLayers(this.canvaslayer);
     }
-    OnResize(width: number, height: number): void {
 
-    }
-
-    OnKey(keycode: string, press: boolean): void {
-
-    }
-    OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
-
-    }
 }

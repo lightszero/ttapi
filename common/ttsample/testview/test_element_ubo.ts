@@ -3,25 +3,16 @@ import { ElementInst, ElementSprite } from "../../ttlayer2/graphics/pipeline/ren
 import { Render_Element_Ubo } from "../../ttlayer2/graphics/pipeline/render/render_elem_ubo.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Label, QUI_Button } from "../../ttlayer2/ttlayer2.js";
 import { GContext, TTState_All } from "../ttstate_all.js";
+import { Test_Base } from "./test_base.js";
 
-export class Test_Element_UBO implements IState<TTState_All> {
-    nav: TTState_All;
-    guilayer: DrawLayer_GUI;
+export class Test_Element_UBO extends Test_Base {
+
     canvaslayer: DrawLayer;
     render: Render_Element_Ubo;
 
     inst: ElementInst[] = []
     OnInit(nav: TTState_All): void {
-        if (this.nav == null) {
-            this.nav = nav;
-        }
-
-
-
-
-
-
-        this.AddBackButton();
+        super.OnInit(nav);
 
         this.AddSprites();
         this.AddLabel("DrawElement,UBO模式");
@@ -32,35 +23,7 @@ export class Test_Element_UBO implements IState<TTState_All> {
         this.AddLabel("这个模式不如TBO模式");
 
     }
-    AddBackButton(): void {
-        this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
-        GameApp.GetViewList().AddDrawLayer(this.guilayer);
-        let btn = new QUI_Button();
-        (btn.elemNormal.GetChild(0) as QUI_Label).text = "<--"
-        btn.localRect.setHPosByLeftBorder(196, 16);
-        btn.localRect.setVPosByTopBorder(20, 8);
-        this.guilayer.GetCanvas().AddChild(btn);
 
-        btn.OnClick = () => {
-            this.nav.Back();
-        }
-
-        this.nav.context.TopUI2Top();
-    }
-
-    y: number = 64;
-    AddLabel(text: string): void {
-        let label = new QUI_Label();
-        label.text = text;
-        this.guilayer.GetCanvas().AddChild(label);
-        label.halign = QUI_HAlign.Left;
-        label.localRect.setHPosByLeftBorder(196, 16);
-        label.localRect.setVPosByTopBorder(16, this.y);
-        label.fontScale.X *= 0.5;
-        label.fontScale.Y *= 0.5;
-        this.y += 16;
-    }
     AddSprites(): void {
 
         this.canvaslayer = new DrawLayer(DrawLayerTag.Main);
@@ -104,7 +67,7 @@ export class Test_Element_UBO implements IState<TTState_All> {
             this.render.AddElement(elem);
             elem2 = elem;
         }
-        for (var i = 0; i < 1024 ; i++) {
+        for (var i = 0; i < 1024; i++) {
             let inst = new ElementInst();
             inst.pos = new Vector3(Math.random() * 400 - 200, Math.random() * 400 - 200, 0);
             inst.rotate = Math.random() * Math.PI;
@@ -125,17 +88,8 @@ export class Test_Element_UBO implements IState<TTState_All> {
         }
     }
     OnExit(): void {
-        GameApp.GetViewList().RemoveDrawLayers(this.guilayer);
+        super.OnExit();
         GameApp.GetViewList().RemoveDrawLayers(this.canvaslayer);
     }
-    OnResize(width: number, height: number): void {
 
-    }
-
-    OnKey(keycode: string, press: boolean): void {
-
-    }
-    OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
-
-    }
 }

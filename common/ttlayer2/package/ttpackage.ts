@@ -39,7 +39,7 @@ export class TTPackageMgr {
                 if (this.packages[pakname] != undefined)
                     continue;
 
-                let refpack = await this.Load(root + loader.GetPathSplitChar() + pakname, loader);
+                let refpack = await this.Load(root + "/" + pakname, loader);
                 pack.refs.push(refpack);
             }
         }
@@ -58,7 +58,7 @@ export class TTPackageMgr {
                     if (ws.length > 2)
                         pivotY = parseInt(ws[2]);
                 }
-                let pic = await this.LoadPic(root + loader.GetPathSplitChar() + picname, loader);
+                let pic = await this.LoadPic(root + "/" + picname, loader);
                 pic.pivotX = pivotX;
                 pic.pivotY = pivotY;
                 pack.pics[key] = pic;
@@ -77,7 +77,10 @@ export class TTPackageMgr {
     }
     static async LoadPic(filename: string, loader: tt.ILoader): Promise<TTPicData> {
         let data = new TTPicData();
-        let imgdata = await loader.LoadImageDataAsync(filename);
+
+        let bin = await loader.LoadBinaryAsync(filename);
+        let blob = new Blob([bin]);
+        let imgdata = await tt.loaderex.LoadImageDataAsync(URL.createObjectURL(blob));
         data.data = imgdata.data;
 
         data.width = imgdata.width;
@@ -217,7 +220,7 @@ export class TTPackage {
         return list;
     }
     GetPic(name: string, searched: TTPackage[] = null): TTPicData {
-        if (this.pics!=undefined&&this.pics[name] != undefined)
+        if (this.pics != undefined && this.pics[name] != undefined)
             return this.pics[name];
 
         //避免递归
@@ -235,7 +238,7 @@ export class TTPackage {
         return null;
     }
     GetAni(name: string, searched: TTPackage[] = null): TTAni {
-        if (this.anis!=undefined&&this.anis[name] != undefined)
+        if (this.anis != undefined && this.anis[name] != undefined)
             return this.anis[name];
 
         //避免递归

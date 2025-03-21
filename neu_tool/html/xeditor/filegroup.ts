@@ -99,7 +99,7 @@ export class FileGroup extends QUI_Window {
     async LoadFileToTexture(file: IOExt_FileHandle) {
         let idata = await IOExt.File_ReadBinary(file);
         let b = new Blob([idata]);
-        let imagedata = await tt.loader.LoadImageDataAsync(URL.createObjectURL(b));
+        let imagedata = await tt.loaderex.LoadImageDataAsync(URL.createObjectURL(b));
         let tex = new Texture(tt.graphic.GetWebGL(), imagedata.width, imagedata.height, TextureFormat.RGBA32,
             imagedata.data);
         return tex;
