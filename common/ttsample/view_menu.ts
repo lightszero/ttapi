@@ -23,7 +23,7 @@ export class View_Menu implements IState<TTState_All> {
 
 
         this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = 3;//tt.graphic.getDevicePixelRadio() * 2.0;
+        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2.0;
 
         GameApp.GetViewList().AddDrawLayer(this.guilayer);
 

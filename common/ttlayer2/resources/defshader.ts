@@ -283,6 +283,23 @@ var vs_simple: string = /*glsl*/`#version 300 es
     }
     `;
 
+var fs_color: string = /*glsl*/`#version 300 es
+    precision highp float;//指定浮点型精确度
+    precision highp sampler2DArray;
+
+    in vec2 vUv;//从vs接收的参数
+    in vec4 vColor;//从vs接收的参数
+    //flat in vec4 vExt;
+
+        
+    layout(location = 0) out vec4 fragColor;
+    void main(void) 
+    {
+
+        vec4 outc = vColor;
+        fragColor = outc;
+    }
+    `;
 
 var fs_simple: string = /*glsl*/`#version 300 es
     precision highp float;//指定浮点型精确度
@@ -386,7 +403,9 @@ export function InitInnerShader(webgl: WebGL2RenderingContext): void {
     if (vssim != null && fssim != null)
         Resources.AddProgram(webgl, "simple", vssim, fssim);
 
-
+    var fscolor = Resources.CompileShader(webgl, ShaderType.FragmentShader, "color", fs_color);
+    if (vssim != null && fscolor != null)
+        Resources.AddProgram(webgl, "color", vssim, fscolor);
 
     var vsfeedback = Resources.CompileShader(webgl, ShaderType.VertexShader, "feedback", vs_feedback);
     var fsempty = Resources.CompileShader(webgl, ShaderType.FragmentShader, "empty", fs_empty);

@@ -1,13 +1,18 @@
 import { b2Transform, XY } from "./src/index.js";
 import { RGBA, b2Draw } from "./src/common/b2_draw.js";
 import { tt } from "../../ttapi/ttapi.js";
-import { DrawPoint, QUI_Resource, Render_Batcher, Resources, Sprite, Texture } from "../ttlayer2.js";
+import { DrawPoint, Material, QUI_Resource, Render_Batcher, Resources, Sprite, Texture } from "../ttlayer2.js";
 export class b2Drawer implements b2Draw {
     batcher: Render_Batcher
-    white: Sprite;
-    constructor(batcher: Render_Batcher) {
+    //white: Sprite;
+    scale: number;
+    mat: Material;
+    constructor(batcher: Render_Batcher, scale: number) {
         this.batcher = batcher;
-        this.white = QUI_Resource.GetWhiteSprite();
+        this.scale = scale;
+        // this.white = QUI_Resource.GetWhiteSprite();
+        this.mat = new Material(Resources.GetShaderProgram("color"));
+
     }
     tranStack: b2Transform[] = [];
     private getTran(): b2Transform {
@@ -39,6 +44,7 @@ export class b2Drawer implements b2Draw {
         }
         let _tran = this.getTran();
 
+        let s = this.scale;
         //b2Transform.MultiplyVec2(_tran, vertices[0], v0);
         for (var i = 0; i < vertexCount; i++) {
 
@@ -51,8 +57,8 @@ export class b2Drawer implements b2Draw {
             b2Transform.MultiplyVec2(_tran, vertices[i + 0], v1);
             b2Transform.MultiplyVec2(_tran, vertices[next], v2);
 
-            this.points[0].x = v1.x;
-            this.points[0].y = v1.y;
+            this.points[0].x = v1.x * s;
+            this.points[0].y = v1.y * s;
             this.points[0].z = 0;
             this.points[0].r = color.r
             this.points[0].g = color.g
@@ -60,8 +66,8 @@ export class b2Drawer implements b2Draw {
             this.points[0].a = color.a
 
 
-            this.points[1].x = v2.x;
-            this.points[1].y = v2.y;
+            this.points[1].x = v2.x * s;
+            this.points[1].y = v2.y * s;
             this.points[1].z = 0;
             this.points[1].r = color.r
             this.points[1].g = color.g
@@ -70,7 +76,7 @@ export class b2Drawer implements b2Draw {
 
 
 
-            this.batcher.DrawLines(this.white.material, this.points, 1);
+            this.batcher.DrawLines(this.mat, this.points, 1);
         }
     }
     points: DrawPoint[] = [];
@@ -80,7 +86,10 @@ export class b2Drawer implements b2Draw {
         }
         let _tran = this.getTran();
         let v0: XY = { x: 0, y: 0 }
+        let s = this.scale;
         b2Transform.MultiplyVec2(_tran, vertices[0], v0);
+        v0.x *= s;
+        v0.y *= s;
         for (var i = 0; i < vertexCount - 2; i++) {
 
 
@@ -90,8 +99,8 @@ export class b2Drawer implements b2Draw {
 
             b2Transform.MultiplyVec2(_tran, vertices[i + 1], v1);
             b2Transform.MultiplyVec2(_tran, vertices[i + 2], v2);
-            this.points[0].x = v0.x;
-            this.points[0].y = v0.y;
+            this.points[0].x = v0.x * s;
+            this.points[0].y = v0.y * s;
             this.points[0].z = 0;
             this.points[0].r = color.r
             this.points[0].g = color.g
@@ -99,23 +108,23 @@ export class b2Drawer implements b2Draw {
             this.points[0].a = color.a
 
 
-            this.points[1].x = v1.x;
-            this.points[1].y = v1.y;
+            this.points[1].x = v1.x * s;
+            this.points[1].y = v1.y * s;
             this.points[1].z = 0;
             this.points[1].r = color.r
             this.points[1].g = color.g
             this.points[1].b = color.b
             this.points[1].a = color.a
 
-            this.points[2].x = v2.x;
-            this.points[2].y = v2.y;
+            this.points[2].x = v2.x * s;
+            this.points[2].y = v2.y * s;
             this.points[2].z = 0;
             this.points[2].r = color.r
             this.points[2].g = color.g
             this.points[2].b = color.b
             this.points[2].a = color.a
 
-            this.batcher.DrawTris(this.white.material, this.points, 1);
+            this.batcher.DrawTris(this.mat, this.points, 1);
         }
 
 
@@ -126,7 +135,7 @@ export class b2Drawer implements b2Draw {
             this.points.push(new DrawPoint());
         }
         let _tran = this.getTran();
-
+        let s = this.scale;
         //b2Transform.MultiplyVec2(_tran, vertices[0], v0);
         for (var i = 0; i < 16; i++) {
             let dx = Math.sin(Math.PI * 2 * i / 16);
@@ -141,8 +150,8 @@ export class b2Drawer implements b2Draw {
             b2Transform.MultiplyVec2(_tran, _v1, v1);
             b2Transform.MultiplyVec2(_tran, _v2, v2);
 
-            this.points[0].x = v1.x;
-            this.points[0].y = v1.y;
+            this.points[0].x = v1.x * s;
+            this.points[0].y = v1.y * s;
             this.points[0].z = 0;
             this.points[0].r = color.r
             this.points[0].g = color.g
@@ -150,8 +159,8 @@ export class b2Drawer implements b2Draw {
             this.points[0].a = color.a
 
 
-            this.points[1].x = v2.x;
-            this.points[1].y = v2.y;
+            this.points[1].x = v2.x * s;
+            this.points[1].y = v2.y * s;
             this.points[1].z = 0;
             this.points[1].r = color.r
             this.points[1].g = color.g
@@ -160,7 +169,7 @@ export class b2Drawer implements b2Draw {
 
 
 
-            this.batcher.DrawLines(this.white.material, this.points, 1);
+            this.batcher.DrawLines(this.mat, this.points, 1);
         }
     }
     DrawSolidCircle(center: XY, radius: number, axis: XY, color: RGBA): void {
@@ -170,6 +179,7 @@ export class b2Drawer implements b2Draw {
         let _tran = this.getTran();
         let v0: XY = { x: 0, y: 0 }
         b2Transform.MultiplyVec2(_tran, center, v0);
+        let s = this.scale;
         for (var i = 0; i < 16; i++) {
             let dx = Math.sin(Math.PI * 2 * i / 16);
             let dy = Math.cos(Math.PI * 2 * i / 16);
@@ -183,8 +193,8 @@ export class b2Drawer implements b2Draw {
             b2Transform.MultiplyVec2(_tran, _v1, v1);
             b2Transform.MultiplyVec2(_tran, _v2, v2);
 
-            this.points[0].x = v0.x;
-            this.points[0].y = v0.y;
+            this.points[0].x = v0.x * s;
+            this.points[0].y = v0.y * s;
             this.points[0].z = 0;
             this.points[0].r = color.r
             this.points[0].g = color.g
@@ -192,23 +202,23 @@ export class b2Drawer implements b2Draw {
             this.points[0].a = color.a
 
 
-            this.points[1].x = v1.x;
-            this.points[1].y = v1.y;
+            this.points[1].x = v1.x * s;
+            this.points[1].y = v1.y * s;
             this.points[1].z = 0;
             this.points[1].r = color.r
             this.points[1].g = color.g
             this.points[1].b = color.b
             this.points[1].a = color.a
 
-            this.points[2].x = v2.x;
-            this.points[2].y = v2.y;
+            this.points[2].x = v2.x * s;
+            this.points[2].y = v2.y * s;
             this.points[2].z = 0;
             this.points[2].r = color.r
             this.points[2].g = color.g
             this.points[2].b = color.b
             this.points[2].a = color.a
 
-            this.batcher.DrawTris(this.white.material, this.points, 1);
+            this.batcher.DrawTris(this.mat, this.points, 1);
         }
     }
     DrawSegment(p1: XY, p2: XY, color: RGBA): void {

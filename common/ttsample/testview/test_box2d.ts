@@ -7,11 +7,11 @@ export class QUI_Box2dDebuger extends QUI_BaseElement {
         return QUI_ElementType.Element_Bar;
     }
     b2world: b2.b2World;
-    b2debug: b2Drawer = new b2Drawer(null);
+    b2debug: b2Drawer = new b2Drawer(null, 1);
     OnRender(canvas: QUI_Canvas): void {
         this.b2debug.batcher = canvas.batcherUI;
         b2.DrawShapes(this.b2debug, this.b2world);
-        b2.DrawAABBs(this.b2debug, this.b2world);
+        //b2.DrawAABBs(this.b2debug, this.b2world);
         canvas.batcherUI.ApplyBatch();
 
     }
@@ -29,6 +29,7 @@ export class Test_Box2D extends Test_Base {
         this.b2world = b2.b2World.Create({ x: 0, y: 0 });
         let b2debug = new QUI_Box2dDebuger();
         b2debug.b2world = this.b2world;
+        b2debug.b2debug.scale = this.guilayer.GetCamera().Scale;
         this.guilayer.GetCanvas().AddChild(b2debug)
 
         for (let i = 0; i < 30; i++) {
@@ -43,6 +44,7 @@ export class Test_Box2D extends Test_Base {
             }
             else {
                 let boxs = psharp = new b2.b2PolygonShape();
+
                 boxs.SetAsBox(25, 25);
             }
 

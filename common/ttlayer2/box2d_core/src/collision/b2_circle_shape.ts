@@ -165,6 +165,6 @@ export class b2CircleShape extends b2Shape {
         const center = this.m_p;
         const radius = this.m_radius;
         const axis = b2Vec2.UNITX;
-        draw.DrawSolidCircle(center, radius, axis, color);
+        draw.DrawCircle(center, radius, color);
     }
 }

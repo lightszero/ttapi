@@ -519,6 +519,6 @@ export class b2PolygonShape extends b2Shape {
     public Draw(draw: b2Draw, color: b2Color): void {
         const vertexCount = this.m_count;
         const vertices = this.m_vertices;
-        draw.DrawSolidPolygon(vertices, vertexCount, color);
+        draw.DrawPolygon(vertices, vertexCount, color);
     }
 }
