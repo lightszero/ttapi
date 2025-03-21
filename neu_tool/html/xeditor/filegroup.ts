@@ -1,4 +1,4 @@
-import { QUI_Grow, Color, QUI_Button, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Scroll, QUI_Container, tt, Texture, TextureFormat, QUI_Overlay } from "../ttlayer2/ttlayer2.js";
+import { QUI_Grow, Color, QUI_Button, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Scroll, QUI_Container, tt, Texture, TextureFormat, QUI_Overlay, QUI_Window } from "../ttlayer2/ttlayer2.js";
 import { TTPathTool } from "../ttlayer2/utils/path/pathtool.js";
 import { FindTool } from "../xioext/findtool.js";
 
@@ -49,7 +49,7 @@ export class PickAble_FileItem extends QUI_Container {
         this.label.localColor = Color.White
     }
 }
-export class FileGroup extends QUI_Group {
+export class FileGroup extends QUI_Window {
     constructor() {
         super();
         this.title.text = "File_List";

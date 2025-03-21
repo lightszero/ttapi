@@ -1,4 +1,4 @@
-import { Navigator, Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Container, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Split, QUI_Resource, QUI_TextBox_DOM, QUI_TextBox_Prompt, Rectangle, ResourceOption, Resources, tt, IState } from "../ttlayer2/ttlayer2.js"
+import { Navigator, Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Container, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Split, QUI_Resource, QUI_TextBox_DOM, QUI_TextBox_Prompt, Rectangle, ResourceOption, Resources, tt, IState, QUI_Menu, QUI_MenuItem } from "../ttlayer2/ttlayer2.js"
 import { QUI_Grow } from "../ttlayer2/ttui/ext/qui_grow.js";
 import { FileGroup } from "./filegroup.js";
 import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "../xioext/ioext.js"
@@ -10,6 +10,7 @@ export class NavState_Begin implements IState<MyLogic> {
     app: MyLogic;
     init: boolean = false;
     root: QUI_Container;
+    menu: QUI_Menu;;
     OnInit(mgr: MyLogic): void {
 
         this.app = mgr;
@@ -23,12 +24,39 @@ export class NavState_Begin implements IState<MyLogic> {
         let titlebar = new QUI_Panel();
         container.AddChild(titlebar);
         titlebar.localRect.setVPosByTopBorder(22);
+        let grow = new QUI_Grow();
+        titlebar.container = grow;
+        grow.direction = QUI_Direction2.Horizontal;
 
-        titlebar.container = new QUI_Grow();
-        let btnFile = new QUI_Button();
-        btnFile.SetText("File");
-        btnFile.localRect.setBySize(100, 18);
-        titlebar.container.AddChild(btnFile);
+
+        this.menu = new QUI_Menu();
+        let submenuFile = new QUI_Menu();
+
+        this.menu.items.push(
+            { label: "File", sprite: null, submenu: submenuFile, onaction: null }
+        );
+        this.menu.items.push(
+            { label: "Info", sprite: null, submenu: null, onaction: null }
+        );
+        this.menu.items.push(
+            { label: "其它", sprite: null, submenu: null, onaction: null }
+        );
+        this.menu.items.push(
+            { label: "Help", sprite: QUI_Resource.GetSprite("round"), submenu: null, onaction: null }
+        );
+        submenuFile.items.push
+            (
+                {
+                    label: "打开项目目录", sprite: QUI_Resource.GetSprite("corner"), submenu: null, onaction: () => {
+                        console.log("open.");
+                    }
+                }
+            );
+        submenuFile.items.push
+            (
+                { label: "编辑", sprite: QUI_Resource.GetSprite("border"), submenu: submenuFile, onaction: null }
+            );
+        this.menu.FillTo(mgr.canvas, titlebar.container);
 
         let desktop = new QUI_Container();
         desktop.localRect.offsetY1 = 22;
@@ -106,12 +134,12 @@ export class MyLogic extends Navigator implements IUserLogic {
 
 
         // let group2 = new QUI_Group();
-        // group2.dragEnable = true;//允许拖动
+        // //group2.dragEnable = true;//允许拖动
         // group2.localRect.setByRect(new Rectangle(200, 200, 200, 200));
         // this.canvas.AddChild(group2);
         // let grow = new QUI_Grow();
         // grow.direction = QUI_Direction2.Vertical;
-        // group2.container().AddChild(grow);
+        // group2.container.AddChild(grow);
 
         // let label = new QUI_Label();
         // label.localRect.setBySize(100, 16);

@@ -23,7 +23,7 @@ export class QUI_Label extends QUI.QUI_BaseElement {
 
     font: Font | null;
     text: string;
-   
+
     withShadow: boolean = true;
     colorShadow: Color = new Color(0, 0, 0, 0.5);
     //是否裁剪
@@ -33,6 +33,12 @@ export class QUI_Label extends QUI.QUI_BaseElement {
     halign: QUI.QUI_HAlign = QUI.QUI_HAlign.Middle;
     valign: QUI.QUI_VAlign = QUI.QUI_VAlign.Middle;
     private _pos: Vector2 = new Vector2(0, 0);
+    GetTextWidth(): number {
+        if (this.font == null)
+            return 0;
+        let w = this.font.SureText(this.text);
+        return w * this.fontScale.X;
+    }
     OnRender(_canvas: QUI_Canvas): void {
 
         //this.Render_impl();

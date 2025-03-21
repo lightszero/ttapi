@@ -276,6 +276,15 @@ export enum QUI_ElementType {
 // }
 
 export abstract class QUI_BaseElement {
+    static _id: number = 0;
+    private _thisid: number = 0;
+    constructor() {
+        QUI_BaseElement._id++;
+        this._thisid = QUI_BaseElement._id;
+    }
+    GetID(): number {
+        return this._thisid;
+    }
     abstract GetElementType(): QUI_ElementType;
 
     Tag: string | null = null;
