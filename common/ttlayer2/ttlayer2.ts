@@ -34,3 +34,6 @@ export * from "./ttui/ttui.js"
 export * from "./package/ttpackage.js";
 export * from "./package/aniplayer.js";
 
+export * as b2 from "./box2d_core/src/index.js"
+export * from "./box2d_core/b2drawer.js"
+

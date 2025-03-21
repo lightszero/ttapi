@@ -233,6 +233,7 @@ export class Mesh {
     _vao: WebGLVertexArrayObject = null;
     vertexcount: number[];
     indexcount: number = 0;
+    mode: number = -1;
     private vertexFormat: VertexFormat;
     constructor() {
 
@@ -339,26 +340,33 @@ export class Mesh {
     }
 
     static DrawMesh(gl: WebGL2RenderingContext, mesh: Mesh, mat: Material): void {
+        let mode = mesh.mode;
+        if (mode == -1)
+            mode = gl.TRIANGLES;
         mesh.Apply(gl);
         mat.Apply(gl);
         if (mesh._ebo == null) {
-            gl.drawArrays(gl.TRIANGLES, 0, mesh.vertexcount[0]);
+            gl.drawArrays(mode, 0, mesh.vertexcount[0]);
         }
         else {
-            gl.drawElements(gl.TRIANGLES, mesh.indexcount, gl.UNSIGNED_SHORT, gl.ZERO);
+            gl.drawElements(mode, mesh.indexcount, gl.UNSIGNED_SHORT, gl.ZERO);
         }
     }
     static DrawMeshInstanced(gl: WebGL2RenderingContext, mesh: Mesh, mat: Material): void {
+        let mode = mesh.mode;
+        if (mode == -1)
+            mode = gl.TRIANGLES;
+        
         mesh.Apply(gl);
         mat.Apply(gl);
 
         //这里instancecount 要乘以定点数，就很迷惑
         if (mesh._ebo == null) {
             //为什么乘以4 是正确的，原型是 六个顶点两个三角形啊
-            gl.drawArraysInstanced(gl.TRIANGLES, 0, mesh.vertexcount[0], mesh.instancecount);
+            gl.drawArraysInstanced(mode, 0, mesh.vertexcount[0], mesh.instancecount);
         }
         else {
-            gl.drawElementsInstanced(gl.TRIANGLES, mesh.indexcount, gl.UNSIGNED_SHORT, gl.ZERO, mesh.instancecount);
+            gl.drawElementsInstanced(mode, mesh.indexcount, gl.UNSIGNED_SHORT, gl.ZERO, mesh.instancecount);
         }
     }
 

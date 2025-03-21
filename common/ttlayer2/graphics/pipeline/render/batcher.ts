@@ -296,13 +296,13 @@ export class Render_Batcher {
         this._target = null;
         this._ApplySingle(null);
     }
-    _Render(): void {
+    private _Render(): void {
         if (this._pointseek == 0)
             return;
         let webgl = this._webgl;
 
 
-
+        this._mesh.mode = this._lastMode;
         this._mesh.UploadVertexBuffer(webgl, 0, this._buffer, true, this._pointseek * 28);
         this._pointseek = 0;
 
@@ -311,7 +311,7 @@ export class Render_Batcher {
 
 
     }
-    _AddBuf(p: DrawPoint): void {
+    private _AddBuf(p: DrawPoint): void {
         this._bufferView.setFloat32(this._pointseek * 28 + 0, p.x, true);
         this._bufferView.setFloat32(this._pointseek * 28 + 4, p.y, true);
         this._bufferView.setFloat32(this._pointseek * 28 + 8, p.z, true);
@@ -333,7 +333,7 @@ export class Render_Batcher {
         this._pointseek++;
     }
 
-    _ApplySingle(mat: Material): void {
+    private _ApplySingle(mat: Material): void {
         this._lastmat = mat;
         if (this._lastmat != null) {
             this._lastmat.UpdateMatModel(this.matrixWorld);
