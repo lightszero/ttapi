@@ -52,10 +52,10 @@ export class QUI_TouchBar extends QUI.QUI_BaseElement {
 
             if (this.spriteJoyHot != null) {
                 let touchhotrect = new Rectangle(
-                    (this._touchHotPoint.X - this.touchHotSize.X / 2) * _canvas.scale + sw.X * _canvas.scale,
-                    (this._touchHotPoint.Y - this.touchHotSize.Y / 2) * _canvas.scale + sw.Y * _canvas.scale,
-                    (this.touchHotSize.X) * _canvas.scale,
-                    (this.touchHotSize.Y) * _canvas.scale
+                    (this._touchHotPoint.X - this.touchHotSize.X / 2) * 1 + sw.X * 1,
+                    (this._touchHotPoint.Y - this.touchHotSize.Y / 2) * 1 + sw.Y * 1,
+                    (this.touchHotSize.X) * 1,
+                    (this.touchHotSize.Y) * 1
                 );
                 this.spriteJoyHot.RenderRect(_canvas.batcherUI, touchhotrect);
             }

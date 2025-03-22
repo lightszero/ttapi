@@ -39,7 +39,7 @@ export class QUI_Image extends QUI.QUI_BaseElement {
 
         //this.Render_impl();
         if (this.sprite != null) {
-            this.sprite.RenderRect(_canvas.batcherUI, this.getWorldRectScale(_canvas.scale), this._colorFinal, -1);
+            this.sprite.RenderRect(_canvas.batcherUI, this.GetWorldRect(), this._colorFinal, -1);
         }
         super.OnRender(_canvas);
     }

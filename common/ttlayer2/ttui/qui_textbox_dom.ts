@@ -73,7 +73,7 @@ export class QUI_TextBox_DOM extends QUI_Label {
             this._pressid = -1;
             if (x >= rect.X && x < x2 && y >= rect.Y && y < y2) {
 
-                this.Prompt(_canvas.scale);
+                this.Prompt(_canvas.camera.Scale);
             }
             return true;
         }

@@ -1,4 +1,4 @@
-import { Navigator, Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Container, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Split, QUI_Resource, QUI_TextBox_DOM, QUI_TextBox_Prompt, Rectangle, ResourceOption, Resources, tt, IState, QUI_Menu, QUI_MenuItem } from "../ttlayer2/ttlayer2.js"
+import { Navigator, Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Container, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Split, QUI_Resource, QUI_TextBox_DOM, QUI_TextBox_Prompt, Rectangle, ResourceOption, Resources, tt, IState, QUI_Menu, QUI_MenuItem, QUI_Window } from "../ttlayer2/ttlayer2.js"
 import { QUI_Grow } from "../ttlayer2/ttui/ext/qui_grow.js";
 import { FileGroup } from "./filegroup.js";
 import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "../xioext/ioext.js"
@@ -72,6 +72,26 @@ export class NavState_Begin implements IState<MyLogic> {
         desktop.AddChild(group);
 
         //加到一个canvas 上是一个办法
+
+        {
+            let group2 = new QUI_Window();
+            //group2.dragEnable = true;//允许拖动
+            group2.localRect.setByRect(new Rectangle(200, 200, 200, 200));
+            desktop.AddChild(group2);
+            let grow2 = new QUI_Grow();
+            grow2.direction = QUI_Direction2.Vertical;
+            group2.container.AddChild(grow2);
+
+            let label = new QUI_Label();
+            label.localRect.setBySize(100, 16);
+            grow2.AddChild(label);
+            let txtprompt = new QUI_TextBox_Prompt();
+            txtprompt.localRect.setBySize(100, 20);
+            grow2.AddChild(txtprompt);
+            let txtdom = new QUI_TextBox_DOM();
+            txtdom.localRect.setBySize(100, 20);
+            grow2.AddChild(txtdom);
+        }
     }
     OnUpdate(delta: number): void {
         if (!this.init && this.app.canvas.target != null) {
@@ -133,23 +153,7 @@ export class MyLogic extends Navigator implements IUserLogic {
 
 
 
-        // let group2 = new QUI_Group();
-        // //group2.dragEnable = true;//允许拖动
-        // group2.localRect.setByRect(new Rectangle(200, 200, 200, 200));
-        // this.canvas.AddChild(group2);
-        // let grow = new QUI_Grow();
-        // grow.direction = QUI_Direction2.Vertical;
-        // group2.container.AddChild(grow);
 
-        // let label = new QUI_Label();
-        // label.localRect.setBySize(100, 16);
-        // grow.AddChild(label);
-        // let txtprompt = new QUI_TextBox_Prompt();
-        // txtprompt.localRect.setBySize(100, 20);
-        // grow.AddChild(txtprompt);
-        // let txtdom = new QUI_TextBox_DOM();
-        // txtdom.localRect.setBySize(100, 20);
-        // grow.AddChild(txtdom);
     }
 
     timer: number = 0;

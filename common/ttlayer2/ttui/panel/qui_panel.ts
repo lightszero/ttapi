@@ -126,7 +126,7 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         let batcher = _canvas.batcherUI;
 
         //根据边距计算限制区域
-        let s = _canvas.scale;
+        let s = _canvas.camera.Scale;
         let rectlimit = this.getWorldRectScale(s);
         rectlimit.X += this._border.XLeft * s;
         rectlimit.Y += this._border.YTop * s;

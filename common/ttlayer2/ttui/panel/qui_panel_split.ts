@@ -93,7 +93,7 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
 
 
         {
-            target.PushLimitRect(this._panel1.getWorldRectScale(_canvas.scale));
+            target.PushLimitRect(this._panel1.getWorldRectScale(_canvas.camera.Scale));
 
             batcher.ResumeDraw();
             this._panel1.OnRender(_canvas);
@@ -102,7 +102,7 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
             target.PopLimitRect();
         }
         {
-            target.PushLimitRect(this._panel2.getWorldRectScale(_canvas.scale));
+            target.PushLimitRect(this._panel2.getWorldRectScale(_canvas.camera.Scale));
 
             batcher.ResumeDraw();
             this._panel2.OnRender(_canvas);

@@ -43,10 +43,10 @@ export class QUI_Label extends QUI.QUI_BaseElement {
 
         //this.Render_impl();
         if (this.font != null) {
-            let sw = this.getWorldRectScale(_canvas.scale);
+            let sw = this.GetWorldRect();
 
-            let fontheight = this.font.GetFontSize() * this.fontScale.Y * _canvas.scale;
-            let fontwidth = this.font.SureText(this.text) * this.fontScale.X * _canvas.scale;
+            let fontheight = this.font.GetFontSize() * this.fontScale.Y ;
+            let fontwidth = this.font.SureText(this.text) * this.fontScale.X ;
             if (this.halign == QUI.QUI_HAlign.Left) {
                 this._pos.X = sw.X;
             }
@@ -67,9 +67,9 @@ export class QUI_Label extends QUI.QUI_BaseElement {
                 this._pos.Y = (sw.Y + (sw.Height - fontheight));
             }
 
-            let fontborder = this.fontBorder * this.fontScale.Y * _canvas.scale;
+            let fontborder = this.fontBorder * this.fontScale.Y ;
 
-            let _outs = new Vector2(this.fontScale.X * _canvas.scale, this.fontScale.Y * _canvas.scale);
+            let _outs = new Vector2(this.fontScale.X, this.fontScale.Y );
             if (this.cut) {
                 if (this.withShadow) {
                     this.font.RenderTextWithLimit(_canvas.batcherUI, this.text, new Vector2(this._pos.X + fontborder, this._pos.Y + fontborder), _outs, this.colorShadow, sw);

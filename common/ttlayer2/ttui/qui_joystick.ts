@@ -50,19 +50,19 @@ export class QUI_JoyStick extends QUI.QUI_BaseElement {
         if (this._press) {
             if (this.spriteJoyBack != null) {
                 let touchbackrect = new Rectangle(
-                    (this._touchBackPoint.X - this.touchBackSize.X / 2) * _canvas.scale + sw.X * _canvas.scale,
-                    (this._touchBackPoint.Y - this.touchBackSize.Y / 2) * _canvas.scale + sw.Y * _canvas.scale,
-                    (this.touchBackSize.X) * _canvas.scale,
-                    (this.touchBackSize.Y) * _canvas.scale
+                    (this._touchBackPoint.X - this.touchBackSize.X / 2) * 1 + sw.X * 1,
+                    (this._touchBackPoint.Y - this.touchBackSize.Y / 2) * 1 + sw.Y * 1,
+                    (this.touchBackSize.X) * 1,
+                    (this.touchBackSize.Y) * 1
                 );
                 this.spriteJoyBack.RenderRect(_canvas.batcherUI, touchbackrect);
             }
             if (this.spriteJoyHot != null) {
                 let touchhotrect = new Rectangle(
-                    (this._touchHotPoint.X - this.touchHotSize.X / 2) * _canvas.scale + sw.X * _canvas.scale,
-                    (this._touchHotPoint.Y - this.touchHotSize.Y / 2) * _canvas.scale + sw.Y * _canvas.scale,
-                    (this.touchHotSize.X) * _canvas.scale,
-                    (this.touchHotSize.Y) * _canvas.scale
+                    (this._touchHotPoint.X - this.touchHotSize.X / 2) * 1 + sw.X * 1,
+                    (this._touchHotPoint.Y - this.touchHotSize.Y / 2) * 1 + sw.Y * 1,
+                    (this.touchHotSize.X) * 1,
+                    (this.touchHotSize.Y) * 1
                 );
                 this.spriteJoyHot.RenderRect(_canvas.batcherUI, touchhotrect);
             }

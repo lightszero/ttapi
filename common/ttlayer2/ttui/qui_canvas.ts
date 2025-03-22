@@ -7,7 +7,7 @@ export class QUI_Canvas extends QUI.QUI_Container {
     constructor() {
         super();
         this.batcherUI = new Render_Batcher(tt.graphic.GetWebGL());// tt.graphic.CreateRenderer_Batcher();
-        this.FIllTarget();
+        //this.FIllTarget();
     }
     FIllTarget() {
         if (this.target == null)
@@ -17,9 +17,8 @@ export class QUI_Canvas extends QUI.QUI_Container {
         //this.batcherUI.LookAt.X = this.target.getWidth() / 2;
         //this.batcherUI.LookAt.Y = this.target.getHeight() / 2;
 
-
-        let scalewidth = this.target.getWidth() / this.scale;
-        let scaleheight = this.target.getHeight() / this.scale;
+        let scalewidth = this.target.getWidth() / this.camera.Scale;
+        let scaleheight = this.target.getHeight() / this.camera.Scale;
         this.localRect.setByRect(new Rectangle(0, 0, scalewidth, scaleheight));
     }
 
@@ -44,9 +43,7 @@ export class QUI_Canvas extends QUI.QUI_Container {
             // this.batcherUI.LookAt.X = this.target.getWidth() / 2;
             // this.batcherUI.LookAt.Y = this.target.getHeight() / 2;
 
-            let scalewidth = this.target.getWidth() / this.camera.Scale;
-            let scaleheight = this.target.getHeight() / this.camera.Scale;
-            this.localRect.setByRect(new Rectangle(0, 0, scalewidth, scaleheight));
+            this.FIllTarget();
         }
         super.OnUpdate(this, delta);
         if (this._event.length > 0) {
