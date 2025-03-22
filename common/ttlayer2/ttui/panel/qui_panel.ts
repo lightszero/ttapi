@@ -23,7 +23,7 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
     }
 
 
-    
+
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel;
     }
@@ -134,17 +134,18 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         rectlimit.Height -= (this._border.YTop + this._border.YBottom) * s;
 
         let target = batcher.getTarget();
+        let camera = batcher.camera;
         batcher.EndDraw();
 
         target.PushLimitRect(rectlimit);
 
-        batcher.BeginDraw(target);
+        batcher.BeginDraw(target, camera);
         this.container.OnRender(_canvas);
         batcher.EndDraw();
 
         target.PopLimitRect();
 
-        batcher.BeginDraw(target);
+        batcher.BeginDraw(target, camera);
         this.OnRenderFore(_canvas);
     }
 

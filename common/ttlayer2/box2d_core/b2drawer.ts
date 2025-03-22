@@ -5,11 +5,11 @@ import { DrawPoint, Material, QUI_Resource, Render_Batcher, Resources, Sprite, T
 export class b2Drawer implements b2Draw {
     batcher: Render_Batcher
     //white: Sprite;
-    scale: number;
+    //scale: number = 1.0;
     mat: Material;
     constructor(batcher: Render_Batcher, scale: number) {
         this.batcher = batcher;
-        this.scale = scale;
+        //this.scale = scale;
         // this.white = QUI_Resource.GetWhiteSprite();
         this.mat = new Material(Resources.GetShaderProgram("color"));
 
@@ -44,7 +44,7 @@ export class b2Drawer implements b2Draw {
         }
         let _tran = this.getTran();
 
-        let s = this.scale;
+        let s = 1;// this.scale;
         //b2Transform.MultiplyVec2(_tran, vertices[0], v0);
         for (var i = 0; i < vertexCount; i++) {
 
@@ -86,7 +86,7 @@ export class b2Drawer implements b2Draw {
         }
         let _tran = this.getTran();
         let v0: XY = { x: 0, y: 0 }
-        let s = this.scale;
+        let s = 1;//Fthis.scale;
         b2Transform.MultiplyVec2(_tran, vertices[0], v0);
         v0.x *= s;
         v0.y *= s;
@@ -135,7 +135,7 @@ export class b2Drawer implements b2Draw {
             this.points.push(new DrawPoint());
         }
         let _tran = this.getTran();
-        let s = this.scale;
+        let s = 1;//this.scale;
         //b2Transform.MultiplyVec2(_tran, vertices[0], v0);
         for (var i = 0; i < 16; i++) {
             let dx = Math.sin(Math.PI * 2 * i / 16);
@@ -179,7 +179,7 @@ export class b2Drawer implements b2Draw {
         let _tran = this.getTran();
         let v0: XY = { x: 0, y: 0 }
         b2Transform.MultiplyVec2(_tran, center, v0);
-        let s = this.scale;
+        let s = 1;//this.scale;
         for (var i = 0; i < 16; i++) {
             let dx = Math.sin(Math.PI * 2 * i / 16);
             let dy = Math.cos(Math.PI * 2 * i / 16);

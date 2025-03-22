@@ -1,6 +1,7 @@
 import { Color, Rectangle } from "../../ttlayer2.js";
+import { QUI_Group } from "../panel/qui_group.js";
 import { QUI_BaseElement, QUI_Container, QUI_ElementType, QUI_HAlign } from "../qui_base.js";
-import { QUI_Canvas, QUI_DragButton, QUI_Group, QUI_Image, QUI_Label, QUI_Overlay, QUI_Panel, QUI_Resource } from "../ttui.js";
+import { QUI_Canvas, QUI_DragButton, QUI_Image, QUI_Label, QUI_Overlay, QUI_Panel, QUI_Resource } from "../ttui.js";
 
 export class QUI_Window extends QUI_Group {
     constructor() {

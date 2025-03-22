@@ -20,7 +20,7 @@ export class QUI_CustomRender extends QUI.QUI_BaseElement {
 
             this.OnCustomRender();
 
-            _canvas.batcherUI.BeginDraw(target);
+            _canvas.batcherUI.ResumeDraw();
         }
         super.OnRender(_canvas);
     }

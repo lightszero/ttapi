@@ -4,7 +4,7 @@ import { Vector2 } from "../../../math/vector.js"
 
 import { ITexture, IRenderTarget } from "../../texture.js"
 
-import { Mesh, Resources } from "../../../ttlayer2.js";
+import { Camera, Mesh, Resources } from "../../../ttlayer2.js";
 import { Material } from "../../material.js";
 import { VertexFormatMgr } from "../../mesh.js";
 
@@ -115,8 +115,8 @@ export class Render_Batcher {
         //     //}
         //     webgl.bindVertexArray(null);
         // }
-        this.LookAt = new Vector2(0, 0);
-        this.Scale = 1.0;
+        // this.LookAt = new Vector2(0, 0);
+        // this.Scale = 1.0;
 
         // var shader = GetShaderProgram("default");
         // if (shader == null)
@@ -129,12 +129,12 @@ export class Render_Batcher {
         this._mesh.UpdateVertexFormat(webgl, VertexFormatMgr.GetFormat_Vertex_UV_Color_Ext());
 
         //reset default matrixworld
-        let matrix = this.matrixWorld = new Float32Array(16);
+        // let matrix = this.matrixWorld = new Float32Array(16);
 
-        matrix[0] = 1; matrix[4] = 0; matrix[8] = 0; matrix[12] = 0;
-        matrix[1] = 0; matrix[5] = 1; matrix[9] = 0; matrix[13] = 0;
-        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
-        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
+        // matrix[0] = 1; matrix[4] = 0; matrix[8] = 0; matrix[12] = 0;
+        // matrix[1] = 0; matrix[5] = 1; matrix[9] = 0; matrix[13] = 0;
+        // matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
+        // matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
 
     }
     //_shader: ShaderProgram;
@@ -233,24 +233,25 @@ export class Render_Batcher {
     getName(): string {
         return "Batcher";
     }
-    LookAt: Vector2;
-    Scale: number;
-    matrixView: Float32Array = new Float32Array(16);
-    matrixWorld: Float32Array = new Float32Array(16);
-    UpdateMatView() {
-        let matrix = this.matrixView;
+    camera: Camera;
+    //LookAt: Vector2;
+    //Scale: number;
+    //matrixView: Float32Array = new Float32Array(16);
+    //matrixWorld: Float32Array = new Float32Array(16);
+    // UpdateMatView() {
+    //     let matrix = this.matrixView;
 
-        let sx = this.Scale;
-        let sy = this.Scale;
-        let offx = -this.LookAt.X;
-        let offy = -this.LookAt.Y;
-        matrix[0] = sx; matrix[4] = 0; matrix[8] = 0; matrix[12] = offx * sx;
-        matrix[1] = 0; matrix[5] = sy; matrix[9] = 0; matrix[13] = offy * sy;
-        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
-        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
+    //     let sx = this.Scale;
+    //     let sy = this.Scale;
+    //     let offx = -this.LookAt.X;
+    //     let offy = -this.LookAt.Y;
+    //     matrix[0] = sx; matrix[4] = 0; matrix[8] = 0; matrix[12] = offx * sx;
+    //     matrix[1] = 0; matrix[5] = sy; matrix[9] = 0; matrix[13] = offy * sy;
+    //     matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
+    //     matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
 
 
-    }
+    // }
     ResetMatrix(): void {
         this._Render();
         this._lastmat.UpdateMatModel();
@@ -264,19 +265,14 @@ export class Render_Batcher {
     ApplyBatch(): void {
         this._Render();
     }
-    BeginDraw(target: IRenderTarget): void {
-        this._target = target;
-
-        //update viewmatrix & modelmatrxi projmatrix
-
-        // this._MatDefault(this._modelMatrix);
-        // this._MatView(this._viewMatrix);
-        // this._MatProj(this._projMatrix, 0, 0);
-        this.UpdateMatView();
+    ResumeDraw() {
+        this.camera.GetViewMatrix();
+        //this.UpdateMatView();
         if (this._lastmat != null) {
-            this._lastmat.UpdateMatModel(this.matrixWorld);
-            this._lastmat.UpdateMatView(this.matrixView);
+            this._lastmat.UpdateMatModel(null);
+            this._lastmat.UpdateMatView(this.camera.GetViewMatrix());
             this._lastmat.UpdateMatProj(this._target);
+
         }
         let webgl = this._webgl;
 
@@ -288,12 +284,22 @@ export class Render_Batcher {
         webgl.blendEquation(webgl.FUNC_ADD);
         webgl.blendFuncSeparate(webgl.SRC_ALPHA, webgl.ONE_MINUS_SRC_ALPHA,
             webgl.SRC_ALPHA, webgl.ONE);
+    }
+    BeginDraw(target: IRenderTarget, camera: Camera): void {
+        this._target = target;
+        this.camera = camera;
+        //update viewmatrix & modelmatrxi projmatrix
 
+        // this._MatDefault(this._modelMatrix);
+        // this._MatView(this._viewMatrix);
+        // this._MatProj(this._projMatrix, 0, 0);
+
+        this.ResumeDraw();
     }
 
     EndDraw(): void {
         this._Render();
-        this._target = null;
+        //this._target = null;
         this._ApplySingle(null);
     }
     private _Render(): void {
@@ -336,8 +342,8 @@ export class Render_Batcher {
     private _ApplySingle(mat: Material): void {
         this._lastmat = mat;
         if (this._lastmat != null) {
-            this._lastmat.UpdateMatModel(this.matrixWorld);
-            this._lastmat.UpdateMatView(this.matrixView);
+            this._lastmat.UpdateMatModel(null);
+            this._lastmat.UpdateMatView(this.camera.GetViewMatrix());
             this._lastmat.UpdateMatProj(this._target);
         }
     }

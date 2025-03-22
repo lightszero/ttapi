@@ -18,12 +18,12 @@ export class GContext {
 }
 export class TTState_All extends Navigator implements IUserLogic {
 
-  
+
     label_fps: QUI_Label;
     context: GContext = new GContext();
     OnInit(): void {
         //创建一个导航器框架
-      
+
 
 
 
@@ -38,7 +38,7 @@ export class TTState_All extends Navigator implements IUserLogic {
     InitTopUI(context: GContext) {
         {
             tt.graphic.setMainScreenScale(1);
-            context.topuiview.GetCamera().Scale =3;// tt.graphic.getDevicePixelRadio() * 1.5;
+            context.topuiview.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 1.5;
             //title
             {
                 let labels = new QUI_Label();
