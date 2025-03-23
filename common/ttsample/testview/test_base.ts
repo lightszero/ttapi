@@ -49,6 +49,7 @@ export class Test_Base implements IState<TTState_All> {
     AddBackButton(): void {
         this.guilayer = new DrawLayer_GUI();
         this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 1.5;
+        
         GameApp.GetViewList().AddDrawLayer(this.guilayer);
         let btn = new QUI_Button();
         btn.SetText("<--");

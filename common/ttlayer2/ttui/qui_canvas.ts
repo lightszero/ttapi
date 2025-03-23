@@ -13,6 +13,8 @@ export class QUI_Canvas extends QUI.QUI_Container {
         if (this.target == null)
             return;
 
+        this.camera.LookAt.X = this.target.getWidth() / 2 / this.camera.Scale;
+        this.camera.LookAt.Y = this.target.getHeight() / 2 / this.camera.Scale;
         //让batcher的中心点看着target中心点，这样就会把0，0点移动到左上角
         //this.batcherUI.LookAt.X = this.target.getWidth() / 2;
         //this.batcherUI.LookAt.Y = this.target.getHeight() / 2;
@@ -28,7 +30,7 @@ export class QUI_Canvas extends QUI.QUI_Container {
     batcherUI: Render_Batcher;
     target: IRenderTarget;
     camera: Camera;
-    scale: number = 1.0;
+    //scale: number = 1.0;
 
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Canvas;
@@ -39,11 +41,14 @@ export class QUI_Canvas extends QUI.QUI_Container {
         if (!this.Enable)
             return;
 
-        if (this.target != null) {
+        if (this.target != null && this.camera != null) {
             // this.batcherUI.LookAt.X = this.target.getWidth() / 2;
             // this.batcherUI.LookAt.Y = this.target.getHeight() / 2;
 
             this.FIllTarget();
+        }
+        else {
+            return;
         }
         super.OnUpdate(this, delta);
         if (this._event.length > 0) {
@@ -57,6 +62,9 @@ export class QUI_Canvas extends QUI.QUI_Container {
         //canvas 自身不绘制
         if (!this.Enable)
             return;
+
+        this.FIllTarget();
+
         this.batcherUI.BeginDraw(this.target, this.camera);
         super.OnRender(this);
         this.batcherUI.EndDraw();
