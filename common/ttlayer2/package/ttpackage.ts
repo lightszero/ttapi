@@ -1,4 +1,5 @@
 import { tt } from "../../ttapi/ttapi.js"
+import { Rectangle } from "../ttlayer2.js";
 import { TTPathTool } from "../utils/path/pathtool.js";
 
 //Json 格式描述
@@ -50,15 +51,39 @@ export class TTPackageMgr {
                 let picname = ttjson.pics[key];
                 let pivotX = 0;
                 let pivotY = 0;
-                if (picname.includes(",")) {
-                    let ws = picname.split(",");
+                let rect: Rectangle = null;
+                if (picname.includes(";")) {
+                    let ws = picname.split(";");
                     picname = ws[0];
-                    if (ws.length > 1)
-                        pivotX = parseInt(ws[1]);
-                    if (ws.length > 2)
-                        pivotY = parseInt(ws[2]);
+                    for (var i = 1; i < ws.length; i++) {
+                        let wss = ws[i].split("=");
+                        let key = wss[0];
+                        if (key == "pivot") {
+                            let value = wss[1].split(",");
+                            pivotX = parseInt(value[0]);
+                            pivotY = parseInt(value[1]);
+                        }
+                        else if (key == "rect") {
+                            let value = wss[1].split(",");
+                            let x = parseInt(value[0]);
+                            let y = parseInt(value[1]);
+                            let w = parseInt(value[2]);
+                            let h = parseInt(value[3]);
+                            rect = new Rectangle(x, y, w, h);
+                        }
+                    }
                 }
-                let pic = await this.LoadPic(root + "/" + picname, loader);
+                let pic: TTPicData = null;
+                if (picname.indexOf("hex:")>0) {
+                    //toduo 嵌入数据
+                }
+                else {
+                    pic = await this.LoadPic(root + "/" + picname, loader);
+                    if (rect != null) {
+                        //Todo 裁剪picdata
+                    }
+                }
+
                 pic.pivotX = pivotX;
                 pic.pivotY = pivotY;
                 pack.pics[key] = pic;
@@ -127,19 +152,31 @@ export class TTAni {
                 f.pics = [];
                 //name,x,y[,scalex,scaley,rotate]
                 for (let j = 0; j < finfo.pics.length; j++) {
+
                     let p = new TTAniPicInfo();
-                    let pwords = finfo.pics[j].split(",");
+                    let pwords = finfo.pics[j].split(";");
                     p.name = pwords[0];
-                    p.x = parseInt(pwords[1]);
-                    p.y = parseInt(pwords[2]);
-                    if (pwords.length > 3)
-                        p.scaleX = parseInt(pwords[3]);
-                    if (pwords.length > 4)
-                        p.scaleY = parseInt(pwords[4]);
-                    if (pwords.length > 5)
-                        p.rotate = parseInt(pwords[5]);
+                    for (let k = 1; k < pwords.length; k++) {
+                        let wss = pwords[k].split("=");
+                        let key = wss[0];
+                        let value = wss[1];
+                        if (key == "pos") {
+                            let values = value.split(",");
+                            p.x = parseInt(values[0]);
+                            p.y = parseInt(values[1]);
+                        }
+                        else if (key == "scale") {
+                            let values = value.split(",");
+                            p.scaleX = parseInt(values[0]);
+                            p.scaleY = parseInt(values[1]);
+                        }
+                        else if (key == "rot") {
+                            p.rotate = parseInt(value);
+                        }
+                    }
                     f.pics.push(p);
                 }
+                f.rects = [];
             }
             this.frame.push(f);
         }
@@ -148,9 +185,14 @@ export class TTAni {
     fps: number;
     loop: boolean;
 }
+export class TTRectInfo {
+    tag: string;
+    rect: Rectangle;
+}
 export class TTAniFrame {
     refframe: number = -1;//是否引用另一个引用
     pics: TTAniPicInfo[] = null;
+    rects: TTRectInfo[] = null;
 }
 export class TTAniPicInfo {
     name: string = "";

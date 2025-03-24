@@ -1,6 +1,6 @@
 {
     "pics":
     {
-        "dot1":"media/tran.png,16,16"
+        "dot1":"media/tran.png;pivot=16,16"
     }
 }
