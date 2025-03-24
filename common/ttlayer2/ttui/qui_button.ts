@@ -42,7 +42,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Button;
     }
-    elemNormal: QUI.QUI_Container | null = null;
+    elemNormal: QUI.QUI_BaseContainer | null = null;
 
     colorNormal: Color;
     colorPress: Color;

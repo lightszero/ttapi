@@ -9,7 +9,7 @@ export class PickAble_FileItem extends QUI_BaseContainer {
         let ol = new QUI_Overlay();
         this.AddChild(ol);
         ol.OnPress = () => {
-            (this._parent as QUI_Container).Pick(this);
+            (this._parent as QUI_BaseContainer).Pick(this);
         }
 
         // let ext = TTPathTool.GetExt(result[i].name).toLowerCase();

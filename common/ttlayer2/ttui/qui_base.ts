@@ -211,6 +211,7 @@ export class QUI_Rect {//相对父结构的位置，百分比，
     }
 }
 export enum QUI_ElementType {
+    Element_User,//User 类型控件
     Element_Canvas,
     //容器控件
     Element_Container,
@@ -293,15 +294,26 @@ export abstract class QUI_BaseElement {
     GetParent(): QUI_BaseElement | null {
         return this._parent;
     }
+    GetCanvas(): QUI_Canvas | null {
+        if (this._parent == null) {
+            if (this.GetElementType() == QUI_ElementType.Element_Canvas)
+                return (this as QUI_BaseElement as QUI_Canvas);
+            return null;
+        }
+        if (this._parent.GetElementType() == QUI_ElementType.Element_Canvas) {
+            return this._parent as QUI_Canvas;
+        }
+        return this._parent.GetCanvas();
+    }
     IsContainer(): boolean {
         return true;
     }
-    AsContainer(): QUI_Container {
-        if (this.IsContainer())
-            return this as any as QUI_Container;
-        else
-            return null;
-    }
+    // AsContainer(): QUI_Container {
+    //     if (this.IsContainer())
+    //         return this as any as QUI_Container;
+    //     else
+    //         return null;
+    // }
     Enable: boolean = true;
     _colorFinal: Color = Color.White;
 
@@ -371,16 +383,11 @@ export enum ChildChangeState {
     AddOne,//增加了一个
     Dirty,//改变太多，整体重刷吧
 }
-export class QUI_Container extends QUI_BaseElement {
+export abstract class QUI_BaseContainer extends QUI_BaseElement {
     constructor() {
         super();
         this.localRect.SetAsFill();
     }
-
-    GetElementType(): QUI_ElementType {
-        return QUI_ElementType.Element_Container;
-    }
-
     protected _children: QUI_BaseElement[];
 
     GetChildCount(): number {
@@ -410,7 +417,7 @@ export class QUI_Container extends QUI_BaseElement {
         //移除旧爹
         let p = (elem as QUI_BaseElement)._parent;
         if (p != null)
-            (p as QUI_Container).RemoveChild(p);
+            (p as QUI_BaseContainer).RemoveChild(p);
 
         this._children.push(elem);
         if (this.childState == ChildChangeState.NoChange) {
@@ -523,15 +530,19 @@ export class QUI_Container extends QUI_BaseElement {
         this._picked = pick;
         this._picked?.OnFocus();
     }
+    PickAt(index: number) {
+        this.Pick(this._children[index]);
+    }
     UnPick(): void {
         this._picked?.OnUnFocus();
         this._picked = null;
     }
 }
 
-// //具备单选能力的组件，应该实现这些
-// export interface QUI_IPicker {
-//     GetPicked(): QUI_BaseElement;
-//     Pick(elem: QUI_BaseElement): void
-//     UnPick(): void
-// }
+export class QUI_Container extends QUI_BaseContainer
+{
+
+    GetElementType(): QUI_ElementType {
+        return QUI_ElementType.Element_Container;
+    }    
+}

@@ -1,39 +1,34 @@
 import { Color, Rectangle } from "../../ttlayer2.js";
 import { QUI_Group } from "../panel/qui_group.js";
-import { QUI_BaseElement, QUI_Container, QUI_ElementType, QUI_HAlign } from "../qui_base.js";
+import { QUI_BaseContainer, QUI_BaseElement, QUI_ElementType, QUI_HAlign } from "../qui_base.js";
 import { QUI_Canvas, QUI_DragButton, QUI_Image, QUI_Label, QUI_Overlay, QUI_Panel, QUI_Resource } from "../ttui.js";
 
 export class QUI_Window extends QUI_Group {
     constructor() {
         super();
-     
+
 
         {//title
+            this.titleback.container.RemoveChildAll();
+
             let dbut = new QUI_DragButton();
             dbut.localRect.SetAsFill();
             this.titleback.container.AddChild(dbut);
 
-            (dbut.ElemNormal as QUI_Container).RemoveChildAll();
+
 
 
             {
                 let img = new QUI_Image();
                 img.localColor = new Color(0.5, 0.5, 0.5, 1);
                 img.localRect.SetAsFill();
-                (dbut.ElemNormal as QUI_Container).AddChild(img);
+                (dbut.ElemNormal as QUI_BaseContainer).AddChild(img);
             }
             {
 
-                let title = this.title = new QUI_Label();
-                title.text = "Group";
-                title.localRect.SetAsFill();
+                //标题挪一个位置
 
-                title.halign = QUI_HAlign.Left;
-                title.fontScale.X *= 0.5;
-                title.fontScale.Y *= 0.5;
-
-
-                (dbut.ElemNormal as QUI_Container).AddChild(title);
+                (dbut.ElemNormal as QUI_BaseContainer).AddChild(this.title);
             }
 
 
@@ -45,7 +40,8 @@ export class QUI_Window extends QUI_Group {
             let image = new QUI_Image();
             image.localRect.SetAsFill();
             image.SetBySprite(QUI_Resource.GetSprite("corner"));
-            dbut.ElemNormal = image;
+            dbut.ElemNormal.RemoveChildAll();
+            dbut.ElemNormal.AddChild(image);
             dbut.localRect.setHPosByRightBorder(16, 2);
             dbut.localRect.setVPosByBottomBorder(16, 2);
             this.foreElements.push(dbut)
@@ -59,7 +55,7 @@ export class QUI_Window extends QUI_Group {
     resizeEnable: boolean;
     dragEnable: boolean
     autoTop: boolean;
-  
+
 
     private _posbeginx = 0;
     private _posbeginy = 0;
@@ -70,7 +66,7 @@ export class QUI_Window extends QUI_Group {
         console.log("begin " + x + "," + y);
         if (this.dragEnable) {
             if (this.autoTop) {
-                (this._parent as QUI_Container).ToTop(this);
+                (this._parent as QUI_BaseContainer).ToTop(this);
 
             }
         }
@@ -103,7 +99,7 @@ export class QUI_Window extends QUI_Group {
         }
         if (kill) {//group 拦截一下事件
             if (this.autoTop) {
-                (this._parent as QUI_Container).ToTop(this);
+                (this._parent as QUI_BaseContainer).ToTop(this);
             }
 
         }
@@ -133,7 +129,7 @@ export class QUI_Window extends QUI_Group {
             //保持尺寸
             this.localRect.setPos(targetx, targety);
             if (this.autoTop) {
-                (this._parent as QUI_Container).ToTop(this);
+                (this._parent as QUI_BaseContainer).ToTop(this);
 
             }
         }

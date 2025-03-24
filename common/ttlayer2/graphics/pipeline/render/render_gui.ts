@@ -16,9 +16,7 @@ export class Render_GUI implements ILayerRender {
 
             this.canvas.target = target;
             this.canvas.camera = camera;
-            camera.LookAt.X = target.getWidth() / 2 / camera.Scale;
-            camera.LookAt.Y = target.getHeight() / 2 / camera.Scale;
-            this.canvas.FIllTarget();
+
             this.canvas.OnRender(null);
         }
     }

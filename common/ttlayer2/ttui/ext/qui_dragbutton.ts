@@ -26,15 +26,24 @@ export class QUI_DragButton extends QUI.QUI_BaseElement {
             txt.text = "DragBtn";
             normal.AddChild(txt)
 
-            
+
         }
         this.ElemNormal = normal;
+    }
+    SetText(text: string): void {
+        if (this.ElemNormal == null || this.ElemNormal.GetChildCount() < 2)
+            return;
+        let e = this.ElemNormal.GetChild(1);
+        if (e == null || e.GetElementType() != QUI.QUI_ElementType.Element_Label) {
+            return;
+        }
+        (e as QUI_Label).text = text;
     }
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_DragButton;
     }
 
-    ElemNormal: QUI.QUI_BaseElement | null = null;
+    ElemNormal: QUI.QUI_BaseContainer | null = null;
     colorNormal: Color;
     colorPress: Color;
     private press: boolean = false;

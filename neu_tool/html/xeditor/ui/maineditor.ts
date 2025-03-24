@@ -31,7 +31,7 @@ export class MainEditor {
         }
         {
             let anipanel = new QUI_Group();
-            anipanel.title.text = "图片Sprite"
+            anipanel.title.text = "动画Animation"
             anipanel.localRect.SetAsFill();
 
             anipanel.localRect.radioY1 = 0.5;

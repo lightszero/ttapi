@@ -1,5 +1,5 @@
 import { Color, Sprite } from "../../ttlayer2.js"
-import { QUI_Canvas, QUI_Container, QUI_Grow, QUI_HAlign, QUI_Image, QUI_ImageScale9, QUI_Label, QUI_Overlay, QUI_Panel, QUI_Resource } from "../ttui.js"
+import { QUI_BaseContainer, QUI_Canvas, QUI_Container, QUI_Grow, QUI_HAlign, QUI_Image, QUI_ImageScale9, QUI_Label, QUI_Overlay, QUI_Panel, QUI_Resource } from "../ttui.js"
 
 export class QUI_MenuItem {
 
@@ -11,7 +11,7 @@ export class QUI_MenuItem {
 export class QUI_Menu {
     items: QUI_MenuItem[] = [];
     //将当前菜单项填充到一个已经有的Grow控件中
-    FillTo(canvas: QUI_Canvas, grow: QUI_Container, samewidth: boolean = false) {
+    FillTo(canvas: QUI_Canvas, grow: QUI_BaseContainer, samewidth: boolean = false) {
         if (this.items == null)
             return;
         let width = 0;
@@ -24,7 +24,7 @@ export class QUI_Menu {
             }
         }
     }
-    private AddMenuItem(canvas: QUI_Canvas, grow: QUI_Container, item: QUI_MenuItem): number {
+    private AddMenuItem(canvas: QUI_Canvas, grow: QUI_BaseContainer, item: QUI_MenuItem): number {
         let c = new QUI_Container();
 
         let width = 0;
@@ -61,7 +61,7 @@ export class QUI_Menu {
         grow.AddChild(c);
         return width; ``
     }
-    static _menuStack: { [id: number]: { canvas: QUI_Canvas, container: QUI_Container[], back: QUI_Container } } = {};
+    static _menuStack: { [id: number]: { canvas: QUI_Canvas, container: QUI_BaseContainer[], back: QUI_BaseContainer } } = {};
     static CloseMenu(canvas: QUI_Canvas) {
         if (this._menuStack[canvas.GetID()] == undefined) {
             return;
@@ -74,7 +74,7 @@ export class QUI_Menu {
         can.canvas.RemoveChild(can.back);
         delete this._menuStack[canvas.GetID()];
     }
-    private static ShowMenuContainer(canvas: QUI_Canvas, container: QUI_Container) {
+    private static ShowMenuContainer(canvas: QUI_Canvas, container: QUI_BaseContainer) {
         let newmenu = false;
         if (this._menuStack[canvas.GetID()] == undefined) {
 

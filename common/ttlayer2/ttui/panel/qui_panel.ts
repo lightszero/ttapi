@@ -199,7 +199,7 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         kill = this.OnTouchBack(_canvas, touchid, press, move, x, y);
         return kill;
     }
-    container: QUI.QUI_Container;
+    container: QUI.QUI_BaseContainer;
 
 
 }

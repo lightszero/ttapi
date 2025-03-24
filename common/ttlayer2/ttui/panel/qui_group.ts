@@ -1,5 +1,5 @@
 import { Color, Rectangle } from "../../ttlayer2.js";
-import { QUI_BaseElement, QUI_Container, QUI_ElementType, QUI_HAlign } from "../qui_base.js";
+import { QUI_BaseElement, QUI_ElementType, QUI_HAlign } from "../qui_base.js";
 import { QUI_Canvas, QUI_DragButton, QUI_Image, QUI_Label, QUI_Overlay, QUI_Panel, QUI_Resource } from "../ttui.js";
 
 
@@ -25,6 +25,19 @@ export class QUI_Group extends QUI_Panel {
         //titleback.localRect.radioX2 = 0.5;
         titleback.localRect.setVPosByTopBorder(16);
         this.foreElements.push(titleback);
+
+        {
+
+            let title = this.title = new QUI_Label();
+            title.text = "Group";
+            title.localRect.SetAsFill();
+
+            title.halign = QUI_HAlign.Left;
+            title.fontScale.X *= 0.5;
+            title.fontScale.Y *= 0.5;
+            titleback.container.AddChild(title);
+        }
+
 
         let overlay = new QUI_Overlay();
         // overlay.OnPress = () => {
