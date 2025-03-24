@@ -1,134 +1,27 @@
-import { Navigator, Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Container, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Split, QUI_Resource, QUI_TextBox_DOM, QUI_TextBox_Prompt, Rectangle, ResourceOption, Resources, tt, IState, QUI_Menu, QUI_MenuItem, QUI_Window } from "../ttlayer2/ttlayer2.js"
+import { Navigator, Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Split, QUI_Resource, QUI_TextBox_DOM, QUI_TextBox_Prompt, Rectangle, ResourceOption, Resources, tt, IState, QUI_Menu, QUI_MenuItem, QUI_Window } from "../ttlayer2/ttlayer2.js"
 import { QUI_Grow } from "../ttlayer2/ttui/ext/qui_grow.js";
 import { FileGroup } from "./filegroup.js";
 import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "../xioext/ioext.js"
+import { InitMainMenu } from "./ui/mainmenu.js";
+import { MainEditor } from "./ui/maineditor.js";
 
 
-export class NavState_Begin implements IState<MyLogic> {
-    fileGroup: FileGroup;
-    //container: QUI_Container;
-    app: MyLogic;
-    init: boolean = false;
-    root: QUI_Container;
-    menu: QUI_Menu;;
-    OnInit(mgr: MyLogic): void {
 
-        this.app = mgr;
-        //this.container = new QUI_Container();
-        //mgr.canvas.AddChild(this.container);
-
-        let container = this.root = new QUI_Container();
-        mgr.canvas.AddChild(container);
-
-
-        let titlebar = new QUI_Panel();
-        container.AddChild(titlebar);
-        titlebar.localRect.setVPosByTopBorder(22);
-        let grow = new QUI_Grow();
-        titlebar.container = grow;
-        grow.direction = QUI_Direction2.Horizontal;
-
-
-        this.menu = new QUI_Menu();
-        let submenuFile = new QUI_Menu();
-
-        this.menu.items.push(
-            { label: "File", sprite: null, submenu: submenuFile, onaction: null }
-        );
-        this.menu.items.push(
-            { label: "Info", sprite: null, submenu: null, onaction: null }
-        );
-        this.menu.items.push(
-            { label: "其它", sprite: null, submenu: null, onaction: null }
-        );
-        this.menu.items.push(
-            { label: "Help", sprite: QUI_Resource.GetSprite("round"), submenu: null, onaction: null }
-        );
-        submenuFile.items.push
-            (
-                {
-                    label: "打开项目目录", sprite: QUI_Resource.GetSprite("corner"), submenu: null, onaction: () => {
-                        console.log("open.");
-                    }
-                }
-            );
-        submenuFile.items.push
-            (
-                { label: "编辑", sprite: QUI_Resource.GetSprite("border"), submenu: submenuFile, onaction: null }
-            );
-        this.menu.FillTo(mgr.canvas, titlebar.container);
-
-        let desktop = new QUI_Container();
-        desktop.localRect.offsetY1 = 22;
-        container.AddChild(desktop);
-
-        let group = this.fileGroup = new FileGroup();
-        group.resizeEnable = true;
-        group.dragEnable = true;//允许拖动
-        let r = mgr.canvas.GetWorldRect();
-
-
-        group.localRect.setByRect(new Rectangle(100, 100, r.Width - 200, r.Height - 200));
-        desktop.AddChild(group);
-
-        //加到一个canvas 上是一个办法
-
-        {
-            let group2 = new QUI_Window();
-            //group2.dragEnable = true;//允许拖动
-            group2.localRect.setByRect(new Rectangle(200, 200, 200, 200));
-            desktop.AddChild(group2);
-            let grow2 = new QUI_Grow();
-            grow2.direction = QUI_Direction2.Vertical;
-            group2.container.AddChild(grow2);
-
-            let label = new QUI_Label();
-            label.localRect.setBySize(100, 16);
-            grow2.AddChild(label);
-            let txtprompt = new QUI_TextBox_Prompt();
-            txtprompt.localRect.setBySize(100, 20);
-            grow2.AddChild(txtprompt);
-            let txtdom = new QUI_TextBox_DOM();
-            txtdom.localRect.setBySize(100, 20);
-            grow2.AddChild(txtdom);
-        }
-    }
-    OnUpdate(delta: number): void {
-        if (!this.init && this.app.canvas.target != null) {
-            let r = this.app.canvas.GetWorldRect();
-            this.fileGroup.localRect.setByPosAndSize(150, 100, r.Width - 300, r.Height - 200);
-            this.init = true;
-        }
-    }
-    OnExit(): void {
-        this.app.canvas.RemoveChild(this.root);
-    }
-    OnResize(width: number, height: number): void {
-
-    }
-    OnKey(keycode: string, press: boolean): void {
-
-    }
-    OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
-
-    }
-
-}
-export class MyLogic extends Navigator implements IUserLogic {
+export class EditorMain implements IUserLogic {
 
     canvas: QUI_Canvas;
 
     fps_txt: QUI_Label;
 
     OnInit(): void {
-        let guilayer = new DrawLayer_GUI(DrawLayerTag.GUI);
+        let guilayer = new DrawLayer_GUI();
 
-        //改动这个会影响canvas size，会造成不点对点
+        //这个设为1就会强行点对点，忽略windows 缩放
         tt.graphic.setMainScreenScale(1);
 
-        let pr = tt.graphic.getDevicePixelRadio();
+        let pr = tt.graphic.getDevicePixelRadio();//得到windows 缩放
 
-        let scaleradio = (pr | 0) * 2;
+        let scaleradio = (pr | 0) * 2;//应用他
         console.log("ScaleRadio=" + scaleradio);
 
         //改Camera的缩放会直接缩放内容
@@ -146,11 +39,9 @@ export class MyLogic extends Navigator implements IUserLogic {
         this.fps_txt.localColor = new Color(0.9, 0.8, 0.3, 1);
         this.canvas.AddChild(this.fps_txt);
 
-        //导航到第一个状态
-
-        this.Push(new NavState_Begin());
-
-
+       
+      InitMainMenu(this.canvas);
+      MainEditor.Init(this.canvas);
 
 
 
@@ -178,23 +69,19 @@ export class MyLogic extends Navigator implements IUserLogic {
             this.fps_txt.text = "fps=" + fpsstr;
         }
 
-        let state = this.GetLast()
-        state?.OnUpdate(delta);
+  
     }
     OnExit(): void {
 
     }
     OnResize(width: number, height: number): void {
-        let state = this.GetLast()
-        state?.OnResize(width, height);
+       
     }
     OnKey(keycode: string, press: boolean): void {
-        let state = this.GetLast()
-        state?.OnKey(keycode, press);
+        
     }
     OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
-        let state = this.GetLast()
-        state?.OnPointAfterGUI(id, x, y, press, move);
+        
     }
 
 }

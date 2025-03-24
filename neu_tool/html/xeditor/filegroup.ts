@@ -1,16 +1,16 @@
-import { QUI_Grow, Color, QUI_Button, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Scroll, QUI_Container, tt, Texture, TextureFormat, QUI_Overlay, QUI_Window } from "../ttlayer2/ttlayer2.js";
+import { QUI_Grow, Color, QUI_Button, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Scroll, tt, Texture, TextureFormat, QUI_Overlay, QUI_Window, QUI_BaseContainer, QUI_ElementType } from "../ttlayer2/ttlayer2.js";
 import { TTPathTool } from "../ttlayer2/utils/path/pathtool.js";
 import { FindTool } from "../xioext/findtool.js";
 
 import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "../xioext/ioext.js";
 
-export class PickAble_FileItem extends QUI_Container {
+export class PickAble_FileItem extends QUI_BaseContainer {
     constructor() {
         super();
         let ol = new QUI_Overlay();
         this.AddChild(ol);
         ol.OnPress = () => {
-            (this._parent as QUI_Container).Pick(this);
+            (this._parent as QUI_BaseContainer).Pick(this);
         }
 
         // let ext = TTPathTool.GetExt(result[i].name).toLowerCase();
@@ -35,6 +35,9 @@ export class PickAble_FileItem extends QUI_Container {
         label.halign = QUI_HAlign.Left;
         //this.contextPanel.container().AddChild(con);
         this.AddChild(label);
+    }
+    GetElementType(): QUI_ElementType {
+        return QUI_ElementType.Element_User;
     }
     image: QUI_Image;
     imageback: QUI_Image;
