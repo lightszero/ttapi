@@ -3,6 +3,7 @@ import { IOExt } from "../../xioext/ioext.js";
 import { EditorMain } from "../editormain.js";
 import { WorkingDir } from "../work/workingdir.js";
 import { MainEditor } from "./maineditor.js";
+import { MessageDialog } from "./messagedialog.js";
 import { PickTTDialog } from "./pickttdialog.js";
 
 
@@ -19,33 +20,57 @@ export function InitMainMenu(canvas: QUI_Canvas) {
 
     menu = new QUI_Menu();
     let submenuFile = new QUI_Menu();
+    let submenuSprite = new QUI_Menu();
+    let submenuAnim = new QUI_Menu();
+    let submenuOther = new QUI_Menu();
+    menu.items.push(
+        { label: "文件File", sprite: null, submenu: submenuFile, onaction: null }
+    );
+    menu.items.push(
+        { label: "精灵Sprite", sprite: null, submenu: submenuSprite, onaction: null }
+    );
+    menu.items.push(
+        { label: "动画Anim", sprite: null, submenu: submenuAnim, onaction: null }
+    );
 
     menu.items.push(
-        { label: "File", sprite: null, submenu: submenuFile, onaction: null }
+        {
+            label: "其它Other", sprite: QUI_Resource.GetSprite("round"), submenu: submenuOther, onaction: null
+        }
     );
-    menu.items.push(
-        { label: "Info", sprite: null, submenu: null, onaction: null }
-    );
-    menu.items.push(
-        { label: "其它", sprite: null, submenu: null, onaction: null }
-    );
-    menu.items.push(
-        { label: "Help", sprite: QUI_Resource.GetSprite("round"), submenu: null, onaction: null }
-    );
-    submenuFile.items.push
-        (
-
-            {
+    {
+        submenuFile.items.push
+            ({
                 label: "打开工作目录", sprite: QUI_Resource.GetSprite("corner"), submenu: null, onaction: () => {
                     OnOpenWorkingDir(canvas);
                 }
             }
-        );
-    submenuFile.items.push
-        (
-            { label: "编辑", sprite: QUI_Resource.GetSprite("border"), submenu: submenuFile, onaction: null }
-        );
+            );
+        submenuFile.items.push
+            (
+                { label: "--", sprite: QUI_Resource.GetSprite("border"), submenu: null, onaction: null }
+            );
+        submenuFile.items.push
+            (
+                { label: "没菜单好摆了。", sprite: QUI_Resource.GetSprite("border"), submenu: null, onaction: null }
+            );
+    }
+    {
+        submenuSprite.items.push({ label: "添加", sprite: null, submenu: null, onaction: null });
+        submenuSprite.items.push({ label: "刷新", sprite: null, submenu: null, onaction: null });
+    }
+    {
+        submenuAnim.items.push({ label: "添加", sprite: null, submenu: null, onaction: null });
+        submenuAnim.items.push({ label: "刷新", sprite: null, submenu: null, onaction: null });
+    }
+    {
+        submenuOther.items.push({
+            label: "Help", sprite: null, submenu: null, onaction: () => {
+                MessageDialog.Show(canvas, "对话框测试\ngood day。");
+            }
+        });
 
+    }
     menu.FillTo(canvas, grow);
 }
 async function OnOpenWorkingDir(canvas: QUI_Canvas) {

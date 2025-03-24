@@ -1,5 +1,7 @@
+import { QUI_Canvas } from "../../ttlayer2/ttlayer2.js";
 import { FindTool } from "../../xioext/findtool.js";
 import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "../../xioext/ioext.js";
+import { MessageDialog } from "../ui/messagedialog.js";
 
 export class WorkingDir {
     private static root: IOExt_DirectoryHandle
@@ -22,16 +24,23 @@ export class WorkingDir {
         }
         return null;
     }
-    static async CreateJsonFile(name: string): Promise<IOExt_FileHandle> {
-        let file = this.GetFile(name, this.root);
-        if (file != null)
-            throw "Error CreateJsonFile 01:" + name;
+    static async CreateJsonFile(canvas: QUI_Canvas, name: string): Promise<IOExt_FileHandle> {
+        let file: IOExt_FileHandle = await this.GetFile(name, this.root);
+        if (file != null) {
+            MessageDialog.Show(canvas, "Error CreateJsonFile 01:" + name + " 文件已存在");
+            return null;
+        }
         let b = await IOExt.File_CreateText(this.root, name, "{}");
-        if (!b)
-            throw "Error CreateJsonFile 02:" + name;
-        file = this.GetFile(name, this.root);
-        if (file == null)
-            throw "Error CreateJsonFile 02:" + name;
+        if (!b) {
+            MessageDialog.Show(canvas, "Error CreateJsonFile 02:" + name + " 文件创建失败");
+            return null;
+        }
+
+        file = await this.GetFile(name, this.root);
+        if (file == null) {
+            MessageDialog.Show(canvas, "Error CreateJsonFile 03:" + name + " 文件创建完却没了");
+            return null;
+        }
         return file;
     }
     static SetEditFile(editfile: IOExt_FileHandle) {

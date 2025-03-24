@@ -39,8 +39,8 @@ export class QUI_Menu {
         let label = new QUI_Label();
         label.text = item.label;
         let tw = label.GetTextWidth();
-        label.localRect.setByPosAndSize(width, 0, tw + 2, 18);
-        width += (tw + 2);
+        label.localRect.setByPosAndSize(width, 0, tw + 4, 18);
+        width += (tw + 4);
         label.halign = QUI_HAlign.Left;
         c.AddChild(label);
 

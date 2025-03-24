@@ -90,7 +90,7 @@ export class PickTTDialog {
         btn1.localRect.setBySize(100, 22);
         btn1.SetText("新建 tt.json");
         btn1.OnClick = async () => {
-            this.OnNewFile();
+            this.OnNewFile(canvas);
 
         }
         innermenu.AddChild(btn1);
@@ -141,11 +141,11 @@ export class PickTTDialog {
         await WorkingDir.SetEditFile(item);
         this.finish = true;
     }
-    private static async OnNewFile() {
+    private static async OnNewFile(canvas: QUI_Canvas) {
         let txt = await tt.input.Prompt("输入文件名", "new1.tt.json", 20, Resources.GetDefFont().GetFont());
         console.log("input name:" + txt);
         this.finish = true;
-        var file = await WorkingDir.SetEditFile(await WorkingDir.CreateJsonFile(txt));
+        var file = await WorkingDir.SetEditFile(await WorkingDir.CreateJsonFile(canvas, txt));
         this.finish = true;
     }
 }

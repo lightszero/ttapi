@@ -161,6 +161,8 @@ export class IOExt {
     static async File_CreateText(path: IOExt_DirectoryHandle, name: string, data: string): Promise<boolean> {
         let file: IOExt_FileHandle;
         if (this._envWeb) {
+           // let dir = (path.state as FileSystemDirectoryHandle);
+           // await dir.requestPermission({ mode: "readwrite" });
             let _file = await (path.state as FileSystemDirectoryHandle).getFileHandle(name, { "create": true });
 
             file = new IOExt_FileHandle(_file);
