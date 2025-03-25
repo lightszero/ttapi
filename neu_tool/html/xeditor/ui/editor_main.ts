@@ -2,7 +2,7 @@ import { QUI_Canvas, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Label, QUI_Panel
 import { IOExt } from "../../xioext/ioext.js";
 import { Working } from "../work/working.js";
 import { Dialog_Message } from "./dialog_message.js";
-import { PickAbleItem } from "./pickitem.js";
+import { PickItem } from "./pickitem.js";
 
 export class Editor_Main {
 
@@ -75,9 +75,14 @@ export class Editor_Main {
 
         this.scrollPic.container.RemoveChildAll();
         for (var key in Working.ttjson.pics) {
-            let item = new PickAbleItem<string>(key);
+            let item = new PickItem<string>(key);
             this.scrollPic.container.AddChild(item);
         }
         this.scrollAni.container.RemoveChildAll();
+    }
+    // 静态方法，用于更新图片
+    static async UpdatePics()
+    {
+
     }
 }

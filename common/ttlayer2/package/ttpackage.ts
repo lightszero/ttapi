@@ -1,5 +1,5 @@
 import { tt } from "../../ttapi/ttapi.js"
-import { Rectangle } from "../ttlayer2.js";
+import { Rectangle, SpriteData, TextureFormat } from "../ttlayer2.js";
 import { TTPathTool } from "../utils/path/pathtool.js";
 
 //Json 格式描述
@@ -29,9 +29,23 @@ export class TTPackageMgr {
         if (pack != undefined)
             return pack;
 
-        pack = this.packages[name] = new TTPackage(name);
+        //pack = this.packages[name] = new TTPackage(name);
 
         let ttjson = JSON.parse(await loader.LoadStringAsync(filename)) as TTJson;
+        pack = await this.LoadFromJson(ttjson, name, root, loader);
+        this.packages[name] = pack;
+        return pack;
+    }
+    static async LoadFromJson(ttjson: TTJson, name: string, rootpath: string, loader: tt.ILoader): Promise<TTPackage> {
+        //let root = TTPathTool.GetPathName(filename);
+        //let name = TTPathTool.GetFileName(filename);
+        //let pack = this.packages[name];
+        //if (pack != undefined)
+        //    return pack;
+
+        let pack = new TTPackage(name);
+
+        //let ttjson = JSON.parse(await loader.LoadStringAsync(filename)) as TTJson;
         //加载引用
         if (ttjson.refs != undefined) {
             pack.refs = []
@@ -40,7 +54,7 @@ export class TTPackageMgr {
                 if (this.packages[pakname] != undefined)
                     continue;
 
-                let refpack = await this.Load(root + "/" + pakname, loader);
+                let refpack = await this.Load(rootpath + "/" + pakname, loader);
                 pack.refs.push(refpack);
             }
         }
@@ -49,43 +63,22 @@ export class TTPackageMgr {
             pack.pics = {}
             for (var key in ttjson.pics) {
                 let picname = ttjson.pics[key];
-                let pivotX = 0;
-                let pivotY = 0;
-                let rect: Rectangle = null;
-                if (picname.includes(";")) {
-                    let ws = picname.split(";");
-                    picname = ws[0];
-                    for (var i = 1; i < ws.length; i++) {
-                        let wss = ws[i].split("=");
-                        let key = wss[0];
-                        if (key == "pivot") {
-                            let value = wss[1].split(",");
-                            pivotX = parseInt(value[0]);
-                            pivotY = parseInt(value[1]);
-                        }
-                        else if (key == "rect") {
-                            let value = wss[1].split(",");
-                            let x = parseInt(value[0]);
-                            let y = parseInt(value[1]);
-                            let w = parseInt(value[2]);
-                            let h = parseInt(value[3]);
-                            rect = new Rectangle(x, y, w, h);
-                        }
+
+                let pic: TTPicData = TTPicData.FromText(picname);
+                if (pic.srcfile != null) {
+                    let imgdata = await this.LoadPic(rootpath + "/" + pic.srcfile, loader);
+
+                    if (pic.srcrect != null) {
+                        imgdata = imgdata.Cut(pic.srcrect.X, pic.srcrect.Y, pic.srcrect.Width, pic.srcrect.Height);
                     }
-                }
-                let pic: TTPicData = null;
-                if (picname.indexOf("hex:")>0) {
-                    //toduo 嵌入数据
-                }
-                else {
-                    pic = await this.LoadPic(root + "/" + picname, loader);
-                    if (rect != null) {
-                        //Todo 裁剪picdata
-                    }
+
+                    pic.data = imgdata.data;
+                    pic.width = imgdata.width;
+                    pic.height = imgdata.height;
+
                 }
 
-                pic.pivotX = pivotX;
-                pic.pivotY = pivotY;
+
                 pack.pics[key] = pic;
             }
         }
@@ -100,17 +93,18 @@ export class TTPackageMgr {
         }
         return pack;
     }
-    static async LoadPic(filename: string, loader: tt.ILoader): Promise<TTPicData> {
-        let data = new TTPicData();
+    static async LoadPic(filename: string, loader: tt.ILoader): Promise<SpriteData> {
+
 
         let bin = await loader.LoadBinaryAsync(filename);
         let blob = new Blob([bin]);
         let imgdata = await tt.loaderex.LoadImageDataAsync(URL.createObjectURL(blob));
-        data.data = imgdata.data;
-
-        data.width = imgdata.width;
-        data.height = imgdata.height;
-        return data;
+        let spdata = new SpriteData();
+        spdata.data = imgdata.data;
+        spdata.width = imgdata.width;
+        spdata.height = imgdata.height;
+        spdata.format = TextureFormat.RGBA32;
+        return spdata;
 
     }
 
@@ -121,6 +115,55 @@ export class TTPicData {
     pivotX: number;
     pivotY: number;
     data: Uint8Array | Uint8ClampedArray;
+    srcfile: string | null;
+    srcrect: Rectangle | null;
+    // 从文本中解析出TTPicData对象
+    static FromText(picinfo: string): TTPicData {
+        let picname = picinfo;
+        let pivotX = 0;
+        let pivotY = 0;
+        let rect: Rectangle = null;
+        if (picinfo.includes(";")) {
+            let ws = picinfo.split(";");
+            picname = ws[0];
+            for (var i = 1; i < ws.length; i++) {
+                let wss = ws[i].split("=");
+                let key = wss[0];
+                if (key == "pivot") {
+                    let value = wss[1].split(",");
+                    pivotX = parseInt(value[0]);
+                    pivotY = parseInt(value[1]);
+                }
+                else if (key == "rect") {
+                    let value = wss[1].split(",");
+                    let x = parseInt(value[0]);
+                    let y = parseInt(value[1]);
+                    let w = parseInt(value[2]);
+                    let h = parseInt(value[3]);
+                    rect = new Rectangle(x, y, w, h);
+                }
+            }
+        }
+        let data = new TTPicData();
+        //可以硬填hex数据
+        if (picname.indexOf("hex:") == 0 || picname.indexOf("HEX:") == 0) {
+            data.srcfile = null;
+            let width = parseInt(picname.substring(4, 6), 16);
+            let height = parseInt(picname.substring(6, 8), 16);
+            data.srcrect = new Rectangle(0, 0, width, height);
+            data.data = new Uint8Array(width * height * 4);
+            for (let i = 8; i <= picname.length - 2; i += 2) {
+                data.data[i / 2 - 4] = parseInt(picname.substring(i, i + 2), 16);
+            }
+        }
+        else {
+            data.srcfile = picname;
+        }
+        data.pivotX = pivotX;
+        data.pivotY = pivotY;
+        data.srcrect = rect;
+        return data;
+    }
 }
 export class TTAni {
     constructor(ani: TTJsonAni) {

@@ -406,7 +406,7 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement {
             return null;
         return this._children[index];
     }
-    GetChildAt(elem: QUI_BaseElement): number {
+    IndexOfChild(elem: QUI_BaseElement): number {
         if (elem == null)
             return -1;
         return this._children.indexOf(elem);

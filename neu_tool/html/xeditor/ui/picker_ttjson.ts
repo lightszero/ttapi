@@ -2,7 +2,7 @@ import { Color, QUI_BaseContainer, QUI_Button, QUI_Canvas, QUI_Container, QUI_Di
 import { IOExt, IOExt_FileHandle } from "../../xioext/ioext.js";
 import { Working } from "../work/working.js";
 import { Dialog_Message } from "./dialog_message.js";
-import { PickAbleItem } from "./pickitem.js";
+import { PickItem } from "./pickitem.js";
 
 
 
@@ -43,17 +43,18 @@ export class Picker_TTJson {
         let btn1 = new QUI_Button();
         btn1.localRect.setBySize(100, 22);
         btn1.SetText("新建 tt.json");
-        btn1.OnClick = async () => {
-            this.OnNewFile(canvas);
 
+        let picked: IOExt_FileHandle = null;
+        btn1.OnClick = async () => {
+            picked = await this.OnNewFile(canvas);
         }
         innermenu.AddChild(btn1);
 
         let panelScroll = new QUI_Panel_Scroll();
 
-        let picked: IOExt_FileHandle = null;
+
         btn0.OnClick = () => {
-            picked = (panelScroll.container.GetPicked() as PickAbleItem<IOExt_FileHandle>).context;
+            picked = (panelScroll.container.GetPicked() as PickItem<IOExt_FileHandle>).context;
             this.OnPick(canvas, picked);
         }
 
@@ -65,7 +66,7 @@ export class Picker_TTJson {
 
 
         for (var i = 0; i < fs.length; i++) {
-            let con = new PickAbleItem<IOExt_FileHandle>(fs[i]);
+            let con = new PickItem<IOExt_FileHandle>(fs[i]);
             con.localRect.setBySize(500, 25);
             panelScroll.container.AddChild(con);
             // let ext = TTPathTool.GetExt(result[i].name).toLowerCase();
@@ -79,7 +80,7 @@ export class Picker_TTJson {
             con.label.text = fs[i].fullname;
         }
         if (fs.length == 0) {
-            let con = new PickAbleItem<IOExt_FileHandle>(null);
+            let con = new PickItem<IOExt_FileHandle>(null);
             con.localRect.setBySize(500, 25);
             panelScroll.container.AddChild(con);
             con.label.text = "Empty";
@@ -100,15 +101,16 @@ export class Picker_TTJson {
             await Dialog_Message.Show(canvas, "Pick Empty.");
             return;
         }
-       
+
         this.finish = true;
     }
-    private static async OnNewFile(canvas: QUI_Canvas) {
+    private static async OnNewFile(canvas: QUI_Canvas): Promise<IOExt_FileHandle> {
 
         let txt = await tt.input.Prompt("输入文件名", "new1.tt.json", 20, Resources.GetDefFont().GetFont());
         console.log("input name:" + txt);
+
+        let file = await Working.CreateJsonFile(canvas, txt);
         this.finish = true;
-        Working.editfile = await Working.CreateJsonFile(canvas, txt);
-        this.finish = true;
+        return file;
     }
 }

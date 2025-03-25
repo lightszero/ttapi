@@ -6,6 +6,7 @@ export interface IState<T> {
 
     OnKey(keycode: string, press: boolean): void;
     OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void;
+    OnWheelAfterGUI(dx: number, dy: number, dz: number): void;
 }
 
 

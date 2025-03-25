@@ -4,7 +4,7 @@
     ],
     "pics": {
         "dot2": "media/dot2.png;pivot=8,8;",
-        "pw6_0":"ani/pw6_sp_000_000.png;pivot=16,16;rect=0,0,8,8",
+        "pw6_0":"ani/pw6_sp_000_000.png;pivot=16,16;rect=0,0,32,32",
         "pw6_1":"ani/pw6_sp_001_000.png;pivot=16,16",
         "pw6_2":"ani/pw6_sp_002_000.png;pivot=16,16",
         "pw6_3":"ani/pw6_sp_003_000.png;pivot=16,16",

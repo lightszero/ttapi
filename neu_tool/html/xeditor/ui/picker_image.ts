@@ -4,13 +4,13 @@ import { FindTool } from "../../xioext/findtool.js";
 import { IOExt, IOExt_FileHandle } from "../../xioext/ioext.js";
 import { Working } from "../work/working.js";
 import { Dialog_Message } from "./dialog_message.js";
-import { PickAbleItem } from "./pickitem.js";
+import { CheckItem } from "./pickitem.js";
 
 
 
 export class Picker_Image {
     static finish: boolean = false;
-    static async ShowPick(canvas: QUI_Canvas): Promise<IOExt_FileHandle> {
+    static async ShowPick(canvas: QUI_Canvas): Promise<IOExt_FileHandle[]> {
         let container = new QUI_Container();
         canvas.AddChild(container);
 
@@ -49,9 +49,15 @@ export class Picker_Image {
 
         let panelScroll = new QUI_Panel_Scroll();
 
-        let picked: IOExt_FileHandle = null;
+        let picked: IOExt_FileHandle[] = [];
         btn0.OnClick = () => {
-            picked = (panelScroll.container.GetPicked() as PickAbleItem<IOExt_FileHandle>).context;
+            for(var i=0;i<panelScroll.container.GetChildCount();i++){
+                let item = panelScroll.container.GetChild(i) as CheckItem<IOExt_FileHandle>;
+                if(item.checked){
+                    picked.push(item.context);
+                }
+            }
+            //picked = (panelScroll.container.GetPicked() as CheckItem<IOExt_FileHandle>).context;
             this.OnPick(canvas, picked);
         }
 
@@ -67,7 +73,7 @@ export class Picker_Image {
 
 
         for (var i = 0; i < fs.length; i++) {
-            let con = new PickAbleItem<IOExt_FileHandle>(fs[i]);
+            let con = new CheckItem<IOExt_FileHandle>(fs[i]);
             con.localRect.setBySize(500, 25);
             panelScroll.container.AddChild(con);
             //let ext = TTPathTool.GetExt(fs[i].name).toLowerCase();
@@ -81,12 +87,12 @@ export class Picker_Image {
             con.label.text = fs[i].fullname;
         }
         if (fs.length == 0) {
-            let con = new PickAbleItem<IOExt_FileHandle>(null);
+            let con = new CheckItem<IOExt_FileHandle>(null);
             con.localRect.setBySize(500, 25);
             panelScroll.container.AddChild(con);
             con.label.text = "Empty";
         }
-        panelScroll.container.PickAt(0);
+        //panelScroll.container.PickAt(0);
         this.finish = false;
         while (!this.finish) {
             await tt.sleep(1);
@@ -111,9 +117,9 @@ export class Picker_Image {
         }
         this.texs = [];
     }
-    private static async OnPick(canvas: QUI_Canvas, item: IOExt_FileHandle) {
+    private static async OnPick(canvas: QUI_Canvas, picked: IOExt_FileHandle[]) {
 
-        if (item == null) {
+        if (picked == null || picked.length == 0) {
             await Dialog_Message.Show(canvas, "Pick Empty.");
             return;
         }

@@ -104,4 +104,7 @@ export class TTState_All extends Navigator implements IUserLogic {
     OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
         this.GetLast()?.OnPointAfterGUI(id, x, y, press, move);
     }
+    OnWheelAfterGUI(dx: number, dy: number, dz: number): void {
+        this.GetLast()?.OnWheelAfterGUI(dx, dy, dz);
+    }
 }

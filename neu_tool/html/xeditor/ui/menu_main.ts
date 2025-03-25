@@ -100,5 +100,24 @@ export class Menu_Main {
             Dialog_Message.Show(canvas, "Error editfile.");
         }
         var imagefile = await Picker_Image.ShowPick(canvas);
+        if (Working.ttjson.pics == null)
+            Working.ttjson.pics = {};
+        for (var i = 0; i < imagefile.length; i++) {
+            var name = imagefile[i].name;
+            var fullname = Working.GetPathReletiveEditFile(imagefile[i].fullname);
+            //先得出文件名，需要一个图片文件名的cache
+            var usename = name//最终使用的图片名称
+            let rid = 0;
+            while (Working.ttjson.pics[usename] != null) {
+                rid++;
+                usename = name + "_" + rid;
+            }
+
+
+            Working.ttjson.pics[usename] = fullname;
+            console.log("add pic:" + fullname);
+
+        }
+        Editor_Main.UpdatePics();
     }
 }

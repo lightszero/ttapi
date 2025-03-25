@@ -27,6 +27,11 @@ export class Working {
         }
         return null;
     }
+    static GetPathReletiveEditFile(path: string): string {
+        var rootpath = this.editfile.parent.fullname;
+        var result = path.replace(rootpath + "/", "");
+        return result;
+    }
     static async CreateJsonFile(canvas: QUI_Canvas, name: string): Promise<IOExt_FileHandle> {
         let file: IOExt_FileHandle = await this.GetFile(name, this.root);
         if (file != null) {

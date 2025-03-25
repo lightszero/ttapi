@@ -82,4 +82,7 @@ export class View_Menu implements IState<TTState_All> {
     OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
 
     }
+    OnWheelAfterGUI(dx: number, dy: number, dz: number): void {
+        
+    }
 }
