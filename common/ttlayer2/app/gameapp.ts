@@ -17,6 +17,7 @@ export interface IUserLogic {
 
   OnKey(keycode: string, press: boolean): void;
   OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void;
+  OnWheelAfterGUI(dx:number,dy:number,dz:number):void;
 }
 
 export class GameApp {
@@ -42,6 +43,7 @@ export class GameApp {
     tt.graphic.OnUpdate = this.OnUpdate.bind(this);
     tt.graphic.OnResize = this.OnResize.bind(this);
     tt.input.OnPoint = this.OnPoint.bind(this);
+    tt.input.OnWheel = this.OnWheel.bind(this);
     tt.input.OnKey = this.OnKey.bind(this);
   }
 
@@ -165,6 +167,36 @@ export class GameApp {
 
     }
     setTimeout(checkfunc, 0);
+  }
+  private static OnWheel(dx: number, dy: number, dz: number): void {
+    if (this._pause)
+      return;
+    // if (id == 0) {
+    //   console.log("mouse at:" + x + "," + y);
+    // }
+    let guiview = this._viewlist.GetDrawLayers(DrawLayerTag.GUI);
+    if (guiview != null) {
+      for (let i = guiview.length - 1; i >= 0; i--) {
+
+        let kill = false;
+
+        let rs = guiview[i].GetRenders();
+        for (let j = rs.length - 1; j >= 0; j--) {
+          let gui = rs[j].GetGUI();
+          if (gui != null) {
+            kill = gui.OnWheel(null, dx,dy,dz);
+            if (kill)
+              break;
+          }
+        }
+
+        if (kill)
+          break;
+      }
+    }
+    if (this._state != null) {
+      this._state.OnWheelAfterGUI(dx,dy,dz);
+    }
   }
   private static OnPoint(id: number, x: number, y: number, press: boolean, move: boolean): void {
     if (this._pause)

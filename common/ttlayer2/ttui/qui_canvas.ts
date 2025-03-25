@@ -75,6 +75,9 @@ export class QUI_Canvas extends QUI.QUI_Container {
         let ty = y * fs;
         return super.OnTouch(this, touchid, press, move, tx, ty);
     }
+    OnWheel(_canvas: QUI_Canvas, dx: number, dy: number, dz: number): boolean {
+        return super.OnWheel(this, dx, dy, dz);
+    }
     _event: (() => void)[] = [];
     InvokeEvent(evt: () => void) {
         this._event.push(evt);

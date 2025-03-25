@@ -17,7 +17,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
         this.container = new QUI_Grow();
         this.container._parent = this;
         this.container.localRect.SetAsFill();
-       // this._container.picker = this;
+        // this._container.picker = this;
     }
     GetElementType(): QUI.QUI_ElementType {
         return QUI.QUI_ElementType.Element_Panel_Scroll;
@@ -32,7 +32,7 @@ export class QUI_Panel_Scroll extends QUI_Panel {
     Scroll(x: number, y: number) {
 
         this.panelOffsetWantX += x;
-        this.panelOffsetWantX += y;
+        this.panelOffsetWantY += y;
         let rectlimit = this.GetWorldRect();
         let width = rectlimit.Width - this._border.XLeft - this._border.XRight;
         let height = rectlimit.Height - this._border.YTop - this._border.YBottom;
@@ -72,6 +72,27 @@ export class QUI_Panel_Scroll extends QUI_Panel {
     CancelTouch() {
         this._press = false;
         this._pressid = -1;
+
+    }
+    OnWheel(canvas: QUI_Canvas, dx: number, dy: number, dz: number): boolean {
+        let kill = super.OnWheel(canvas, dx, dy, dz);;
+        if (kill)
+            return true;
+
+        console.log("wheel:" + dx + "," + dy + "," + dz);
+        if (this.dragDirection == QUI.QUI_DragDriection.None)
+            return false;
+        else if (this.dragDirection == QUI.QUI_DragDriection.LeftToRight) {
+            dy = 0;
+            dz = 0;
+        }
+        else if (this.dragDirection == QUI.QUI_DragDriection.UpToDown) {
+            dx = 0;
+            dz = 0;
+        }
+        this.Scroll(dx, dy);
+        return true;
+
 
     }
     OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {

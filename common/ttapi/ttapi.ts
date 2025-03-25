@@ -48,6 +48,7 @@ export namespace tt {
         GetInputPoints(): InputPoint[];
         OnPoint: null | ((id: number, x: number, y: number, press: boolean, move: boolean) => void);
 
+        OnWheel: null | ((deltaX: number, deltaY: number, deltaZ: number) => void);
         //键盘
         IsKeyDown(keycode: string): boolean
         GetPressKeys(): string[];

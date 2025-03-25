@@ -21,6 +21,10 @@ export namespace tt_impl {
             window.addEventListener("keyup", (r) => {
                 this.UpdateKey(r.code, false);
             });
+            window.addEventListener("wheel", (r) => {
+                if (this.OnWheel != null)
+                    this.OnWheel(r.deltaX, r.deltaY, r.deltaZ);
+            })
             canvas.addEventListener("mousedown", (r) => {
                 if (r.button == 0) {
 
@@ -130,7 +134,7 @@ export namespace tt_impl {
                 }
             }
             //console.log("Input Key:" + keycode + "=" + press);
-          
+
             if (this.OnKey != null)
                 this.OnKey(keycode, press);
         }
@@ -149,7 +153,7 @@ export namespace tt_impl {
             return this.points;
         }
         OnPoint: null | ((id: number, x: number, y: number, press: boolean, move: boolean) => void);
-
+        OnWheel: null | ((deltaX: number, deltaY: number, deltaZ: number) => void);
         onkeycomfirm: (txt: string) => void;
         ishow: boolean = false;
         async Prompt(message: string, deftxt: string = "", maxlen: number = 256, font: string = ""): Promise<string> {

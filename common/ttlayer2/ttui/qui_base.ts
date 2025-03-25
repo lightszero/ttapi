@@ -324,6 +324,10 @@ export abstract class QUI_BaseElement {
     OnTouch(canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         return false;
     }
+    OnWheel(canvas:QUI_Canvas,dx:number,dy:number,dz:number):boolean
+    {
+        return false;
+    }
     OnRender(canvas: QUI_Canvas): void {
 
     }
@@ -485,6 +489,21 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement {
                 let child = this._children[i];
                 if (child.Enable) {
                     let kill = child.OnTouch(canvas, touchid, press, move, x, y);
+                    if (kill)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+    OnWheel(canvas:QUI_Canvas,dx:number,dy:number,dz:number):boolean
+    {
+        
+        if (this._children != null) {
+            for (var i = this._children.length - 1; i >= 0; i--) {
+                let child = this._children[i];
+                if (child.Enable) {
+                    let kill = child.OnWheel(canvas, dx,dy,dz);
                     if (kill)
                         return true;
                 }

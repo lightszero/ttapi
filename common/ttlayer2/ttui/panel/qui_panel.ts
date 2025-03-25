@@ -120,6 +120,32 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         }
         return false;
     }
+    protected OnWheelFore(_canvas: QUI_Canvas, dx: number, dy: number, dz: number): boolean {
+        if (this.foreElements != null) {
+            for (var i = this.foreElements.length - 1; i >= 0; i--) {
+                let elem = this.foreElements[i] as QUI.QUI_BaseElement;
+                if (elem.Enable) {
+                    let kill = elem.OnWheel(_canvas, dx, dy,dz);
+                    if (kill)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+    protected OnWheelBack(_canvas: QUI_Canvas, dx: number, dy: number, dz: number): boolean {
+        if (this.backElements != null) {
+            for (var i = this.backElements.length - 1; i >= 0; i--) {
+                let elem = this.backElements[i] as QUI.QUI_BaseElement;
+                if (elem.Enable) {
+                    let kill = elem.OnWheel(_canvas, dx, dy,dz);
+                    if (kill)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
     OnRender(_canvas: QUI_Canvas): void {
 
         this.OnRenderBack(_canvas);
@@ -172,6 +198,17 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         this.CancelTouchFore();
         super.CancelTouch();
         this.CancelTouchBack();
+    }
+    OnWheel(_canvas: QUI_Canvas, dx: number, dy: number, dz: number): boolean {
+        let kill = this.OnWheelFore(_canvas, dx, dy, dz);
+        if (kill)
+            return kill;
+
+        kill = this.container.OnWheel(_canvas, dx, dy, dz);
+        if (kill)
+            return kill;
+        kill = this.OnWheelBack(_canvas, dx, dy, dz);
+        return kill;
     }
     OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         let kill = this.OnTouchFore(_canvas, touchid, press, move, x, y);
