@@ -1,7 +1,7 @@
 import { Color, QUI_Button, QUI_Canvas, QUI_Container, QUI_Direction2, QUI_Grow, QUI_HAlign, QUI_Image, QUI_Label, QUI_Overlay, QUI_Window, tt } from "../../ttlayer2/ttlayer2.js";
 
 
-export class MessageDialog {
+export class Dialog_Message {
 
     static finish: boolean = false;
     static async Show(canvas: QUI_Canvas, message: string) {
@@ -27,10 +27,10 @@ export class MessageDialog {
             let group = new QUI_Window();
             group.title.text = "信息"
             container.AddChild(group);
-            group.localRect.offsetX1 = 100;
-            group.localRect.offsetY1 = 100;
-            group.localRect.offsetX2 = -100;
-            group.localRect.offsetY2 = -100
+            group.localRect.offsetX1 = 120;
+            group.localRect.offsetY1 = 120;
+            group.localRect.offsetX2 = -120;
+            group.localRect.offsetY2 = -120
 
             let innermenu = new QUI_Grow();
             innermenu.direction = QUI_Direction2.Horizontal;

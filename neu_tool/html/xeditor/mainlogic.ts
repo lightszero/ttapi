@@ -1,13 +1,13 @@
 import { Navigator, Color, DrawLayer_GUI, DrawLayerTag, GameApp, IUserLogic, MainScreen, QUI_Button, QUI_Canvas, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Image, QUI_Label, QUI_Panel, QUI_Panel_Split, QUI_Resource, QUI_TextBox_DOM, QUI_TextBox_Prompt, Rectangle, ResourceOption, Resources, tt, IState, QUI_Menu, QUI_MenuItem, QUI_Window } from "../ttlayer2/ttlayer2.js"
 import { QUI_Grow } from "../ttlayer2/ttui/ext/qui_grow.js";
-import { FileGroup } from "./filegroup.js";
+
 import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "../xioext/ioext.js"
-import { InitMainMenu } from "./ui/mainmenu.js";
-import { MainEditor } from "./ui/maineditor.js";
+import { Menu_Main } from "./ui/menu_main.js";
+import { Editor_Main } from "./ui/editor_main.js";
 
 
 
-export class EditorMain implements IUserLogic {
+export class MainLogic implements IUserLogic {
 
     canvas: QUI_Canvas;
 
@@ -39,9 +39,9 @@ export class EditorMain implements IUserLogic {
         this.fps_txt.localColor = new Color(0.9, 0.8, 0.3, 1);
         this.canvas.AddChild(this.fps_txt);
 
-       
-      InitMainMenu(this.canvas);
-      MainEditor.Init(this.canvas);
+
+        Menu_Main.Init(this.canvas);
+        Editor_Main.Init(this.canvas);
 
 
 
@@ -69,19 +69,19 @@ export class EditorMain implements IUserLogic {
             this.fps_txt.text = "fps=" + fpsstr;
         }
 
-  
+
     }
     OnExit(): void {
 
     }
     OnResize(width: number, height: number): void {
-       
+
     }
     OnKey(keycode: string, press: boolean): void {
-        
+
     }
     OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void {
-        
+
     }
 
 }

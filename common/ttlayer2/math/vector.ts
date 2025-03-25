@@ -244,6 +244,13 @@ export class Border {
     XRight: number;
     YTop: number;
     YBottom: number;
+    SetZero():void
+    {
+        this.XLeft=0;
+        this.XRight=0;
+        this.YTop=0;
+        this.YBottom=0;
+    }
 }
 export class UVRect {
     constructor(u1: number, v1: number, u2: number, v2: number) {

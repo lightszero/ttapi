@@ -60,7 +60,7 @@ export class IOExt {
                 return null;
 
             //fileHandle
-            return new IOExt_FileHandle(r[0]);
+            return new IOExt_FileHandle(r[0], null);
         }
         else {
             let op: Neutralino.os.OpenDialogOptions =
@@ -71,7 +71,7 @@ export class IOExt {
             if (r == null || r.length == 0)
                 return null;
             //string 
-            return new IOExt_FileHandle(r[0]);
+            return new IOExt_FileHandle(r[0], null);
         }
     }
     static async Picker_SaveFile(): Promise<IOExt_FileHandle | null> {
@@ -84,7 +84,7 @@ export class IOExt {
                 return null;
 
             //fileHandle
-            return new IOExt_FileHandle(r);
+            return new IOExt_FileHandle(r, null);
         }
         else {
             let op: Neutralino.os.SaveDialogOptions =
@@ -94,17 +94,17 @@ export class IOExt {
             let r = await Neutralino.os.showSaveDialog("open file dialog.", op);
             if (r == null)
                 return null;
-            return new IOExt_FileHandle(r);
+            return new IOExt_FileHandle(r, null);
         }
     }
     static async Picker_Folder(): Promise<IOExt_DirectoryHandle | null> {
         if (this._envWeb) {
             var dir = await window.showDirectoryPicker();
-            return new IOExt_DirectoryHandle(dir);
+            return new IOExt_DirectoryHandle(dir, null);
         }
         else {
             var r = await Neutralino.os.showFolderDialog("选择文件夹");
-            return new IOExt_DirectoryHandle(r);
+            return new IOExt_DirectoryHandle(r, null);
 
         }
     }
@@ -161,16 +161,16 @@ export class IOExt {
     static async File_CreateText(path: IOExt_DirectoryHandle, name: string, data: string): Promise<boolean> {
         let file: IOExt_FileHandle;
         if (this._envWeb) {
-           // let dir = (path.state as FileSystemDirectoryHandle);
-           // await dir.requestPermission({ mode: "readwrite" });
+            // let dir = (path.state as FileSystemDirectoryHandle);
+            // await dir.requestPermission({ mode: "readwrite" });
             let _file = await (path.state as FileSystemDirectoryHandle).getFileHandle(name, { "create": true });
 
-            file = new IOExt_FileHandle(_file);
+            file = new IOExt_FileHandle(_file, path);
         }
         else {
             let newname = path.state as string + "/" + name;
 
-            file = new IOExt_FileHandle(newname);
+            file = new IOExt_FileHandle(newname, path);
         }
         return await this.File_WriteText(file, data);
     }
@@ -179,12 +179,12 @@ export class IOExt {
         if (this._envWeb) {
             let _file = await (path.state as FileSystemDirectoryHandle).getFileHandle(name, { "create": true });
 
-            file = new IOExt_FileHandle(_file);
+            file = new IOExt_FileHandle(_file, path);
         }
         else {
             let newname = path.state as string + "/" + name;
 
-            file = new IOExt_FileHandle(newname);
+            file = new IOExt_FileHandle(newname, path);
         }
         return await this.File_WriteBinary(file, data);
     }
@@ -201,10 +201,10 @@ export class IOExt {
 
                     let u: FileSystemHandleUnion = handle;
                     if (u.kind == "file") {
-                        out.push(new IOExt_FileHandle(u))
+                        out.push(new IOExt_FileHandle(u, path))
                     }
                     else {
-                        out.push(new IOExt_DirectoryHandle(u));
+                        out.push(new IOExt_DirectoryHandle(u, path));
                     }
                 }
             }
@@ -213,10 +213,10 @@ export class IOExt {
                 let all = await Neutralino.filesystem.readDirectory(path.state as string);
                 for (var i = 0; i < all.length; i++) {
                     if (all[i].type == "FILE") {
-                        out.push(new IOExt_FileHandle(all[i].path));
+                        out.push(new IOExt_FileHandle(all[i].path, path));
                     }
                     else {
-                        out.push(new IOExt_DirectoryHandle(all[i].path));
+                        out.push(new IOExt_DirectoryHandle(all[i].path, path));
                     }
                 }
 
@@ -231,7 +231,7 @@ export class IOExt {
         if (this._envWeb) {
             try {
                 let file = await (path.state as FileSystemDirectoryHandle).getDirectoryHandle(name, { "create": true });
-                return new IOExt_DirectoryHandle(file);
+                return new IOExt_DirectoryHandle(file, path);
             }
             catch (e) {
                 this.Log("Directory_Create error:" + e);
@@ -240,7 +240,7 @@ export class IOExt {
         else {
             let newname = path.state as string + "/" + name;
             await Neutralino.filesystem.createDirectory(newname);
-            return new IOExt_DirectoryHandle(newname);
+            return new IOExt_DirectoryHandle(newname, path);
         }
     }
     static async Directory_Remove(path: IOExt_DirectoryHandle, name: string): Promise<boolean> {
@@ -290,12 +290,14 @@ enum IOExt_LoggerType {
     ERROR,
 }
 export interface IOExt_Handle {
-    isfile: boolean;
-    name: string;
+    readonly isfile: boolean;
+    readonly name: string;
+    readonly fullname: string;
+    readonly parent: IOExt_DirectoryHandle;
 }
 type IOExt_HandleUnion = IOExt_FileHandle | IOExt_DirectoryHandle;
 export class IOExt_FileHandle implements IOExt_Handle {
-    constructor(_state: FileSystemFileHandle | string) {
+    constructor(_state: FileSystemFileHandle | string, _parent: IOExt_DirectoryHandle) {
         this.state = _state;
         this.isfile = true;
         if (IOExt.IsWebEnv()) {
@@ -305,13 +307,17 @@ export class IOExt_FileHandle implements IOExt_Handle {
             let i = (_state as string).lastIndexOf("/");
             this.name = (_state as string).substring(i + 1);
         }
+        this.fullname = _parent == null ? this.name : (_parent.fullname + "/" + this.name);
+        this.parent = this.parent;
     }
-    state: FileSystemFileHandle | string;
-    name: string
-    isfile: boolean;
+    readonly state: FileSystemFileHandle | string;
+    readonly name: string
+    readonly isfile: boolean;
+    readonly fullname: string;
+    readonly parent: IOExt_DirectoryHandle;
 }
-export class IOExt_DirectoryHandle {
-    constructor(_state: FileSystemDirectoryHandle | string) {
+export class IOExt_DirectoryHandle implements IOExt_Handle {
+    constructor(_state: FileSystemDirectoryHandle | string, _parent: IOExt_DirectoryHandle) {
         this.state = _state;
         this.isfile = false;
         if (IOExt.IsWebEnv()) {
@@ -321,8 +327,12 @@ export class IOExt_DirectoryHandle {
             let i = (_state as string).lastIndexOf("/");
             this.name = (_state as string).substring(i + 1);
         }
+        this.fullname = _parent == null ? this.name : (_parent.fullname + "/" + this.name);
+        this.parent = this.parent;
     }
-    state: FileSystemDirectoryHandle | string;
-    name: string
-    isfile: boolean;
+    readonly state: FileSystemDirectoryHandle | string;
+    readonly name: string
+    readonly isfile: boolean;
+    readonly fullname: string;
+    readonly parent: IOExt_DirectoryHandle;
 }

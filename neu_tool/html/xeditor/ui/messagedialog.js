@@ -28,10 +28,10 @@ export class MessageDialog {
                 let group = new QUI_Window();
                 group.title.text = "信息";
                 container.AddChild(group);
-                group.localRect.offsetX1 = 100;
-                group.localRect.offsetY1 = 100;
-                group.localRect.offsetX2 = -100;
-                group.localRect.offsetY2 = -100;
+                group.localRect.offsetX1 = 120;
+                group.localRect.offsetY1 = 120;
+                group.localRect.offsetX2 = -120;
+                group.localRect.offsetY2 = -120;
                 let innermenu = new QUI_Grow();
                 innermenu.direction = QUI_Direction2.Horizontal;
                 group.container.AddChild(innermenu);
