@@ -1,4 +1,6 @@
-import { Color, QUI_BaseContainer, QUI_Button, QUI_Canvas, QUI_Container, QUI_Direction2, QUI_ElementType, QUI_Group, QUI_Grow, QUI_HAlign, QUI_Image, QUI_Label, QUI_Overlay, QUI_Panel_Scroll, QUI_Window, Resources, tt } from "../../ttlayer2/ttlayer2.js";
+import { Color, QUI_BaseContainer, QUI_Button, QUI_Canvas, QUI_Container, QUI_Direction2, QUI_ElementType, QUI_Group, QUI_Grow, QUI_HAlign, QUI_Image, QUI_Label, QUI_Overlay, QUI_Panel_Scroll, QUI_Window, Resources, Texture, TextureFormat, tt } from "../../ttlayer2/ttlayer2.js";
+import { TTPathTool } from "../../ttlayer2/utils/path/pathtool.js";
+import { FindTool } from "../../xioext/findtool.js";
 import { IOExt, IOExt_FileHandle } from "../../xioext/ioext.js";
 import { Working } from "../work/working.js";
 import { Dialog_Message } from "./dialog_message.js";
@@ -6,7 +8,7 @@ import { PickAbleItem } from "./pickitem.js";
 
 
 
-export class Picker_TTJson {
+export class Picker_Image {
     static finish: boolean = false;
     static async ShowPick(canvas: QUI_Canvas): Promise<IOExt_FileHandle> {
         let container = new QUI_Container();
@@ -39,15 +41,11 @@ export class Picker_TTJson {
         btn0.SetText("打开选中");
         innermenu.AddChild(btn0);
 
-
         let btn1 = new QUI_Button();
         btn1.localRect.setBySize(100, 22);
-        btn1.SetText("新建 tt.json");
-        btn1.OnClick = async () => {
-            this.OnNewFile(canvas);
-
-        }
+        btn1.SetText("取消");
         innermenu.AddChild(btn1);
+
 
         let panelScroll = new QUI_Panel_Scroll();
 
@@ -57,10 +55,14 @@ export class Picker_TTJson {
             this.OnPick(canvas, picked);
         }
 
+        btn1.OnClick = () => {
+            this.finish = true;
+        }
         group.container.AddChild(panelScroll);
         panelScroll.localRect.offsetY1 = 22;
 
-        let fs = await Working.FindFile([".tt.json"], 3);
+
+        let fs = await FindTool.FindAllFile(Working.editfile.parent, [".png", ".jpg", ".jpeg"], 3);
 
 
 
@@ -68,12 +70,12 @@ export class Picker_TTJson {
             let con = new PickAbleItem<IOExt_FileHandle>(fs[i]);
             con.localRect.setBySize(500, 25);
             panelScroll.container.AddChild(con);
-            // let ext = TTPathTool.GetExt(result[i].name).toLowerCase();
-            // if (ext == ".jpg" || ext == ".png") {
-            //     let img = new QUI_Image();
-            //     let tex = await this.LoadFileToTexture(result[i]);
-            //     con.image.SetByTexture(tex);
-            // }
+            //let ext = TTPathTool.GetExt(fs[i].name).toLowerCase();
+            //if (ext == ".jpg" || ext == ".png") {
+            //let img = new QUI_Image();
+            let tex = await this.LoadFileToTexture(fs[i]);
+            con.image.SetByTexture(tex);
+            //}
 
 
             con.label.text = fs[i].fullname;
@@ -91,8 +93,23 @@ export class Picker_TTJson {
         }
 
         canvas.RemoveChild(container);
-
+        this.FreeTexture();
         return picked;
+    }
+    private static texs: Texture[] = []
+    private static async LoadFileToTexture(file: IOExt_FileHandle) {
+        let bin = await IOExt.File_ReadBinary(file);
+        let b = new Blob([bin]);
+        let texdata = await tt.loaderex.LoadImageDataAsync(URL.createObjectURL(b));
+        let tex = new Texture(tt.graphic.GetWebGL(), texdata.width, texdata.height, TextureFormat.RGBA32, texdata.data);
+        this.texs.push(tex);
+        return tex;
+    }
+    private static FreeTexture() {
+        for (var i = 0; i < this.texs.length; i++) {
+            this.texs[i].Destory();
+        }
+        this.texs = [];
     }
     private static async OnPick(canvas: QUI_Canvas, item: IOExt_FileHandle) {
 
@@ -100,15 +117,8 @@ export class Picker_TTJson {
             await Dialog_Message.Show(canvas, "Pick Empty.");
             return;
         }
-       
-        this.finish = true;
-    }
-    private static async OnNewFile(canvas: QUI_Canvas) {
 
-        let txt = await tt.input.Prompt("输入文件名", "new1.tt.json", 20, Resources.GetDefFont().GetFont());
-        console.log("input name:" + txt);
-        this.finish = true;
-        Working.editfile = await Working.CreateJsonFile(canvas, txt);
         this.finish = true;
     }
+
 }

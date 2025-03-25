@@ -14,6 +14,10 @@ export class Working {
         let result = await FindTool.FindAllFile(this.root, filter, depth);
         return result;
     }
+    static async FindFileReletive(path: IOExt_DirectoryHandle, filter: string[], depth: number = 3) {
+        let result = await FindTool.FindAllFile(path, filter, depth);
+        return result;
+    }
     static async GetFile(name: string, path: IOExt_DirectoryHandle): Promise<IOExt_FileHandle> {
         let list = await IOExt.Directory_List(this.root);
         for (var i = 0; i < list.length; i++) {

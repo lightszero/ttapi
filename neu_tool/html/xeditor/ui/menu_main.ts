@@ -4,7 +4,8 @@ import { MainLogic } from "../mainlogic.js";
 import { Working } from "../work/working.js";
 import { Editor_Main } from "./editor_main.js";
 import { Dialog_Message } from "./dialog_message.js";
-import { PickTTDialog } from "./picker_ttjson.js";
+import { Picker_TTJson } from "./picker_ttjson.js";
+import { Picker_Image } from "./picker_image.js";
 
 export class Menu_Main {
     static Init(canvas: QUI_Canvas) {
@@ -88,13 +89,16 @@ export class Menu_Main {
         let r = await IOExt.Picker_Folder();
         if (r != null) {
             Working.root = r;
-            await PickTTDialog.Show(canvas);//这个对话框 会调用 WorkingDir.SetEditFile
+            Working.editfile = await Picker_TTJson.ShowPick(canvas);//这个对话框 会调用 WorkingDir.SetEditFile
             Editor_Main.Open(canvas);
         }
 
     }
 
     static async OnSpriteAdd(canvas: QUI_Canvas) {
-
+        if (Working.editfile == null) {
+            Dialog_Message.Show(canvas, "Error editfile.");
+        }
+        var imagefile = await Picker_Image.ShowPick(canvas);
     }
 }

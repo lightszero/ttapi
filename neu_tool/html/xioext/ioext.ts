@@ -308,7 +308,7 @@ export class IOExt_FileHandle implements IOExt_Handle {
             this.name = (_state as string).substring(i + 1);
         }
         this.fullname = _parent == null ? this.name : (_parent.fullname + "/" + this.name);
-        this.parent = this.parent;
+        this.parent = _parent;
     }
     readonly state: FileSystemFileHandle | string;
     readonly name: string
@@ -328,7 +328,7 @@ export class IOExt_DirectoryHandle implements IOExt_Handle {
             this.name = (_state as string).substring(i + 1);
         }
         this.fullname = _parent == null ? this.name : (_parent.fullname + "/" + this.name);
-        this.parent = this.parent;
+        this.parent = _parent;
     }
     readonly state: FileSystemDirectoryHandle | string;
     readonly name: string
