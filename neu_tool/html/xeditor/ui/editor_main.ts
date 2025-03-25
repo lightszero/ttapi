@@ -1,4 +1,4 @@
-import { QUI_Canvas, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Label, QUI_Panel, QUI_Panel_Scroll, QUI_Panel_Split, TTJson } from "../../ttlayer2/ttlayer2.js";
+import { QUI_Canvas, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Label, QUI_Panel, QUI_Panel_Scroll, QUI_Panel_Split, TTJson, TTPackageMgr } from "../../ttlayer2/ttlayer2.js";
 import { IOExt } from "../../xioext/ioext.js";
 import { Working } from "../work/working.js";
 import { Dialog_Message } from "./dialog_message.js";
@@ -65,24 +65,24 @@ export class Editor_Main {
             split.getPanel1().container.AddChild(anipanel);
         }
     }
-    static async Open(canvas:QUI_Canvas) {
-        if(Working.editfile==null)
-        {
-            await Dialog_Message.Show(canvas,"没选择文件");
+    static async Open(canvas: QUI_Canvas) {
+        if (Working.editfile == null) {
+            await Dialog_Message.Show(canvas, "没选择文件");
         }
         Working.ttjson = JSON.parse(await IOExt.File_ReadText(Working.editfile)) as TTJson;
         this.editTitle.text = Working.editfile.fullname;
 
+
+    }
+    // 静态方法，用于更新图片
+    static async UpdatePics() {
         this.scrollPic.container.RemoveChildAll();
         for (var key in Working.ttjson.pics) {
             let item = new PickItem<string>(key);
+            item.label.text = key;
+            //TTPackageMgr.LoadPic(Working.ttjson.pics[key])
             this.scrollPic.container.AddChild(item);
         }
-        this.scrollAni.container.RemoveChildAll();
-    }
-    // 静态方法，用于更新图片
-    static async UpdatePics()
-    {
 
     }
 }

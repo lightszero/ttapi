@@ -3,6 +3,7 @@ import { Color, QUI_BaseContainer, QUI_ElementType, QUI_HAlign, QUI_Image, QUI_L
 export class PickItem<T> extends QUI_BaseContainer {
     constructor(context: T) {
         super();
+        this.localRect.setBySize(500, 25);
         let ol = new QUI_Overlay();
         this.AddChild(ol);
         ol.OnPress = () => {
