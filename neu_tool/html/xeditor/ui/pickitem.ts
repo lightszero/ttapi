@@ -18,6 +18,7 @@ export class PickItem<T> extends QUI_BaseContainer {
         imgback.localColor.A = 0;
 
         let img = this.image = new QUI_Image();
+        img.keepAspect = true;
         //let tex = await this.LoadFileToTexture(result[i]);
         //img.SetByTexture(tex);
         img.localRect.setByPosAndSize(0, 0, 24, 24);
@@ -83,6 +84,7 @@ export class CheckItem<T> extends QUI_BaseContainer {
         imgback.localColor.A = 0;
 
         let img = this.image = new QUI_Image();
+        img.keepAspect = true;
         //let tex = await this.LoadFileToTexture(result[i]);
         //img.SetByTexture(tex);
         // 将QUI_Image对象的localRect属性设置为指定位置和大小

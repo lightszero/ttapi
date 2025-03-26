@@ -32,14 +32,31 @@ export class QUI_Image extends QUI.QUI_BaseElement {
         return QUI.QUI_ElementType.Element_Image;
     }
     sprite: Sprite | null;
-
+    keepAspect: boolean = false;
 
     OnRender(_canvas: QUI_Canvas): void {
 
 
         //this.Render_impl();
         if (this.sprite != null) {
-            this.sprite.RenderRect(_canvas.batcherUI, this.GetWorldRect(), this._colorFinal, -1);
+            let rect = this.GetWorldRect();
+            if (this.keepAspect) {
+
+                var oldheight = rect.Height;
+                var oldwidth = rect.Width;
+                var asp = this.sprite.pixelheight / this.sprite.pixelwidth;
+                var asprect = oldheight / oldwidth;
+                if (asprect > asp)//越大越瘦高
+                {
+                    rect.Height = oldwidth * asp;
+                    rect.Y += (oldheight - rect.Height) / 2;
+                }
+                else if (asprect < asp) {
+                    rect.Width = oldheight / asp;
+                    rect.X += (oldwidth - rect.Width) / 2;
+                }
+            }
+            this.sprite.RenderRect(_canvas.batcherUI, rect, this._colorFinal, -1);
         }
         super.OnRender(_canvas);
     }

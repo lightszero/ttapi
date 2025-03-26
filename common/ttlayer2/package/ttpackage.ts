@@ -1,5 +1,5 @@
 import { tt } from "../../ttapi/ttapi.js"
-import { Rectangle, SpriteData, TextureFormat } from "../ttlayer2.js";
+import { Rectangle, Sha256, SpriteData, TextureFormat } from "../ttlayer2.js";
 import { TTPathTool } from "../utils/path/pathtool.js";
 
 //Json 格式描述
@@ -114,7 +114,7 @@ export class TTPicData {
     height: number;
     pivotX: number;
     pivotY: number;
-    data: Uint8Array | Uint8ClampedArray;
+    data: Uint8Array | Uint8ClampedArray | null; //if data=null srcfile 就是文件 ，否则srcfile 是 data 的 hash
     srcfile: string | null;
     srcrect: Rectangle | null;
     // 从文本中解析出TTPicData对象
@@ -147,7 +147,7 @@ export class TTPicData {
         let data = new TTPicData();
         //可以硬填hex数据
         if (picname.indexOf("hex:") == 0 || picname.indexOf("HEX:") == 0) {
-            data.srcfile = null;
+
             let width = parseInt(picname.substring(4, 6), 16);
             let height = parseInt(picname.substring(6, 8), 16);
             data.srcrect = new Rectangle(0, 0, width, height);
@@ -155,9 +155,13 @@ export class TTPicData {
             for (let i = 8; i <= picname.length - 2; i += 2) {
                 data.data[i / 2 - 4] = parseInt(picname.substring(i, i + 2), 16);
             }
+            let sha256 = new Sha256();
+            sha256.update(data.data);
+            data.srcfile = sha256.hex();//srcfile 是hash
         }
         else {
-            data.srcfile = picname;
+            data.srcfile = picname;//srcfile 是 file
+            data.data = null;
         }
         data.pivotX = pivotX;
         data.pivotY = pivotY;

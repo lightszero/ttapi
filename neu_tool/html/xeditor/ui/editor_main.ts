@@ -1,5 +1,6 @@
-import { QUI_Canvas, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Label, QUI_Panel, QUI_Panel_Scroll, QUI_Panel_Split, TTJson, TTPackageMgr } from "../../ttlayer2/ttlayer2.js";
+import { QUI_Canvas, QUI_Direction2, QUI_Group, QUI_HAlign, QUI_Label, QUI_Panel, QUI_Panel_Scroll, QUI_Panel_Split, SpriteData, TextureFormat, tt, TTJson, TTPackageMgr, TTPicData } from "../../ttlayer2/ttlayer2.js";
 import { IOExt } from "../../xioext/ioext.js";
+import { EditorSpritePool } from "../work/spritepool.js";
 import { Working } from "../work/working.js";
 import { Dialog_Message } from "./dialog_message.js";
 import { PickItem } from "./pickitem.js";
@@ -76,10 +77,35 @@ export class Editor_Main {
     }
     // 静态方法，用于更新图片
     static async UpdatePics() {
+        if (Working.texturePool == null) {
+            Working.texturePool = new EditorSpritePool();
+        }
+
         this.scrollPic.container.RemoveChildAll();
         for (var key in Working.ttjson.pics) {
+            let value = TTPicData.FromText(Working.ttjson.pics[key]);
+            if (value.data == null) {
+                let files = await Working.GetFileReletive(Working.editfile.parent, value.srcfile);
+                let data = await IOExt.File_ReadBinary(files);
+                value.data = new Uint8Array(data);
+
+            }
+
+            let blob = new Blob([value.data]);
+            let imgdata = await tt.loaderex.LoadImageDataAsync(URL.createObjectURL(blob));
+            let spritedata = new SpriteData();
+            spritedata.pivotX = value.pivotX;
+            spritedata.pivotY = value.pivotY;
+            spritedata.data = imgdata.data;
+            spritedata.format = TextureFormat.RGBA32;
+            spritedata.width = imgdata.width;
+            spritedata.height = imgdata.height;
+
+            let sprite = await Working.texturePool.SetPic(key, value.srcfile, spritedata);
+
             let item = new PickItem<string>(key);
             item.label.text = key;
+            item.image.SetBySprite(sprite);
             //TTPackageMgr.LoadPic(Working.ttjson.pics[key])
             this.scrollPic.container.AddChild(item);
         }

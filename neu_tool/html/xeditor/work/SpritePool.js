@@ -1,0 +1,45 @@
+import { Material, Resources, Sprite, Texture, tt } from "../../ttlayer2/ttlayer2.js";
+//Editor模式管理Sprite,全都是独立图片
+export class EditorSpritePool {
+    constructor() {
+        this.mapPicName = {};
+        this.mapPic = {};
+    }
+    LoadPic(name) {
+    }
+    Render(ttpic, worldpos, worldscale) {
+        let s = ttpic.cacheobj;
+        //pivot?
+        s.RenderWithPivot(this.batcher, worldpos, worldscale);
+    }
+    GetPicName(filename) {
+        return this.mapPicName[filename];
+    }
+    SetPic(name, filename, data) {
+        if (this.mapPicName[filename] != undefined) {
+            if (name != this.mapPicName[filename])
+                throw "already have a picfile :" + filename + " with name:" + name;
+        }
+        this.mapPicName[filename] = name;
+        let texture = new Texture(tt.graphic.GetWebGL(), data.width, data.height, data.format, data.data);
+        let sprite;
+        if (this.mapPic[name] != undefined) {
+            //销毁旧贴图 并更新
+            let s = this.mapPic[name];
+            s[1].Destory();
+            s[0].material.uniformTexs["tex"].value = texture;
+            sprite = s[0];
+        }
+        else {
+            //创建新精灵
+            let mat = new Material(Resources.GetShaderProgram("simple"));
+            mat.uniformTexs["tex"].value = texture;
+            sprite = new Sprite(mat);
+            this.mapPic[name] = [sprite, texture];
+        }
+        sprite.pivotX = data.pivotX;
+        sprite.pivotY = data.pivotY;
+        return sprite;
+    }
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic3ByaXRlcG9vbC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInNwcml0ZXBvb2wudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsT0FBTyxFQUFxQixRQUFRLEVBQWtCLFNBQVMsRUFBRSxNQUFNLEVBQWMsT0FBTyxFQUFFLEVBQUUsRUFBeUIsTUFBTSw0QkFBNEIsQ0FBQztBQUU1SiwwQkFBMEI7QUFDMUIsTUFBTSxPQUFPLGdCQUFnQjtJQUE3QjtRQWFJLGVBQVUsR0FBNkIsRUFBRSxDQUFBO1FBQ3pDLFdBQU0sR0FBd0MsRUFBRSxDQUFBO0lBaUNwRCxDQUFDO0lBN0NHLE9BQU8sQ0FBQyxJQUFZO0lBRXBCLENBQUM7SUFFRCxNQUFNLENBQUMsS0FBbUIsRUFBRSxRQUFpQixFQUFFLFVBQW1CO1FBQzlELElBQUksQ0FBQyxHQUFHLEtBQUssQ0FBQyxRQUFrQixDQUFDO1FBQ2pDLFFBQVE7UUFDUixDQUFDLENBQUMsZUFBZSxDQUFDLElBQUksQ0FBQyxPQUFPLEVBQUUsUUFBUSxFQUFFLFVBQVUsQ0FBQyxDQUFDO0lBQzFELENBQUM7SUFLRCxVQUFVLENBQUMsUUFBZ0I7UUFDdkIsT0FBTyxJQUFJLENBQUMsVUFBVSxDQUFDLFFBQVEsQ0FBQyxDQUFDO0lBQ3JDLENBQUM7SUFDRCxNQUFNLENBQUMsSUFBWSxFQUFFLFFBQWdCLEVBQUUsSUFBZ0I7UUFDbkQsSUFBSSxJQUFJLENBQUMsVUFBVSxDQUFDLFFBQVEsQ0FBQyxJQUFJLFNBQVMsRUFBRSxDQUFDO1lBQ3pDLElBQUksSUFBSSxJQUFJLElBQUksQ0FBQyxVQUFVLENBQUMsUUFBUSxDQUFDO2dCQUNqQyxNQUFNLDBCQUEwQixHQUFHLFFBQVEsR0FBRyxhQUFhLEdBQUcsSUFBSSxDQUFDO1FBQzNFLENBQUM7UUFDRCxJQUFJLENBQUMsVUFBVSxDQUFDLFFBQVEsQ0FBQyxHQUFHLElBQUksQ0FBQztRQUVqQyxJQUFJLE9BQU8sR0FBRyxJQUFJLE9BQU8sQ0FBQyxFQUFFLENBQUMsT0FBTyxDQUFDLFFBQVEsRUFBRSxFQUFFLElBQUksQ0FBQyxLQUFLLEVBQUUsSUFBSSxDQUFDLE1BQU0sRUFBRSxJQUFJLENBQUMsTUFBTSxFQUFFLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQztRQUdsRyxJQUFJLE1BQWMsQ0FBQztRQUNuQixJQUFJLElBQUksQ0FBQyxNQUFNLENBQUMsSUFBSSxDQUFDLElBQUksU0FBUyxFQUFFLENBQUM7WUFDakMsV0FBVztZQUNYLElBQUksQ0FBQyxHQUFHLElBQUksQ0FBQyxNQUFNLENBQUMsSUFBSSxDQUFDLENBQUM7WUFDMUIsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLE9BQU8sRUFBRSxDQUFDO1lBQ2YsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDLFFBQVEsQ0FBQyxXQUFXLENBQUMsS0FBSyxDQUFDLENBQUMsS0FBSyxHQUFHLE9BQU8sQ0FBQztZQUNqRCxNQUFNLEdBQUcsQ0FBQyxDQUFDLENBQUMsQ0FBQyxDQUFDO1FBQ2xCLENBQUM7YUFDSSxDQUFDO1lBQ0YsT0FBTztZQUNQLElBQUksR0FBRyxHQUFHLElBQUksUUFBUSxDQUFDLFNBQVMsQ0FBQyxnQkFBZ0IsQ0FBQyxRQUFRLENBQUMsQ0FBQyxDQUFDO1lBQzdELEdBQUcsQ0FBQyxXQUFXLENBQUMsS0FBSyxDQUFDLENBQUMsS0FBSyxHQUFHLE9BQU8sQ0FBQztZQUN2QyxNQUFNLEdBQUcsSUFBSSxNQUFNLENBQUMsR0FBRyxDQUFDLENBQUM7WUFDekIsSUFBSSxDQUFDLE1BQU0sQ0FBQyxJQUFJLENBQUMsR0FBRyxDQUFDLE1BQU0sRUFBRSxPQUFPLENBQUMsQ0FBQztRQUMxQyxDQUFDO1FBQ0QsTUFBTSxDQUFDLE1BQU0sR0FBRyxJQUFJLENBQUMsTUFBTSxDQUFDO1FBQzVCLE1BQU0sQ0FBQyxNQUFNLEdBQUcsSUFBSSxDQUFDLE1BQU0sQ0FBQztRQUM1QixPQUFPLE1BQU0sQ0FBQztJQUNsQixDQUFDO0NBQ0oifQ==

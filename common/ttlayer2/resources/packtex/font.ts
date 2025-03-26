@@ -85,9 +85,9 @@ export class Font {
         for (var i = 0; i < text.length; i++) {
             let s = this.GetCharSprite(text.charCodeAt(i));
             if (s != null) {
-                //let rect = new Rectangle(pos.X + xadd, pos.Y, s.totalWidth * scale.X, s.totalHeight * scale.Y);
-                //s.RenderRect(bathcer, rect, color)
-                s.Render(bathcer, new Vector2((pos.X | 0) + xadd, pos.Y | 0), scale, color);
+                let rect = new Rectangle(pos.X + xadd, pos.Y, s.pixelwidth * scale.X, s.pixelheight * scale.Y);
+                s.RenderRect(bathcer, rect, color)
+                //s.Render(bathcer, new Vector2((pos.X | 0) + xadd, pos.Y | 0), scale, color);
                 xadd += (s.pixelwidth * scale.X);
             }
             else {

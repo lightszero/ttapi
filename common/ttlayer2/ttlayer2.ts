@@ -14,7 +14,7 @@ export * from "./graphics/pipeline/drawlayer.js";
 export * from "./graphics/pipeline/drawlayer_gui.js";
 
 export * from "./math/vector.js";
-
+export * from "./math/sha256.js"
 
 export * from "./utils/text/texttool.js";
 

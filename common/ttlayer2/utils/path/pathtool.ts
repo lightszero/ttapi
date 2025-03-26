@@ -1,7 +1,7 @@
 
 
 export class TTPathTool {
-    
+
     static GetFileName(filename: string) {
         if (filename.includes("/")) {
             let fi = filename.lastIndexOf("/");
@@ -17,6 +17,32 @@ export class TTPathTool {
             return shortname
         }
         return filename;
+    }
+    static GetFirstPath(filename: string): string {
+        if (filename.includes("/")) {
+            let fi = filename.indexOf("/");
+            if (fi < 0)
+                return filename;
+
+            let shortname = filename.substring(0, fi);
+
+            return shortname
+
+        }
+        if (filename.includes("\\")) {
+            let fi = filename.indexOf("\\");
+
+
+
+            let shortname = filename.substring(0, fi);
+
+            return shortname
+        }
+        return "";
+    }
+    static RemoveFirstPath(filename: string): string {
+        let path = this.GetFirstPath(filename);
+        return filename.substring(path.length + 1);
     }
     static GetPathName(filename: string): string {
         if (filename.includes("/")) {

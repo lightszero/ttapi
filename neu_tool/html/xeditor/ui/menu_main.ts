@@ -96,8 +96,9 @@ export class Menu_Main {
     }
 
     static async OnSpriteAdd(canvas: QUI_Canvas) {
-        if (Working.editfile == null) {
+        if (Working.editfile == null || Working.root == null) {
             Dialog_Message.Show(canvas, "Error editfile.");
+            return;
         }
         var imagefile = await Picker_Image.ShowPick(canvas);
         if (Working.ttjson.pics == null)

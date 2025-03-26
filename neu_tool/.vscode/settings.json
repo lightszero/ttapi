@@ -1,5 +1,10 @@
 {
     "files.exclude": {
         "**/*.js": true
+    },
+    "liveServer.settings.https": {
+        "cert": "d:/git/thinapi/https/s1+3.pem",
+        "key": "d:/git/thinapi/https/s1+3-key.pem",
+        "enable": true
     }
 }
