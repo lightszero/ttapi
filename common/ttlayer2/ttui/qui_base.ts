@@ -324,8 +324,7 @@ export abstract class QUI_BaseElement {
     OnTouch(canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
         return false;
     }
-    OnWheel(canvas:QUI_Canvas,dx:number,dy:number,dz:number):boolean
-    {
+    OnWheel(canvas: QUI_Canvas, dx: number, dy: number, dz: number): boolean {
         return false;
     }
     OnRender(canvas: QUI_Canvas): void {
@@ -496,14 +495,13 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement {
         }
         return false;
     }
-    OnWheel(canvas:QUI_Canvas,dx:number,dy:number,dz:number):boolean
-    {
-        
+    OnWheel(canvas: QUI_Canvas, dx: number, dy: number, dz: number): boolean {
+
         if (this._children != null) {
             for (var i = this._children.length - 1; i >= 0; i--) {
                 let child = this._children[i];
                 if (child.Enable) {
-                    let kill = child.OnWheel(canvas, dx,dy,dz);
+                    let kill = child.OnWheel(canvas, dx, dy, dz);
                     if (kill)
                         return true;
                 }
@@ -541,13 +539,15 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement {
     GetPicked(): QUI_BaseElement {
         return this._picked;
     }
-
+    OnPick: (pick: QUI_BaseElement) => void;
     Pick(pick: QUI_BaseElement) {
         if (this._picked == pick)
             return;
         this._picked?.OnUnFocus();
         this._picked = pick;
         this._picked?.OnFocus();
+        if (this.OnPick != null)
+            this.OnPick(this._picked);
     }
     PickAt(index: number) {
         this.Pick(this._children[index]);
@@ -558,10 +558,9 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement {
     }
 }
 
-export class QUI_Container extends QUI_BaseContainer
-{
+export class QUI_Container extends QUI_BaseContainer {
 
     GetElementType(): QUI_ElementType {
         return QUI_ElementType.Element_Container;
-    }    
+    }
 }

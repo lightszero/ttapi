@@ -1,4 +1,4 @@
-import { QUI_Canvas, TTJson, TTPackage } from "../../ttlayer2/ttlayer2.js";
+import { QUI_Canvas, SpriteData, TextureFormat, tt, TTJson, TTPackage } from "../../ttlayer2/ttlayer2.js";
 import { TTPathTool } from "../../ttlayer2/utils/path/pathtool.js";
 import { FindTool } from "../../xioext/findtool.js";
 import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "../../xioext/ioext.js";
@@ -12,7 +12,81 @@ export class Working {
 
     static ttjson: TTJson;
 
-    static texturePool: EditorSpritePool;
+    static histroy: string[];//将ttjson的历史存起来
+
+    static texturePool: EditorSpritePool = new EditorSpritePool();
+
+    //将当前ttjson记录历史
+    static async Rec_History() {
+
+    }
+    //回到历史位置
+    static async Restore_History(pos: number = -1) {
+
+    }
+    static async Cmd_AddImgsFromFile(imagefile: IOExt_FileHandle[]) {
+        let start = false;
+        for (var i = 0; i < imagefile.length; i++) {
+
+            var name = imagefile[i].name;
+
+            var fullname = this.GetPathReletiveEditFile(imagefile[i].fullname);
+
+            let usename: string = this.GetUniqueImgName(name);
+            if (this.texturePool.HavePic(fullname)) {
+                //这张图片已经在texture pool 里面了
+                let name = this.texturePool.GetPicName(fullname);
+                if (this.ttjson.pics[name] != undefined) {
+                    //重复图片，不添加了
+                    continue;
+                }
+                //这张图片已经在texture pool 里面了,但是并没出现在ttjson中，改名添加
+
+                this.texturePool.SetPicNameOnly(usename, fullname);
+            }
+            else {
+                //需要加载图片
+
+                let data = await IOExt.File_ReadBinary(imagefile[i]);
+
+                let blob = new Blob([data]);
+                let imgdata = await tt.loaderex.LoadImageDataAsync(URL.createObjectURL(blob));
+                let spritedata = new SpriteData();
+                spritedata.pivotX = 0;
+                spritedata.pivotY = 0;
+                spritedata.data = imgdata.data;
+                spritedata.format = TextureFormat.RGBA32;
+                spritedata.width = imgdata.width;
+                spritedata.height = imgdata.height;
+
+                this.texturePool.SetPic(name, fullname, spritedata);
+            }
+
+            if (start == false) {
+                start = true;
+                this.Rec_History();
+            }
+            Working.ttjson.pics[usename] = fullname;
+
+
+
+        }
+    }
+    static GetUniqueImgName(name: string) {
+        //先算个不重复的名字，不一定用，先占着
+        //先得出文件名，需要一个图片文件名的cache
+        var usename = name//最终使用的图片名称
+        let rid = 0;
+        while (Working.ttjson.pics[usename] != null) {
+            rid++;
+            usename = name + "_" + rid;
+        }
+        return usename;
+
+    }
+    static async Save(): Promise<boolean> {
+        return await IOExt.File_WriteText(this.editfile, JSON.stringify(this.ttjson, null, 2));
+    }
     static async FindFile(filter: string[], depth: number = 3) {
         let result = await FindTool.FindAllFile(this.root, filter, depth);
         return result;
@@ -21,7 +95,7 @@ export class Working {
         let result = await FindTool.FindAllFile(path, filter, depth);
         return result;
     }
-    static async GetFileReletive(root: IOExt_DirectoryHandle, path: string):Promise<IOExt_FileHandle> {
+    static async GetFileReletive(root: IOExt_DirectoryHandle, path: string): Promise<IOExt_FileHandle> {
         let curpath = TTPathTool.GetFirstPath(path);
         if (curpath == "")
             return this.GetFile(root, path);
@@ -63,7 +137,7 @@ export class Working {
             return null;
         }
 
-        file = await this.GetFile(this.root,name);
+        file = await this.GetFile(this.root, name);
         if (file == null) {
             Dialog_Message.Show(canvas, "Error CreateJsonFile 03:" + name + " 文件创建完却没了");
             return null;

@@ -65,6 +65,19 @@ export class Editor_Main {
             anipanel.container.AddChild(this.scrollAni);
             split.getPanel1().container.AddChild(anipanel);
         }
+
+        //选中图片则编辑图片
+        this.scrollPic.container.OnPick = (_pick) => {
+            let pick = (_pick as PickItem<string>).context;
+            this.EditImg(pick);
+        };
+    }
+    static EditImg(imgname: string) {
+
+    }
+    static EditAni(aniname:string)
+    {
+
     }
     static async Open(canvas: QUI_Canvas) {
         if (Working.editfile == null) {
@@ -72,36 +85,40 @@ export class Editor_Main {
         }
         Working.ttjson = JSON.parse(await IOExt.File_ReadText(Working.editfile)) as TTJson;
         this.editTitle.text = Working.editfile.fullname;
-
+        Editor_Main.UpdatePics();
 
     }
     // 静态方法，用于更新图片
     static async UpdatePics() {
-        if (Working.texturePool == null) {
-            Working.texturePool = new EditorSpritePool();
-        }
+
 
         this.scrollPic.container.RemoveChildAll();
         for (var key in Working.ttjson.pics) {
             let value = TTPicData.FromText(Working.ttjson.pics[key]);
-            if (value.data == null) {
-                let files = await Working.GetFileReletive(Working.editfile.parent, value.srcfile);
-                let data = await IOExt.File_ReadBinary(files);
-                value.data = new Uint8Array(data);
+            let sprite = Working.texturePool.GetPicByFileName(value.srcfile);
 
+            if (sprite == null) {
+                if (value.data == null) {
+                    let files = await Working.GetFileReletive(Working.editfile.parent, value.srcfile);
+                    let data = await IOExt.File_ReadBinary(files);
+                    value.data = new Uint8Array(data);
+
+                }
+                let blob = new Blob([value.data]);
+                let imgdata = await tt.loaderex.LoadImageDataAsync(URL.createObjectURL(blob));
+                let spritedata = new SpriteData();
+                spritedata.pivotX = value.pivotX;
+                spritedata.pivotY = value.pivotY;
+                spritedata.data = imgdata.data;
+                spritedata.format = TextureFormat.RGBA32;
+                spritedata.width = imgdata.width;
+                spritedata.height = imgdata.height;
+
+                sprite = await Working.texturePool.SetPic(key, value.srcfile, spritedata);
             }
+            sprite.pivotX = value.pivotX;
+            sprite.pivotY = value.pivotY;
 
-            let blob = new Blob([value.data]);
-            let imgdata = await tt.loaderex.LoadImageDataAsync(URL.createObjectURL(blob));
-            let spritedata = new SpriteData();
-            spritedata.pivotX = value.pivotX;
-            spritedata.pivotY = value.pivotY;
-            spritedata.data = imgdata.data;
-            spritedata.format = TextureFormat.RGBA32;
-            spritedata.width = imgdata.width;
-            spritedata.height = imgdata.height;
-
-            let sprite = await Working.texturePool.SetPic(key, value.srcfile, spritedata);
 
             let item = new PickItem<string>(key);
             item.label.text = key;

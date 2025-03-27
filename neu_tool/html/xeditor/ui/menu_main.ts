@@ -63,14 +63,41 @@ export class Menu_Main {
                 }
             });
             submenuSprite.items.push({
-                label: "刷新", sprite: null, submenu: null, onaction: () => {
-
+                label: "排序", sprite: null, submenu: null, onaction: () => {
+                    this.OnSpriteSort(canvas);
                 }
             });
+            submenuSprite.items.push({
+                label: "添加嵌入", sprite: null, submenu: null, onaction: () => {
+                    Dialog_Message.Show(canvas, "尚未支持");
+                }
+            });
+            submenuSprite.items.push(
+                {
+                    label: "删除选中", sprite: null, submenu: null, onaction: () => {
+                        Dialog_Message.Show(canvas, "尚未支持");
+                    }
+                }
+            )
         }
         {
-            submenuAnim.items.push({ label: "添加", sprite: null, submenu: null, onaction: null });
-            submenuAnim.items.push({ label: "刷新", sprite: null, submenu: null, onaction: null });
+            submenuAnim.items.push({
+                label: "添加", sprite: null, submenu: null, onaction: () => {
+                    Dialog_Message.Show(canvas, "尚未支持");
+                }
+            });
+            submenuAnim.items.push({
+                label: "排序", sprite: null, submenu: null, onaction: () => {
+                    Dialog_Message.Show(canvas, "尚未支持");
+                }
+            });
+            submenuAnim.items.push({
+                label: "删除选中", sprite: null, submenu: null, onaction: () => {
+                    Dialog_Message.Show(canvas, "尚未支持");
+                }
+            })
+                ;
+
         }
         {
             submenuOther.items.push({
@@ -91,6 +118,7 @@ export class Menu_Main {
             Working.root = r;
             Working.editfile = await Picker_TTJson.ShowPick(canvas);//这个对话框 会调用 WorkingDir.SetEditFile
             Editor_Main.Open(canvas);
+
         }
 
     }
@@ -103,22 +131,26 @@ export class Menu_Main {
         var imagefile = await Picker_Image.ShowPick(canvas);
         if (Working.ttjson.pics == null)
             Working.ttjson.pics = {};
-        for (var i = 0; i < imagefile.length; i++) {
-            var name = imagefile[i].name;
-            var fullname = Working.GetPathReletiveEditFile(imagefile[i].fullname);
-            //先得出文件名，需要一个图片文件名的cache
-            var usename = name//最终使用的图片名称
-            let rid = 0;
-            while (Working.ttjson.pics[usename] != null) {
-                rid++;
-                usename = name + "_" + rid;
-            }
 
+        await Working.Cmd_AddImgsFromFile(imagefile);
 
-            Working.ttjson.pics[usename] = fullname;
-            console.log("add pic:" + fullname);
-
+        await Working.Save();
+        Editor_Main.UpdatePics();
+    }
+    static async OnSpriteSort(canvas: QUI_Canvas) {
+        let keys: string[] = []
+        let oldpic = Working.ttjson.pics;
+        for (var key in Working.ttjson.pics) {
+            keys.push(key);
         }
+        Working.ttjson.pics = {};
+        keys.sort();
+        for (var i = 0; i < keys.length; i++) {
+            let key = keys[i];
+            Working.ttjson.pics[key] = oldpic[key];
+        }
+
+        await Working.Save();
         Editor_Main.UpdatePics();
     }
 }
