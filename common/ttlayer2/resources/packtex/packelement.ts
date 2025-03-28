@@ -13,25 +13,24 @@ export class PackElement {
     constructor(packtexduo: PackTextureDuo) {
         this.packTexDuo = packtexduo;
         this.ElemInit(512, 512);
-        
-      
+
+
     }
-    
-    private material:Material;
-    
-    InitMat():void
-    {
-        this.material= new Material(Resources.GetShaderProgram("default"));
-        this.material.uniformTexs["texRGBA"].value =this.packTexDuo.packRGBA;
-        this.material.uniformTexs["texGray"].value =this.packTexDuo.packGray; 
+
+    private material: Material;
+
+    InitMat(): void {
+        this.material = new Material(Resources.GetShaderProgram("default"));
+        this.material.uniformTexs["texRGBA"].value = this.packTexDuo.packRGBA;
+        this.material.uniformTexs["texGray"].value = this.packTexDuo.packGray;
     }
-    GetMaterial():Material
-    {
+    GetMaterial(): Material {
         return this.material;
     }
 
     ConvertElemToSprite(elem: ElementSprite): Sprite {
         let s = new Sprite(this.material);
+
         s.effect = elem.eff;
         s.uv = new UVRect(elem.uvCenter.X - elem.uvHalfSize.X, elem.uvCenter.Y - elem.uvHalfSize.Y
             ,
@@ -41,7 +40,8 @@ export class PackElement {
         //s.border = new Border(0, 0, 0, 0);
         s.pixelwidth = elem.sizeRB.X - elem.sizeTL.X;
         s.pixelheight = elem.sizeRB.Y - elem.sizeTL.Y;
-
+        s.pivotX = elem.sizeTL.X;
+        s.pivotY = elem.sizeTL.Y;
         s.uvlayer = elem.uvLayer;
         return s;
     }

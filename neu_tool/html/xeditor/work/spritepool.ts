@@ -15,25 +15,33 @@ export class EditorSpritePool implements IAniPlayerAdapter {
 
     mapPicName2FileName: { [id: string]: string } = {}//Name=>FileName
     mapPicFileName2Name: { [id: string]: string } = {}//FileName=>Name
-    mapPic: { [id: string]: [Sprite, Texture] } = {}//FileName=>Sprite
+    mapPic: { [id: string]: [Sprite, Texture, SpriteData] } = {}//FileName=>Sprite
     HavePic(filename: string): boolean {
         return this.mapPic[filename] != undefined;
     }
-    GetPicName(filename: string): string {
-        return this.mapPicFileName2Name[filename];
-    }
-    GetPicByFileName(filename:string):Sprite
-    {
-        let pic =this.mapPic[filename];
-        if(pic==undefined)
+    GetPicName(filename: string): string | null {
+        let name = this.mapPicFileName2Name[filename];
+        if (name == undefined)
             return null;
-        return pic[0];
+        return name;
+    }
+    GetPicByName(name: string): [Sprite, Texture, SpriteData] | null {
+        let filename = this.mapPicName2FileName[name];
+        if (filename == undefined)
+            return null;
+        return this.GetPicByFileName(filename);
+    }
+    GetPicByFileName(filename: string): [Sprite, Texture, SpriteData] | null {
+        let pic = this.mapPic[filename];
+        if (pic == undefined)
+            return null;
+        return pic;
     }
     SetPicNameOnly(name: string, filename: string) {
         this.mapPicName2FileName[name] = filename;
         this.mapPicFileName2Name[filename] = name;
     }
-    SetPic(name: string, filename: string, data: SpriteData): Sprite {
+    SetPic(name: string, filename: string, data: SpriteData): [Sprite, Texture, SpriteData] {
         if (this.mapPic[filename] != undefined) {
             throw "already have a picfile :" + filename + " with name:" + name;
         }
@@ -46,10 +54,10 @@ export class EditorSpritePool implements IAniPlayerAdapter {
             let mat = new Material(Resources.GetShaderProgram("simple"));
             mat.uniformTexs["tex"].value = texture;
             sprite = new Sprite(mat);
-            this.mapPic[filename] = [sprite, texture];
+            this.mapPic[filename] = [sprite, texture, data];
         }
         sprite.pivotX = data.pivotX;
         sprite.pivotY = data.pivotY;
-        return sprite;
+        return [sprite, texture, data];
     }
 }

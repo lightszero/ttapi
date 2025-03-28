@@ -1,10 +1,10 @@
 {
   "pics": {
-    "pw6_sp_000_000.png": "ani/pw6_sp_000_000.png",
-    "pw6_sp_001_000.png": "ani/pw6_sp_001_000.png",
-    "pw6_sp_002_000.png": "ani/pw6_sp_002_000.png",
-    "pw6_sp_003_000.png": "ani/pw6_sp_003_000.png",
-    "pw6_sp_004_000.png": "ani/pw6_sp_004_000.png",
-    "pw6_sp_005_000.png": "ani/pw6_sp_005_000.png"
+    "pw6_sp_000_000.png": "ani/pw6_sp_000_000.png;pivot=34,64",
+    "pw6_sp_001_000.png": "ani/pw6_sp_001_000.png;pivot=32,66",
+    "pw6_sp_002_000.png": "ani/pw6_sp_002_000.png;pivot=32,66",
+    "pw6_sp_004_000.png": "ani/pw6_sp_004_000.png;pivot=34,66",
+    "pw6_sp_005_000.png": "ani/pw6_sp_005_000.png;pivot=32,66",
+    "pw6_sp_003_000.png": "ani/pw6_sp_003_000.png;pivot=30,66"
   }
 }

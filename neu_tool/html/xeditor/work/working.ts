@@ -1,21 +1,46 @@
-import { QUI_Canvas, SpriteData, TextureFormat, tt, TTJson, TTPackage } from "../../ttlayer2/ttlayer2.js";
+import { QUI_Canvas, Sprite, SpriteData, TextureFormat, tt, TTJson, TTPackage, TTPicData } from "../../ttlayer2/ttlayer2.js";
 import { TTPathTool } from "../../ttlayer2/utils/path/pathtool.js";
 import { FindTool } from "../../xioext/findtool.js";
 import { IOExt, IOExt_DirectoryHandle, IOExt_FileHandle } from "../../xioext/ioext.js";
 import { Dialog_Message } from "../ui/dialog_message.js";
 import { EditorSpritePool } from "./spritepool.js";
 
+
+export class EditImage {
+    name: string
+    data: TTPicData
+    sprite: Sprite
+    //spritedata: SpriteData
+    //保存修改
+    Apply() {
+        if (this.data.IsInnerHex()) {
+            this.data.FillHexSrcName(this.data.data);
+        }
+        let str = this.data.srcfile;
+        str += ";pivot=" + this.data.pivotX + "," + this.data.pivotY;
+        Working.Cmd_SetImg(this.name, str);
+
+    }
+}
 export class Working {
     static root: IOExt_DirectoryHandle
 
     static editfile: IOExt_FileHandle;
-
     static ttjson: TTJson;
 
     static histroy: string[];//将ttjson的历史存起来
 
     static texturePool: EditorSpritePool = new EditorSpritePool();
 
+    static CreateEditImage(name: string) {
+        let editImage = new EditImage();
+        editImage.name = name;
+        let pic = this.texturePool.GetPicByName(name);
+        editImage.data = TTPicData.FromText(this.ttjson.pics[name]);
+        editImage.sprite = pic[0];
+        editImage.data.data = pic[2].data;
+        return editImage;
+    }
     //将当前ttjson记录历史
     static async Rec_History() {
 
@@ -23,6 +48,27 @@ export class Working {
     //回到历史位置
     static async Restore_History(pos: number = -1) {
 
+    }
+    static async Cmd_SetImg(name: string, data: string) {
+        let old = this.ttjson.pics[name];
+        if (old != data) {
+            this.Rec_History();
+            this.ttjson.pics[name] = data;
+        }
+    }
+    static async Cmd_RemoveImg(name: string[]) {
+        let start = false;
+        for (let i = 0; i < name.length; i++) {
+            let old = this.ttjson.pics[name[i]];
+            if (old != undefined) {
+
+                if (start == false) {
+                    start = true;
+                    this.Rec_History();
+                }
+                delete this.ttjson.pics[name[i]];
+            }
+        }
     }
     static async Cmd_AddImgsFromFile(imagefile: IOExt_FileHandle[]) {
         let start = false;

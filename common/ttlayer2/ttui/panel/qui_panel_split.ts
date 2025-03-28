@@ -252,10 +252,10 @@ export class QUI_Panel_Split extends QUI.QUI_BaseElement {
     }
     protected _panel1: QUI_Panel;
     protected _panel2: QUI_Panel;
-    getPanel1(): QUI_Panel {
+    GetPanel1(): QUI_Panel {
         return this._panel1;
     }
-    getPanel2(): QUI_Panel {
+    GetPanel2(): QUI_Panel {
         return this._panel2;
     }
   

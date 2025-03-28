@@ -50,12 +50,23 @@ export class Picker_TTJson {
         }
         innermenu.AddChild(btn1);
 
+
+        let btn2 = new QUI_Button();
+        btn2.localRect.setBySize(100, 22);
+        btn2.SetText("取消");
+        innermenu.AddChild(btn2);
+
         let panelScroll = new QUI_Panel_Scroll();
 
 
         btn0.OnClick = () => {
             picked = (panelScroll.container.GetPicked() as PickItem<IOExt_FileHandle>).context;
             this.OnPick(canvas, picked);
+        }
+        btn2.OnClick = () => {
+            picked = null;
+
+            this.finish = true;
         }
 
         group.container.AddChild(panelScroll);

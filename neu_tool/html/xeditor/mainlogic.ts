@@ -77,6 +77,7 @@ export class MainLogic implements IUserLogic {
     OnResize(width: number, height: number): void {
 
     }
+
     OnKey(keycode: string, press: boolean): void {
 
     }

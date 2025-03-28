@@ -75,7 +75,7 @@ export class Menu_Main {
             submenuSprite.items.push(
                 {
                     label: "删除选中", sprite: null, submenu: null, onaction: () => {
-                        Dialog_Message.Show(canvas, "尚未支持");
+                        this.OnSpriteDelete(canvas);
                     }
                 }
             )
@@ -136,6 +136,19 @@ export class Menu_Main {
 
         await Working.Save();
         Editor_Main.UpdatePics();
+    }
+    static async OnSpriteDelete(canvas: QUI_Canvas) {
+        if (Working.editfile == null || Working.root == null) {
+            Dialog_Message.Show(canvas, "Error editfile.");
+            return;
+        }
+        var pic = Editor_Main.GetPickPic();
+        if (pic != null) {
+            await Working.Cmd_RemoveImg([pic]);
+            await Working.Save();
+            await Editor_Main.UpdatePics();
+
+        }
     }
     static async OnSpriteSort(canvas: QUI_Canvas) {
         let keys: string[] = []

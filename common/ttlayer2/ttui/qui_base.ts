@@ -454,6 +454,9 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement {
     }
 
     RemoveChildAll(): void {
+        if (this._picked != null) {
+            this.UnPick();
+        }
         if (this._children == null)
             return;
         for (var i = 0; i < this._children.length; i++) {

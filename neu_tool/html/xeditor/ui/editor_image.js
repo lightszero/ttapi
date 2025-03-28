@@ -1,0 +1,77 @@
+//图片编辑模块
+import { Color, QUI_Label, QUI_Resource, Rectangle, tt } from "../../ttlayer2/ttlayer2.js";
+import { QUI_CustomRender } from "../../ttlayer2/ttui/qui_rendercontainer.js";
+import { Working } from "../work/working.js";
+//edit 区域分为一个 主编辑区 和 副编辑区，分别是split 的 panel1 和 panel2
+export class Editor_Image {
+    static Edit(split, edititem) {
+        this.edititem = edititem;
+        let r = new QUI_CustomRender();
+        split.GetPanel1().container.AddChild(r);
+        r.OnCustomRender = (canvas) => {
+            this.OnRender(canvas, r.GetWorldRect());
+        };
+        r.OnUpdate = (canvas, delta) => {
+            this.OnUpdate(delta);
+        };
+        //这个东西直接从这里抢不太对劲，GameApp的包装有点2
+        tt.input.OnKey = (keycode, press) => {
+            this.OnKey(keycode, press);
+        };
+        let label = new QUI_Label();
+        label.text = "用 上下左右或者 wasd 移动pivot,图片定轴以后才方便替换";
+        label.localRect.setHPosFill();
+        label.localRect.setVPosByTopBorder(20, 2);
+        split.GetPanel1().container.AddChild(label);
+        //给留个边
+        // let bordercontainer = new QUI_Container();
+        // let w = edititem.sprite.pixelwidth * 2;
+        // let h = edititem.sprite.pixelheight * 2;
+        // let border = 32;
+        // bordercontainer.localRect.setByPosAndSize(0, 0, w + border * 2, h + border * 2);
+        // let image = new QUI_Image;
+        // image.SetBySprite(edititem.sprite);
+        // image.localRect.setByPosAndSize(border, border, w, h);
+        // bordercontainer.AddChild(image)
+    }
+    static OnUpdate(delta) {
+        this.timer += delta;
+        while (this.timer > 1)
+            this.timer -= 1;
+        let a = this.timer > 0.5 ? 1 - this.timer : this.timer;
+        this.color.A = a * 2;
+    }
+    static OnRender(canvas, rect) {
+        let scale = 2;
+        let srect = new Rectangle(rect.X + 32, rect.Y + 32, this.edititem.sprite.pixelwidth * scale, this.edititem.sprite.pixelheight * scale);
+        this.edititem.sprite.RenderRect(canvas.batcherUI, srect);
+        let spritewhite = QUI_Resource.GetWhiteSprite();
+        let pivotX = this.edititem.data.pivotX;
+        let pivotY = this.edititem.data.pivotY;
+        //画个pivot 十字
+        spritewhite.RenderRect(canvas.batcherUI, new Rectangle(rect.X, srect.Y + pivotY - 1, rect.Width, 2), this.color);
+        spritewhite.RenderRect(canvas.batcherUI, new Rectangle(srect.X + pivotX - 1, rect.Y, 2, rect.Height), this.color);
+    }
+    static OnKey(keycode, press) {
+        console.log("--key " + keycode + "," + press);
+        if (keycode == "KeyW" || keycode == "ArrowUp") {
+            this.edititem.data.pivotY--;
+        }
+        if (keycode == "KeyA" || keycode == "ArrowLeft") {
+            this.edititem.data.pivotX--;
+        }
+        if (keycode == "KeyS" || keycode == "ArrowDown") {
+            this.edititem.data.pivotY++;
+        }
+        if (keycode == "KeyD" || keycode == "ArrowRight") {
+            this.edititem.data.pivotX++;
+        }
+        this.edititem.sprite.pivotX = this.edititem.data.pivotX;
+        this.edititem.sprite.pivotY = this.edititem.data.pivotY;
+        this.edititem.Apply();
+        Working.Save();
+    }
+}
+Editor_Image.color = Color.White;
+Editor_Image.timer = 0;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZWRpdG9yX2ltYWdlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiZWRpdG9yX2ltYWdlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLFFBQVE7QUFFUixPQUFPLEVBQVUsS0FBSyxFQUFpRCxTQUFTLEVBQW1CLFlBQVksRUFBRSxTQUFTLEVBQUUsRUFBRSxFQUFFLE1BQU0sNEJBQTRCLENBQUM7QUFDbkssT0FBTyxFQUFFLGdCQUFnQixFQUFFLE1BQU0sNENBQTRDLENBQUM7QUFDOUUsT0FBTyxFQUFhLE9BQU8sRUFBRSxNQUFNLG9CQUFvQixDQUFDO0FBR3hELG9EQUFvRDtBQUNwRCxNQUFNLE9BQU8sWUFBWTtJQUVyQixNQUFNLENBQUMsSUFBSSxDQUFDLEtBQXNCLEVBQUUsUUFBbUI7UUFDbkQsSUFBSSxDQUFDLFFBQVEsR0FBRyxRQUFRLENBQUM7UUFDekIsSUFBSSxDQUFDLEdBQUcsSUFBSSxnQkFBZ0IsRUFBRSxDQUFDO1FBQy9CLEtBQUssQ0FBQyxTQUFTLEVBQUUsQ0FBQyxTQUFTLENBQUMsUUFBUSxDQUFDLENBQUMsQ0FBQyxDQUFDO1FBQ3hDLENBQUMsQ0FBQyxjQUFjLEdBQUcsQ0FBQyxNQUFNLEVBQUUsRUFBRTtZQUMxQixJQUFJLENBQUMsUUFBUSxDQUFDLE1BQU0sRUFBRSxDQUFDLENBQUMsWUFBWSxFQUFFLENBQUMsQ0FBQztRQUM1QyxDQUFDLENBQUE7UUFDRCxDQUFDLENBQUMsUUFBUSxHQUFHLENBQUMsTUFBTSxFQUFFLEtBQUssRUFBRSxFQUFFO1lBQzNCLElBQUksQ0FBQyxRQUFRLENBQUMsS0FBSyxDQUFDLENBQUM7UUFDekIsQ0FBQyxDQUFBO1FBRUQsOEJBQThCO1FBQzlCLEVBQUUsQ0FBQyxLQUFLLENBQUMsS0FBSyxHQUFHLENBQUMsT0FBTyxFQUFFLEtBQUssRUFBRSxFQUFFO1lBQ2hDLElBQUksQ0FBQyxLQUFLLENBQUMsT0FBTyxFQUFFLEtBQUssQ0FBQyxDQUFDO1FBQy9CLENBQUMsQ0FBQTtRQUVE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

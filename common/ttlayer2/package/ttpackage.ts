@@ -68,9 +68,9 @@ export class TTPackageMgr {
                 if (pic.srcfile != null) {
                     let imgdata = await this.LoadPic(rootpath + "/" + pic.srcfile, loader);
 
-                    if (pic.srcrect != null) {
-                        imgdata = imgdata.Cut(pic.srcrect.X, pic.srcrect.Y, pic.srcrect.Width, pic.srcrect.Height);
-                    }
+                    // if (pic.srcrect != null) {
+                    //     imgdata = imgdata.Cut(pic.srcrect.X, pic.srcrect.Y, pic.srcrect.Width, pic.srcrect.Height);
+                    // }
 
                     pic.data = imgdata.data;
                     pic.width = imgdata.width;
@@ -116,7 +116,25 @@ export class TTPicData {
     pivotY: number;
     data: Uint8Array | Uint8ClampedArray | null; //if data=null srcfile 就是文件 ，否则srcfile 是 data 的 hash
     srcfile: string | null;
-    srcrect: Rectangle | null;
+    IsInnerHex(): boolean {
+        if (this.srcfile.indexOf("hex:") == 0 || this.srcfile.indexOf("HEX:") == 0) {
+
+            return true;
+        }
+    }
+    FillHexSrcName(data: Uint8Array | Uint8ClampedArray): void {
+        this.srcfile = "hex:";
+        for (var i = 0; i < data.length; i++) {
+            let hstr = data[i].toString(16);
+            if (hstr.length == 1) {
+                this.srcfile += "0" + hstr;
+            }
+            else {
+                this.srcfile += hstr;
+            }
+        }
+    }
+    //srcrect: Rectangle | null;
     // 从文本中解析出TTPicData对象
     static FromText(picinfo: string): TTPicData {
         let picname = picinfo;
@@ -134,14 +152,14 @@ export class TTPicData {
                     pivotX = parseInt(value[0]);
                     pivotY = parseInt(value[1]);
                 }
-                else if (key == "rect") {
-                    let value = wss[1].split(",");
-                    let x = parseInt(value[0]);
-                    let y = parseInt(value[1]);
-                    let w = parseInt(value[2]);
-                    let h = parseInt(value[3]);
-                    rect = new Rectangle(x, y, w, h);
-                }
+                // else if (key == "rect") {
+                //     let value = wss[1].split(",");
+                //     let x = parseInt(value[0]);
+                //     let y = parseInt(value[1]);
+                //     let w = parseInt(value[2]);
+                //     let h = parseInt(value[3]);
+                //     rect = new Rectangle(x, y, w, h);
+                // }
             }
         }
         let data = new TTPicData();
@@ -150,7 +168,7 @@ export class TTPicData {
 
             let width = parseInt(picname.substring(4, 6), 16);
             let height = parseInt(picname.substring(6, 8), 16);
-            data.srcrect = new Rectangle(0, 0, width, height);
+            //data.srcrect = new Rectangle(0, 0, width, height);
             data.data = new Uint8Array(width * height * 4);
             for (let i = 8; i <= picname.length - 2; i += 2) {
                 data.data[i / 2 - 4] = parseInt(picname.substring(i, i + 2), 16);
@@ -165,7 +183,7 @@ export class TTPicData {
         }
         data.pivotX = pivotX;
         data.pivotY = pivotY;
-        data.srcrect = rect;
+        //data.srcrect = rect;
         return data;
     }
 }

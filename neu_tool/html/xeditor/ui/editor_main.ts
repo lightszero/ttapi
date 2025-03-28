@@ -3,6 +3,7 @@ import { IOExt } from "../../xioext/ioext.js";
 import { EditorSpritePool } from "../work/spritepool.js";
 import { Working } from "../work/working.js";
 import { Dialog_Message } from "./dialog_message.js";
+import { Editor_Image } from "./editor_image.js";
 import { PickItem } from "./pickitem.js";
 
 export class Editor_Main {
@@ -10,6 +11,7 @@ export class Editor_Main {
     static scrollPic: QUI_Panel_Scroll
     static scrollAni: QUI_Panel_Scroll
     static editTitle: QUI_Label;
+    static editArea: QUI_Panel_Split;
     static Init(canvas: QUI_Canvas) {
         let split = new QUI_Panel_Split();
         {//root split
@@ -20,12 +22,12 @@ export class Editor_Main {
             split.localRect.offsetY1 = 22;
             split.getSplitButton().SetText("");
             split.splitSize = 4;
-            split.getPanel1().getBorder().SetZero();
-            split.getPanel2().getBorder().SetZero();
+            split.GetPanel1().getBorder().SetZero();
+            split.GetPanel2().getBorder().SetZero();
 
             canvas.AddChild(split);
 
-            let split2 = new QUI_Panel_Split();
+            let split2 = this.editArea = new QUI_Panel_Split();
             split2.getBorder().SetZero();
             split2.splitDir = QUI_Direction2.Horizontal;
             split2.splitPos = 0.66;
@@ -33,8 +35,8 @@ export class Editor_Main {
             split2.localRect.offsetY1 = 22;
             split2.getSplitButton().SetText("");
             split2.splitSize = 4;
-            split2.getPanel1().getBorder().SetZero();
-            split2.getPanel2().getBorder().SetZero();
+            split2.GetPanel1().getBorder().SetZero();
+            split2.GetPanel2().getBorder().SetZero();
 
             this.editTitle = new QUI_Label();
             this.editTitle.localRect.setHPosFill();
@@ -42,8 +44,8 @@ export class Editor_Main {
             this.editTitle.halign = QUI_HAlign.Left;
             this.editTitle.localRect.offsetX1 = 4;
             this.editTitle.text = "当前编辑文件";
-            split.getPanel2().container.AddChild(this.editTitle);
-            split.getPanel2().container.AddChild(split2);
+            split.GetPanel2().container.AddChild(this.editTitle);
+            split.GetPanel2().container.AddChild(split2);
         }
         {
             let picpanel = new QUI_Group();
@@ -53,7 +55,7 @@ export class Editor_Main {
             picpanel.localRect.radioY2 = 0.5;
             this.scrollPic = new QUI_Panel_Scroll();
             picpanel.container.AddChild(this.scrollPic);
-            split.getPanel1().container.AddChild(picpanel);
+            split.GetPanel1().container.AddChild(picpanel);
         }
         {
             let anipanel = new QUI_Group();
@@ -63,7 +65,7 @@ export class Editor_Main {
             anipanel.localRect.radioY1 = 0.5;
             this.scrollAni = new QUI_Panel_Scroll();
             anipanel.container.AddChild(this.scrollAni);
-            split.getPanel1().container.AddChild(anipanel);
+            split.GetPanel1().container.AddChild(anipanel);
         }
 
         //选中图片则编辑图片
@@ -72,16 +74,25 @@ export class Editor_Main {
             this.EditImg(pick);
         };
     }
-    static EditImg(imgname: string) {
+    private static ClearEditArea() {
+        this.editArea.GetPanel1().container.RemoveChildAll();
+        this.editArea.GetPanel2().container.RemoveChildAll();
+    }
+    private static EditImg(imgname: string) {
+        this.ClearEditArea();
+        Editor_Image.Edit(this.editArea, Working.CreateEditImage(imgname));
+    }
+    private static EditAni(aniname: string) {
 
     }
-    static EditAni(aniname:string)
-    {
-
+    static GetPickPic(): string {
+        let name = (this.scrollPic.container.GetPicked() as PickItem<string>)?.context;
+        return name;
     }
     static async Open(canvas: QUI_Canvas) {
         if (Working.editfile == null) {
-            await Dialog_Message.Show(canvas, "没选择文件");
+            //await Dialog_Message.Show(canvas, "没选择文件");
+            return;
         }
         Working.ttjson = JSON.parse(await IOExt.File_ReadText(Working.editfile)) as TTJson;
         this.editTitle.text = Working.editfile.fullname;
@@ -116,13 +127,14 @@ export class Editor_Main {
 
                 sprite = await Working.texturePool.SetPic(key, value.srcfile, spritedata);
             }
-            sprite.pivotX = value.pivotX;
-            sprite.pivotY = value.pivotY;
-
+            else {
+                sprite[0].pivotX = value.pivotX;
+                sprite[0].pivotY = value.pivotY;
+            }
 
             let item = new PickItem<string>(key);
             item.label.text = key;
-            item.image.SetBySprite(sprite);
+            item.image.SetBySprite(sprite[0]);
             //TTPackageMgr.LoadPic(Working.ttjson.pics[key])
             this.scrollPic.container.AddChild(item);
         }
