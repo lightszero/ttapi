@@ -13,6 +13,7 @@ export class QUI_Button extends QUI.QUI_BaseElement {
 
 
         {
+            normal._parent = this;
             normal.localRect.SetAsFill();
             let normalback = new QUI_ImageScale9(QUI_Resource.GetBorderScaleR());
             normal.AddChild(normalback);
@@ -136,6 +137,8 @@ export class QUI_Button extends QUI.QUI_BaseElement {
         super.OnRender(_canvas);
     }
     OnUpdate(_canvas: QUI_Canvas, delta: number): void {
+        super.OnUpdate(_canvas, delta);
+
         if (this.BindKey != null) {
             let keydown = tt.input.IsKeyDown(this.BindKey);
             if (this._keypress && !keydown) {
@@ -164,6 +167,6 @@ export class QUI_Button extends QUI.QUI_BaseElement {
             }
         }
 
-        super.OnUpdate(_canvas, delta);
+
     }
 }
