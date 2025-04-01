@@ -145,8 +145,10 @@ export class VertexFormatMgr {
             vecf.vbos.push(new VBOInfo());
             vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 3, false));
             vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 2, false));
+          
             vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, true));
             vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.UNSIGNED_BYTE, 4, false));
+            vecf.vbos[0].atrribs.push(new VertexAttribItem(VertexAttribType.FLOAT, 4, false));
             this.vertexFormat_Vertex_UV_Color_Color2 = this.RegFormat(vecf);
         }
         return this.vertexFormat_Vertex_UV_Color_Color2;

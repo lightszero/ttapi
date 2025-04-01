@@ -35,33 +35,36 @@ export class Font {
         let txt = String.fromCharCode(charCode);
         let e = this.fonttex.GetElementByName(txt);
         //  let s = this.fonttex.packGray.namedsprites[txt];
-        if (e != null)
-            return this.fonttex.ConvertElemToSprite(e);
+        if (e == null) {
 
-        try {
-            let imgdata = TextTool.LoadTextPixel(txt, this.fontname, this.fontsize, this.fontsize + 2, this.fontsize + 2, 0, 0);
-            if (imgdata.height == 0 || imgdata.width == 0)
+            try {
+                let imgdata = TextTool.LoadTextPixel(txt, this.fontname, this.fontsize, this.fontsize + 2, this.fontsize + 2, 0, 0);
+                if (imgdata.height == 0 || imgdata.width == 0)
+                    return null;
+
+                let data = new SpriteData()
+                data.format = TextureFormat.RGBA32;
+                data.toR = ToROption.Alpha;
+                data.data = imgdata.data;
+                data.width = imgdata.width;
+                data.height = imgdata.height;
+
+                let data2 = data.ConvertToR();
+                data2.toR = ToROption.Alpha;
+                e = this.fonttex.AddSprite(data2, ElementFormat.GrayAsAlpha, txt);
+
+
+            }
+            catch (e) {
+                console.error("cache char error:" + e);
                 return null;
-
-            let data = new SpriteData()
-            data.format = TextureFormat.RGBA32;
-            data.toR = ToROption.Alpha;
-            data.data = imgdata.data;
-            data.width = imgdata.width;
-            data.height = imgdata.height;
-
-            let data2 = data.ConvertToR();
-            data2.toR = ToROption.Alpha;
-            e = this.fonttex.AddSprite(data2, ElementFormat.GrayAsAlpha, txt);
-
-            return this.fonttex.ConvertElemToSprite(e);
-
+            }
         }
-        catch (e) {
-            console.error("cache char error:" + e);
-            return null;
-        }
-
+        //if (e != null) {
+            let s = this.fonttex.ConvertElemToSprite(e);
+            s.material = this.fonttex.GetMaterialCut();
+            return s;
+        //}
 
     }
     SureText(text: string,): number {

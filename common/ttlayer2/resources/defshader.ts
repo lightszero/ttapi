@@ -11,13 +11,14 @@ var vs_default: string = /*glsl*/`#version 300 es
     layout(location = 1) in vec2 uv; 
     layout(location = 2) in vec4 color; 
     layout(location = 3) in vec4 ext; 
-
+    layout(location = 4) in vec4 uvLimit; 
     uniform mat4 matModel;
     uniform mat4 matView;
     uniform mat4 matProj;
 
     out vec4 vColor;//输出给fs的参数
     out vec2 vUv;//输出给fs的参数2
+    flat out vec4 vUvLimit;//输出给fs的参数2
     flat out int vExt;
     flat out int vLayer;
     void main(void) 
@@ -26,6 +27,7 @@ var vs_default: string = /*glsl*/`#version 300 es
         gl_Position = matrix * vec4(position,1);// uViewProjMatrix * uModelMatrix * position;
         vColor = color;
         vUv = uv;
+        vUvLimit = uvLimit;;
         vExt = int(ext.w);
         vLayer =int(ext.x);
     }
@@ -257,7 +259,51 @@ var fs_default: string = /*glsl*/`#version 300 es
         
     }
     `;
+var fs_default_cut: string = /*glsl*/`#version 300 es
+    precision highp float;//指定浮点型精确度
+    precision highp sampler2DArray;
+    in vec2 vUv;//从vs接收的参数
+    in vec4 vColor;//从vs接收的参数
+    flat in vec4 vUvLimit;
+    flat in int vExt;
+    flat in int vLayer;
+        
+    layout(location = 0) out vec4 fragColor;
 
+    
+    uniform sampler2DArray texRGBA;  //从外部设置的参数
+    uniform sampler2DArray texGray;
+    void main(void) 
+    {
+        //无奈了，只能用discard来处理了，这个像素下边会多一丢丢，莫名
+        if(vUv.x<vUvLimit.x||vUv.x>vUvLimit.z||vUv.y<vUvLimit.y||vUv.y>vUvLimit.w-(1.0/4096.0))
+        {
+            discard;
+        }
+        vec4 texc = vExt==0? texture(texRGBA,vec3(vUv,vLayer))
+        : texture(texGray,vec3(vUv,vLayer));
+        vec4 outc = vColor;
+        int effect = vExt;//int(vExt.w);
+        if(effect==0)//rgba model 
+        {
+            outc = vColor*texc;
+        }
+        else if(effect==1)//gray model
+        {
+            vec4 c = vec4(texc.r,texc.r,texc.r,1);
+            outc = vColor * c;
+        }
+        else if(effect==4)//gray as alpha model
+        {
+            //outc.a *= texc.r;
+            outc = vColor;
+            outc.a *=texc.r; 
+            //outc = vColor * 0.5;
+        }
+        fragColor =  outc;
+        
+    }
+    `;
 var vs_simple: string = /*glsl*/`#version 300 es
     layout(location = 0) in vec3 position;//顶点提供的数据
     layout(location = 1) in vec2 uv; 
@@ -393,9 +439,12 @@ export function InitInnerShader(webgl: WebGL2RenderingContext): void {
 
     var vsdef = Resources.CompileShader(webgl, ShaderType.VertexShader, "default", vs_default);
     var fsdef = Resources.CompileShader(webgl, ShaderType.FragmentShader, "default", fs_default);
+    var fsdefcut = Resources.CompileShader(webgl, ShaderType.FragmentShader, "default_cut", fs_default_cut);
 
     if (vsdef != null && fsdef != null)
         Resources.AddProgram(webgl, "default", vsdef, fsdef);
+    if (vsdef != null && fsdefcut != null)
+        Resources.AddProgram(webgl, "default_cut", vsdef, fsdefcut);
 
     var vssim = Resources.CompileShader(webgl, ShaderType.VertexShader, "simple", vs_simple);
     var fssim = Resources.CompileShader(webgl, ShaderType.FragmentShader, "simple", fs_simple);

@@ -18,14 +18,20 @@ export class PackElement {
     }
 
     private material: Material;
-
+    private materialCut: Material;
     InitMat(): void {
         this.material = new Material(Resources.GetShaderProgram("default"));
         this.material.uniformTexs["texRGBA"].value = this.packTexDuo.packRGBA;
         this.material.uniformTexs["texGray"].value = this.packTexDuo.packGray;
+        this.materialCut = new Material(Resources.GetShaderProgram("default_cut"));
+        this.materialCut.uniformTexs["texRGBA"].value = this.packTexDuo.packRGBA;
+        this.materialCut.uniformTexs["texGray"].value = this.packTexDuo.packGray;
     }
     GetMaterial(): Material {
         return this.material;
+    }
+    GetMaterialCut(): Material {
+        return this.materialCut;
     }
 
     ConvertElemToSprite(elem: ElementSprite): Sprite {

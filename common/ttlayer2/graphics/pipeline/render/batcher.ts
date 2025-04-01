@@ -44,7 +44,10 @@ export class DrawPoint {
     e3: number = 0;  //offset 26 //this can be auto,no need to public
     eff: ElementFormat = 0;    //offset 27
     //pixel length =28
-
+    umin: number = 0;
+    vmin: number = 0;
+    umax: number = 0;
+    vmax: number = 0;
     Clone(): DrawPoint {
         var p = new DrawPoint();
         p.x = this.x;
@@ -60,7 +63,10 @@ export class DrawPoint {
         p.e2 = this.e2;
         p.e3 = this.e3;
         p.eff = this.eff;
-        p.x = this.x;
+        p.umin = this.umin;
+        p.vmin = this.vmin;
+        p.umax = this.umax;
+        p.vmax = this.vmax;
 
         return p;
 
@@ -73,7 +79,7 @@ export class Render_Batcher {
         this._target = null;
         this._lastmat = null;
         //var _vbo = webgl.createBuffer();
-        this._buffer = new Uint8Array(65536 * 28);
+        this._buffer = new Uint8Array(65536 * 44);
         this._bufferView = new DataView(this._buffer.buffer, 0, this._buffer.length);
         this._pointseek = 0;
         this._lastMode = webgl.TRIANGLES;
@@ -169,12 +175,20 @@ export class Render_Batcher {
         this._lastMode = this._webgl.TRIANGLES
 
         for (var i = 0; i < quadCount; i++) {
-            this._AddBuf(quads[i * 4 + 0]);
-            this._AddBuf(quads[i * 4 + 1]);
-            this._AddBuf(quads[i * 4 + 2]);
-            this._AddBuf(quads[i * 4 + 2]);
-            this._AddBuf(quads[i * 4 + 1]);
-            this._AddBuf(quads[i * 4 + 3]);
+            let p0 = quads[i * 4 + 0];
+            let p1 = quads[i * 4 + 1];
+            let p2 = quads[i * 4 + 2];
+            let p3 = quads[i * 4 + 3];
+            p0.umin = p1.umin = p2.umin = p3.umin = p0.u;
+            p0.vmin = p1.vmin = p2.vmin = p3.vmin = p0.v;
+            p0.umax = p1.umax = p2.umax = p3.umax = p3.u;
+            p0.vmax = p1.vmax = p2.vmax = p3.vmax = p3.v;
+            this._AddBuf(p0);
+            this._AddBuf(p1);
+            this._AddBuf(p2);
+            this._AddBuf(p2);
+            this._AddBuf(p1);
+            this._AddBuf(p3);
         }
 
     }
@@ -309,7 +323,7 @@ export class Render_Batcher {
 
 
         this._mesh.mode = this._lastMode;
-        this._mesh.UploadVertexBuffer(webgl, 0, this._buffer, true, this._pointseek * 28);
+        this._mesh.UploadVertexBuffer(webgl, 0, this._buffer, true, this._pointseek * 44);
         this._pointseek = 0;
 
         if (this._lastmat != null)
@@ -318,24 +332,28 @@ export class Render_Batcher {
 
     }
     private _AddBuf(p: DrawPoint): void {
-        this._bufferView.setFloat32(this._pointseek * 28 + 0, p.x, true);
-        this._bufferView.setFloat32(this._pointseek * 28 + 4, p.y, true);
-        this._bufferView.setFloat32(this._pointseek * 28 + 8, p.z, true);
-        this._bufferView.setFloat32(this._pointseek * 28 + 12, p.u, true);
-        this._bufferView.setFloat32(this._pointseek * 28 + 16, p.v, true);
+        this._bufferView.setFloat32(this._pointseek * 44 + 0, p.x, true);
+        this._bufferView.setFloat32(this._pointseek * 44 + 4, p.y, true);
+        this._bufferView.setFloat32(this._pointseek * 44 + 8, p.z, true);
+        this._bufferView.setFloat32(this._pointseek * 44 + 12, p.u, true);
+        this._bufferView.setFloat32(this._pointseek * 44 + 16, p.v, true);
 
 
-        this._bufferView.setUint8(this._pointseek * 28 + 20, (p.r * 255) | 0);
-        this._bufferView.setUint8(this._pointseek * 28 + 21, (p.g * 255) | 0);
-        this._bufferView.setUint8(this._pointseek * 28 + 22, (p.b * 255) | 0);
-        this._bufferView.setUint8(this._pointseek * 28 + 23, (p.a * 255) | 0);
+        this._bufferView.setUint8(this._pointseek * 44 + 20, (p.r * 255) | 0);
+        this._bufferView.setUint8(this._pointseek * 44 + 21, (p.g * 255) | 0);
+        this._bufferView.setUint8(this._pointseek * 44 + 22, (p.b * 255) | 0);
+        this._bufferView.setUint8(this._pointseek * 44 + 23, (p.a * 255) | 0);
 
 
 
-        this._bufferView.setUint8(this._pointseek * 28 + 24, p.uvlayer);
-        this._bufferView.setUint8(this._pointseek * 28 + 25, p.e2);
-        this._bufferView.setUint8(this._pointseek * 28 + 26, p.e3);//p.texid); will be auto
-        this._bufferView.setUint8(this._pointseek * 28 + 27, p.eff);
+        this._bufferView.setUint8(this._pointseek * 44 + 24, p.uvlayer);
+        this._bufferView.setUint8(this._pointseek * 44 + 25, p.e2);
+        this._bufferView.setUint8(this._pointseek * 44 + 26, p.e3);//p.texid); will be auto
+        this._bufferView.setUint8(this._pointseek * 44 + 27, p.eff);
+        this._bufferView.setFloat32(this._pointseek * 44 + 28, p.umin, true);
+        this._bufferView.setFloat32(this._pointseek * 44 + 32, p.vmin, true);
+        this._bufferView.setFloat32(this._pointseek * 44 + 36, p.umax, true);
+        this._bufferView.setFloat32(this._pointseek * 44 + 40, p.vmax, true);
         this._pointseek++;
     }
 
