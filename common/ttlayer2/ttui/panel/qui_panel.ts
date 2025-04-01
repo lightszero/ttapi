@@ -187,11 +187,12 @@ export class QUI_Panel extends QUI.QUI_BaseElement {
         this.container.localRect.offsetY2 = -this._border.YBottom;
     }
     OnUpdate(_canvas: QUI_Canvas, delta: number): void {
+        super.OnUpdate(_canvas, delta);
         this.OnUpdateBack(_canvas, delta);
         this.updateContainerPos();
         this.container.OnUpdate(_canvas, delta);
         this.OnUpdateFore(_canvas, delta);
-        super.OnUpdate(_canvas, delta);
+       
     }
 
     CancelTouch(): void {
