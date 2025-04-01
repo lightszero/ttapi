@@ -288,7 +288,7 @@ export abstract class QUI_BaseElement {
     }
     abstract GetElementType(): QUI_ElementType;
 
-    Tag: string | null = null;
+    Tag: any = null;
     localRect: QUI_Rect = new QUI_Rect();
     _parent: QUI_BaseElement | null = null;
     GetParent(): QUI_BaseElement | null {
@@ -410,27 +410,27 @@ export abstract class QUI_BaseContainer extends QUI_BaseElement {
             return -1;
         return this._children.indexOf(elem);
     }
-    InsertChild(elem: QUI_BaseElement):void {
+    InsertChild(elem: QUI_BaseElement): void {
         if (this._children == null)
             this._children = [];
         if (this._children.indexOf(elem) >= 0)
             return;
 
-           //移除旧爹
-           let p = (elem as QUI_BaseElement)._parent;
-           if (p != null)
-               (p as QUI_BaseContainer).RemoveChild(p);
-   
-           this._children.splice(0,0,elem);
-           
-           if (this.childState == ChildChangeState.NoChange) {
-               this.childState = ChildChangeState.AddOne;
-           }
-           else {
-               this.childState = ChildChangeState.Dirty;
-           }
-           //换新爹
-           (elem as QUI_BaseElement)._parent = this;
+        //移除旧爹
+        let p = (elem as QUI_BaseElement)._parent;
+        if (p != null)
+            (p as QUI_BaseContainer).RemoveChild(p);
+
+        this._children.splice(0, 0, elem);
+
+        if (this.childState == ChildChangeState.NoChange) {
+            this.childState = ChildChangeState.AddOne;
+        }
+        else {
+            this.childState = ChildChangeState.Dirty;
+        }
+        //换新爹
+        (elem as QUI_BaseElement)._parent = this;
     }
     AddChild(elem: QUI_BaseElement): void {
 
