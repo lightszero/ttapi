@@ -9,11 +9,11 @@ export class Test_Info extends Test_Base {
         super.OnInit(nav);
 
         let gl = tt.graphic.GetWebGL();
-        this.AddLabel("好奇怪，DevicePixelRadio=" + tt.graphic.getDevicePixelRadio());
-        this.AddLabel("为啥有时font MAX_UNIFORM_BLOCK_SIZE=" + gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE));
-        this.AddLabel("会溢出一些点MAX_3D_TEXTURE_SIZE=" + gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
-        this.AddLabel("这也不符合MAX_ARRAY_TEXTURE_LAYERS=" + gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS));
-        this.AddLabel("逻辑MAX_TEXTURE_SIZE=" + gl.getParameter(gl.MAX_TEXTURE_SIZE));
+        this.AddLabel("DevicePixelRadio=" + tt.graphic.getDevicePixelRadio());
+        this.AddLabel("font MAX_UNIFORM_BLOCK_SIZE=" + gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE));
+        this.AddLabel("MAX_3D_TEXTURE_SIZE=" + gl.getParameter(gl.MAX_3D_TEXTURE_SIZE));
+        this.AddLabel("MAX_ARRAY_TEXTURE_LAYERS=" + gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS));
+        this.AddLabel("MAX_TEXTURE_SIZE=" + gl.getParameter(gl.MAX_TEXTURE_SIZE));
         this.AddLabel("MAX_VERTEX_UNIFORM_BLOCKS=" + gl.getParameter(gl.MAX_VERTEX_UNIFORM_BLOCKS));
         this.AddLabel("MAX_VERTEX_UNIFORM_COMPONENTS=" + gl.getParameter(gl.MAX_VERTEX_UNIFORM_COMPONENTS));
     }

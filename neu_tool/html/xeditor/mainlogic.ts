@@ -21,7 +21,7 @@ export class MainLogic implements IUserLogic {
 
         let pr = tt.graphic.getDevicePixelRadio();//得到windows 缩放
 
-        let scaleradio = (pr | 0) * 2;//应用他
+        let scaleradio = pr * 1.5;//windows多大我多大 (pr | 0)*2 ;//比windows大两倍
         console.log("ScaleRadio=" + scaleradio);
 
         //改Camera的缩放会直接缩放内容
@@ -85,7 +85,7 @@ export class MainLogic implements IUserLogic {
 
     }
     OnWheelAfterGUI(dx: number, dy: number, dz: number): void {
-        
+
     }
 
 }

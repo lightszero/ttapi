@@ -36,11 +36,6 @@ export class View_Menu implements IState<TTState_All> {
         this.AddButton("Test:TextureArray", new Test_TexArr());
         this.AddButton("Test:Element (UBO,废弃)", new Test_Element_UBO());
         this.AddButton("Test:Element (TBO)", new Test_Element_TBO());
-        this.AddButton("Test:Element Tilemap[欠]", null);
-        this.AddButton("Test:TF 粒子系统[欠]", null);
-        this.AddButton("Test:GUI[欠]");
-        this.AddButton("Test:Box2d[欠]");
-        this.AddButton("Test:Ani[欠]");
         this.AddButton("Test:FileApi", new Test_FileApi());
         this.AddButton("Test:Tiledmap", new Test_Tiledmap());
         this.AddButton("Test:TTPack", new Test_TTPack());

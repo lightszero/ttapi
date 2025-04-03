@@ -70,6 +70,8 @@ export class QUI_Canvas extends QUI.QUI_Container {
         this.batcherUI.EndDraw();
     }
     OnTouch(_canvas: QUI_Canvas, touchid: number, press: boolean, move: boolean, x: number, y: number): boolean {
+        if(this.camera==null)
+            return false;
         let fs = tt.graphic.getFinalScale() / this.camera.Scale;
         let tx = x * fs;
         let ty = y * fs;

@@ -6,6 +6,8 @@ import { Dialog_Message } from "./dialog_message.js";
 import { Editor_Image } from "./editor_image.js";
 import { PickItem } from "./pickitem.js";
 
+//主编辑区，主要从这里选中要编辑的项目
+//然后就分流到具体的Editor里面去了
 export class Editor_Main {
 
     static scrollPic: QUI_Panel_Scroll
