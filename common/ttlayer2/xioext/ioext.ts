@@ -1,5 +1,5 @@
-///<reference  path="../js/filesystem.d.ts" />
-///<reference  path="../js/neutralino.d.ts" />
+///<reference  path="./js/filesystem.d.ts" />
+///<reference  path="./js/neutralino.d.ts" />
 //封装来自web的 filesystem api
 //和来自 Neutralino 的 本地 api
 //这样就可以用一套系统
@@ -20,8 +20,9 @@ export class IOExt {
 
         }
         catch (e) {
-            this.Log("error:" + e);
             this._envWeb = true;
+            this.Log("error:" + e);
+            //this._envWeb = true;
             this.Log("Web env Init.");
         }
     }

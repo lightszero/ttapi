@@ -58,7 +58,7 @@ export class TTState_All extends Navigator implements IUserLogic {
 
             let img = new QUI_Image();
             img.sprite = QUI_Resource.GetSprite("round");
-            img.localRect.setHPosByLeftBorder(16, 0);
+            img.localRect.setHPosByRightBorder(16, 80);
             img.localRect.setVPosByTopBorder(16, 0);
             context.topuiview.GetCanvas().AddChild(img);
 
@@ -67,7 +67,7 @@ export class TTState_All extends Navigator implements IUserLogic {
             label_fps.text = "FPS:";
             context.topuiview.GetCanvas().AddChild(label_fps);
             label_fps.halign = QUI_HAlign.Left;
-            label_fps.localRect.setHPosByLeftBorder(100, 16);
+            label_fps.localRect.setHPosByRightBorder(80, 0);
             label_fps.localRect.setVPosByTopBorder(16, 0);
         }
 

@@ -17,6 +17,7 @@ export * from "./math/vector.js";
 export * from "./math/sha256.js"
 
 export * from "./utils/text/texttool.js";
+export * from "./utils/path/pathtool.js"
 
 export * from "./graphics/pipeline/render/batcher.js";
 export * from "./graphics/pipeline/render/render_elem_tbo.js";
@@ -37,3 +38,5 @@ export * from "./package/aniplayer.js";
 export * as b2 from "./box2d_core/src/index.js"
 export * from "./box2d_core/b2drawer.js"
 
+export * from "./xioext/ioext.js"
+export * from "./xioext/findtool.js"

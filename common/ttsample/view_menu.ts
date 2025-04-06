@@ -10,6 +10,7 @@ import { Test_Tiledmap } from "./testview/test_tiledmap.js";
 import { Test_TTPack } from "./testview/test_ttpack.js";
 
 import { GContext, TTState_All } from "./ttstate_all.js";
+import { Editor_TTPack } from "./xeditor/editor_ttpack.js";
 
 export class View_Menu implements IState<TTState_All> {
     nav: TTState_All;
@@ -23,7 +24,7 @@ export class View_Menu implements IState<TTState_All> {
 
 
         this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 1.5;
+        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2
 
         GameApp.GetViewList().AddDrawLayer(this.guilayer);
 
@@ -40,6 +41,8 @@ export class View_Menu implements IState<TTState_All> {
         this.AddButton("Test:Tiledmap", new Test_Tiledmap());
         this.AddButton("Test:TTPack", new Test_TTPack());
         this.AddButton("Test:Box2d", new Test_Box2D());
+        this.y += 16;
+        this.AddButton("Editor:动画编辑器", new Editor_TTPack());
     }
     y: number = 16;
     x: number = 16;
@@ -78,6 +81,6 @@ export class View_Menu implements IState<TTState_All> {
 
     }
     OnWheelAfterGUI(dx: number, dy: number, dz: number): void {
-        
+
     }
 }
