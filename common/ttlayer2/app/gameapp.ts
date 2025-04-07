@@ -17,7 +17,7 @@ export interface IUserLogic {
 
   OnKey(keycode: string, press: boolean): void;
   OnPointAfterGUI(id: number, x: number, y: number, press: boolean, move: boolean): void;
-  OnWheelAfterGUI(dx:number,dy:number,dz:number):void;
+  OnWheelAfterGUI(dx: number, dy: number, dz: number): void;
 }
 
 export class GameApp {
@@ -180,22 +180,22 @@ export class GameApp {
 
         let kill = false;
 
-        let rs = guiview[i].GetRenders();
-        for (let j = rs.length - 1; j >= 0; j--) {
-          let gui = rs[j].GetGUI();
-          if (gui != null) {
-            kill = gui.OnWheel(null, dx,dy,dz);
-            if (kill)
-              break;
-          }
+        let rs = guiview[i] as DrawLayer_GUI;
+        var gui = rs.GetCanvas();
+
+        if (gui != null) {
+          kill = gui.OnWheel(null, dx, dy, dz);
+          if (kill)
+            break;
         }
+
 
         if (kill)
           break;
       }
     }
     if (this._state != null) {
-      this._state.OnWheelAfterGUI(dx,dy,dz);
+      this._state.OnWheelAfterGUI(dx, dy, dz);
     }
   }
   private static OnPoint(id: number, x: number, y: number, press: boolean, move: boolean): void {
@@ -210,15 +210,14 @@ export class GameApp {
 
         let kill = false;
 
-        let rs = guiview[i].GetRenders();
-        for (let j = rs.length - 1; j >= 0; j--) {
-          let gui = rs[j].GetGUI();
-          if (gui != null) {
-            kill = gui.OnTouch(null, id, press, move, x, y);
-            if (kill)
-              break;
-          }
+        let gui = (guiview[i] as DrawLayer_GUI).GetCanvas();
+
+        if (gui != null) {
+          kill = gui.OnTouch(null, id, press, move, x, y);
+          if (kill)
+            break;
         }
+
 
         if (kill)
           break;

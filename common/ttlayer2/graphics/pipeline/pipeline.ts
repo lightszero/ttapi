@@ -13,11 +13,29 @@ import { DrawLayer, DrawLayerList, DrawLayerTag } from "./drawlayer.js";
 //view 不需要暴露ViewItem概念
 
 export interface IPileLine {
+    Update(viewlist: DrawLayerList, delta: number): void;
     Render(views: DrawLayerList): void;
 }
 export class PipeLine_Default implements IPileLine {
     clearcolor: Color = new Color(0, 0, 0, 1);
     private maintarget: IRenderTarget = null;
+
+    Update(viewlist: DrawLayerList, delta: number): void {
+        if (this.maintarget == null)
+            this.maintarget = GameApp.GetMainScreen();
+        //默认管线,后期把这玩意儿搞成容易配置的
+
+        // this.maintarget.Begin();
+        //this.maintarget.Clear(this.clearcolor);
+
+        viewlist.UpdateDrawLayers(delta, DrawLayerTag.Main, this.maintarget, 0);
+        viewlist.UpdateDrawLayers(delta, DrawLayerTag.GUI, this.maintarget, 0);
+
+
+
+        //this.maintarget.End();
+
+    }
     Render(viewlist: DrawLayerList): void {
         if (this.maintarget == null)
             this.maintarget = GameApp.GetMainScreen();

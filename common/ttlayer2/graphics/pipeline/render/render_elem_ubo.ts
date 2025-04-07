@@ -217,12 +217,10 @@ export class Render_Element_Ubo implements ILayerRender {
     GetGUI(): QUI_Canvas {
         return null;
     }
-
-    OnUpdate(delta: number): void {
-
-    }
-    OnRender(target: IRenderTarget, camera: Camera, tag: number) {
+    lasttag: number = 0;
+    OnUpdate(delta: number, target: IRenderTarget, camera: Camera, tag: number): void {
         if (tag == 0) {
+            this.lasttag = tag;
             let gl = tt.graphic.GetWebGL();
 
             if (this.elemInstDirty) {
@@ -236,6 +234,14 @@ export class Render_Element_Ubo implements ILayerRender {
 
             this.material.UpdateMatProj(target);
             this.material.UpdateMatView(camera.GetViewMatrix());
+            //Mesh.DrawMeshInstanced(gl, this.mesh, this.material);
+        }
+    }
+    OnRender() {
+        if (this.lasttag == 0) {
+            let gl = tt.graphic.GetWebGL();
+
+
             Mesh.DrawMeshInstanced(gl, this.mesh, this.material);
         }
     }

@@ -1,5 +1,6 @@
 import { tt } from "../ttapi/ttapi.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, QUI_Button, QUI_Label } from "../ttlayer2/ttlayer2.js";
+import { TestScene_Imgs } from "./testscene/testscene_imgs.js";
 import { Test_Box2D } from "./testview/test_box2d.js";
 import { Test_Element_TBO } from "./testview/test_element_tbo.js";
 import { Test_Element_UBO } from "./testview/test_element_ubo.js";
@@ -41,11 +42,21 @@ export class View_Menu implements IState<TTState_All> {
         this.AddButton("Test:Tiledmap", new Test_Tiledmap());
         this.AddButton("Test:TTPack", new Test_TTPack());
         this.AddButton("Test:Box2d", new Test_Box2D());
-        this.y += 16;
+        this.AddEmpty();
+        this.AddButton("TestScene:Imgs",new TestScene_Imgs());
+        this.AddEmpty();
         this.AddButton("Editor:动画编辑器", new Editor_TTPack());
     }
     y: number = 16;
     x: number = 16;
+    AddEmpty():void
+    {
+        this.y += 24;
+        if (this.y > 256) {
+            this.y = 16;
+            this.x += 200;
+        }
+    }
     AddButton(name: string, target: IState<Navigator> = null): void {
         let btn = new QUI_Button();
         btn.SetText(name);

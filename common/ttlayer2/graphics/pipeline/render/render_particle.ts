@@ -145,12 +145,11 @@ export class ParticleView implements ILayerRender {
     GetGUI(): QUI_Canvas {
         return null;
     }
-    OnUpdate(delta: number): void {
-
-    }
-    OnRender(target: IRenderTarget, camera: Camera, rendertag: number): void {
+    OnUpdate(delta: number,target: IRenderTarget, camera: Camera, rendertag: number): void {
         this.matDraw.UpdateMatView();//这个应该跟着View走
         this.matDraw.UpdateMatProj(target);
+    }
+    OnRender(): void {
         Mesh.DrawMeshInstanced(this.webgl, this.meshDraw, this.matDraw);
     }
 

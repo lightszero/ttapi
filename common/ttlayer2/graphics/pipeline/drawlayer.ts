@@ -63,10 +63,8 @@ export class Camera {
     }
 }
 export interface ILayerRender {
-    GetGUI(): QUI_Canvas;
-   
-    OnUpdate(delta: number): void;
-    OnRender(target: IRenderTarget, camera: Camera, tag: number): void;
+    OnUpdate(delta: number, target: IRenderTarget, camera: Camera, tag: number): void;
+    OnRender(): void;
 }
 //一个View 代表一个Camera
 export class DrawLayer {
@@ -87,27 +85,19 @@ export class DrawLayer {
     GetRenders(): ILayerRender[] {
         return this.renders;
     }
-    GetGUIs(result: QUI_Canvas[]): void {
-        for (let i = 0; i < this.renders.length; i++) {
-            let r = this.renders[i];
-            if (r.GetGUI() != null) {
-                result.push(r.GetGUI());
-            }
-        }
-    }
     AddRender(render: ILayerRender): void {
         this.renders.push(render);
     }
-    Update(delta: number): void {
+    Update(delta: number, target: IRenderTarget, rendertag: number): void {
         for (let i = 0; i < this.renders.length; i++) {
-            this.renders[i].OnUpdate(delta);
+            this.renders[i].OnUpdate(delta, target, this.camera, rendertag);
         }
     }
 
     //绘制View
     Render(target: IRenderTarget, rendertag: number): void {
         for (let i = 0; i < this.renders.length; i++) {
-            this.renders[i].OnRender(target, this.camera, rendertag);
+            this.renders[i].OnRender();
         }
     }
     //CollRenderItem(tolist: IViewRenderItem[]): void;
@@ -137,6 +127,16 @@ export class DrawLayerList {
         }
         return this.mapviews[tag];
     }
+    UpdateDrawLayers(delta: number, tag: number, target: IRenderTarget, rendertag: number): number {
+        let views = this.GetDrawLayers(tag);
+        if (views != null) {
+            for (let i = 0; i < views.length; i++) {
+                views[i].Update(delta, target, rendertag);
+            }
+            return views.length;
+        }
+        return 0;
+    }
     RenderDrawLayers(tag: number, target: IRenderTarget, rendertag: number): number {
         let views = this.GetDrawLayers(tag);
         if (views != null) {
@@ -155,12 +155,13 @@ export class DrawLayerList {
         return tags;
     }
     Update(delta: number): void {
-        for (let key in this.mapviews) {
-            let group = this.mapviews[key];
-            for (let i = 0; i < group.length; i++) {
-                group[i].Update(delta);
-            }
-        }
+        this.pipeline.Update(this,delta);
+        // for (let key in this.mapviews) {
+        //     let group = this.mapviews[key];
+        //     for (let i = 0; i < group.length; i++) {
+        //         group[i].Update(delta);
+        //     }
+        // }
     }
 
 

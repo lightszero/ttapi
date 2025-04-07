@@ -88,17 +88,23 @@ export class Render_Tiledmap implements ILayerRender {
     GetGUI(): QUI_Canvas {
         return null;
     }
-    OnUpdate(delta: number): void {
-
-    }
-    OnRender(target: IRenderTarget, camera: Camera, rendertag: number): void {
+    lasttag: number = 0;
+    OnUpdate(delta: number, target: IRenderTarget, camera: Camera, rendertag: number): void {
         if (this.mat == null || this.mesh == null)
             return;
-        let gl = tt.graphic.GetWebGL();
         if (rendertag == 0) {
+            this.lasttag = rendertag;
             //this.canvas.batcherUI.LookAt = camera.LookAt;
             this.mat.UpdateMatProj(target);
             this.mat.UpdateMatView(camera.GetViewMatrix());
+        }
+    }
+    OnRender(): void {
+        if (this.mat == null || this.mesh == null)
+            return;
+        let gl = tt.graphic.GetWebGL();
+        if (this.lasttag == 0) {
+
             Mesh.DrawMesh(gl, this.mesh, this.mat);
         }
     }

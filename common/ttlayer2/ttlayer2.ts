@@ -12,6 +12,7 @@ export * from "./graphics/mesh.js";
 export * from "./graphics/pipeline/pipeline.js";
 export * from "./graphics/pipeline/drawlayer.js";
 export * from "./graphics/pipeline/drawlayer_gui.js";
+export * from "./graphics/pipeline/drawlayer_scene.js";
 
 export * from "./math/vector.js";
 export * from "./math/sha256.js"
@@ -40,3 +41,5 @@ export * from "./box2d_core/b2drawer.js"
 
 export * from "./xioext/ioext.js"
 export * from "./xioext/findtool.js"
+
+export * from "./scene/scene.js"

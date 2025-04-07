@@ -6,16 +6,17 @@ export class Render_GUI implements ILayerRender {
     GetGUI(): QUI_Canvas {
         return this.canvas;
     }
-    OnUpdate(delta: number): void {
+    lasttag: number = 0;
+    OnUpdate(delta: number, target: IRenderTarget, camera: Camera, rendertag: number): void {
+        this.lasttag = rendertag;
+        this.canvas.target = target;
+        this.canvas.camera = camera;
         this.canvas.OnUpdate(null, delta);
     }
-    OnRender(target: IRenderTarget, camera: Camera, rendertag: number): void {
-        if (rendertag == 0) {
+    OnRender(): void {
+        if (this.lasttag == 0) {
             //this.canvas.batcherUI.LookAt = camera.LookAt;
 
-
-            this.canvas.target = target;
-            this.canvas.camera = camera;
 
             this.canvas.OnRender(null);
         }
