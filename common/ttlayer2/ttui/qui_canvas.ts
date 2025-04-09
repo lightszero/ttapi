@@ -62,7 +62,9 @@ export class QUI_Canvas extends QUI.QUI_Container {
         //canvas 自身不绘制
         if (!this.Enable)
             return;
-
+        if(this.camera==null||this.target==null)
+            return;
+        
         this.FIllTarget();
 
         this.batcherUI.BeginDraw(this.target, this.camera);

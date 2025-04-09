@@ -1,11 +1,21 @@
-import { Camera, ILayerRender, IRenderTarget, Vector3 } from "../ttlayer2.js";
+import { Camera, ILayerRender, IRenderTarget, SceneRender_SingleMesh, Vector3 } from "../ttlayer2.js";
 
 //场景应该有机的结合多种渲染器，将渲染器牢牢的隔离在逻辑之外
-
-export interface ISceneRender extends SceneComponent {
-
+export enum SceneRenderType {
+    SingleMesh,
+    TBORender,
+    BatchRender,
 }
-export interface SceneComponent {
+export interface ISceneRenderItem {
+    get type(): SceneRenderType;
+    get sort(): boolean;//
+    get sortz(): number;
+}
+export interface ISceneRender {
+    Render(camera: Camera, renderTarget: IRenderTarget, tag: number, renderItems: ISceneRenderItem[]): void;
+    RenderOrdered(camera: Camera, renderTarget: IRenderTarget, tag: number, renderItems: ISceneRenderItem): void;
+}
+export interface ISceneComponent {
     OnUpdate(delta: number): void;
     OnAdd(node: SceneNode): void;
     OnRemove(): void;
@@ -25,7 +35,7 @@ export class SceneNode {
     name: string;
     pos: Vector3;
     children: SceneNode[];
-    comps: SceneComponent[];
+    comps: ISceneComponent[];
     parent: SceneNode;
     scene: Scene;
 
@@ -68,7 +78,7 @@ export class SceneNode {
                     this.comps[i].OnRemove();
                 }
             }
-             //节点往下传递
+            //节点往下传递
             if (this.children != null) {
                 for (var i = 0; i < this.children.length; i++) {
                     this.children[i].OnRemoveScene();
@@ -77,7 +87,7 @@ export class SceneNode {
         }
         this.scene = null;
     }
-  
+
     OnUpdate(delta: number) {
         if (this.comps != null)
             for (var i = 0; i < this.comps.length; i++) {
@@ -89,7 +99,9 @@ export class SceneNode {
             }
     }
     //增加组件
-    Comp_Add(comp: SceneComponent): void {
+    Comp_Add(comp: ISceneComponent): void {
+        if (this.comps == null)
+            this.comps = [];
         if (this.comps.indexOf(comp) >= 0)
             throw "alread have comp.";
         this.comps.push(comp);
@@ -126,8 +138,7 @@ export class SceneNode {
             throw "not have this node.";
         this.children.splice(index, 1);
         node.OnNodeRemove();
-        if(this.InScene())
-        {
+        if (this.InScene()) {
             //离开场景，会传递
             node.OnRemoveScene();
         }
@@ -145,11 +156,24 @@ export class Scene implements ILayerRender {
 
         this.rootNode.OnNodeAdd(null);
         this.rootNode.OnAttachScene(this);
+        this.renderList_NoOrder[SceneRenderType.SingleMesh] = [];
+        this.renderList_NoOrder[SceneRenderType.BatchRender] = [];
+        this.renderList_NoOrder[SceneRenderType.TBORender] = [];
+        this.render_NoOrder[SceneRenderType.SingleMesh] = new SceneRender_SingleMesh(true);
+        this.render_NoOrder[SceneRenderType.BatchRender] = new SceneRender_SingleMesh(true);
+        this.render_NoOrder[SceneRenderType.TBORender] = new SceneRender_SingleMesh(true);
+        this.render_Sorted[SceneRenderType.SingleMesh] = new SceneRender_SingleMesh();
+        this.render_Sorted[SceneRenderType.BatchRender] = new SceneRender_SingleMesh();
+        this.render_Sorted[SceneRenderType.TBORender] = new SceneRender_SingleMesh();
     }
     lastTarget: IRenderTarget;
     lastCamera: Camera;
     lastTag: number;
     private rootNode: SceneNode;
+    renderList_NoOrder: { [type: number]: ISceneRenderItem[] } = {};
+    renderList_Sorted: ISceneRenderItem[] = [];
+    render_NoOrder: { [type: number]: ISceneRender } = {};
+    render_Sorted: { [type: number]: ISceneRender } = {};
     OnUpdate(delta: number, target: IRenderTarget, camera: Camera, tag: number): void {
         this.lastTag = tag;
         this.lastCamera = camera;
@@ -158,7 +182,18 @@ export class Scene implements ILayerRender {
     }
     //收集透明 非透明，把Ztest 用起来
     OnRender(): void {
+        //无序批量渲染
+        for (var key in this.renderList_NoOrder) {
+            let render = this.render_NoOrder[key];
+            let renderitemlist = this.renderList_NoOrder[key];
+            render.Render(this.lastCamera, this.lastTarget, this.lastTag, renderitemlist);
+        }
 
+        for (var i = 0; i < this.renderList_Sorted.length; i++) {
+            let renderitem = this.renderList_Sorted[i];
+            let render = this.render_Sorted[renderitem.type];
+            render.RenderOrdered(this.lastCamera, this.lastTarget, this.lastTag, renderitem);
+        }
     }
 
     OnKey: (keycode: string, press: boolean) => void
