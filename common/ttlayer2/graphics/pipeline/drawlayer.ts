@@ -1,6 +1,6 @@
 import { IRenderTarget } from "../../graphics/texture.js";
 import { Matrix3x2, Matrix3x2Math } from "../../math/Matrix3x2.js";
-import { Color, Vector2 } from "../../math/vector.js";
+import { Color, Rectangle, Vector2 } from "../../math/vector.js";
 import { GameApp, QUI_Canvas } from "../../ttlayer2.js";
 import { IPileLine, PipeLine_Default } from "./pipeline.js";
 
@@ -29,6 +29,7 @@ export enum DrawLayerTag {
 export class Camera {
     LookAt: Vector2 = Vector2.Zero;
     Scale: number = 2.0;
+    limitRect: Rectangle = null;
     private _viewmatrix: Float32Array = new Float32Array(16);
     private _projmatrix: Float32Array = new Float32Array(16);
 
@@ -88,6 +89,7 @@ export class DrawLayer {
     AddRender(render: ILayerRender): void {
         this.renders.push(render);
     }
+    lasttarget: IRenderTarget;
     Update(delta: number, target: IRenderTarget, rendertag: number): void {
         for (let i = 0; i < this.renders.length; i++) {
             this.renders[i].OnUpdate(delta, target, this.camera, rendertag);
@@ -96,8 +98,14 @@ export class DrawLayer {
 
     //绘制View
     Render(target: IRenderTarget, rendertag: number): void {
+        if (this.camera.limitRect != null) {
+            target.PushLimitRect(this.camera.limitRect);
+        }
         for (let i = 0; i < this.renders.length; i++) {
             this.renders[i].OnRender();
+        }
+        if (this.camera.limitRect != null) {
+            target.ClearLimitRect();
         }
     }
     //CollRenderItem(tolist: IViewRenderItem[]): void;
@@ -155,7 +163,7 @@ export class DrawLayerList {
         return tags;
     }
     Update(delta: number): void {
-        this.pipeline.Update(this,delta);
+        this.pipeline.Update(this, delta);
         // for (let key in this.mapviews) {
         //     let group = this.mapviews[key];
         //     for (let i = 0; i < group.length; i++) {
