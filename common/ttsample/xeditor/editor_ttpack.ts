@@ -1,5 +1,5 @@
 import { DrawLayer_GUI, IOExt, IState } from "../../ttlayer2/ttlayer2.js";
-import { Test_Base } from "../testview/test_base.js";
+import { Test_Base } from "../test_base.js";
 import { TTState_All } from "../ttstate_all.js";
 import { Editor_Main } from "./ui/editor_main.js";
 import { Menu_Main } from "./ui/menu_main.js";

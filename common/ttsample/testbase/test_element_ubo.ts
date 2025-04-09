@@ -3,7 +3,7 @@ import { ElementInst, ElementSprite } from "../../ttlayer2/graphics/pipeline/ren
 import { Render_Element_Ubo } from "../../ttlayer2/graphics/pipeline/render/render_elem_ubo.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Label, QUI_Button } from "../../ttlayer2/ttlayer2.js";
 import { GContext, TTState_All } from "../ttstate_all.js";
-import { Test_Base } from "./test_base.js";
+import { Test_Base } from "../test_base.js";
 
 export class Test_Element_UBO extends Test_Base {
 

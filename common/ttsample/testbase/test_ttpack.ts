@@ -6,7 +6,7 @@ import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, ElementFormat, TextureFormat, QUI_Label, QUI_Button } from "../../ttlayer2/ttlayer2.js";
 import { GContext, TTState_All } from "../ttstate_all.js";
 import { AniPlayer, IAniPlayerAdapter } from "../../ttlayer2/package/aniplayer.js";
-import { Test_Base } from "./test_base.js";
+import { Test_Base } from "../test_base.js";
 
 class AniTboAdadpher implements IAniPlayerAdapter {
     render: Render_Element_Tbo

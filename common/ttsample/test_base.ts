@@ -1,43 +1,58 @@
-import { tt } from "../../ttapi/ttapi.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Button, QUI_Label } from "../../ttlayer2/ttlayer2.js";
-import { GContext, TTState_All } from "../ttstate_all.js";
+import { tt } from "../ttapi/ttapi.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Button, QUI_Label, QUI_ScreenFixer } from "../ttlayer2/ttlayer2.js";
+import { GContext, TTState_All } from "./ttstate_all.js";
 
 export class Test_Base implements IState<TTState_All> {
     nav: TTState_All;
     guilayer: DrawLayer_GUI;
+    container: QUI_ScreenFixer;
+    private y: number = 64;
 
     OnInit(nav: TTState_All): void {
+        this.y = 64;
         if (this.nav == null) {
             this.nav = nav;
         }
+        this.guilayer = new DrawLayer_GUI();
+        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 2;
+
+        GameApp.GetViewList().AddDrawLayer(this.guilayer);
 
 
-
+        this.container = new QUI_ScreenFixer();
+        this.container.setAsp(2 / 3, 1 / 2);
+        this.guilayer.GetCanvas().AddChild(this.container);
 
 
 
         this.AddBackButton();
+        this.nav.context.TopUI2Top();
 
-        let gl = tt.graphic.GetWebGL();
     }
-    y: number = 64;
+
+    AddEmpty(height: number = 20): void {
+        this.y += height;
+    }
+    GetUIY() {
+        return this.y;
+    }
     AddLabel(text: string, s: number = 1): void {
         let label = new QUI_Label();
         label.text = text;
-        this.guilayer.GetCanvas().AddChild(label);
+        this.container.AddChild(label);
         label.halign = QUI_HAlign.Left;
-        label.localRect.setHPosByLeftBorder(196, 16);
-        label.localRect.setVPosByTopBorder(16, this.y);
+        label.localRect.setHPosFill(10, 10);
+        label.localRect.setVPosByTopBorder(20, this.y);
         label.fontScale.X *= s;
         label.fontScale.Y *= s;
-        this.y += 18 * s;
+        this.y += 24 * s;
     }
     AddButton(name: string, click: () => void): void {
         let btn = new QUI_Button();
         btn.SetText(name);
-        btn.localRect.setHPosByLeftBorder(196, 16);
+        btn.localRect.setHPosFill(10, 10);
         btn.localRect.setVPosByTopBorder(20, this.y);
-        this.guilayer.GetCanvas().AddChild(btn);
+        this.container.AddChild(btn);
 
         btn.OnClick = () => {
             click();
@@ -46,22 +61,18 @@ export class Test_Base implements IState<TTState_All> {
         this.y += 24;
 
     }
-    AddBackButton(): void {
-        this.guilayer = new DrawLayer_GUI();
-        this.guilayer.GetCamera().Scale = tt.graphic.getDevicePixelRadio() * 1.5;
-        
-        GameApp.GetViewList().AddDrawLayer(this.guilayer);
+    private AddBackButton(): void {
+        if (this.nav.Count() == 1) return;
         let btn = new QUI_Button();
         btn.SetText("<--");
-        btn.localRect.setHPosByLeftBorder(196, 16);
+        btn.localRect.setHPosByLeftBorder(64, 8);
         btn.localRect.setVPosByTopBorder(20, 8);
-        this.guilayer.GetCanvas().AddChild(btn);
+        this.container.AddChild(btn);
 
         btn.OnClick = () => {
             this.nav.Back();
         }
 
-        this.nav.context.TopUI2Top();
     }
 
 
@@ -83,6 +94,6 @@ export class Test_Base implements IState<TTState_All> {
 
     }
     OnWheelAfterGUI(dx: number, dy: number, dz: number): void {
-        
+
     }
 }

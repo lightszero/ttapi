@@ -1,7 +1,7 @@
 import { b2Color } from "../../ttlayer2/box2d_core/src/index.js";
 import { b2Drawer, b2, QUI_BaseElement, QUI_Canvas, QUI_ElementType, QUI_Image, ElementInst, DrawLayerList, DrawLayer, DrawLayerTag, GameApp, Render_Element_Tbo, Resources, Vector3, Vector2, Color, Camera } from "../../ttlayer2/ttlayer2.js";
 import { TTState_All } from "../ttstate_all.js";
-import { Test_Base } from "./test_base.js";
+import { Test_Base } from "../test_base.js";
 
 //面向对象 不适合js
 export class b2obj {

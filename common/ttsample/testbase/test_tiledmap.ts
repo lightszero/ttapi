@@ -5,7 +5,7 @@ import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
 import { IndexTex as TiledIndexTex, TiledTex } from "../../ttlayer2/resources/tiledmap/tiledmap.js";
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Image, Sprite, Material, Texture, TextureFormat, QUI_Label, QUI_Button } from "../../ttlayer2/ttlayer2.js";
 import { GContext, TTState_All } from "../ttstate_all.js";
-import { Test_Base } from "./test_base.js";
+import { Test_Base } from "../test_base.js";
 
 export class Test_Tiledmap extends Test_Base {
 
@@ -91,7 +91,7 @@ export class Test_Tiledmap extends Test_Base {
             img.sprite = s1;
             img.localRect.setHPosByLeftBorder(96, x);
             x += 100;
-            img.localRect.setVPosByTopBorder(192, this.y);
+            img.localRect.setVPosByTopBorder(192, this.GetUIY());
             this.guilayer.GetCanvas().AddChild(img);
 
         }
@@ -109,7 +109,7 @@ export class Test_Tiledmap extends Test_Base {
             img.sprite = s1;
             img.localRect.setHPosByLeftBorder(96, x);
             x += 100;
-            img.localRect.setVPosByTopBorder(192, this.y);
+            img.localRect.setVPosByTopBorder(192, this.GetUIY());
             this.guilayer.GetCanvas().AddChild(img);
 
             let imgdata = new SpriteData();
@@ -133,7 +133,7 @@ export class Test_Tiledmap extends Test_Base {
             img.sprite = s1;
             img.localRect.setHPosByLeftBorder(96, x);
             x += 100;
-            img.localRect.setVPosByTopBorder(192, this.y);
+            img.localRect.setVPosByTopBorder(192, this.GetUIY());
             this.guilayer.GetCanvas().AddChild(img);
 
             let imgdata = new SpriteData();
@@ -143,7 +143,7 @@ export class Test_Tiledmap extends Test_Base {
             imgdata.height = teximg.height;
             this.tiledtex.AddLPCTile(imgdata);
         }
-        this.y += 192;
+        this.AddEmpty(192);
 
         this.AddLabel("使用3x6的区块，表达地表的一层");
         this.AddLabel("大点，小点，内角四块。");
