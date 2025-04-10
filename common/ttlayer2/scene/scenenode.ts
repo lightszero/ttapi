@@ -62,6 +62,9 @@ export class SceneNode {
         return this._pos;
     }
 
+    sortz: number;
+
+
     private _poslocal: Vector3 = Vector3.Zero;
     set poslocal(value: Vector3) {
         this._poslocal = value;
@@ -166,6 +169,25 @@ export class SceneNode {
         if (this.InScene()) {
             comp.OnAdd(this);
         }
+    }
+    Comp_Count(): number {
+        if (this.comps == null)
+            return 0;
+        return this.comps.length;
+    }
+    Comp_GetAt(index: number): ISceneComponent {
+        if (this.comps == null)
+            return null;
+        return this.comps[index];
+    }
+    Comp_Find(name: string): ISceneComponent {
+        if (this.comps == null)
+            return;
+        for (var i = 0; i < this.comps.length; i++) {
+            if (this.comps[i].CompType == name)
+                return this.comps[i];
+        }
+        return null;
     }
     //子节点操作
     Node_Add(node: SceneNode) {

@@ -58,18 +58,16 @@ export class SceneComp_Sprite implements ISceneComponent, ISceneRenderItem {
             this._sort = value;
         }
     }
-    get sortz(): number {
-        return this.node.pos.Z;
-    }
+    sortz: number
 
 
-    get CompType(): string
-    {
+    get CompType(): string {
         return "sprite";
     }
 
     OnUpdate(delta: number): void {
         this.pos = this.node.pos;
+        this.sortz = this.node.sortz;
     }
     node: SceneNode;
     OnAdd(node: SceneNode): void {
