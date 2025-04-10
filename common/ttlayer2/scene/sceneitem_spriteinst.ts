@@ -1,14 +1,20 @@
 import { Camera, IRenderTarget } from "../ttlayer2.js";
-import { ISceneComponent, ISceneRender, ISceneRenderItem, SceneNode, SceneRenderType } from "./scene.js";
+import { ISceneComponent, ISceneRender, ISceneRenderItem, SceneNode, SceneRenderType } from "./scenenode.js";
 
 export class SceneRender_ElementInst implements ISceneRender {
     constructor(noorder: boolean = false) {
 
     }
-    Render(camera: Camera, renderTarget: IRenderTarget, tag: number, renderItems: ISceneRenderItem[]): void {
+    RenderBatch(camera: Camera, renderTarget: IRenderTarget, tag: number, renderItems: ISceneRenderItem[]): void {
 
     }
-    RenderOrdered(camera: Camera, renderTarget: IRenderTarget, tag: number, renderItems: ISceneRenderItem): void {
+    RenderOrderedBegin(camera: Camera, renderTarget: IRenderTarget, tag: number): void {
+
+    }
+    RenderOrdered(renderItem: ISceneRenderItem): void {
+
+    }
+    RenderOrderedEnd(): void {
 
     }
 
@@ -22,6 +28,10 @@ export class SceneComp_Element implements ISceneComponent, ISceneRenderItem {
     }
     get sortz(): number {
         throw new Error("Method not implemented.");
+    }
+
+    get CompType(): string {
+        return "elementinst";
     }
     OnUpdate(delta: number): void {
         throw new Error("Method not implemented.");

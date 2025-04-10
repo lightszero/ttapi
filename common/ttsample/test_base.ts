@@ -80,7 +80,7 @@ export class Test_Base implements IState<TTState_All> {
 
     }
     OnExit(): void {
-        GameApp.GetViewList().RemoveDrawLayers(this.guilayer);
+        GameApp.GetViewList().RemoveDrawLayer(this.guilayer);
 
     }
     OnResize(width: number, height: number): void {

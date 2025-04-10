@@ -179,7 +179,7 @@ export class Test_Box2D extends Test_Base {
     }
     OnExit(): void {
         super.OnExit();
-        GameApp.GetViewList().RemoveDrawLayers(this.drawlayer);
+        GameApp.GetViewList().RemoveDrawLayer(this.drawlayer);
     }
     OnUpdate(delta: number): void {
         let camera: Camera = this.guilayer?.GetCanvas()?.camera;

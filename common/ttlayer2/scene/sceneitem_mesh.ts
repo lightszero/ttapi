@@ -1,20 +1,30 @@
 import { Camera, IRenderTarget } from "../ttlayer2.js";
-import { ISceneComponent, ISceneRender, ISceneRenderItem, SceneNode, SceneRenderType } from "./scene.js";
+import { ISceneComponent, ISceneRender, ISceneRenderItem, SceneNode, SceneRenderType } from "./scenenode.js";
 
-export class SceneRender_SingleMesh implements ISceneRender{
+export class SceneRender_SingleMesh implements ISceneRender {
     constructor(noorder: boolean = false) {
 
     }
-    Render(camera: Camera, renderTarget: IRenderTarget, tag: number, renderItems: ISceneRenderItem[]): void {
-       
+    RenderBatch(camera: Camera, renderTarget: IRenderTarget, tag: number, renderItems: ISceneRenderItem[]): void {
+        this.RenderOrderedBegin(camera, renderTarget, tag);
+        for (var i = 0; i < renderItems.length; i++) {
+            this.RenderOrdered(renderItems[i]);
+        }
+        this.RenderOrderedEnd();
     }
-    RenderOrdered(camera: Camera, renderTarget: IRenderTarget, tag: number, renderItems: ISceneRenderItem): void {
-       
+    RenderOrderedBegin(camera: Camera, renderTarget: IRenderTarget, tag: number): void {
+
     }
-    
+    RenderOrdered(renderItems: ISceneRenderItem): void {
+
+    }
+    RenderOrderedEnd(): void {
+
+    }
+
 }
 export class SceneComp_Mesh implements ISceneComponent, ISceneRenderItem {
-
+    //ISceneRenderItem
     get type(): SceneRenderType {
         return SceneRenderType.SingleMesh;
     }
@@ -23,6 +33,11 @@ export class SceneComp_Mesh implements ISceneComponent, ISceneRenderItem {
     }
     get sortz(): number {
         return this.node.pos.Z;
+    }
+
+    get CompType(): string
+    {
+        return "mesh";
     }
     node: SceneNode = null;
     OnAdd(node: SceneNode): void {

@@ -149,7 +149,7 @@ export class Test_TTPack extends Test_Base {
     }
     OnExit(): void {
         super.OnExit();
-        GameApp.GetViewList().RemoveDrawLayers(this.canvaslayer);
+        GameApp.GetViewList().RemoveDrawLayer(this.canvaslayer);
     }
 
 }

@@ -64,7 +64,7 @@ export class Test_Load extends Test_Base {
     }
     OnExit(): void {
         super.OnExit();
-        GameApp.GetViewList().RemoveDrawLayers(this.canvaslayer);
+        GameApp.GetViewList().RemoveDrawLayer(this.canvaslayer);
     }
 
 }

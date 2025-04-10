@@ -1,7 +1,4 @@
-import { tt } from "../../ttapi/ttapi.js";
-import { ElementInst, ElementSprite } from "../../ttlayer2/graphics/pipeline/render/elem.js";
-import { Render_Element_Tbo } from "../../ttlayer2/graphics/pipeline/render/render_elem_tbo.js";
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Button, QUI_Label, QUI_ScreenFixer, Scene, DrawLayer_Scene, SceneNode, SceneComp_Mesh } from "../../ttlayer2/ttlayer2.js";
+import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Button, QUI_Label, QUI_ScreenFixer, Scene, DrawLayer_Scene, SceneNode, SceneComp_Mesh, SceneComp_Sprite } from "../../ttlayer2/ttlayer2.js";
 import { GContext, TTState_All } from "../ttstate_all.js";
 import { Test_Base } from "../test_base.js";
 
@@ -9,15 +6,18 @@ import { Test_Base } from "../test_base.js";
 export class Test_Scene_Simple extends Test_Base {
 
     scene: Scene;
-
+    scenelayer: DrawLayer_Scene;
     OnInit(nav: TTState_All): void {
-        super.OnInit(nav);
-
         //添加一个场景到DrawLayer，这个是纯粹的显示能力
         this.scene = new Scene();
-        let drawlayer = new DrawLayer_Scene(this.scene);
-        GameApp.GetViewList().AddDrawLayer(drawlayer);
-        let camera = drawlayer.GetCamera();//注意相机在drawlayer之上，如果你要从场景外访问相机就是现在了
+        this.scenelayer = new DrawLayer_Scene(this.scene);
+        GameApp.GetViewList().AddDrawLayer(this.scenelayer);
+        let camera = this.scenelayer.GetCamera();//注意相机在drawlayer之上，如果你要从场景外访问相机就是现在了
+
+        super.OnInit(nav);
+
+
+
 
         //竖屏比例限制
         this.container.setAsp(2 / 3, 1 / 2);
@@ -26,24 +26,28 @@ export class Test_Scene_Simple extends Test_Base {
         //还需要对场景也施加显示限制
 
         let node = new SceneNode();
-        node.name = "abc";
+        node.name = "rectgroup";
         console.log("node" + node.name + " is inscene" + node.InScene());
 
         this.scene.GetRoot().Node_Add(node);
 
         console.log("node" + node.name + " is inscene" + node.InScene());
 
+        for (var i = 0; i < 10; i++) {
+            let node2 = new SceneNode();
 
-        let node2 = new SceneNode();
+            node2.name = "mynode_" + i;
 
-        node2.name = "def";
-
-        console.log("node2" + node2.name + " is inscene" + node2.InScene());
-        node.Node_Add(node2);
-        console.log("node2" + node2.name + " is inscene" + node2.InScene());
-
-        let mesh = new SceneComp_Mesh();
-        node2.Comp_Add(mesh);
+            console.log("node2" + node2.name + " is inscene" + node2.InScene());
+            node.Node_Add(node2);
+            console.log("node2" + node2.name + " is inscene" + node2.InScene());
+            node2.poslocal = new Vector3(i * 15, 0, 0);
+            let sprite = new SceneComp_Sprite();
+            node2.Comp_Add(sprite);
+        }
+    }
+    OnExit(): void {
+        GameApp.GetViewList().RemoveDrawLayer(this.scenelayer);
     }
 
     //把事件也交给场景

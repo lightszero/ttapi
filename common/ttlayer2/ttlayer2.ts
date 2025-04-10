@@ -43,5 +43,6 @@ export * from "./xioext/ioext.js"
 export * from "./xioext/findtool.js"
 
 export * from "./scene/scene.js"
+export * from "./scene/scenenode.js"
 export * from "./scene/sceneitem_mesh.js"
 export * from "./scene/sceneitem_sprite.js"

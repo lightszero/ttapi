@@ -167,7 +167,7 @@ export class Test_Tiledmap extends Test_Base {
     }
     OnExit(): void {
         super.OnExit();
-        GameApp.GetViewList().RemoveDrawLayers(this.tiledlayer);
+        GameApp.GetViewList().RemoveDrawLayer(this.tiledlayer);
     }
 
 }

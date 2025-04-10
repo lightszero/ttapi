@@ -91,6 +91,7 @@ export class DrawLayer {
     }
     lasttarget: IRenderTarget;
     Update(delta: number, target: IRenderTarget, rendertag: number): void {
+        this.lasttarget = target;
         for (let i = 0; i < this.renders.length; i++) {
             this.renders[i].OnUpdate(delta, target, this.camera, rendertag);
         }
@@ -98,9 +99,12 @@ export class DrawLayer {
 
     //绘制View
     Render(target: IRenderTarget, rendertag: number): void {
+        if (this.lasttarget == null)
+            return;
         if (this.camera.limitRect != null) {
             target.PushLimitRect(this.camera.limitRect);
         }
+
         for (let i = 0; i < this.renders.length; i++) {
             this.renders[i].OnRender();
         }
@@ -121,7 +125,7 @@ export class DrawLayerList {
         }
         this.mapviews[tag].push(view);
     }
-    RemoveDrawLayers(view: DrawLayer): void {
+    RemoveDrawLayer(view: DrawLayer): void {
         let tag = view.GetTag();
         let views = this.GetDrawLayers(tag);
         let index = views.indexOf(view);

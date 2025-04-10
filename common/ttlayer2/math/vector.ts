@@ -193,6 +193,9 @@ export class Vector3 {
     static get Zero(): Vector3 {
         return new Vector3(0, 0, 0);
     }
+    static Add(a: Vector3, b: Vector3): Vector3 {
+        return new Vector3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+    }
 }
 //#endregion 
 
@@ -244,12 +247,11 @@ export class Border {
     XRight: number;
     YTop: number;
     YBottom: number;
-    SetZero():void
-    {
-        this.XLeft=0;
-        this.XRight=0;
-        this.YTop=0;
-        this.YBottom=0;
+    SetZero(): void {
+        this.XLeft = 0;
+        this.XRight = 0;
+        this.YTop = 0;
+        this.YBottom = 0;
     }
 }
 export class UVRect {
