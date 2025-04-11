@@ -1,5 +1,5 @@
-import { Camera, IRenderTarget, Scene, Vector3 } from "../ttlayer2.js";
-
+import { Camera, IRenderTarget, Vector3 } from "../../ttlayer2.js";
+import { Scene } from "./sceneimpl.js";
 //场景节点渲染器，用来处理各种特定合批情况
 export enum SceneRenderType {
     SingleMesh,
