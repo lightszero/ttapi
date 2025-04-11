@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "vscode-edge-devtools.debug",
+            "type": "msedge",
             "request": "launch",
             "name": "Launch Edge against localhost",
             "url": "http://localhost:5501/index-dev.html",
