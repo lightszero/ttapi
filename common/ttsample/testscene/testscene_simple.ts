@@ -1,6 +1,7 @@
 import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Button, QUI_Label, QUI_ScreenFixer, Scene, DrawLayer_Scene, SceneNode, SceneComp_Mesh, SceneComp_Sprite, ISceneComponent } from "../../ttlayer2/ttlayer2.js";
 import { GContext, TTState_All } from "../ttstate_all.js";
 import { Test_Base } from "../test_base.js";
+import { Box2DSharp, ColliderComp } from "../../ttlayer2/scene/sceneitem_collider.js";
 
 class mycomp implements ISceneComponent {
     get CompType(): string {
@@ -11,8 +12,8 @@ class mycomp implements ISceneComponent {
         this.target = new Vector2(Math.random() * 1000 - 500, Math.random() * 1000 - 500);
     }
     OnUpdate(delta: number): void {
-        let dir = Vector2.Dir(this.node.poslocal, this.target);
-        let dist = Vector2.Dist(this.node.poslocal, this.target);
+        let dir = Vector2.Dir(this._node.poslocal, this.target);
+        let dist = Vector2.Dist(this._node.poslocal, this.target);
         var movedist = 100 * delta;
         if (dist * 0.5 <= movedist) {
             movedist = dist * 0.5;
@@ -22,17 +23,20 @@ class mycomp implements ISceneComponent {
         }
         dir.X *= movedist;
         dir.Y *= movedist;
-        let npos = Vector2.Add(this.node.poslocal, dir);
+        let npos = Vector2.Add(this._node.poslocal, dir);
 
-        this.node.poslocal = new Vector3(npos.X, npos.Y, 0);
+        this._node.poslocal = new Vector3(npos.X, npos.Y, 0);
 
     }
-    node: SceneNode;
+    private _node: SceneNode;
+    get Node(): SceneNode {
+        return this._node;
+    }
     OnAdd(node: SceneNode): void {
-        this.node = node;
+        this._node = node;
     }
     OnRemove(): void {
-        this.node = null;
+        this._node = null;
     }
 
 }
@@ -81,6 +85,16 @@ export class Test_Scene_Simple extends Test_Base {
             let sprite = new SceneComp_Sprite();
             node2.Comp_Add(sprite);
             node2.Comp_Add(new mycomp());
+
+            let collider = new ColliderComp();
+            collider.sharptype = Box2DSharp.Box;
+            collider.sharpsize = new Vector2(10, 10);
+            //默认设置是和32个层碰撞
+            //collider.touchlayermask = 0;//不和任何东西碰撞
+            collider.OnHit = (other) => {
+                console.log("hit from:" + other.Node.id + " to:" + collider.Node.id);
+            }
+            node2.Comp_Add(collider);
         }
     }
     OnUpdate(delta: number): void {

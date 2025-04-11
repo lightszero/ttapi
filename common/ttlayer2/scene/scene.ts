@@ -3,31 +3,55 @@ import { SceneRender_ElementInst } from "./sceneitem_spriteinst.js";
 import { ISceneRender, ISceneRenderItem, SceneNode, SceneRenderType } from "./scenenode.js";
 
 //场景应该有机的结合多种渲染器，将渲染器牢牢的隔离在逻辑之外
-
+export interface ISceneSystem {
+    get type(): string;
+    OnAdd(scene: Scene): void
+    OnRemove(): void;
+    OnUpdate(delta: number, tag: number): void;
+}
 export class Scene implements ILayerRender {
     constructor() {
         this.rootNode = new SceneNode();
 
         this.rootNode.OnNodeAdd(null);
         this.rootNode.OnAttachScene(this);
-        this.renderList_NoOrder[SceneRenderType.SingleMesh] = [];
-        this.renderList_NoOrder[SceneRenderType.VBOBatchRender] = [];
-        this.renderList_NoOrder[SceneRenderType.TBOBatchRender] = [];
-        this.render_NoOrder[SceneRenderType.SingleMesh] = new SceneRender_SingleMesh(true);
-        this.render_NoOrder[SceneRenderType.VBOBatchRender] = new SceneRender_Sprite(true);
-        this.render_NoOrder[SceneRenderType.TBOBatchRender] = new SceneRender_ElementInst(true);
-        this.render_Sorted[SceneRenderType.SingleMesh] = new SceneRender_SingleMesh();
-        this.render_Sorted[SceneRenderType.VBOBatchRender] = new SceneRender_Sprite();
-        this.render_Sorted[SceneRenderType.TBOBatchRender] = new SceneRender_ElementInst();
     }
     lastTarget: IRenderTarget;
     lastCamera: Camera;
     lastTag: number;
     private rootNode: SceneNode;
+    GetSceneRender(type: number, sroted: boolean): ISceneRender {
+        if (sroted) {
+            return this.render_Sorted[type];
+        } else {
+            return this.render_NoOrder[type];
+        }
+    }
+    RegSceneRender(item: ISceneRender) {
+        if (item.sort) {
+            this.render_Sorted[item.type] = item;
+        }
+        else {
+            this.render_NoOrder[item.type] = item;
+            this.renderList_NoOrder[item.type] = [];
+        }
+    }
     renderList_NoOrder: { [type: number]: ISceneRenderItem[] } = {};
     renderList_Sorted: ISceneRenderItem[] = [];
     render_NoOrder: { [type: number]: ISceneRender } = {};
     render_Sorted: { [type: number]: ISceneRender } = {};
+    private systems: { [type: string]: ISceneSystem } = {};
+    GetSystem(type: string): ISceneSystem {
+        return this.systems[type];
+    }
+    RegSystem(item: ISceneSystem) {
+        item.OnAdd(this);
+        this.systems[item.type] = item;
+    }
+    RemoveSystem(type: string) {
+        this.systems[type]?.OnRemove();
+        delete this.systems[type];
+    }
     OnUpdate(delta: number, target: IRenderTarget, camera: Camera, tag: number): void {
         this.lastTag = tag;
         this.lastCamera = camera;
@@ -39,6 +63,9 @@ export class Scene implements ILayerRender {
             this.renderList_Sorted.sort((a, b) => {
                 return a.sortz - b.sortz;
             })
+        }
+        for (var key in this.systems) {
+            this.systems[key].OnUpdate(delta, tag);
         }
     }
     //收集透明 非透明，把Ztest 用起来

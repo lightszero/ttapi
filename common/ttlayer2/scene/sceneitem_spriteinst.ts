@@ -2,8 +2,16 @@ import { Camera, IRenderTarget } from "../ttlayer2.js";
 import { ISceneComponent, ISceneRender, ISceneRenderItem, SceneNode, SceneRenderType } from "./scenenode.js";
 
 export class SceneRender_ElementInst implements ISceneRender {
-    constructor(noorder: boolean = false) {
 
+    constructor(sort: boolean = false) {
+        this._sort = sort;
+    }
+    private _sort: boolean = false;
+    get sort(): boolean {
+        return this._sort;
+    }
+    get type(): SceneRenderType {
+        return SceneRenderType.TBOBatchRender;
     }
     RenderBatch(camera: Camera, renderTarget: IRenderTarget, tag: number, renderItems: ISceneRenderItem[]): void {
 
@@ -36,11 +44,15 @@ export class SceneComp_Element implements ISceneComponent, ISceneRenderItem {
     OnUpdate(delta: number): void {
         throw new Error("Method not implemented.");
     }
+    private _node: SceneNode = null;
+    get Node(): SceneNode {
+        return this._node;
+    }
     OnAdd(node: SceneNode): void {
-        throw new Error("Method not implemented.");
+        this._node = node;
     }
     OnRemove(): void {
-        throw new Error("Method not implemented.");
-    }
+        this._node = null;
 
+    }
 }

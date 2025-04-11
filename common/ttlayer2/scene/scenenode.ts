@@ -13,6 +13,8 @@ export interface ISceneRenderItem {
 }
 
 export interface ISceneRender {
+    get sort(): boolean;
+    get type(): SceneRenderType;
     RenderBatch(camera: Camera, renderTarget: IRenderTarget, tag: number, renderItems: ISceneRenderItem[]): void;
     RenderOrderedBegin(camera: Camera, renderTarget: IRenderTarget, tag: number): void;
     RenderOrdered(renderItems: ISceneRenderItem): void;
@@ -22,6 +24,7 @@ export interface ISceneRender {
 //逻辑组件
 export interface ISceneComponent {
     get CompType(): string;
+    get Node(): SceneNode;
     OnUpdate(delta: number): void;
     OnAdd(node: SceneNode): void;
     OnRemove(): void;
@@ -29,6 +32,7 @@ export interface ISceneComponent {
 //场景基本没毛病，了，但是场景图矩阵传递，更新矩阵性能就很差了，父子关系这套要收着用
 //场景树结构只做分组之用，位置信息往不往下传，要具体看
 export class SceneNode {
+    static g_nodeid: number = 0;
     constructor() {
         this.name = "";
 
@@ -37,8 +41,14 @@ export class SceneNode {
         this.parent = null;
         this.comps = null;
         this.children = null;
-
+        SceneNode.g_nodeid++;
+        this._id = SceneNode.g_nodeid;
     }
+    private _id: number;
+    get id(): number {
+        return this._id;
+    }
+
     name: string;
 
     private _dirtypos = false;
