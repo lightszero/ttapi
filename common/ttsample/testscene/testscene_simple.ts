@@ -14,7 +14,7 @@ class mycomp implements ISceneComponent {
     OnUpdate(delta: number): void {
         let dir = Vector2.Dir(this._node.poslocal, this.target);
         let dist = Vector2.Dist(this._node.poslocal, this.target);
-        var movedist = 100 * delta;
+        var movedist = 400 * delta;
         if (dist * 0.5 <= movedist) {
             movedist = dist * 0.5;
 
