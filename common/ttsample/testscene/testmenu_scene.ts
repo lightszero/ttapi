@@ -5,6 +5,7 @@ import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI,
 import { GContext, TTState_All } from "../ttstate_all.js";
 import { Test_Base } from "../test_base.js";
 import { Test_Scene_Simple } from "./testscene_simple.js";
+import { Test_Scene_BallGame } from "./testscene_ballgame.js";
 
 
 export class TestMenu_Scene extends Test_Base {
@@ -20,7 +21,10 @@ export class TestMenu_Scene extends Test_Base {
         this.AddButton("Test:BaseScene", () => {
             this.nav.NavigatorTo(new Test_Scene_Simple())
         });
-       
+        this.AddButton("Test:经典弹球游戏", () => {
+            this.nav.NavigatorTo(new Test_Scene_BallGame())
+        });
+
     }
 
 

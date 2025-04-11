@@ -24,7 +24,7 @@ export class SceneComp_Collider implements ISceneComponent {
 
     //this 都需要做dirty
     sharptype: colliderSharp = colliderSharp.Box;
-    sharpsize: Vector2 = new Vector2(8, 8);
+    sharphalfsize: Vector2 = new Vector2(8, 8);
     layer: number = 1 << 0;//自己的碰撞层
     touchlayermask: number = 0xffffffff;// 1 << 0 | 1 << 1;//可以接触的碰撞层,32个位
 
@@ -36,7 +36,7 @@ export class SceneComp_Collider implements ISceneComponent {
             node.scene.RegSystem(new Box2dWorld());
         }
         let system = node.scene.GetSystem("box2d") as Box2dWorld;
-        this._body = system.CreateBody(this.sharptype, this.sharpsize, this.layer, this.touchlayermask);
+        this._body = system.CreateBody(this.sharptype, this.sharphalfsize, this.layer, this.touchlayermask);
         this._body.m_userData = this;
     }
     OnHit: (other: SceneComp_Collider) => void;

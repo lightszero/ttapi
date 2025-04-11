@@ -5,6 +5,8 @@ import { ISceneRender_Sprite, SceneRender_Sprite } from "../scenerender/sceneren
 export class SceneComp_Sprite implements ISceneComponent, ISceneRender_Sprite {
     constructor() {
         this.sprite = Resources.GetPackElement().ConvertElemToSprite(Resources.GetWhiteBlock());
+        this.sprite.pivotX = this.sprite.pixelwidth / 2;
+        this.sprite.pivotY = this.sprite.pixelheight / 2;
     }
 
     sprite: Sprite;
@@ -47,8 +49,7 @@ export class SceneComp_Sprite implements ISceneComponent, ISceneRender_Sprite {
         this.sortz = this._node.sortz;
     }
     private _node: SceneNode = null;
-    get Node(): SceneNode
-    {
+    get Node(): SceneNode {
         return this._node;
     }
     OnAdd(node: SceneNode): void {

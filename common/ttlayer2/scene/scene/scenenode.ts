@@ -33,8 +33,8 @@ export interface ISceneComponent {
 //场景树结构只做分组之用，位置信息往不往下传，要具体看
 export class SceneNode {
     static g_nodeid: number = 0;
-    constructor() {
-        this.name = "";
+    constructor(name: string = "") {
+        this.name = name;
 
 
         this.scene = null;

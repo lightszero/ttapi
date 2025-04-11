@@ -67,7 +67,7 @@ export class Box2dWorld extends b2.b2ContactListener implements ISceneSystem {
 
     public BeginContact(_contact: b2.b2Contact): void {
         let u1 = _contact.m_fixtureA.m_body.m_userData as SceneComp_Collider;
-        let u2 = _contact.m_fixtureA.m_body.m_userData as SceneComp_Collider;
+        let u2 = _contact.m_fixtureB.m_body.m_userData as SceneComp_Collider;
         u1?.OnHit?.(u2);
         u2?.OnHit?.(u1);
     }
@@ -77,7 +77,7 @@ export class Box2dWorld extends b2.b2ContactListener implements ISceneSystem {
      */
     public EndContact(_contact: b2.b2Contact): void {
         let u1 = _contact.m_fixtureA.m_body.m_userData as SceneComp_Collider;
-        let u2 = _contact.m_fixtureA.m_body.m_userData as SceneComp_Collider;
+        let u2 = _contact.m_fixtureB.m_body.m_userData as SceneComp_Collider;
         u1?.OnUnhit?.(u2);
         u2?.OnUnhit?.(u1);
     }

@@ -87,7 +87,7 @@ export class Test_Scene_Simple extends Test_Base {
 
             let collider = new SceneComp_Collider();
             collider.sharptype = colliderSharp.Box;
-            collider.sharpsize = new Vector2(10, 10);
+            collider.sharphalfsize = new Vector2(10, 10);
             //默认设置是和32个层碰撞
             //collider.touchlayermask = 0;//不和任何东西碰撞
             collider.OnHit = (other) => {
