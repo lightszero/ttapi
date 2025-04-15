@@ -1,7 +1,7 @@
 import { tt } from "../../ttapi/ttapi.js"
-import { Rectangle, Sha256, SpriteData, TextureFormat } from "../ttlayer2.js";
+import { Rectangle, Sha256, SpriteData, TextureFormat, Vector2 } from "../ttlayer2.js";
 import { TTPathTool } from "../utils/path/pathtool.js";
-
+import * as gif from "../ts-gif/src/index.js"
 //Json 格式描述
 export class TTJson {
     refs: string[];//引用
@@ -13,6 +13,7 @@ export class TTJsonAni {
     framecount: number;
     loop: boolean;
     frames: TTJsonFrame[];
+    import: string;
 }
 export class TTJsonFrame {
     frameid: number;
@@ -77,8 +78,6 @@ export class TTPackageMgr {
                     pic.height = imgdata.height;
 
                 }
-
-
                 pack.pics[key] = pic;
             }
         }
@@ -86,8 +85,15 @@ export class TTPackageMgr {
         if (ttjson.anis != undefined) {
             pack.anis = {};
             for (var key in ttjson.anis) {
-
-                let ani = new TTAni(ttjson.anis[key]);
+                let ttanijson = ttjson.anis[key];
+                let ani = new TTAni();
+                if (ttanijson.import != undefined) {
+                    //导入选项开着
+                    await ani.Import(ttanijson, rootpath, loader);
+                }
+                else {
+                    ani.InitFromAniJson(ttanijson);
+                }
                 pack.anis[key] = ani;
             }
         }
@@ -188,61 +194,126 @@ export class TTPicData {
     }
 }
 export class TTAni {
-    constructor(ani: TTJsonAni) {
-        this.fps = ani.fps;
+    // constructor(a) {
+
+    //     if (ani.import != undefined) {
+    //         this.InitFromImport(ani.import);
+    //         return;
+    //     }
+    //     else {
+    //         this.InitFromAniJson(ani);
+    //     }
+    // }
+    async Import(ani: TTJsonAni, rootpath: string, loader: tt.ILoader) {
+        let importstr = ani.import;
+        let words = importstr.split(";");
+        let filename = words[0];
+        let ext = TTPathTool.GetExt(filename);
+        console.log("InitFromImport ext=" + ext);
+        let scale = 1;//这个指的是原始缩放
+        let pivot = Vector2.Zero;
+        for (var i = 1; i < words.length; i++) {
+            let line = words[i];
+            let lwords = line.split("=");
+            let key = lwords[0];
+            let value = lwords[1];
+            if (key == "scale") {
+                scale = parseFloat(value);
+            }
+            else if (key == "pivot") {
+                let vwords = value.split(",");
+                pivot.X = parseFloat(vwords[0]);
+                pivot.Y = parseFloat(vwords[1]);
+            }
+        }
+        console.log("InitFromImport scale=" + scale + " pivot=" + pivot.X + "," + pivot.Y)
+        let gifbs = await loader.LoadBinaryAsync(rootpath + "/" + filename);
+
+        let gifRender = new gif.Reader(new Uint8Array(gifbs));
+    }
+    InitFromAniJson(ani: TTJsonAni) {
+        // 初始化循环
         this.loop = ani.loop;
+        // 初始化帧率
+        this.fps = ani.fps;
+
+        // 如果帧率未定义，则默认为30
         if (this.fps == undefined)
             this.fps = 30;
 
+        // 创建一个映射表，用于存储帧id和帧索引的对应关系
         let mapkey: { [id: number]: number } = {};
+        // 遍历所有帧，将帧id和帧索引存入映射表
         for (let i = 0; i < ani.frames.length; i++) {
             mapkey[ani.frames[i].frameid] = i;
         }
+        // 如果映射表中没有第一帧，则抛出异常
         if (mapkey[0] == undefined)
             throw "你至少得指定第一帧吧";
+        // 初始化最后一帧的索引
         let lastid = -1;
+        // 初始化帧数
         let framecount = ani.framecount;
+        // 如果帧数未定义，则抛出异常
         if (framecount == undefined)
             throw "no ani.framecount value.";
+        // 遍历所有帧
         for (let i = 0; i < framecount; i++) {
+            // 获取当前帧的信息
             let finfo = ani.frames[mapkey[i]];
 
+            // 创建一个帧对象
             let f = new TTAniFrame();
+            // 如果当前帧信息未定义，则将当前帧的引用帧设置为上一帧
             if (finfo == undefined) {
                 f.refframe = lastid;
             }
+            // 否则，将当前帧的引用帧设置为-1，并将最后一帧的索引设置为当前帧的索引
             else {
                 f.refframe = -1;
                 lastid = i;
+                // 初始化当前帧的图片信息
                 f.pics = [];
                 //name,x,y[,scalex,scaley,rotate]
+                // 遍历当前帧的所有图片信息
                 for (let j = 0; j < finfo.pics.length; j++) {
 
+                    // 创建一个图片信息对象
                     let p = new TTAniPicInfo();
+                    // 将图片信息字符串按分号分割，得到图片名称和属性
                     let pwords = finfo.pics[j].split(";");
+                    // 设置图片名称
                     p.name = pwords[0];
+                    // 遍历图片的属性
                     for (let k = 1; k < pwords.length; k++) {
+                        // 将属性按等号分割，得到属性名和属性值
                         let wss = pwords[k].split("=");
                         let key = wss[0];
                         let value = wss[1];
+                        // 如果属性名为pos，则将属性值按逗号分割，得到x和y坐标，并转换为整数
                         if (key == "pos") {
                             let values = value.split(",");
                             p.x = parseInt(values[0]);
                             p.y = parseInt(values[1]);
                         }
+                        // 如果属性名为scale，则将属性值按逗号分割，得到scalex和scaley，并转换为整数
                         else if (key == "scale") {
                             let values = value.split(",");
                             p.scaleX = parseInt(values[0]);
                             p.scaleY = parseInt(values[1]);
                         }
+                        // 如果属性名为rot，则将属性值转换为整数
                         else if (key == "rot") {
                             p.rotate = parseInt(value);
                         }
                     }
+                    // 将图片信息对象添加到当前帧的图片信息列表中
                     f.pics.push(p);
                 }
+                // 初始化当前帧的矩形信息
                 f.rects = [];
             }
+            // 将当前帧添加到帧列表中
             this.frame.push(f);
         }
     }

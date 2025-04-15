@@ -1,0 +1,23 @@
+{
+    "anis":
+    {
+        "ani1":{
+            "fps":30,
+            "framecount":30,
+            "loop":true,
+            "frames":[
+                {"frameid":0,"pics":["pw6_0;pos=0,0;scale=2,2;rot=0"],"rects":["red,0,0,16,16"]},
+                {"frameid":5,"pics":["pw6_1;scale=2,2,rot=0"]},
+                {"frameid":10,"pics":["pw6_2;scale=2,2"]},
+                {"frameid":15,"pics":["pw6_3;pos=0,0;scale=2,2,rot=0"]},
+                {"frameid":20,"pics":["pw6_4;pos=0,0;scale=2,2,rot=0"]},
+                {"frameid":25,"pics":["pw6_5;pos=0,0;scale=2,2,rot=0"]}
+            ]
+
+        },
+        "walk":{
+            "import":"1_Common/[Common] Walk_MiniSwordMan.gif;scale=4;pivot=16,30",
+            "loop":true
+        }
+    }
+}

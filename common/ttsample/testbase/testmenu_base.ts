@@ -10,6 +10,7 @@ import { Test_Element_TBO } from "./test_element_tbo.js";
 import { Test_Tiledmap } from "./test_tiledmap.js";
 import { Test_TTPack } from "./test_ttpack.js";
 import { Test_Box2D } from "./test_box2d.js";
+import { Test_TTPack_GIF } from "./test_ttpack_gif.js";
 
 export class TestMenu_Base extends Test_Base {
 
@@ -35,6 +36,9 @@ export class TestMenu_Base extends Test_Base {
         });
         this.AddButton("Test:TTPack", () => {
             this.nav.NavigatorTo(new Test_TTPack())
+        });
+        this.AddButton("Test:TTPack GIF", () => {
+            this.nav.NavigatorTo(new Test_TTPack_GIF())
         });
         this.AddButton("Test:Box2d", () => {
             this.nav.NavigatorTo(new Test_Box2D())
