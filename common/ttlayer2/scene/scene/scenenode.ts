@@ -1,5 +1,5 @@
-import { Camera, IRenderTarget, Scene, Vector3 } from "../ttlayer2.js";
-
+import { Camera, IRenderTarget, Vector3 } from "../../ttlayer2.js";
+import { Scene } from "./sceneimpl.js";
 //场景节点渲染器，用来处理各种特定合批情况
 export enum SceneRenderType {
     SingleMesh,
@@ -33,8 +33,8 @@ export interface ISceneComponent {
 //场景树结构只做分组之用，位置信息往不往下传，要具体看
 export class SceneNode {
     static g_nodeid: number = 0;
-    constructor() {
-        this.name = "";
+    constructor(name: string = "") {
+        this.name = name;
 
 
         this.scene = null;

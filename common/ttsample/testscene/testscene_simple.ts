@@ -1,7 +1,6 @@
-import { Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Button, QUI_Label, QUI_ScreenFixer, Scene, DrawLayer_Scene, SceneNode, SceneComp_Mesh, SceneComp_Sprite, ISceneComponent } from "../../ttlayer2/ttlayer2.js";
+import { colliderSharp, SceneComp_Collider, Navigator, IState, Resources, Color, QUI_Panel, GameApp, DrawLayer_GUI, DrawLayer, DrawLayerTag, Vector2, Vector3, QUI_HAlign, QUI_Button, QUI_Label, QUI_ScreenFixer, Scene, DrawLayer_Scene, SceneNode, SceneComp_Mesh, SceneComp_Sprite, ISceneComponent } from "../../ttlayer2/ttlayer2.js";
 import { GContext, TTState_All } from "../ttstate_all.js";
 import { Test_Base } from "../test_base.js";
-import { Box2DSharp, ColliderComp } from "../../ttlayer2/scene/sceneitem_collider.js";
 
 class mycomp implements ISceneComponent {
     get CompType(): string {
@@ -86,9 +85,9 @@ export class Test_Scene_Simple extends Test_Base {
             node2.Comp_Add(sprite);
             node2.Comp_Add(new mycomp());
 
-            let collider = new ColliderComp();
-            collider.sharptype = Box2DSharp.Box;
-            collider.sharpsize = new Vector2(10, 10);
+            let collider = new SceneComp_Collider();
+            collider.sharptype = colliderSharp.Box;
+            collider.sharphalfsize = new Vector2(10, 10);
             //默认设置是和32个层碰撞
             //collider.touchlayermask = 0;//不和任何东西碰撞
             collider.OnHit = (other) => {

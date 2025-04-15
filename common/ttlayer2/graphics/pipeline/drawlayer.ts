@@ -45,23 +45,23 @@ export class Camera {
         matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
         return this._viewmatrix;
     }
-    GetProjMatrix(_target: IRenderTarget): Float32Array {
-        let matrix = this._projmatrix;
-        let offx: number = 0;
-        let offy: number = 0;
+    // GetProjMatrix(_target: IRenderTarget): Float32Array {
+    //     let matrix = this._projmatrix;
+    //     let offx: number = 0;
+    //     let offy: number = 0;
 
-        let sx = 1.0 * 2 / _target.getWidth()
-        let sy = 1 * 2 / _target.getHeight()
-        if (_target.IsMainOutput())//isMainoutput
-            sy *= -1;
+    //     let sx = 1.0 * 2 / _target.getWidth()
+    //     let sy = 1 * 2 / _target.getHeight()
+    //     if (_target.IsMainOutput())//isMainoutput
+    //         sy *= -1;
 
-        matrix[0] = sx; matrix[4] = 0; matrix[8] = 0; matrix[12] = offx;
-        matrix[1] = 0; matrix[5] = sy; matrix[9] = 0; matrix[13] = offy;
-        matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
-        matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
+    //     matrix[0] = sx; matrix[4] = 0; matrix[8] = 0; matrix[12] = offx;
+    //     matrix[1] = 0; matrix[5] = sy; matrix[9] = 0; matrix[13] = offy;
+    //     matrix[2] = 0; matrix[6] = 0; matrix[10] = 1; matrix[14] = 0;
+    //     matrix[3] = 0; matrix[7] = 0; matrix[11] = 0; matrix[15] = 1;
 
-        return matrix;
-    }
+    //     return matrix;
+    // }
 }
 export interface ILayerRender {
     OnUpdate(delta: number, target: IRenderTarget, camera: Camera, tag: number): void;
