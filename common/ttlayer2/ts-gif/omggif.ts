@@ -387,7 +387,7 @@ export class GifFrame {
     data_length: number;
     transparent_index: number;
     interlaced: boolean;
-    delay: number;
+    delay: number;//延迟
     disposal: number;
 }
 export class GifReader {
@@ -402,12 +402,13 @@ export class GifReader {
         this.buf = buf;
         var p = 0;
 
+        //文件头
         // - Header (GIF87a or GIF89a).
         if (buf[p++] !== 0x47 || buf[p++] !== 0x49 || buf[p++] !== 0x46 ||
             buf[p++] !== 0x38 || (buf[p++] + 1 & 0xfd) !== 0x38 || buf[p++] !== 0x61) {
             throw new Error("Invalid GIF 87a/89a header.");
         }
-
+        //逻辑块，固定尺寸
         // - Logical Screen Descriptor.
         this.width = buf[p++] | buf[p++] << 8;
         this.height = buf[p++] | buf[p++] << 8;
@@ -424,6 +425,7 @@ export class GifReader {
         if (global_palette_flag) {
             global_palette_offset = p;
             global_palette_size = num_global_colors;
+            //全局调色板块，直接走
             p += num_global_colors * 3;  // Seek past palette.
         }
 
@@ -439,110 +441,114 @@ export class GifReader {
 
         while (no_eof && p < buf.length) {
             switch (buf[p++]) {
+                //图形控制块
                 case 0x21:  // Graphics Control Extension Block
-                    switch (buf[p++]) {
-                        case 0xff:  // Application specific block
-                            // Try if it's a Netscape block (with animation loop counter).
-                            if (buf[p] !== 0x0b ||  // 21 FF already read, check block size.
-                                // NETSCAPE2.0
-                                buf[p + 1] == 0x4e && buf[p + 2] == 0x45 && buf[p + 3] == 0x54 &&
-                                buf[p + 4] == 0x53 && buf[p + 5] == 0x43 && buf[p + 6] == 0x41 &&
-                                buf[p + 7] == 0x50 && buf[p + 8] == 0x45 && buf[p + 9] == 0x32 &&
-                                buf[p + 10] == 0x2e && buf[p + 11] == 0x30 &&
-                                // Sub-block
-                                buf[p + 12] == 0x03 && buf[p + 13] == 0x01 && buf[p + 16] == 0) {
-                                p += 14;
-                                this.loop_count = buf[p++] | buf[p++] << 8;
+                    {
+                        switch (buf[p++]) {
+                            case 0xff:  // Application specific block
+                                // Try if it's a Netscape block (with animation loop counter).
+                                if (buf[p] !== 0x0b ||  // 21 FF already read, check block size.
+                                    // NETSCAPE2.0
+                                    buf[p + 1] == 0x4e && buf[p + 2] == 0x45 && buf[p + 3] == 0x54 &&
+                                    buf[p + 4] == 0x53 && buf[p + 5] == 0x43 && buf[p + 6] == 0x41 &&
+                                    buf[p + 7] == 0x50 && buf[p + 8] == 0x45 && buf[p + 9] == 0x32 &&
+                                    buf[p + 10] == 0x2e && buf[p + 11] == 0x30 &&
+                                    // Sub-block
+                                    buf[p + 12] == 0x03 && buf[p + 13] == 0x01 && buf[p + 16] == 0) {
+                                    p += 14;
+                                    this.loop_count = buf[p++] | buf[p++] << 8;
+                                    p++;  // Skip terminator.
+                                } else {  // We don't know what it is, just try to get past it.
+                                    p += 12;
+                                    while (true) {  // Seek through subblocks.
+                                        var block_size = buf[p++];
+                                        // Bad block size (ex: undefined from an out of bounds read).
+                                        if (!(block_size >= 0)) throw Error("Invalid block size");
+                                        if (block_size === 0) break;  // 0 size is terminator
+                                        p += block_size;
+                                    }
+                                }
+                                break;
+
+                            case 0xf9:  // Graphics Control Extension
+                                if (buf[p++] !== 0x4 || buf[p + 4] !== 0)
+                                    throw new Error("Invalid graphics extension block.");
+                                var pf1 = buf[p++];
+                                delay = buf[p++] | buf[p++] << 8;
+                                this.transparent_index = buf[p++];
+                                if ((pf1 & 1) === 0) transparent_index = -1;
+                                disposal = pf1 >> 2 & 0x7;
                                 p++;  // Skip terminator.
-                            } else {  // We don't know what it is, just try to get past it.
-                                p += 12;
+                                break;
+
+                            // Plain Text Extension could be present and we just want to be able
+                            // to parse past it.  It follows the block structure of the comment
+                            // extension enough to reuse the path to skip through the blocks.
+                            case 0x01:  // Plain Text Extension (fallthrough to Comment Extension)
+                            case 0xfe:  // Comment Extension.
                                 while (true) {  // Seek through subblocks.
                                     var block_size = buf[p++];
                                     // Bad block size (ex: undefined from an out of bounds read).
                                     if (!(block_size >= 0)) throw Error("Invalid block size");
                                     if (block_size === 0) break;  // 0 size is terminator
+                                    // console.log(buf.slice(p, p+block_size).toString('ascii'));
                                     p += block_size;
                                 }
-                            }
-                            break;
+                                break;
 
-                        case 0xf9:  // Graphics Control Extension
-                            if (buf[p++] !== 0x4 || buf[p + 4] !== 0)
-                                throw new Error("Invalid graphics extension block.");
-                            var pf1 = buf[p++];
-                            delay = buf[p++] | buf[p++] << 8;
-                            this.transparent_index = buf[p++];
-                            if ((pf1 & 1) === 0) transparent_index = -1;
-                            disposal = pf1 >> 2 & 0x7;
-                            p++;  // Skip terminator.
-                            break;
-
-                        // Plain Text Extension could be present and we just want to be able
-                        // to parse past it.  It follows the block structure of the comment
-                        // extension enough to reuse the path to skip through the blocks.
-                        case 0x01:  // Plain Text Extension (fallthrough to Comment Extension)
-                        case 0xfe:  // Comment Extension.
-                            while (true) {  // Seek through subblocks.
-                                var block_size = buf[p++];
-                                // Bad block size (ex: undefined from an out of bounds read).
-                                if (!(block_size >= 0)) throw Error("Invalid block size");
-                                if (block_size === 0) break;  // 0 size is terminator
-                                // console.log(buf.slice(p, p+block_size).toString('ascii'));
-                                p += block_size;
-                            }
-                            break;
-
-                        default:
-                            throw new Error(
-                                "Unknown graphic control label: 0x" + buf[p - 1].toString(16));
+                            default:
+                                throw new Error(
+                                    "Unknown graphic control label: 0x" + buf[p - 1].toString(16));
+                        }
+                        break;
                     }
-                    break;
-
+                //图像描述快
                 case 0x2c:  // Image Descriptor.
-                    var x = buf[p++] | buf[p++] << 8;
-                    var y = buf[p++] | buf[p++] << 8;
-                    var w = buf[p++] | buf[p++] << 8;
-                    var h = buf[p++] | buf[p++] << 8;
-                    var pf2 = buf[p++];
-                    var local_palette_flag = pf2 >> 7;
-                    var interlace_flag = pf2 >> 6 & 1;
-                    var num_local_colors_pow2 = pf2 & 0x7;
-                    var num_local_colors = 1 << (num_local_colors_pow2 + 1);
-                    var palette_offset = global_palette_offset;
-                    var palette_size = global_palette_size;
-                    var has_local_palette = false;
-                    if (local_palette_flag) {
-                        var has_local_palette = true;
-                        palette_offset = p;  // Override with local palette.
-                        palette_size = num_local_colors;
-                        p += num_local_colors * 3;  // Seek past palette.
+                    {
+                        var x = buf[p++] | buf[p++] << 8;
+                        var y = buf[p++] | buf[p++] << 8;
+                        var w = buf[p++] | buf[p++] << 8;
+                        var h = buf[p++] | buf[p++] << 8;
+                        var pf2 = buf[p++];
+                        var local_palette_flag = pf2 >> 7;
+                        var interlace_flag = pf2 >> 6 & 1;
+                        var num_local_colors_pow2 = pf2 & 0x7;
+                        var num_local_colors = 1 << (num_local_colors_pow2 + 1);
+                        var palette_offset = global_palette_offset;
+                        var palette_size = global_palette_size;
+                        var has_local_palette = false;
+                        if (local_palette_flag) {
+                            var has_local_palette = true;
+                            palette_offset = p;  // Override with local palette.
+                            palette_size = num_local_colors;
+                            p += num_local_colors * 3;  // Seek past palette.
+                        }
+
+                        var data_offset = p;
+
+                        p++;  // codesize
+                        while (true) {
+                            var block_size = buf[p++];
+                            // Bad block size (ex: undefined from an out of bounds read).
+                            if (!(block_size >= 0)) throw Error("Invalid block size");
+                            if (block_size === 0) break;  // 0 size is terminator
+                            p += block_size;
+                        }
+
+                        this.frames.push({
+                            x: x, y: y, width: w, height: h,
+                            has_local_palette: has_local_palette,
+                            palette_offset: palette_offset,
+                            palette_size: palette_size,
+                            data_offset: data_offset,
+                            data_length: p - data_offset,
+                            transparent_index: transparent_index,
+                            interlaced: !!interlace_flag,
+                            delay: delay,
+                            disposal: disposal
+                        });
+                        break;
                     }
-
-                    var data_offset = p;
-
-                    p++;  // codesize
-                    while (true) {
-                        var block_size = buf[p++];
-                        // Bad block size (ex: undefined from an out of bounds read).
-                        if (!(block_size >= 0)) throw Error("Invalid block size");
-                        if (block_size === 0) break;  // 0 size is terminator
-                        p += block_size;
-                    }
-
-                    this.frames.push({
-                        x: x, y: y, width: w, height: h,
-                        has_local_palette: has_local_palette,
-                        palette_offset: palette_offset,
-                        palette_size: palette_size,
-                        data_offset: data_offset,
-                        data_length: p - data_offset,
-                        transparent_index: transparent_index,
-                        interlaced: !!interlace_flag,
-                        delay: delay,
-                        disposal: disposal
-                    });
-                    break;
-
                 case 0x3b:  // Trailer Marker (end of file).
                     no_eof = false;
                     break;
@@ -692,7 +698,7 @@ export class GifReader {
             }
 
             if (index === trans) {
-               // op += 4;
+                // op += 4;
                 pixels[op++] = 0;
                 pixels[op++] = 0;
                 pixels[op++] = 0;
