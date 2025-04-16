@@ -1,7 +1,7 @@
 import { tt } from "../../ttapi/ttapi.js"
 import { Rectangle, Sha256, SpriteData, TextureFormat, Vector2 } from "../ttlayer2.js";
 import { TTPathTool } from "../utils/path/pathtool.js";
-import * as gif from "../ts-gif/src/index.js"
+import { GifReader } from "../ts-gif/omggif.js";
 //Json 格式描述
 export class TTJson {
     refs: string[];//引用
@@ -229,7 +229,12 @@ export class TTAni {
         console.log("InitFromImport scale=" + scale + " pivot=" + pivot.X + "," + pivot.Y)
         let gifbs = await loader.LoadBinaryAsync(rootpath + "/" + filename);
 
-        let gifRender = new gif.Reader(new Uint8Array(gifbs));
+        let gifRender = new GifReader(new Uint8Array(gifbs));
+        for (var i = 0; i < gifRender.numFrames(); i++) {
+            let finfo = gifRender.frameInfo(i);
+            let data = new Uint8Array(finfo.width * finfo.height * 4);
+            gifRender.decodeAndBlitFrameRGBA(i, data);
+        }
     }
     InitFromAniJson(ani: TTJsonAni) {
         // 初始化循环
