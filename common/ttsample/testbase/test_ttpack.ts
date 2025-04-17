@@ -61,7 +61,7 @@ export class Test_TTPack extends Test_Base {
 
 
         this.AddLabel("测试TTPack加载");
-        let pp = await TTPackageMgr.Load("data/p01.tt.json", tt.loader);
+        let pp = await TTPackageMgr.Load("ttsample/data/p01.tt.json", tt.loader);
 
 
         console.log("pp=" + pp.Name);
@@ -88,7 +88,7 @@ export class Test_TTPack extends Test_Base {
 
         this.AddSprites();
     }
-  
+
 
     AddSprites(): void {
 

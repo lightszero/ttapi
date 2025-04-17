@@ -32,7 +32,7 @@ export class Test_Tiledmap extends Test_Base {
 
 
 
-        this.AddLabel("LPC有个很好的Tiledmap 规则");
+        this.AddLabel("LPC有个很好的Tiledmap 规则", 0.5);
         this.AddButton("随机地图", () => {
             this.RandomMap();
         });
@@ -78,38 +78,41 @@ export class Test_Tiledmap extends Test_Base {
 
         this.tiledtex.AddEmpty();
         {
-            let mat1 = new Material(Resources.GetShaderProgram("simple"));
+            //let mat1 = new Material(Resources.GetShaderProgram("simple"));
 
-            let teximg = await tt.loaderex.LoadImageAsync("./data/tiledrule.png");
+            let teximg = await tt.loaderex.LoadImageAsync("ttsample/data/tiledrule.png");
             let tex1 = new Texture(gl, teximg.width, teximg.height, TextureFormat.RGBA32, null);
             tex1.UploadImg(teximg);
-            mat1.uniformTexs["tex"].value = tex1;
+            //mat1.uniformTexs["tex"].value = tex1;
 
-            let s1 = new Sprite(mat1);
+            //let s1 = new Sprite(mat1);
 
             let img = new QUI_Image();
-            img.sprite = s1;
-            img.localRect.setHPosByLeftBorder(96, x);
-            x += 100;
-            img.localRect.setVPosByTopBorder(192, this.GetUIY());
+            img.SetByTexture(tex1);
+
+            //img.sprite = s1;
+            img.localRect.setHPosByLeftBorder(96 / 2, x);
+            x += 100 / 2;
+            img.localRect.setVPosByTopBorder(192 / 2, this.GetUIY());
             this.guilayer.GetCanvas().AddChild(img);
 
         }
         {
-            let mat1 = new Material(Resources.GetShaderProgram("simple"));
+            //let mat1 = new Material(Resources.GetShaderProgram("simple"));
 
-            let teximg = await tt.loaderex.LoadImageDataAsync("./data/grass.png");
+            let teximg = await tt.loaderex.LoadImageDataAsync("ttsample/data/grass.png");
             let tex1 = new Texture(gl, teximg.width, teximg.height, TextureFormat.RGBA32, null);
             tex1.UploadImg(teximg);
-            mat1.uniformTexs["tex"].value = tex1;
+            //mat1.uniformTexs["tex"].value = tex1;
 
-            let s1 = new Sprite(mat1);
+            //let s1 = new Sprite(mat1);
 
             let img = new QUI_Image();
-            img.sprite = s1;
-            img.localRect.setHPosByLeftBorder(96, x);
-            x += 100;
-            img.localRect.setVPosByTopBorder(192, this.GetUIY());
+            img.SetByTexture(tex1);
+            //img.sprite = s1;
+            img.localRect.setHPosByLeftBorder(96 / 2, x);
+            x += 100 / 2;
+            img.localRect.setVPosByTopBorder(192 / 2, this.GetUIY());
             this.guilayer.GetCanvas().AddChild(img);
 
             let imgdata = new SpriteData();
@@ -120,20 +123,21 @@ export class Test_Tiledmap extends Test_Base {
             this.tiledtex.AddLPCTile(imgdata);
         }
         {
-            let mat1 = new Material(Resources.GetShaderProgram("simple"));
+            //let mat1 = new Material(Resources.GetShaderProgram("simple"));
 
-            let teximg = await tt.loaderex.LoadImageDataAsync("./data/dirt.png");
+            let teximg = await tt.loaderex.LoadImageDataAsync("ttsample/data/dirt.png");
             let tex1 = new Texture(gl, teximg.width, teximg.height, TextureFormat.RGBA32, null);
             tex1.UploadImg(teximg);
-            mat1.uniformTexs["tex"].value = tex1;
+            //mat1.uniformTexs["tex"].value = tex1;
 
-            let s1 = new Sprite(mat1);
+            //let s1 = new Sprite(mat1);
 
             let img = new QUI_Image();
-            img.sprite = s1;
-            img.localRect.setHPosByLeftBorder(96, x);
-            x += 100;
-            img.localRect.setVPosByTopBorder(192, this.GetUIY());
+            //img.sprite = s1;
+            img.SetByTexture(tex1);
+            img.localRect.setHPosByLeftBorder(96 / 2, x);
+            x += 100 / 2;
+            img.localRect.setVPosByTopBorder(192 / 2, this.GetUIY());
             this.guilayer.GetCanvas().AddChild(img);
 
             let imgdata = new SpriteData();
@@ -143,12 +147,12 @@ export class Test_Tiledmap extends Test_Base {
             imgdata.height = teximg.height;
             this.tiledtex.AddLPCTile(imgdata);
         }
-        this.AddEmpty(192);
+        this.AddEmpty(192 / 2);
 
-        this.AddLabel("使用3x6的区块，表达地表的一层");
-        this.AddLabel("大点，小点，内角四块。");
-        this.AddLabel("外角八块，外角的最中间是平铺块");
-        this.AddLabel("最下边一行是替换的平铺块");
+        this.AddLabel("使用3x6的区块，表达地表的一层", 0.5);
+        this.AddLabel("大点，小点，内角四块。", 0.5);
+        this.AddLabel("外角八块，外角的最中间是平铺块", 0.5);
+        this.AddLabel("最下边一行是替换的平铺块", 0.5);
 
 
         this.RandomMap()

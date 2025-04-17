@@ -42,7 +42,7 @@ export class Test_Base implements IState<TTState_All> {
         this.container.AddChild(label);
         label.halign = QUI_HAlign.Left;
         label.localRect.setHPosFill(10, 10);
-        label.localRect.setVPosByTopBorder(20, this.y);
+        label.localRect.setVPosByTopBorder(20 * s, this.y);
         label.fontScale.X *= s;
         label.fontScale.Y *= s;
         this.y += 24 * s;
