@@ -88,7 +88,7 @@ export class Test_TTPack_GIF extends Test_Base {
 
         this.AddSprites();
     }
-  
+
 
     AddSprites(): void {
 
@@ -109,18 +109,18 @@ export class Test_TTPack_GIF extends Test_Base {
 
         this.render.SetPackElement(Resources.GetPackElement());
 
-        for (var i = 0; i < 5; i++) {
-            let inst = new ElementInst();
-            inst.pos = new Vector3(i * 50, 0, 0);
-            inst.rotate = 0;
-            inst.scale = new Vector2(2, 2);
-            inst.instid = i % 2 == 0 ? s.index : s2.index;
+        // for (var i = 0; i < 5; i++) {
+        //     let inst = new ElementInst();
+        //     inst.pos = new Vector3(i * 50, 0, 0);
+        //     inst.rotate = 0;
+        //     inst.scale = new Vector2(2, 2);
+        //     inst.instid = i % 2 == 0 ? s.index : s2.index;
 
-            inst.color = new Color(1, Math.random(), 1, 1.0);
+        //     inst.color = new Color(1, Math.random(), 1, 1.0);
 
-            this.inst.push(inst);
-            this.render.AddElementInst(this.inst[i]);
-        }
+        //     this.inst.push(inst);
+        //     this.render.AddElementInst(this.inst[i]);
+        // }
         console.log("int count =" + this.inst.length);
 
     }
@@ -138,12 +138,14 @@ export class Test_TTPack_GIF extends Test_Base {
             //play by fps
             this.anip.Update(delta);
 
-            for (var i = 0; i < 10; i++) {
-                this.anip.pos.X = i * 50;
-                this.anip.pos.Y = 50;
-                this.anip.Render();
+            for (var j = 0; j < 3; j++) {
+                for (var i = 0; i < 10; i++) {
+                    this.anip.pos.X = i * 100;
+                    this.anip.pos.Y = 50 + j * 50;
+                    this.anip.Render();
 
 
+                }
             }
         }
     }
