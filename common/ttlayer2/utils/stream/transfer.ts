@@ -4,7 +4,7 @@ export enum TransferMode {
     Read,
     Write,
 }
-
+//Transfei 用于对对象进行树状的遍历
 export interface ITransfer {
     Transfer(stream: DataStream, mode: TransferMode): void
 }

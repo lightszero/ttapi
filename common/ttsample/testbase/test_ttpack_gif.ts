@@ -138,10 +138,10 @@ export class Test_TTPack_GIF extends Test_Base {
             //play by fps
             this.anip.Update(delta);
 
-            for (var j = 0; j < 3; j++) {
+            for (var j = 0; j < 10; j++) {
                 for (var i = 0; i < 10; i++) {
-                    this.anip.pos.X = i * 100;
-                    this.anip.pos.Y = 50 + j * 50;
+                    this.anip.pos.X = i * 32;
+                    this.anip.pos.Y = 50 + j * 32;
                     this.anip.Render();
 
 

@@ -196,31 +196,19 @@ export class SpriteData {
             for (let i = 0; i < this.width; i++) {
 
                 let srcindex = (j) * this.width + (i);
-                if (len == 1) {
-                    if (this.data[srcindex] > 0) {
-                        if (i < x1)
-                            x1 = i;
-                        if (j < y1)
-                            y1 = j;
-                        if (i > x2)
-                            x2 = i;
-                        if (j > y2)
-                            y2 = j;
-                    }
-                }
-                else {
+                let nottran = len == 1 ? this.data[srcindex] > 0 : this.data[srcindex * 4 + 3] > 0;
 
-                    if (this.data[srcindex * 4 + 3] > 0) {
-                        if (i < x1)
-                            x1 = i;
-                        if (j < y1)
-                            y1 = j;
-                        if (i > x2)
-                            x2 = i;
-                        if (j > y2)
-                            y2 = j;
-                    }
+                if (nottran) {
+                    if (x1 > i)
+                        x1 = i;
+                    if (x2 < i)
+                        x2 = i;
+                    if (y1 > j)
+                        y1 = j;
+                    if (y2 < j)
+                        y2 = j;
                 }
+
             }
         }
 
@@ -228,7 +216,7 @@ export class SpriteData {
             //空白图像
             return null;
         }
-        return this.Cut(x1, x2, x2 - x1 + 1, y2 - y1 + 1);
+        return this.Cut(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
     }
     //往小了缩
     ScaleToSmall(srcscale: number): SpriteData {

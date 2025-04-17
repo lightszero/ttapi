@@ -112,17 +112,27 @@ export class TTPackageMgr {
         let gifbs = await loader.LoadBinaryAsync(rootpath + "/" + filename);
 
         let gifRender = new GifReader(new Uint8Array(gifbs));
-        let realw = gifRender.width / srcscale;
-        let realh = gifRender.height / srcscale;
+        // let realw = gifRender.width / srcscale;
+        // let realh = gifRender.height / srcscale;
         for (var i = 0; i < gifRender.numFrames(); i++) {
             let finfo = gifRender.frameInfo(i);
 
             let data = new Uint8Array(gifRender.width * gifRender.height * 4);
             gifRender.decodeAndBlitFrameRGBA(i, data);
 
-            let pic = TTPicData.FromData(gifRender.width, gifRender.height, data);
-            pic.pivotX = pivot.X;
-            pic.pivotY = pivot.Y;
+            //利用spriteData来做转换
+            let spdata = new SpriteData()
+            spdata.width = gifRender.width;
+            spdata.height = gifRender.height;
+            spdata.data = data;
+            spdata.format = TextureFormat.RGBA32;
+            spdata = spdata.ScaleToSmall(srcscale);
+            spdata.pivotX = pivot.X;
+            spdata.pivotY = pivot.Y;
+            spdata = spdata.CutByTransparent();
+            let pic = TTPicData.FromData(spdata.width, spdata.height, spdata.data);
+            pic.pivotX = spdata.pivotX;
+            pic.pivotY = spdata.pivotY;
 
             pack.pics[pic.srcfile] = pic;
 
@@ -348,7 +358,7 @@ export class TTPicData {
         //data.srcrect = rect;
         return data;
     }
-    static FromData(width: number, height: number, data: Uint8Array): TTPicData {
+    static FromData(width: number, height: number, data: Uint8Array | Uint8ClampedArray): TTPicData {
 
         let picdata = new TTPicData();
         picdata.width = width;
