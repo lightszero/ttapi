@@ -1,5 +1,5 @@
 import { Border, ElementFormat, Material, Resources, Sprite, Texture, TextureFormat, UVRect, Vector2 } from "../../ttlayer2.js";
-import { SpriteData } from "../packtex/packtex";
+import { SpriteData, ToRGBAOption } from "../packtex/packtex.js";
 
 
 export class TiledTexOption {
@@ -84,7 +84,7 @@ export class TiledTex extends Texture {
         t.index = index;
         this.tiles[index] = t;
         if (data.format != TextureFormat.RGBA32) {
-            data = data.ConvertToRGBA();
+            data = data.ConvertToRGBA(ToRGBAOption.R2Gray);
         }
         this.UploadTexture(t.posU * this.tileSize, t.posV * this.tileSize, this.tileSize, this.tileSize, data.data);
         return t;

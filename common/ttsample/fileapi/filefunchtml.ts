@@ -1,4 +1,4 @@
-import { SpriteData } from "../../ttlayer2/resources/packtex/packtex";
+import { SpriteData } from "../../ttlayer2/resources/packtex/packtex.js";
 
 export class FileTool {
     static input: HTMLInputElement = null;

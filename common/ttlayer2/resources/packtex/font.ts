@@ -44,13 +44,13 @@ export class Font {
 
                 let data = new SpriteData()
                 data.format = TextureFormat.RGBA32;
-                data.toR = ToROption.Alpha;
+                //data.toR = ToROption.Alpha;
                 data.data = imgdata.data;
                 data.width = imgdata.width;
                 data.height = imgdata.height;
 
-                let data2 = data.ConvertToR();
-                data2.toR = ToROption.Alpha;
+                let data2 = data.ConvertToR(ToROption.Alpha);
+                //data2.toR = ToROption.Alpha;
                 e = this.fonttex.AddSprite(data2, ElementFormat.GrayAsAlpha, txt);
 
 

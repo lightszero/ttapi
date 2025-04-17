@@ -112,6 +112,8 @@ export class TTPackageMgr {
         let gifbs = await loader.LoadBinaryAsync(rootpath + "/" + filename);
 
         let gifRender = new GifReader(new Uint8Array(gifbs));
+        let realw = gifRender.width / srcscale;
+        let realh = gifRender.height / srcscale;
         for (var i = 0; i < gifRender.numFrames(); i++) {
             let finfo = gifRender.frameInfo(i);
 

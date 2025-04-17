@@ -434,7 +434,7 @@ export class GifReader {
 
 
         var delay = 0;
-        var transparent_index = null;
+        //var transparent_index = null;
         var disposal = 0;  // 0 - No disposal specified.
 
 
@@ -476,7 +476,7 @@ export class GifReader {
                                 var pf1 = buf[p++];
                                 delay = buf[p++] | buf[p++] << 8;
                                 this.transparent_index = buf[p++];
-                                if ((pf1 & 1) === 0) transparent_index = -1;
+                                if ((pf1 & 1) === 0) this.transparent_index = -1;
                                 disposal = pf1 >> 2 & 0x7;
                                 p++;  // Skip terminator.
                                 break;
@@ -542,7 +542,7 @@ export class GifReader {
                             palette_size: palette_size,
                             data_offset: data_offset,
                             data_length: p - data_offset,
-                            transparent_index: transparent_index,
+                            transparent_index: this.transparent_index,
                             interlaced: !!interlace_flag,
                             delay: delay,
                             disposal: disposal

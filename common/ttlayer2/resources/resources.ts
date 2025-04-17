@@ -133,7 +133,6 @@ export class Resources {
             spdata.format = TextureFormat.R8;
             spdata.width = 8;
             spdata.height = 8;
-            spdata.toR = ToROption.Alpha;
             spdata.data = new Uint8Array(
                 [
                     0.0, 0.0, 0.0, 255, 255, 0.0, 0.0, 0.0,
@@ -157,7 +156,6 @@ export class Resources {
             spdata.format = TextureFormat.R8;
             spdata.width = 8;
             spdata.height = 8;
-            spdata.toR = ToROption.Alpha;
             spdata.data = new Uint8Array(
                 [
                     255, 255, 255, 255, 255, 0.0, 0.0, 0.0,
@@ -181,7 +179,6 @@ export class Resources {
             spdata.format = TextureFormat.R8;
             spdata.width = 8;
             spdata.height = 8;
-            spdata.toR = ToROption.Alpha;
             spdata.data = new Uint8Array(
                 [
                     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 255,
